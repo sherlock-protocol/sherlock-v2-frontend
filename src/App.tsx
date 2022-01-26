@@ -1,9 +1,9 @@
 import React from "react"
 import { Route, Routes } from "react-router-dom"
 
-import { StakingPage } from "./pages/Staking/Staking"
-import { StakingPositionsPage } from "./pages/StakingPositions/StakingPositions"
-import { ProtocolBalancePage } from "./pages/ProtocolBalance/ProtocolBalance"
+import { StakingPage } from "./pages/Staking"
+import { StakingPositionsPage } from "./pages/StakingPositions"
+import { ProtocolBalancePage } from "./pages/ProtocolBalance"
 
 import styles from "./App.module.scss"
 
