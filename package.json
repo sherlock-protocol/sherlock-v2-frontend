@@ -10,12 +10,14 @@
     "@types/node": "^16.11.21",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
+    "ethers": "^5.5.3",
     "node-sass": "^7.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
     "typescript": "^4.5.5",
+    "wagmi": "^0.2.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
