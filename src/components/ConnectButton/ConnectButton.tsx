@@ -1,5 +1,6 @@
 import React from "react"
 import { chain, useAccount, useConnect, useNetwork } from "wagmi"
+import useUSDC from "../../hooks/useUSDC"
 import { Button } from "../Button/Button"
 import WalletProviderModal from "../WalletProviderModal/WalletProviderModal"
 
@@ -20,7 +21,7 @@ const ConnectButton: React.FC = ({ children }) => {
    * Triggers a network switch to the correct network
    */
   const handleSwitchToCorrectNetwork = React.useCallback(() => {
-    switchNetwork?.(chain.mainnet.id)
+    switchNetwork?.(parseInt(`${process.env.REACT_APP_NETWORK_ID}`))
   }, [switchNetwork])
 
   /**
