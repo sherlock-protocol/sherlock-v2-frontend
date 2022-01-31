@@ -11,12 +11,13 @@ import { BigNumber } from "ethers"
 const useERC20 = (contractAddress: string) => {
   const [balance, setBalance] = React.useState<BigNumber>()
 
+  const provider = useProvider()
   const [{ data: signerData }] = useSigner()
   const [{ data: accountData }] = useAccount()
 
   const contract: ERC20 = useContract({
     addressOrName: contractAddress,
-    signerOrProvider: signerData,
+    signerOrProvider: signerData || provider,
     contractInterface: ERC20ABI.abi,
   })
 
