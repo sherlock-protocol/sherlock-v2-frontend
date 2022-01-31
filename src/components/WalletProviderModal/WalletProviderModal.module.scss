@@ -1,0 +1,18 @@
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  flex-direction: column;
+
+  .container {
+    padding: 2rem;
+    border: 1px solid black;
+    pointer-events: auto;
+  }
+}

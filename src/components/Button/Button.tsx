@@ -1,7 +1,9 @@
 import React from "react"
 
-type ButtonProps = {}
+type ButtonProps = {
+  onClick: (e: React.SyntheticEvent) => void
+}
 
-export const Button: React.FC<ButtonProps> = ({ children }) => {
-  return <button>{children}</button>
+export const Button: React.FC<ButtonProps> = ({ children, onClick }) => {
+  return <button onClick={onClick}>{children}</button>
 }
