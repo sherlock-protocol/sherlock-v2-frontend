@@ -4,7 +4,7 @@ import { BrowserRouter } from "react-router-dom"
 import "./index.css"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
-import { Provider, defaultChains } from "wagmi"
+import { Provider, defaultChains, developmentChains } from "wagmi"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 import { providers } from "ethers"
@@ -14,6 +14,11 @@ const alchemyApiKey = process.env.REACT_APP_ALCHEMY_API_KEY
 
 // Chains for connectors to support
 const chains = defaultChains
+
+// Add local node support if developing
+if (process.env.NODE_ENV === "development") {
+  chains.push(...developmentChains)
+}
 
 // Set up connectors
 const connectors = ({ chainId }: { chainId?: number | undefined }) => {
@@ -32,6 +37,11 @@ const connectors = ({ chainId }: { chainId?: number | undefined }) => {
 }
 
 const provider = ({ chainId }: { chainId?: number | undefined }) => {
+  // Use local node if working on a development chain
+  if (!chainId || chainId?.toString().indexOf("1337") > -1) {
+    return new providers.JsonRpcProvider("http://127.0.0.1:8545")
+  }
+
   return new providers.AlchemyProvider(chainId, alchemyApiKey)
 }
 
