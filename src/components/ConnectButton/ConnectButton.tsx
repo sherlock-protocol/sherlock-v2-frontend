@@ -1,6 +1,5 @@
 import React from "react"
-import { chain, useAccount, useConnect, useNetwork } from "wagmi"
-import useUSDC from "../../hooks/useUSDC"
+import { useAccount, useConnect, useNetwork } from "wagmi"
 import { Button } from "../Button/Button"
 import WalletProviderModal from "../WalletProviderModal/WalletProviderModal"
 

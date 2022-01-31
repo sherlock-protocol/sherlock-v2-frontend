@@ -5,14 +5,9 @@ import styles from "./ProtocolBalanceInput.module.scss"
 
 interface Props {
   /**
-   * Called when user wants to add balance
+   * Called when amount has changed
    */
-  onAdd: (amount: BigNumber) => void
-
-  /**
-   * Called when user wants to remove balance
-   */
-  onRemove: (amount: BigNumber) => void
+  onChange?: (amount: BigNumber | null) => void
 
   /**
    * Protocol's per-second USDC premium
@@ -32,7 +27,7 @@ interface Props {
  * It allows using predefined coverage period (e.g. 2 weeks, 1 month, 3 months)
  * that are automatically translated to USDC.
  */
-const ProtocolBalanceInput: React.FC<Props> = ({ onAdd, onRemove, protocolPremium, usdcBalance }) => {
+const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocolPremium, usdcBalance }) => {
   /**
    * Amount in USDC
    */
@@ -57,37 +52,19 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onAdd, onRemove, protocolPremiu
       const totalAmount = protocolPremium.mul(seconds)
 
       setAmount(ethers.utils.formatUnits(totalAmount, 6))
+      onChange(totalAmount)
     },
-    [protocolPremium]
+    [protocolPremium, onChange]
   )
 
-  const handleOnAmountChanged = React.useCallback((e) => {
-    setAmount(e.target.value)
-  }, [])
-
-  /**
-   * Handle the add balance event
-   */
-  const handleAddBalance = React.useCallback(() => {
-    // Check if amount is set
-    if (!amount) {
-      return
-    }
-
-    onAdd(BigNumber.from(ethers.utils.parseUnits(amount, 6)))
-  }, [amount, onAdd])
-
-  /**
-   * Handle the remove balance event
-   */
-  const handleRemoveBalance = React.useCallback(() => {
-    // Check if amount is set
-    if (!amount) {
-      return
-    }
-
-    onRemove(BigNumber.from(ethers.utils.parseUnits(amount, 6)))
-  }, [amount, onRemove])
+  const handleOnAmountChanged = React.useCallback(
+    (e) => {
+      const value = e.target.value
+      setAmount(value)
+      onChange(value ? ethers.utils.parseUnits(value, 6) : null)
+    },
+    [onChange]
+  )
 
   /**
    * Reset inputs on protocol premium change
@@ -126,12 +103,6 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onAdd, onRemove, protocolPremiu
       />
       <span>USDC</span>
       {amountDuration && <p>~{amountDuration} days</p>}
-      <div>
-        <Button onClick={handleAddBalance}>Add balance</Button>
-      </div>
-      <div>
-        <Button onClick={handleRemoveBalance}>Remove balance</Button>
-      </div>
     </div>
   )
 }

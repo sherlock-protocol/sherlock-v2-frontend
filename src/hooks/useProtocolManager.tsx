@@ -1,5 +1,5 @@
 import React from "react"
-import { useContract, useProvider } from "wagmi"
+import { useContract, useProvider, useSigner } from "wagmi"
 import { SherlockProtocolManager } from "../contracts"
 import SherlockProtocolManagerABI from "../abi/SherlockProtocolManager.json"
 import { BigNumber, ethers } from "ethers"
@@ -34,9 +34,10 @@ export const COVERED_PROTOCOLS = {
  */
 const useProtocolManager = () => {
   const provider = useProvider()
+  const [{ data: signerData }] = useSigner()
   const contract: SherlockProtocolManager = useContract({
     addressOrName: SHERLOCK_PROTOCOL_MANAGER_ADDRESS,
-    signerOrProvider: provider,
+    signerOrProvider: signerData || provider,
     contractInterface: SherlockProtocolManagerABI.abi,
   })
 
@@ -74,10 +75,25 @@ const useProtocolManager = () => {
     [contract]
   )
 
+  /**
+   * Deposit USDC to a protocol's active balance
+   */
+  const depositActiveBalance = React.useCallback(
+    (protocol: keyof typeof COVERED_PROTOCOLS, amount: BigNumber) => {
+      return contract.depositToActiveBalance(ethers.utils.formatBytes32String(protocol), amount)
+    },
+    [contract]
+  )
+
   return React.useMemo(
-    () => ({ getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium }),
-    [getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium]
+    () => ({
+      address: SHERLOCK_PROTOCOL_MANAGER_ADDRESS,
+      getProtocolActiveBalance,
+      getProtocolCoverageLeft,
+      getProtocolPremium,
+      depositActiveBalance,
+    }),
+    [getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium, depositActiveBalance]
   )
 }
-
 export default useProtocolManager
