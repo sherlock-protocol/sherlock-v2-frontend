@@ -41,7 +41,7 @@ const ConnectButton: React.FC = ({ children }) => {
   }
 
   // Check if correct network is selected
-  const isCorrectNetwork = networkData.chain?.id === chain.mainnet?.id
+  const isCorrectNetwork = networkData.chain?.id?.toString() === process.env.REACT_APP_NETWORK_ID
   if (!isCorrectNetwork) {
     return <Button onClick={handleSwitchToCorrectNetwork}>Switch network</Button>
   }
