@@ -4,6 +4,7 @@ import ProtocolBalanceInput from "../../components/ProtocolBalanceInput/Protocol
 import useProtocolManager, { COVERED_PROTOCOLS } from "../../hooks/useProtocolManager"
 import styles from "./Protocol.module.scss"
 import { convertSecondsToDurationString } from "../../utils/time"
+import useUSDC from "../../hooks/useUSDC"
 
 export const ProtocolPage: React.FC = () => {
   const [selectedProtocol, setSelectedProtocol] = React.useState<keyof typeof COVERED_PROTOCOLS>("SQUEETH")
@@ -12,6 +13,7 @@ export const ProtocolPage: React.FC = () => {
   const [premium, setPremium] = React.useState<BigNumber>()
 
   const { getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium } = useProtocolManager()
+  const { balance: usdcBalance } = useUSDC()
 
   /**
    * Handler for changing the protocol
@@ -70,7 +72,12 @@ export const ProtocolPage: React.FC = () => {
       </select>
       {balance && <p>Active balance: {ethers.utils.formatUnits(balance, 6)} USDC</p>}
       {coverageLeft && <p>Coverage left: {convertSecondsToDurationString(coverageLeft.toNumber())}</p>}
-      <ProtocolBalanceInput onAdd={handleAddBalance} onRemove={handleRemoveBalance} protocolPremium={premium} />
+      <ProtocolBalanceInput
+        onAdd={handleAddBalance}
+        onRemove={handleRemoveBalance}
+        protocolPremium={premium}
+        usdcBalance={usdcBalance}
+      />
     </div>
   )
 }

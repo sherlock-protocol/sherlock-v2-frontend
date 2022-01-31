@@ -18,6 +18,11 @@ interface Props {
    * Protocol's per-second USDC premium
    */
   protocolPremium?: BigNumber
+
+  /**
+   * User's USDC balance
+   */
+  usdcBalance?: BigNumber
 }
 
 /**
@@ -27,7 +32,7 @@ interface Props {
  * It allows using predefined coverage period (e.g. 2 weeks, 1 month, 3 months)
  * that are automatically translated to USDC.
  */
-const ProtocolBalanceInput: React.FC<Props> = ({ onAdd, onRemove, protocolPremium }) => {
+const ProtocolBalanceInput: React.FC<Props> = ({ onAdd, onRemove, protocolPremium, usdcBalance }) => {
   /**
    * Amount in USDC
    */
@@ -114,7 +119,11 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onAdd, onRemove, protocolPremiu
         <Button onClick={() => handleSelectPredefinedPeriod(4)}>1 month</Button>
         <Button onClick={() => handleSelectPredefinedPeriod(12)}>3 months</Button>
       </div>
-      <input value={amount} onChange={handleOnAmountChanged} />
+      <input
+        value={amount}
+        onChange={handleOnAmountChanged}
+        placeholder={usdcBalance && `max. ${ethers.utils.formatUnits(usdcBalance, 6)} USDC`}
+      />
       <span>USDC</span>
       {amountDuration && <p>~{amountDuration} days</p>}
       <div>
