@@ -1,7 +1,13 @@
 import { BigNumber, ethers } from "ethers"
 import React from "react"
+import { escapeRegExp } from "../../utils/format"
 import { Button } from "../Button/Button"
 import styles from "./ProtocolBalanceInput.module.scss"
+
+/**
+ * Regex for testing the amount against
+ */
+const amountRegex = /^\d*(?:\\[.])?\d*$/
 
 interface Props {
   /**
@@ -59,9 +65,14 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
 
   const handleOnAmountChanged = React.useCallback(
     (e) => {
-      const value = e.target.value
-      setAmount(value)
-      onChange(value ? ethers.utils.parseUnits(value, 6) : null)
+      // Replace commas with periods
+      const value = e.target.value.replace(/,/g, ".")
+
+      // Test the inputted amount for expected format
+      if (value === "" || amountRegex.test(escapeRegExp(value))) {
+        setAmount(value)
+        onChange(value ? ethers.utils.parseUnits(value, 6) : null)
+      }
     },
     [onChange]
   )
