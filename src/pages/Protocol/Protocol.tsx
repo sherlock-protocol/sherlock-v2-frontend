@@ -32,6 +32,20 @@ export const ProtocolPage: React.FC = () => {
   }, [])
 
   /**
+   * Fetch latest protocol details: active balance, coverage left and premium
+   */
+  const fetchProtocolDetails = React.useCallback(async () => {
+    const protocolBalance = await getProtocolActiveBalance(selectedProtocol)
+    setBalance(protocolBalance)
+
+    const protocolCoverageleft = await getProtocolCoverageLeft(selectedProtocol)
+    setCoverageLeft(protocolCoverageleft)
+
+    const protocolPremium = await getProtocolPremium(selectedProtocol)
+    setPremium(protocolPremium)
+  }, [selectedProtocol, getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium])
+
+  /**
    * Add balance to selected protocol
    */
   const handleAddBalance = React.useCallback(async () => {
@@ -39,9 +53,12 @@ export const ProtocolPage: React.FC = () => {
       return
     }
 
-    await depositActiveBalance(selectedProtocol, amount)
-    // TODO: Refresh protocol balance
-  }, [amount, selectedProtocol, depositActiveBalance])
+    const tx = await depositActiveBalance(selectedProtocol, amount)
+    await tx?.wait()
+
+    fetchProtocolDetails()
+    setAmount(null)
+  }, [amount, selectedProtocol, depositActiveBalance, fetchProtocolDetails])
 
   /**
    * Remove balance from selected protocol
@@ -87,20 +104,9 @@ export const ProtocolPage: React.FC = () => {
 
   // Fetch protocol coverage information
   React.useEffect(() => {
-    async function fetchAsyncData() {
-      const protocolBalance = await getProtocolActiveBalance(selectedProtocol)
-      setBalance(protocolBalance)
-
-      const protocolCoverageleft = await getProtocolCoverageLeft(selectedProtocol)
-      setCoverageLeft(protocolCoverageleft)
-
-      const protocolPremium = await getProtocolPremium(selectedProtocol)
-      setPremium(protocolPremium)
-    }
-
     setAmount(null)
-    fetchAsyncData()
-  }, [selectedProtocol, getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium])
+    fetchProtocolDetails()
+  }, [fetchProtocolDetails])
 
   // Fetch allowance
   React.useEffect(() => {
