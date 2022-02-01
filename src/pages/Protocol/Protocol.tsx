@@ -67,7 +67,7 @@ export const ProtocolPage: React.FC = () => {
       return
     }
 
-    const lastAllowance = await getAllowance(address)
+    const lastAllowance = await getAllowance(address, true)
     setAllowance(lastAllowance)
   }, [address, getAllowance])
 
@@ -79,7 +79,9 @@ export const ProtocolPage: React.FC = () => {
       return
     }
 
-    await approve(address, amount)
+    const tx = await approve(address, amount)
+    await tx?.wait()
+
     refreshAllowance()
   }, [approve, address, amount, refreshAllowance])
 
