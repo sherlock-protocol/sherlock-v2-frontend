@@ -42,7 +42,7 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
   /**
    * Duration in seconds
    */
-  const [amountDuration, setAmountDuration] = React.useState<number | null>(null)
+  const [amountDuration, setAmountDuration] = React.useState<BigNumber | null>(null)
 
   /**
    * Select a predefined period (in weeks) and convert to USDC
@@ -71,7 +71,12 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
       // Test the inputted amount for expected format
       if (value === "" || amountRegex.test(escapeRegExp(value))) {
         setAmount(value)
-        onChange(value ? ethers.utils.parseUnits(value, 6) : null)
+
+        try {
+          onChange(ethers.utils.parseUnits(value, 6))
+        } catch {
+          onChange(null)
+        }
       }
     },
     [onChange]
@@ -93,10 +98,16 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
     if (!amount || !protocolPremium) {
       setAmountDuration(null)
     } else {
-      const amountBN = BigNumber.from(ethers.utils.parseUnits(amount, 6))
-      const days = amountBN.div(protocolPremium).div(60 * 60 * 24)
+      // Catch exception from computing coverage period
+      // from invalid amount numbmer (e.g. too many decimals)
+      try {
+        const amountBN = BigNumber.from(ethers.utils.parseUnits(amount, 6))
+        const days = amountBN.div(protocolPremium).div(60 * 60 * 24)
 
-      setAmountDuration(days.toNumber())
+        setAmountDuration(days)
+      } catch {
+        setAmountDuration(null)
+      }
     }
   }, [amount, protocolPremium])
 
@@ -113,7 +124,7 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
         placeholder={usdcBalance && `max. ${ethers.utils.formatUnits(usdcBalance, 6)} USDC`}
       />
       <span>USDC</span>
-      {amountDuration && <p>~{amountDuration} days</p>}
+      {amountDuration && <p>~{amountDuration.toString()} days</p>}
     </div>
   )
 }
