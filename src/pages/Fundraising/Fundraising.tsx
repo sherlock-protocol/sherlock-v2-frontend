@@ -5,8 +5,17 @@ import { useSherTokenContract } from "../../hooks/useSherTokenContract"
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
 
 type Rewards = {
+  /**
+   * Amount of SHER available to claim after once the fundraise event finishes.
+   */
   sherAmount: ethers.BigNumber
+  /**
+   * Amount of USDC that needs to be staked for a period of time.
+   */
   stake: ethers.BigNumber
+  /**
+   * Amount of USDC that needs to be paid to get SHER rewards.
+   */
   price: ethers.BigNumber
 }
 
@@ -23,14 +32,30 @@ export const FundraisingPage: React.FC = () => {
   const sherClaimContract = useSherClaimContract()
   const sherTokenContract = useSherTokenContract()
 
+  /**
+   * User input. Amount of USDC willing to pay.
+   */
   const [usdcInput, setUsdcInput] = useState<number>()
-  const [usdcToSherRewardRatio, setUsdcToSherRewardRatio] = useState<number>()
-  const [sherToUsdcRatio, setSherToUsdcRatio] = useState<number>()
 
-  const [isLoadingRewards, setIsLoadingRewards] = useState(false)
-  const [rewards, setRewards] = useState<Rewards>()
+  /**
+   * Ratio: converts USDC to amount of SHER available for claim.
+   */
+  const [usdcToSherRewardRatio, setUsdcToSherRewardRatio] = useState<number>()
+
+  /**
+   * Fundraise deadline. USDC payments won't be accepted afterwards.
+   */
   const [deadline, setDeadline] = useState<Date>()
+  /**
+   * Amount of SHER left in SherBuy contract, available for sale during the fundraise.
+   */
   const [sherRemaining, setSherRemaining] = useState<ethers.BigNumber>()
+  const [isLoadingRewards, setIsLoadingRewards] = useState(false)
+
+  /**
+   * These rewards are calculated based on how much USDC the user is willing to contribute.
+   */
+  const [rewards, setRewards] = useState<Rewards>()
 
   useEffect(() => {
     const fetchConversionRatio = async () => {
@@ -42,7 +67,6 @@ export const FundraisingPage: React.FC = () => {
         const buyRatio = Number(utils.formatUnits(buyRate, 6))
 
         setUsdcToSherRewardRatio(buyRatio / (stakeRatio + buyRatio))
-        setSherToUsdcRatio(stakeRatio + buyRatio)
       } catch (error) {
         console.error(error)
       }
@@ -55,7 +79,6 @@ export const FundraisingPage: React.FC = () => {
     const fetchDeadlineData = async () => {
       try {
         const deadlineTimestamp = await sherClaimContract.claimableAt()
-        console.log(deadlineTimestamp.toString())
         setDeadline(new Date(deadlineTimestamp.mul(1000).toNumber()))
       } catch (error) {
         console.error(error)
@@ -107,7 +130,7 @@ export const FundraisingPage: React.FC = () => {
 
   const formattedDeadline = deadline && millisecondsToHoursAndMinutes(deadline.getTime() - Date.now())
   const usdcRemaining =
-    sherToUsdcRatio && sherRemaining && Number(utils.formatUnits(sherRemaining, 18)) * sherToUsdcRatio
+    usdcToSherRewardRatio && sherRemaining && Number(utils.formatUnits(sherRemaining, 18)) / usdcToSherRewardRatio
 
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
