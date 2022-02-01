@@ -3,6 +3,7 @@ import React from "react"
 import { escapeRegExp } from "../../utils/format"
 import { Button } from "../Button/Button"
 import styles from "./ProtocolBalanceInput.module.scss"
+import { useDebounce } from "use-debounce"
 
 /**
  * Regex for testing the amount against
@@ -38,6 +39,7 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
    * Amount in USDC
    */
   const [amount, setAmount] = React.useState<string>("")
+  const [debouncedAmount] = useDebounce(amount, 100)
 
   /**
    * Duration in seconds
@@ -95,13 +97,13 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
    */
   React.useEffect(() => {
     // TODO: Debounce computation
-    if (!amount || !protocolPremium) {
+    if (!debouncedAmount || !protocolPremium) {
       setAmountDuration(null)
     } else {
       // Catch exception from computing coverage period
       // from invalid amount numbmer (e.g. too many decimals)
       try {
-        const amountBN = BigNumber.from(ethers.utils.parseUnits(amount, 6))
+        const amountBN = BigNumber.from(ethers.utils.parseUnits(debouncedAmount, 6))
         const days = amountBN.div(protocolPremium).div(60 * 60 * 24)
 
         setAmountDuration(days)
@@ -109,7 +111,7 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
         setAmountDuration(null)
       }
     }
-  }, [amount, protocolPremium])
+  }, [debouncedAmount, protocolPremium])
 
   return (
     <div className={styles.container}>
