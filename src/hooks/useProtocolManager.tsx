@@ -85,6 +85,16 @@ const useProtocolManager = () => {
     [contract]
   )
 
+  /**
+   * Withdraw USDC from a protocol's active balance
+   */
+  const withdrawActiveBalance = React.useCallback(
+    (protocol: keyof typeof COVERED_PROTOCOLS, amount: BigNumber) => {
+      return contract.withdrawActiveBalance(ethers.utils.formatBytes32String(protocol), amount)
+    },
+    [contract]
+  )
+
   return React.useMemo(
     () => ({
       address: SHERLOCK_PROTOCOL_MANAGER_ADDRESS,
@@ -92,8 +102,9 @@ const useProtocolManager = () => {
       getProtocolCoverageLeft,
       getProtocolPremium,
       depositActiveBalance,
+      withdrawActiveBalance,
     }),
-    [getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium, depositActiveBalance]
+    [getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium, depositActiveBalance, withdrawActiveBalance]
   )
 }
 export default useProtocolManager

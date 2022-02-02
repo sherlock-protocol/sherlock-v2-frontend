@@ -20,8 +20,14 @@ export const ProtocolPage: React.FC = () => {
    */
   const [amount, setAmount] = React.useState<BigNumber | null>()
 
-  const { address, getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium, depositActiveBalance } =
-    useProtocolManager()
+  const {
+    address,
+    getProtocolActiveBalance,
+    getProtocolCoverageLeft,
+    getProtocolPremium,
+    depositActiveBalance,
+    withdrawActiveBalance,
+  } = useProtocolManager()
   const { balance: usdcBalance, getAllowance, approve } = useERC20("USDC")
 
   /**
@@ -63,11 +69,17 @@ export const ProtocolPage: React.FC = () => {
   /**
    * Remove balance from selected protocol
    */
-  const handleRemoveBalance = React.useCallback(() => {
+  const handleRemoveBalance = React.useCallback(async () => {
     if (!amount) {
       return
     }
-  }, [amount])
+
+    const tx = await withdrawActiveBalance(selectedProtocol, amount)
+    await tx?.wait()
+
+    fetchProtocolDetails()
+    setAmount(null)
+  }, [amount, selectedProtocol, withdrawActiveBalance, fetchProtocolDetails])
 
   /**
    * Handle the inputted amount changed event
