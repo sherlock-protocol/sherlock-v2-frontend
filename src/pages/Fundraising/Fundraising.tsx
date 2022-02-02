@@ -57,6 +57,9 @@ export const FundraisingPage: React.FC = () => {
    */
   const [rewards, setRewards] = useState<Rewards>()
 
+  /**
+   * Fetch ratio to convert between USDC and SHER.
+   */
   useEffect(() => {
     const fetchConversionRatio = async () => {
       try {
@@ -75,6 +78,9 @@ export const FundraisingPage: React.FC = () => {
     fetchConversionRatio()
   }, [sherBuyContract, setUsdcToSherRewardRatio])
 
+  /**
+   * Fetch fundraise event deadline.
+   */
   useEffect(() => {
     const fetchDeadlineData = async () => {
       try {
@@ -88,6 +94,9 @@ export const FundraisingPage: React.FC = () => {
     fetchDeadlineData()
   }, [sherClaimContract])
 
+  /**
+   * Fetch amount of SHER remaining.
+   */
   useEffect(() => {
     const fetchAmountRemaining = async () => {
       try {
