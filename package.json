@@ -17,6 +17,7 @@
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
     "typescript": "^4.5.5",
+    "use-debounce": "^7.0.1",
     "wagmi": "^0.2.1",
     "web-vitals": "^2.1.4"
   },
@@ -25,7 +26,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "contract-typings": "typechain --target=ethers-v5 --out-dir src/contracts src/abi/*.json"
+    "contract-typings": "typechain --target=ethers-v5 --out-dir src/contracts src/abi/*.json",
+    "prepare": "husky install"
   },
   "husky": {
     "hooks": {

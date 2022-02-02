@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom"
 
 import { StakingPage } from "./pages/Staking"
 import { StakingPositionsPage } from "./pages/StakingPositions"
-import { ProtocolBalancePage } from "./pages/ProtocolBalance"
+import { ProtocolPage } from "./pages/Protocol"
 
 import styles from "./App.module.scss"
 import Header from "./components/Header/Header"
@@ -17,7 +17,7 @@ function App() {
         <Route index element={<StakingPage />} />
         <Route path="stake" element={<StakingPage />} />
         <Route path="positions" element={<StakingPositionsPage />} />
-        <Route path="protocol" element={<ProtocolBalancePage />} />
+        <Route path="protocol" element={<ProtocolPage />} />
       </Routes>
     </div>
   )
