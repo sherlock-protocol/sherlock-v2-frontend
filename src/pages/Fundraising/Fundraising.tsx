@@ -63,13 +63,8 @@ export const FundraisingPage: React.FC = () => {
   useEffect(() => {
     const fetchConversionRatio = async () => {
       try {
-        const stakeRate = await sherBuyContract.stakeRate()
-        const buyRate = await sherBuyContract.buyRate()
-
-        const stakeRatio = Number(utils.formatUnits(stakeRate, 6))
-        const buyRatio = Number(utils.formatUnits(buyRate, 6))
-
-        setUsdcToSherRewardRatio(buyRatio / (stakeRatio + buyRatio))
+        const ratio = await sherBuyContract.getUsdcToSherRewardRatio()
+        setUsdcToSherRewardRatio(ratio)
       } catch (error) {
         console.error(error)
       }
@@ -117,7 +112,7 @@ export const FundraisingPage: React.FC = () => {
 
     try {
       const sherAmountWanted = usdcInput * usdcToSherRewardRatio
-      const { sherAmount, stake, price } = await sherBuyContract.viewCapitalRequirements(
+      const { sherAmount, stake, price } = await sherBuyContract.getCapitalRequirements(
         utils.parseUnits(sherAmountWanted.toString(), 18)
       )
 
