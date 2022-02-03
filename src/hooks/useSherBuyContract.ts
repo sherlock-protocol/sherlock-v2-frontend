@@ -9,7 +9,7 @@ export type { PurchaseEvent } from "../contracts/SherBuy"
 /**
  * SherBuy smart contract address
  */
-export const SHER_BUY_ADDRESS = "0xcB8F76171c73B8Cd81C5EfB2c1f47345A7781581"
+export const SHER_BUY_ADDRESS = process.env.REACT_APP_SHER_BUY_ADDRESS as string
 
 /**
  * Capital requirements indicate how much USDC is needed to get `sherAmount` of SHER tokens
