@@ -5,7 +5,6 @@ import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
 
 import { useSherBuyContract } from "../../hooks/useSherBuyContract"
-import { useSherTokenContract } from "../../hooks/useSherTokenContract"
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
 import useERC20 from "../../hooks/useERC20"
 
@@ -35,8 +34,8 @@ const millisecondsToHoursAndMinutes = (milliseconds: number): [number, number] =
 export const FundraisingPage: React.FC = () => {
   const sherBuyContract = useSherBuyContract()
   const sherClaimContract = useSherClaimContract()
-  const sherTokenContract = useSherTokenContract()
   const { getAllowance: getUSDCAllowance, approve: approveSpendUSDC } = useERC20("USDC")
+  const sher = useERC20("SHER")
 
   /**
    * User input. Amount of USDC willing to pay.
@@ -105,7 +104,7 @@ export const FundraisingPage: React.FC = () => {
   useEffect(() => {
     const fetchAmountRemaining = async () => {
       try {
-        const sherAmount = await sherTokenContract.balanceOf(sherBuyContract.address)
+        const sherAmount = await sher.getBalanceOf(sherBuyContract.address)
         setSherRemaining(sherAmount)
       } catch (error) {
         console.error(error)
@@ -113,7 +112,7 @@ export const FundraisingPage: React.FC = () => {
     }
 
     fetchAmountRemaining()
-  }, [sherTokenContract, sherBuyContract.address, setSherRemaining])
+  }, [sher, sherBuyContract.address, setSherRemaining])
 
   /**
    * Refresh allowance from ERC20 contract

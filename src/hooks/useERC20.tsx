@@ -11,6 +11,7 @@ import { BigNumber } from "ethers"
  */
 const TokenContracts = {
   USDC: process.env.REACT_APP_USDC_ADDRESS as string,
+  SHER: process.env.REACT_APP_SHER_ADDRESS as string,
 }
 
 type AvailableERC20Tokens = keyof typeof TokenContracts
@@ -50,6 +51,16 @@ const useERC20 = (token?: AvailableERC20Tokens, contractAddress?: string) => {
     const latestBalance = await contract.balanceOf(accountData?.address)
     setBalance(latestBalance)
   }, [contract, accountData])
+
+  /**
+   * Fetch balance of specific address
+   */
+  const getBalanceOf = React.useCallback(
+    async (address: string) => {
+      return contract.balanceOf(address)
+    },
+    [contract]
+  )
 
   /**
    * Fetch the allowance amount for a given spender
@@ -98,8 +109,8 @@ const useERC20 = (token?: AvailableERC20Tokens, contractAddress?: string) => {
   }, [accountData, refreshBalance, balance])
 
   return React.useMemo(
-    () => ({ balance, refreshBalance, getAllowance, approve }),
-    [balance, refreshBalance, getAllowance, approve]
+    () => ({ balance, refreshBalance, getBalanceOf, getAllowance, approve }),
+    [balance, refreshBalance, getAllowance, getBalanceOf, approve]
   )
 }
 
