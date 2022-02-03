@@ -69,7 +69,7 @@ const useERC20 = (token?: AvailableERC20Tokens, contractAddress?: string) => {
 
       return lastAllowance
     },
-    [contract, accountData, allowances]
+    [contract, accountData?.address, allowances]
   )
 
   /**

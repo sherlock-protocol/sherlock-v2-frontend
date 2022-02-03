@@ -5,7 +5,7 @@ import { SherClaim } from "../contracts/SherClaim"
 export const useSherClaimContract = () => {
   const provider = useProvider()
   const contract = useContract<SherClaim>({
-    addressOrName: "0x9a902e8Aae5f1aB423c7aFB29C0Af50e0d3Fea7e",
+    addressOrName: "0xc4864A1e55B5764c44565b173c4D5b744793fAae",
     contractInterface: SherClaimInterface.abi,
     signerOrProvider: provider,
   })

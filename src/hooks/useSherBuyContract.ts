@@ -1,13 +1,15 @@
 import { ethers, BigNumber } from "ethers"
-import { useCallback, useMemo } from "react"
-import { useContract, useProvider } from "wagmi"
+import { useCallback, useEffect, useMemo } from "react"
+import { useContract, useProvider, useSigner } from "wagmi"
 import SherBuyABI from "../abi/SherBuy.json"
 import { SherBuy } from "../contracts/SherBuy"
+
+export type { PurchaseEvent } from "../contracts/SherBuy"
 
 /**
  * SherBuy smart contract address
  */
-export const SHER_BUY_ADDRESS = "0x8B7c22003087153972e48dada310b4d7CDC18F32"
+export const SHER_BUY_ADDRESS = "0xcB8F76171c73B8Cd81C5EfB2c1f47345A7781581"
 
 /**
  * Capital requirements indicate how much USDC is needed to get `sherAmount` of SHER tokens
@@ -32,11 +34,18 @@ export type CapitalRequirements = {
 
 export const useSherBuyContract = () => {
   const provider = useProvider()
+  const [{ data: signerData }] = useSigner()
   const contract = useContract<SherBuy>({
     addressOrName: SHER_BUY_ADDRESS,
     contractInterface: SherBuyABI.abi,
-    signerOrProvider: provider,
+    signerOrProvider: signerData || provider,
   })
+
+  useEffect(() => {
+    contract.on("Purchase", () => {
+      console.log("Purchase!!!")
+    })
+  }, [contract])
 
   /**
    * Fetch stakeRate & buyRate values and calculates the USDC to SHER ratio.
@@ -72,12 +81,28 @@ export const useSherBuyContract = () => {
     [contract]
   )
 
+  /**
+   * Send USDC to SherBuy smart contract based on the amount of SHER wanted.
+   * A portion will be locked in the liquidity pool for X period.
+   * The remaining will go to Sherlock in exchange of SHER tokens (available for claim right after the fundraise)
+   *
+   * @param sherAmountWant - amount of SHER the user is willing to claim
+   * @returns void
+   */
+  const execute = useCallback(
+    async (sherAmountWant: BigNumber) => {
+      return contract.execute(sherAmountWant)
+    },
+    [contract]
+  )
+
   return useMemo(
     () => ({
       address: SHER_BUY_ADDRESS,
       getUsdcToSherRewardRatio,
       getCapitalRequirements,
+      execute,
     }),
-    [getUsdcToSherRewardRatio, getCapitalRequirements]
+    [getUsdcToSherRewardRatio, getCapitalRequirements, execute]
   )
 }
