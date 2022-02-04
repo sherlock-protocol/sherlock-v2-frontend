@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react"
-import { useContract, useProvider } from "wagmi"
+import { useContract, useProvider, useSigner } from "wagmi"
 import SherClaimInterface from "../abi/SherClaim.json"
 import { SherClaim } from "../contracts/SherClaim"
 
@@ -15,10 +15,11 @@ export const SHER_CLAIM_ADDRESS = process.env.REACT_APP_SHER_CLAIM_ADDRESS as st
 
 export const useSherClaimContract = () => {
   const provider = useProvider()
+  const [{ data: signerData }] = useSigner()
   const contract = useContract<SherClaim>({
     addressOrName: SHER_CLAIM_ADDRESS,
     contractInterface: SherClaimInterface.abi,
-    signerOrProvider: provider,
+    signerOrProvider: signerData || provider,
   })
 
   /**
@@ -53,13 +54,29 @@ export const useSherClaimContract = () => {
     return txReceipt
   }, [contract])
 
+  /**
+   * Fetch the amount of SHER an address can claim once they become claimable
+   *
+   * @param address - account
+   *
+   * @returns claimable amount
+   */
+  const getClaimableAmount = useCallback(
+    async (address: string) => {
+      const sherAmount = await contract.userClaims(address)
+      return sherAmount
+    },
+    [contract]
+  )
+
   return useMemo(
     () => ({
       address: SHER_CLAIM_ADDRESS,
       getClaimableAt,
+      getClaimableAmount,
       claimIsActive,
       claim,
     }),
-    [getClaimableAt, claimIsActive, claim]
+    [getClaimableAt, getClaimableAmount, claimIsActive, claim]
   )
 }
