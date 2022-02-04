@@ -1,14 +1,9 @@
 import { BigNumber, ethers } from "ethers"
 import React from "react"
-import { escapeRegExp } from "../../utils/format"
 import { Button } from "../Button/Button"
 import styles from "./ProtocolBalanceInput.module.scss"
 import { useDebounce } from "use-debounce"
-
-/**
- * Regex for testing the amount against
- */
-const amountRegex = /^\d*(?:\\[.])?\d*$/
+import useAmountState from "../../hooks/useAmountState"
 
 interface Props {
   /**
@@ -38,8 +33,8 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
   /**
    * Amount in USDC
    */
-  const [amount, setAmount] = React.useState<string>("")
-  const [debouncedAmount] = useDebounce(amount, 200)
+  const [amount, amountBN, setAmount, setAmountBN] = useAmountState(6)
+  const [debouncedAmountBN] = useDebounce(amountBN, 200)
 
   /**
    * Duration in seconds
@@ -59,29 +54,10 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
       const seconds = weeks * 7 * 24 * 60 * 60
       const totalAmount = protocolPremium.mul(seconds)
 
-      setAmount(ethers.utils.formatUnits(totalAmount, 6))
+      setAmountBN(totalAmount)
       onChange(totalAmount)
     },
-    [protocolPremium, onChange]
-  )
-
-  const handleOnAmountChanged = React.useCallback(
-    (e) => {
-      // Replace commas with periods
-      const value = e.target.value.replace(/,/g, ".")
-
-      // Test the inputted amount for expected format
-      if (value === "" || amountRegex.test(escapeRegExp(value))) {
-        setAmount(value)
-
-        try {
-          onChange(ethers.utils.parseUnits(value, 6))
-        } catch {
-          onChange(null)
-        }
-      }
-    },
-    [onChange]
+    [protocolPremium, onChange, setAmountBN]
   )
 
   /**
@@ -90,27 +66,26 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
   React.useEffect(() => {
     setAmount("")
     setAmountDuration(null)
-  }, [protocolPremium])
+  }, [protocolPremium, setAmount])
 
   /**
    * Compute coverage period extension from the inputted amount
    */
   React.useEffect(() => {
-    if (!debouncedAmount || !protocolPremium) {
+    if (!debouncedAmountBN || !protocolPremium) {
       setAmountDuration(null)
     } else {
       // Catch exception from computing coverage period
       // from invalid amount numbmer (e.g. too many decimals)
       try {
-        const amountBN = BigNumber.from(ethers.utils.parseUnits(debouncedAmount, 6))
-        const days = amountBN.div(protocolPremium).div(60 * 60 * 24)
+        const days = debouncedAmountBN.div(protocolPremium).div(60 * 60 * 24)
 
         setAmountDuration(days)
       } catch {
         setAmountDuration(null)
       }
     }
-  }, [debouncedAmount, protocolPremium])
+  }, [debouncedAmountBN, protocolPremium])
 
   return (
     <div className={styles.container}>
@@ -121,7 +96,7 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
       </div>
       <input
         value={amount}
-        onChange={handleOnAmountChanged}
+        onChange={(e) => setAmount(e.target.value)}
         placeholder={usdcBalance && `max. ${ethers.utils.formatUnits(usdcBalance, 6)} USDC`}
       />
       <span>USDC</span>
