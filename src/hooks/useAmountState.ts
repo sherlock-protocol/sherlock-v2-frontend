@@ -16,9 +16,9 @@ const amountRegex = /^\d*(?:\\[.])?\d*$/
  *
  * @param decimals Number of decimals units to be used when parsing as BigNumber
  */
-const useAmountState = (decimals: number): [string, BigNumber | null, (value: string) => void] => {
+const useAmountState = (decimals: number): [string, BigNumber | undefined, (value: string) => void] => {
   const [amount, setAmount] = React.useState("")
-  const [amountBN, setAmountBN] = React.useState<BigNumber | null>(null)
+  const [amountBN, setAmountBN] = React.useState<BigNumber>()
 
   /**
    * Validate and set a new amount
@@ -35,7 +35,7 @@ const useAmountState = (decimals: number): [string, BigNumber | null, (value: st
         try {
           setAmountBN(ethers.utils.parseUnits(value, decimals))
         } catch {
-          setAmountBN(null)
+          setAmountBN(undefined)
         }
       }
     },

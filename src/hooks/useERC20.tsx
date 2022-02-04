@@ -2,7 +2,7 @@ import React from "react"
 import { ERC20 } from "../contracts"
 import ERC20ABI from "../abi/ERC20.json"
 import { useAccount, useContract, useProvider, useSigner } from "wagmi"
-import { BigNumber } from "ethers"
+import { BigNumber, ethers } from "ethers"
 
 /**
  * Object containing used ERC20 tokens.
@@ -27,6 +27,7 @@ const useERC20 = (token?: AvailableERC20Tokens, contractAddress?: string) => {
     throw Error("Address or token name required")
   }
 
+  const [decimals, setDecimals] = React.useState<number>(18)
   const [balance, setBalance] = React.useState<BigNumber>()
   const [allowances, setAllowances] = React.useState<{ [key: string]: BigNumber }>({})
 
@@ -50,7 +51,7 @@ const useERC20 = (token?: AvailableERC20Tokens, contractAddress?: string) => {
 
     const latestBalance = await contract.balanceOf(accountData?.address)
     setBalance(latestBalance)
-  }, [contract, accountData])
+  }, [contract, accountData?.address])
 
   /**
    * Fetch balance of specific address
@@ -98,19 +99,47 @@ const useERC20 = (token?: AvailableERC20Tokens, contractAddress?: string) => {
   )
 
   /**
-   * Refresh balance on initialization
+   * Format amount
+   */
+  const format = React.useCallback(
+    (amount: BigNumber) => {
+      return ethers.utils.formatUnits(amount, decimals)
+    },
+    [decimals]
+  )
+
+  /**
+   * Refresh balance on initialization, or on account change
    */
   React.useEffect(() => {
-    if (!accountData?.address || !!balance) {
+    if (!accountData?.address) {
       return
     }
 
     refreshBalance()
-  }, [accountData, refreshBalance, balance])
+  }, [accountData?.address, refreshBalance])
+
+  /**
+   * Fetch ERC20 metadata on initialization
+   */
+  React.useEffect(() => {
+    if (!contract) {
+      return
+    }
+
+    const fetchERC20metadata = async () => {
+      const tokenDecimals = await contract.decimals()
+      if (tokenDecimals) {
+        setDecimals(tokenDecimals)
+      }
+    }
+
+    fetchERC20metadata()
+  }, [contract])
 
   return React.useMemo(
-    () => ({ balance, refreshBalance, getBalanceOf, getAllowance, approve }),
-    [balance, refreshBalance, getAllowance, getBalanceOf, approve]
+    () => ({ balance, refreshBalance, getBalanceOf, getAllowance, approve, decimals, format }),
+    [balance, refreshBalance, getAllowance, getBalanceOf, approve, decimals, format]
   )
 }
 

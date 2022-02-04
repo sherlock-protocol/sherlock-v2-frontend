@@ -39,7 +39,7 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
    * Amount in USDC
    */
   const [amount, setAmount] = React.useState<string>("")
-  const [debouncedAmount] = useDebounce(amount, 100)
+  const [debouncedAmount] = useDebounce(amount, 200)
 
   /**
    * Duration in seconds
@@ -96,7 +96,6 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
    * Compute coverage period extension from the inputted amount
    */
   React.useEffect(() => {
-    // TODO: Debounce computation
     if (!debouncedAmount || !protocolPremium) {
       setAmountDuration(null)
     } else {
