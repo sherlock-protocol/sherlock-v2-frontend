@@ -34,7 +34,6 @@ const millisecondsToHoursAndMinutes = (milliseconds: number): [number, number] =
 export const FundraisingPage: React.FC = () => {
   const sherBuyContract = useSherBuyContract()
   const sherClaimContract = useSherClaimContract()
-  const { getAllowance: getUSDCAllowance, approve: approveSpendUSDC } = useERC20("USDC")
   const sher = useERC20("SHER")
 
   /**
@@ -56,10 +55,6 @@ export const FundraisingPage: React.FC = () => {
    */
   const [sherRemaining, setSherRemaining] = useState<ethers.BigNumber>()
   const [isLoadingRewards, setIsLoadingRewards] = useState(false)
-  /**
-   * Keep track of SherBuy's contract allowance to spend USDC
-   */
-  const [allowance, setAllowance] = useState<BigNumber>()
 
   /**
    * These rewards are calculated based on how much USDC the user is willing to contribute.
@@ -114,27 +109,6 @@ export const FundraisingPage: React.FC = () => {
     fetchAmountRemaining()
   }, [sher, sherBuyContract.address, setSherRemaining])
 
-  /**
-   * Refresh allowance from ERC20 contract
-   */
-  const refreshUSDCAllowance = useCallback(async () => {
-    const _allowance = await getUSDCAllowance(sherBuyContract.address, true)
-    setAllowance(_allowance)
-    console.log(_allowance)
-  }, [setAllowance, sherBuyContract.address, getUSDCAllowance])
-
-  /**
-   * Fetch USDC allowance
-   */
-  useEffect(() => {
-    if (!!allowance) {
-      return
-    }
-
-    console.log("changed")
-    refreshUSDCAllowance()
-  }, [allowance, refreshUSDCAllowance])
-
   const handleCalculateRewards = useCallback(async () => {
     if (!usdcInput || !usdcToSherRewardRatio) return
 
@@ -173,15 +147,6 @@ export const FundraisingPage: React.FC = () => {
     }
   }
 
-  const handleUSDCApprove = async () => {
-    if (!usdcInput) return
-
-    const tx = await approveSpendUSDC(sherBuyContract.address, ethers.utils.parseUnits(usdcInput.toString(), 6))
-    await tx?.wait()
-
-    refreshUSDCAllowance()
-  }
-
   const formattedDeadline = deadline && millisecondsToHoursAndMinutes(deadline.getTime() - Date.now())
   const usdcRemaining =
     usdcToSherRewardRatio && sherRemaining && Number(utils.formatUnits(sherRemaining, 18)) / usdcToSherRewardRatio
@@ -203,10 +168,8 @@ export const FundraisingPage: React.FC = () => {
               <li>{`SHER Reward: ${utils.commify(utils.formatUnits(rewards.sherAmount, 18))} tokens`}</li>
             </ul>
             <AllowanceGate
-              allowance={allowance}
               spender={sherBuyContract.address}
               amount={usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0)}
-              onApprove={handleUSDCApprove}
             >
               <Button onClick={handleExecute}>Execute</Button>
             </AllowanceGate>

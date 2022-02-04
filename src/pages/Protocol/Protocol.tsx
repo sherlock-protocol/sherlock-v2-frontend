@@ -13,7 +13,6 @@ export const ProtocolPage: React.FC = () => {
   const [balance, setBalance] = React.useState<BigNumber>()
   const [coverageLeft, setCoverageLeft] = React.useState<BigNumber>()
   const [premium, setPremium] = React.useState<BigNumber>()
-  const [allowance, setAllowance] = React.useState<BigNumber>()
 
   /**
    * Amount to add to/remove from active balance
@@ -28,7 +27,7 @@ export const ProtocolPage: React.FC = () => {
     depositActiveBalance,
     withdrawActiveBalance,
   } = useProtocolManager()
-  const { balance: usdcBalance, getAllowance, approve } = useERC20("USDC")
+  const { balance: usdcBalance } = useERC20("USDC")
 
   /**
    * Handler for changing the protocol
@@ -88,46 +87,11 @@ export const ProtocolPage: React.FC = () => {
     setAmount(amount)
   }, [])
 
-  /**
-   * Refresh USDC allowance
-   */
-  const refreshAllowance = React.useCallback(async () => {
-    if (!address) {
-      return
-    }
-
-    const lastAllowance = await getAllowance(address, true)
-    setAllowance(lastAllowance)
-  }, [address, getAllowance])
-
-  /**
-   * Approve USDC spending for a inputted amount
-   */
-  const handleApproveUSDCSpending = React.useCallback(async () => {
-    if (!address || !amount) {
-      return
-    }
-
-    const tx = await approve(address, amount)
-    await tx?.wait()
-
-    refreshAllowance()
-  }, [approve, address, amount, refreshAllowance])
-
   // Fetch protocol coverage information
   React.useEffect(() => {
     setAmount(null)
     fetchProtocolDetails()
   }, [fetchProtocolDetails])
-
-  // Fetch allowance
-  React.useEffect(() => {
-    if (!address || !!allowance) {
-      return
-    }
-
-    refreshAllowance()
-  }, [address, allowance, refreshAllowance])
 
   return (
     <div className={styles.container}>
@@ -147,12 +111,7 @@ export const ProtocolPage: React.FC = () => {
       {amount && (
         <>
           <div>
-            <AllowanceGate
-              amount={amount}
-              spender={address}
-              allowance={allowance}
-              onApprove={handleApproveUSDCSpending}
-            >
+            <AllowanceGate amount={amount} spender={address}>
               <Button onClick={handleAddBalance} disabled={!amount}>
                 Add balance {amount?.toString()}
               </Button>
