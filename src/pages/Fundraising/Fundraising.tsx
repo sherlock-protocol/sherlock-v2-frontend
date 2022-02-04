@@ -120,7 +120,6 @@ export const FundraisingPage: React.FC = () => {
   const refreshUSDCAllowance = useCallback(async () => {
     const _allowance = await getUSDCAllowance(sherBuyContract.address, true)
     setAllowance(_allowance)
-    console.log(_allowance)
   }, [setAllowance, sherBuyContract.address, getUSDCAllowance])
 
   /**
@@ -131,7 +130,6 @@ export const FundraisingPage: React.FC = () => {
       return
     }
 
-    console.log("changed")
     refreshUSDCAllowance()
   }, [allowance, refreshUSDCAllowance])
 
