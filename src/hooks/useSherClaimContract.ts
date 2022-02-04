@@ -33,11 +33,33 @@ export const useSherClaimContract = () => {
     return new Date(timestampInSeconds.toNumber() * 1000)
   }, [contract])
 
+  /**
+   * Fetch wether the claim is active (users can claim) or not.
+   *
+   * @returns true|false
+   */
+  const claimIsActive = useCallback(async () => {
+    const active = await contract.active()
+    return active
+  }, [contract])
+
+  /**
+   * Claim SHER tokens.
+   */
+  const claim = useCallback(async () => {
+    const tx = await contract.claim()
+    const txReceipt = await tx.wait()
+
+    return txReceipt
+  }, [contract])
+
   return useMemo(
     () => ({
       address: SHER_CLAIM_ADDRESS,
       getClaimableAt,
+      claimIsActive,
+      claim,
     }),
-    [getClaimableAt]
+    [getClaimableAt, claimIsActive, claim]
   )
 }
