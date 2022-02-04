@@ -26,7 +26,7 @@ export const StakingPage: React.FC = () => {
   const [stakingPeriod, setStakingPeriod] = React.useState<number>()
   const [sherRewards, setSherRewards] = React.useState<BigNumber>()
 
-  const { tvl, address } = useSherlock()
+  const { tvl, address, stake, refreshTvl } = useSherlock()
   const { computeRewards } = useSherDistManager()
   const { format: formatSHER } = useERC20("SHER")
   const { balance, format: formatUSDC } = useERC20("USDC")
@@ -53,13 +53,16 @@ export const StakingPage: React.FC = () => {
   /**
    * Stake USDC for a given period of time
    */
-  const handleOnStake = React.useCallback(() => {
+  const handleOnStake = React.useCallback(async () => {
     if (!amountBN || !stakingPeriod) {
       return
     }
 
-    console.log("Staking", { amountBN, stakingPeriod })
-  }, [amountBN, stakingPeriod])
+    const tx = await stake(amountBN, stakingPeriod)
+    await tx?.wait()
+
+    refreshTvl()
+  }, [amountBN, stakingPeriod, stake, refreshTvl])
 
   // Compute rewards when amount or period is changed
   React.useEffect(() => {

@@ -1,5 +1,5 @@
 import React from "react"
-import { useContract, useProvider, useSigner } from "wagmi"
+import { useAccount, useContract, useProvider, useSigner } from "wagmi"
 import { Sherlock } from "../contracts"
 import SherlockABI from "../abi/Sherlock.json"
 import { BigNumber } from "ethers"
@@ -19,6 +19,7 @@ const useSherlock = () => {
 
   const provider = useProvider()
   const [{ data: signerData }] = useSigner()
+  const [{ data: accountData }] = useAccount()
   const contract: Sherlock = useContract({
     addressOrName: SHERLOCK_ADDRESS,
     signerOrProvider: signerData || provider,
@@ -32,6 +33,23 @@ const useSherlock = () => {
     const latestTvl = await contract.totalTokenBalanceStakers()
     setTvl(latestTvl)
   }, [contract])
+
+  /**
+   * Stake USDC
+   *
+   * @param amount Amount of USDC staked
+   * @param period Lock time
+   */
+  const stake = React.useCallback(
+    async (amount: BigNumber, period: number) => {
+      if (!accountData?.address) {
+        return
+      }
+
+      return contract.initialStake(amount, period, accountData?.address)
+    },
+    [accountData?.address, contract]
+  )
 
   /**
    * Fetch TVL on initialization
@@ -48,8 +66,10 @@ const useSherlock = () => {
     () => ({
       address: SHERLOCK_ADDRESS,
       tvl,
+      refreshTvl,
+      stake,
     }),
-    [tvl]
+    [tvl, stake, refreshTvl]
   )
 }
 export default useSherlock
