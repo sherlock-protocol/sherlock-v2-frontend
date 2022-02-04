@@ -88,8 +88,8 @@ export const FundraisingPage: React.FC = () => {
   useEffect(() => {
     const fetchDeadlineData = async () => {
       try {
-        const deadlineTimestamp = await sherClaimContract.claimableAt()
-        setDeadline(new Date(deadlineTimestamp.mul(1000).toNumber()))
+        const deadline = await sherClaimContract.getClaimableAt()
+        setDeadline(deadline)
       } catch (error) {
         console.error(error)
       }
