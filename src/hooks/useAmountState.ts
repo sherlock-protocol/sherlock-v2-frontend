@@ -8,9 +8,6 @@ import { escapeRegExp } from "../utils/format"
 const amountRegex = /^\d*(?:\\[.])?\d*$/
 
 /**
- */
-
-/**
  * React Hook for storing a validated and sanitized
  * currency input amount.
  *
