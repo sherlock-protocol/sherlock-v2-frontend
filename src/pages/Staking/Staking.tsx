@@ -14,7 +14,7 @@ import styles from "./Staking.module.scss"
  *
  * TODO: Should be fetched automatically or hardcoded?
  */
-const PERIODS_IN_SECONDS = {
+export const PERIODS_IN_SECONDS = {
   THREE_MONTHS: 60 * 60 * 24 * 7 * 13,
   SIX_MONTHS: 60 * 60 * 24 * 7 * 26,
   ONE_YEAR: 60 * 60 * 24 * 7 * 52,

@@ -5,7 +5,7 @@
  * @param seconds Number of seconds to convert
  */
 export const convertSecondsToDurationString = (seconds: number): string => {
-  if (!seconds) {
+  if (!seconds || seconds < 0) {
     return ""
   }
 

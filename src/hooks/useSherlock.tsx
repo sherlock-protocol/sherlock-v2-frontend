@@ -52,6 +52,62 @@ const useSherlock = () => {
   )
 
   /**
+   * Fetch the SHER rewards owed to a position
+   *
+   * @param id Position ID
+   */
+  const getPositionSherRewards = React.useCallback(
+    async (id: number) => {
+      return contract.sherRewards(id)
+    },
+    [contract]
+  )
+
+  /**
+   * Fetch the current USDC balance of a position,
+   * claimable at the end of the lockup period.
+   *
+   * @param id Position ID
+   */
+  const getPositionUsdcBalance = React.useCallback(
+    async (id: number) => {
+      return contract.tokenBalanceOf(id)
+    },
+    [contract]
+  )
+
+  /**
+   * Fetch the timestamp at which a position can be
+   * restaked or unstaked.
+   */
+  const getPositionLockupEnd = React.useCallback(
+    async (id: number) => {
+      return contract.lockupEnd(id)
+    },
+    [contract]
+  )
+
+  /**
+   * Unsttake and cash out an unlocked position
+   */
+  const unstake = React.useCallback(
+    async (id: number) => {
+      return contract.redeemNFT(id)
+    },
+    [contract]
+  )
+
+  /**
+   * Unsttake and cash out an unlocked position
+   */
+  const restake = React.useCallback(
+    async (id: number, period: number) => {
+      return contract.redeemNFT(id)
+    },
+    [contract]
+  )
+
+  /**
    * Fetch TVL on initialization
    */
   React.useEffect(() => {
@@ -68,8 +124,13 @@ const useSherlock = () => {
       tvl,
       refreshTvl,
       stake,
+      getPositionLockupEnd,
+      getPositionSherRewards,
+      getPositionUsdcBalance,
+      restake,
+      unstake,
     }),
-    [tvl, stake, refreshTvl]
+    [tvl, stake, refreshTvl, getPositionLockupEnd, getPositionSherRewards, getPositionUsdcBalance, restake, unstake]
   )
 }
 export default useSherlock
