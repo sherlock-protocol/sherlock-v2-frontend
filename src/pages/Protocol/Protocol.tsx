@@ -7,6 +7,7 @@ import { convertSecondsToDurationString } from "../../utils/time"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
 import useERC20 from "../../hooks/useERC20"
+import ConnectGate from "../../components/ConnectGate/ConnectGate"
 
 export const ProtocolPage: React.FC = () => {
   const [selectedProtocol, setSelectedProtocol] = React.useState<keyof typeof COVERED_PROTOCOLS>("SQUEETH")
@@ -109,18 +110,20 @@ export const ProtocolPage: React.FC = () => {
         <ProtocolBalanceInput onChange={handleOnAmountChanged} protocolPremium={premium} usdcBalance={usdcBalance} />
       )}
       {amount && (
-        <>
-          <div>
-            <AllowanceGate amount={amount} spender={address}>
-              <Button onClick={handleAddBalance} disabled={!amount}>
-                Add balance {amount?.toString()}
-              </Button>
-            </AllowanceGate>
-          </div>
-          <div>
-            <Button onClick={handleRemoveBalance}>Remove balance</Button>
-          </div>
-        </>
+        <ConnectGate>
+          <>
+            <div>
+              <AllowanceGate amount={amount} spender={address}>
+                <Button onClick={handleAddBalance} disabled={!amount}>
+                  Add balance {amount?.toString()}
+                </Button>
+              </AllowanceGate>
+            </div>
+            <div>
+              <Button onClick={handleRemoveBalance}>Remove balance</Button>
+            </div>
+          </>
+        </ConnectGate>
       )}
     </div>
   )

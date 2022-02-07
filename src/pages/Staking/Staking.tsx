@@ -3,6 +3,7 @@ import React from "react"
 import { useDebounce } from "use-debounce"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
+import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import useAmountState from "../../hooks/useAmountState"
 import useERC20 from "../../hooks/useERC20"
 import useSherDistManager from "../../hooks/useSherDistManager"
@@ -92,9 +93,11 @@ export const StakingPage: React.FC = () => {
           </div>
         )}
         {amountBN && stakingPeriod && (
-          <AllowanceGate amount={amountBN} spender={address}>
-            <Button onClick={handleOnStake}>Stake</Button>
-          </AllowanceGate>
+          <ConnectGate>
+            <AllowanceGate amount={amountBN} spender={address}>
+              <Button onClick={handleOnStake}>Stake</Button>
+            </AllowanceGate>
+          </ConnectGate>
         )}
       </div>
     </div>

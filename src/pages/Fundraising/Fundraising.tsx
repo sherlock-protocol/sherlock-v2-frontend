@@ -7,6 +7,7 @@ import { Button } from "../../components/Button/Button"
 import { useSherBuyContract } from "../../hooks/useSherBuyContract"
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
 import useERC20 from "../../hooks/useERC20"
+import ConnectGate from "../../components/ConnectGate/ConnectGate"
 
 type Rewards = {
   /**
@@ -167,12 +168,14 @@ export const FundraisingPage: React.FC = () => {
               <li>{`USDC Contributed: ${utils.commify(utils.formatUnits(rewards.price, 6))}`}</li>
               <li>{`SHER Reward: ${utils.commify(utils.formatUnits(rewards.sherAmount, 18))} tokens`}</li>
             </ul>
-            <AllowanceGate
-              spender={sherBuyContract.address}
-              amount={usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0)}
-            >
-              <Button onClick={handleExecute}>Execute</Button>
-            </AllowanceGate>
+            <ConnectGate>
+              <AllowanceGate
+                spender={sherBuyContract.address}
+                amount={usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0)}
+              >
+                <Button onClick={handleExecute}>Execute</Button>
+              </AllowanceGate>
+            </ConnectGate>
           </div>
         )}
       </div>
