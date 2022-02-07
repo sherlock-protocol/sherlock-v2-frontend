@@ -32,6 +32,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "contract-typings": "typechain --target=ethers-v5 --out-dir src/contracts src/abi/*.json",
+    "graphql-codegen": "graphql-codegen --config codegen.yml",
     "prepare": "husky install"
   },
   "husky": {
@@ -63,10 +64,15 @@
     ]
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "2.5.0",
     "@typechain/ethers-v5": "^9.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.2",
     "prettier": "2.5.1",
-    "typechain": "^7.0.0"
+    "typechain": "^7.0.0",
+    "@graphql-codegen/typescript": "2.4.3",
+    "@graphql-codegen/typescript-react-apollo": "3.2.5",
+    "@graphql-codegen/typescript-operations": "2.2.4",
+    "@graphql-codegen/introspection": "2.1.1"
   }
 }

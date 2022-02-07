@@ -4,6 +4,7 @@ import { useAccount } from "wagmi"
 import { gql, useQuery } from "@apollo/client"
 
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
+import { GetPositionsQuery } from "../../graphql/types"
 
 const GET_POSITIONS = gql`
   query GetPositions($owner: String!) {
@@ -20,15 +21,21 @@ export const FundraisingClaimPage = () => {
   const [{ data: accountData }] = useAccount()
   const sherClaim = useSherClaimContract()
 
-  const { data, error } = useQuery(GET_POSITIONS, {
+  const { data, error } = useQuery<GetPositionsQuery>(GET_POSITIONS, {
     variables: {
       owner: "0x0b6a04b8d3d050cbed9a4621a5d503f27743c942",
     },
   })
 
   useEffect(() => {
-    console.log(data)
-    console.log(error)
+    if (data) {
+      const position = data.positions?.at(0)
+
+      if (position) {
+        const all = BigNumber.from(position.sherAmount)
+        console.log(ethers.utils.formatUnits(all))
+      }
+    }
   }, [data, error])
 
   /**

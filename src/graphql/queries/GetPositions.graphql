@@ -1,0 +1,8 @@
+query GetPositions($owner: String!) {
+  positions(owner: $owner) {
+    usdcAmount
+    sherAmount
+    expiration
+    owner
+  }
+}
