@@ -8,6 +8,7 @@ import { Provider, defaultChains, developmentChains } from "wagmi"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 import { providers } from "ethers"
+import { TxWaitProvider } from "./hooks/useWaitTx"
 
 // API key for Alchemy project
 const alchemyApiKey = process.env.REACT_APP_ALCHEMY_API_KEY
@@ -49,7 +50,9 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Provider autoConnect provider={provider} connectors={connectors}>
-        <App />
+        <TxWaitProvider>
+          <App />
+        </TxWaitProvider>
       </Provider>
     </BrowserRouter>
   </React.StrictMode>,
