@@ -1,35 +1,12 @@
 import { BigNumber, ethers } from "ethers"
 import React, { useCallback, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
-import { gql, useQuery } from "@apollo/client"
-import { loader } from "graphql.macro"
 
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
-import { GetPositionsQuery } from "../../graphql/types"
-
-const GET_POSITIONS = loader("../../graphql/queries/GetPositions.graphql")
 
 export const FundraisingClaimPage = () => {
   const [{ data: accountData }] = useAccount()
   const sherClaim = useSherClaimContract()
-
-  const { data, error } = useQuery<GetPositionsQuery>(GET_POSITIONS, {
-    variables: {
-      owner: "0x0b6a04b8d3d050cbed9a4621a5d503f27743c942",
-    },
-  })
-
-  useEffect(() => {
-    if (data) {
-      const position = data.positions?.at(0)
-
-      if (position) {
-        const all = BigNumber.from(position.sherAmount)
-        console.log(position.id)
-        console.log(ethers.utils.formatUnits(all))
-      }
-    }
-  }, [data, error])
 
   /**
    * Amount of SHER tokens available to be claimed once the fundraise event ends.

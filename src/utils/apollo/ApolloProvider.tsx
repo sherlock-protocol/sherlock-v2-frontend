@@ -61,8 +61,6 @@ const resolvers = {
   },
 }
 
-console.log(typeDefs)
-
 const schema = makeExecutableSchema({ typeDefs, resolvers })
 
 const client = new ApolloClient({
