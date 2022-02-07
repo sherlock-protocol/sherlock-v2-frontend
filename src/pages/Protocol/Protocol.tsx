@@ -18,7 +18,7 @@ export const ProtocolPage: React.FC = () => {
   /**
    * Amount to add to/remove from active balance
    */
-  const [amount, setAmount] = React.useState<BigNumber | null>()
+  const [amount, setAmount] = React.useState<BigNumber>()
 
   const {
     address,
@@ -78,19 +78,19 @@ export const ProtocolPage: React.FC = () => {
     await tx?.wait()
 
     fetchProtocolDetails()
-    setAmount(null)
+    setAmount(undefined)
   }, [amount, selectedProtocol, withdrawActiveBalance, fetchProtocolDetails])
 
   /**
    * Handle the inputted amount changed event
    */
-  const handleOnAmountChanged = React.useCallback((amount: BigNumber | null) => {
+  const handleOnAmountChanged = React.useCallback((amount: BigNumber | undefined) => {
     setAmount(amount)
   }, [])
 
   // Fetch protocol coverage information
   React.useEffect(() => {
-    setAmount(null)
+    setAmount(undefined)
     fetchProtocolDetails()
   }, [fetchProtocolDetails])
 
