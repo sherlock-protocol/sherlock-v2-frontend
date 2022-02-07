@@ -94,6 +94,7 @@ export type GetPositionsQuery = {
   __typename?: "Query"
   positions?: Array<{
     __typename?: "Position"
+    id: string
     usdcAmount: BigInt
     sherAmount: BigInt
     expiration: BigInt
@@ -104,6 +105,7 @@ export type GetPositionsQuery = {
 export const GetPositionsDocument = gql`
   query GetPositions($owner: String!) {
     positions(owner: $owner) {
+      id
       usdcAmount
       sherAmount
       expiration

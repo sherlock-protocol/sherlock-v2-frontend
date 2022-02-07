@@ -2,20 +2,12 @@ import { BigNumber, ethers } from "ethers"
 import React, { useCallback, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 import { gql, useQuery } from "@apollo/client"
+import { loader } from "graphql.macro"
 
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
 import { GetPositionsQuery } from "../../graphql/types"
 
-const GET_POSITIONS = gql`
-  query GetPositions($owner: String!) {
-    positions(owner: $owner) {
-      usdcAmount
-      sherAmount
-      expiration
-      owner
-    }
-  }
-`
+const GET_POSITIONS = loader("../../graphql/queries/GetPositions.graphql")
 
 export const FundraisingClaimPage = () => {
   const [{ data: accountData }] = useAccount()
@@ -33,6 +25,7 @@ export const FundraisingClaimPage = () => {
 
       if (position) {
         const all = BigNumber.from(position.sherAmount)
+        console.log(position.id)
         console.log(ethers.utils.formatUnits(all))
       }
     }

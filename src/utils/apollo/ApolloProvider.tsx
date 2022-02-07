@@ -11,8 +11,43 @@ const typeDefs = [clientSchema, scalarTypeDefs]
 
 const positions = [
   {
-    id: "0x01",
-    owner: "0x0b6a04b8d3d050cbed9a4621a5d503f27743c942",
+    id: 1,
+    owner: "0x100F04C9B98AB9D22772Aacc469bEA466d54cc4A",
+    usdcAmount: BigNumber.from("1000000").toBigInt(),
+    sherAmount: BigNumber.from("1000000000000000000").toBigInt(),
+    expiration: BigNumber.from(1644249926818).toBigInt(),
+  },
+  {
+    id: 2,
+    owner: "0x100F04C9B98AB9D22772Aacc469bEA466d54cc4A",
+    usdcAmount: BigNumber.from("1000000").toBigInt(),
+    sherAmount: BigNumber.from("1000000000000000000").toBigInt(),
+    expiration: BigNumber.from(1644249926818).toBigInt(),
+  },
+  {
+    id: 3,
+    owner: "0x100F04C9B98AB9D22772Aacc469bEA466d54cc4A",
+    usdcAmount: BigNumber.from("1000000").toBigInt(),
+    sherAmount: BigNumber.from("1000000000000000000").toBigInt(),
+    expiration: BigNumber.from(1644249926818).toBigInt(),
+  },
+  {
+    id: 1,
+    owner: "0x0B6a04b8D3d050cbeD9A4621A5D503F27743c942",
+    usdcAmount: BigNumber.from("1000000").toBigInt(),
+    sherAmount: BigNumber.from("1000000000000000000").toBigInt(),
+    expiration: BigNumber.from(1644249926818).toBigInt(),
+  },
+  {
+    id: 2,
+    owner: "0x0B6a04b8D3d050cbeD9A4621A5D503F27743c942",
+    usdcAmount: BigNumber.from("1000000").toBigInt(),
+    sherAmount: BigNumber.from("1000000000000000000").toBigInt(),
+    expiration: BigNumber.from(1644249926818).toBigInt(),
+  },
+  {
+    id: 3,
+    owner: "0x0B6a04b8D3d050cbeD9A4621A5D503F27743c942",
     usdcAmount: BigNumber.from("1000000").toBigInt(),
     sherAmount: BigNumber.from("1000000000000000000").toBigInt(),
     expiration: BigNumber.from(1644249926818).toBigInt(),

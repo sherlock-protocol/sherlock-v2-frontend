@@ -1,5 +1,6 @@
 query GetPositions($owner: String!) {
   positions(owner: $owner) {
+    id
     usdcAmount
     sherAmount
     expiration
