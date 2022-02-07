@@ -13,6 +13,8 @@
     "@types/react-dom": "^17.0.11",
     "ethers": "^5.5.3",
     "graphql": "^16.3.0",
+    "graphql-tools": "^8.2.0",
+    "graphql.macro": "^1.4.2",
     "node-sass": "^7.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

@@ -5,7 +5,7 @@ import "./index.css"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 
-import { ApolloProvider } from "./utils/ApolloProvider"
+import { ApolloProvider } from "./utils/apollo/ApolloProvider"
 import { WagmiProvider } from "./utils/WagmiProvider"
 
 ReactDOM.render(
