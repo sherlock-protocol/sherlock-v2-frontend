@@ -2,60 +2,31 @@ import React from "react"
 import { ApolloClient, InMemoryCache, ApolloProvider as Provider } from "@apollo/client"
 import { SchemaLink } from "@apollo/client/link/schema"
 import { makeExecutableSchema } from "graphql-tools"
+import { typeDefs as scalarTypeDefs, resolvers as scalarResolvers } from "graphql-scalars"
 import { loader } from "graphql.macro"
+import { BigNumber } from "ethers"
 
-const typeDefs = loader("./schema.graphql")
+const clientSchema = loader("./schema.graphql")
+const typeDefs = [clientSchema, scalarTypeDefs]
 
 const positions = [
   {
     id: "0x01",
     owner: "0x0b6a04b8d3d050cbed9a4621a5d503f27743c942",
-    usdcAmount: 1000,
-    sherAmount: 100,
-    expiration: 1644249926818,
-  },
-  {
-    id: "0x02",
-    owner: "0x0b6a04b8d3d050cbed9a4621a5d503f27743c942",
-    usdcAmount: 1000,
-    sherAmount: 100,
-    expiration: 1644249926818,
-  },
-  {
-    id: "0x03",
-    owner: "0x0b6a04b8d3d050cbed9a4621a5d503f27743c942",
-    usdcAmount: 1000,
-    sherAmount: 100,
-    expiration: 1644249926818,
-  },
-  {
-    id: "0x04",
-    owner: "0x100f04c9b98ab9d22772aacc469bea466d54cc4a",
-    usdcAmount: 1000,
-    sherAmount: 100,
-    expiration: 1644249926818,
-  },
-  {
-    id: "0x05",
-    owner: "0x100f04c9b98ab9d22772aacc469bea466d54cc4a",
-    usdcAmount: 1000,
-    sherAmount: 100,
-    expiration: 1644249926818,
-  },
-  {
-    id: "0x06",
-    owner: "0x100f04c9b98ab9d22772aacc469bea466d54cc4a",
-    usdcAmount: 1000,
-    sherAmount: 100,
-    expiration: 1644249926818,
+    usdcAmount: BigNumber.from("1000000").toBigInt(),
+    sherAmount: BigNumber.from("1000000000000000000").toBigInt(),
+    expiration: BigNumber.from(1644249926818).toBigInt(),
   },
 ]
 
 const resolvers = {
+  ...scalarResolvers,
   Query: {
-    positions: (owner: string) => positions.filter((p) => p.owner === owner),
+    positions: (_ctx: any, { owner }: { owner: string }) => positions.filter((p) => p.owner === owner),
   },
 }
+
+console.log(typeDefs)
 
 const schema = makeExecutableSchema({ typeDefs, resolvers })
 

@@ -1,8 +1,8 @@
 type Position {
   id: ID!
-  usdcAmount: Int!
-  sherAmount: Int!
-  expiration: Int! # timestamp in milliseconds
+  usdcAmount: BigInt!
+  sherAmount: BigInt!
+  expiration: BigInt! # timestamp in milliseconds
   owner: String! # owner's address
 }
 
