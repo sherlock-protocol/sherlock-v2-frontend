@@ -1,0 +1,11 @@
+type Position {
+  id: ID!
+  usdcAmount: BigInt!
+  sherAmount: BigInt!
+  expiration: BigInt! # timestamp in milliseconds
+  owner: String! # owner's address
+}
+
+type Query {
+  positions(owner: String!): [Position]
+}
