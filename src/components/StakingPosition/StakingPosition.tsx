@@ -12,45 +12,40 @@ interface Props {
    * Position ID
    */
   id: number
+
+  /**
+   * Current USDC balance, claimable at the end
+   * of the lockup period.
+   */
+  usdcBalance: BigNumber
+
+  /**
+   * Guaranteed SHER rewards
+   */
+  sherRewards: BigNumber
+
+  /**
+   * The timestampt at which the position
+   * can be unstaked or restaked
+   */
+  lockupEnd: BigNumber
 }
 
-const StakingPosition: React.FC<Props> = ({ id }) => {
+const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockupEnd }) => {
   const [lockedForSeconds, setLockedForSeconds] = React.useState<number>()
-  const [usdcBalance, setUsdcBalance] = React.useState<BigNumber>()
-  const [sherRewards, setSherRewards] = React.useState<BigNumber>()
   const [stakingPeriod, setStakingPeriod] = React.useState<number>()
   const isUnlocked = lockedForSeconds && lockedForSeconds <= 0
 
-  const { getPositionLockupEnd, getPositionSherRewards, getPositionUsdcBalance, unstake, restake } = useSherlock()
+  const { unstake, restake } = useSherlock()
   const { waitForTx } = useWaitTx()
 
   /**
-   * Fetch the timestamp at which the position
-   * can be unstaked or restaked.
+   * Compute time left until position unlocks
    */
-  const handleFetchLockupPeriod = React.useCallback(async () => {
-    const lockupEnds = await getPositionLockupEnd(id)
-
-    const timeLeft = lockupEnds.sub(BigNumber.from((new Date().valueOf() / 1000).toFixed(0))).toNumber()
+  React.useEffect(() => {
+    const timeLeft = lockupEnd.sub(BigNumber.from((new Date().valueOf() / 1000).toFixed(0))).toNumber()
     setLockedForSeconds(timeLeft)
-  }, [getPositionLockupEnd, id])
-
-  /**
-   * Fetch position's current USDC balance, claimable at the end
-   * of the lockup period.
-   */
-  const handleFetchUsdcBalance = React.useCallback(async () => {
-    const positionUsdcBalance = await getPositionUsdcBalance(id)
-    setUsdcBalance(positionUsdcBalance)
-  }, [getPositionUsdcBalance, id])
-
-  /**
-   * Fetch position's guaranteed SHER rewards
-   */
-  const handleFetchSherRewards = React.useCallback(async () => {
-    const positionSherRewards = await getPositionSherRewards(id)
-    setSherRewards(positionSherRewards)
-  }, [getPositionSherRewards, id])
+  }, [lockupEnd])
 
   /**
    * Unstake position
@@ -69,12 +64,6 @@ const StakingPosition: React.FC<Props> = ({ id }) => {
 
     await waitForTx(async () => await restake(id, stakingPeriod))
   }, [restake, id, stakingPeriod, waitForTx])
-
-  React.useEffect(() => {
-    handleFetchLockupPeriod()
-    handleFetchSherRewards()
-    handleFetchUsdcBalance()
-  }, [handleFetchLockupPeriod, handleFetchSherRewards, handleFetchUsdcBalance])
 
   return (
     <div className={styles.container}>

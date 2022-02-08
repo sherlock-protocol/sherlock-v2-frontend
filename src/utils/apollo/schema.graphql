@@ -1,5 +1,5 @@
 type Position {
-  id: ID!
+  id: Int!
   usdcAmount: BigInt!
   sherAmount: BigInt!
   expiration: BigInt! # timestamp in milliseconds

@@ -1,15 +1,14 @@
 import React from "react"
-import StakingPosition from "../../components/StakingPosition/StakingPosition"
+import ConnectGate from "../../components/ConnectGate/ConnectGate"
+import { StakingPositionsList } from "../../components/StakingPositionsList/StakingPositionsList"
 import styles from "./StakingPositions.module.scss"
 
-export type StakingPositionsPageProps = {}
-
-export const StakingPositionsPage: React.FC<StakingPositionsPageProps> = () => {
+export const StakingPositionsPage: React.FC = () => {
   return (
     <div className={styles.container}>
-      {[1, 2, 3, 4, 5, 6].map((item, index) => (
-        <StakingPosition key={item.toString()} id={item} />
-      ))}
+      <ConnectGate>
+        <StakingPositionsList />
+      </ConnectGate>
     </div>
   )
 }
