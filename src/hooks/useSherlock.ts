@@ -55,7 +55,7 @@ const useSherlock = () => {
    * Unsttake and cash out an unlocked position
    */
   const unstake = React.useCallback(
-    async (id: number) => {
+    async (id: BigNumber) => {
       return contract.redeemNFT(id)
     },
     [contract]
@@ -65,7 +65,7 @@ const useSherlock = () => {
    * Unsttake and cash out an unlocked position
    */
   const restake = React.useCallback(
-    async (id: number, period: number) => {
+    async (id: BigNumber, period: number) => {
       return contract.redeemNFT(id)
     },
     [contract]

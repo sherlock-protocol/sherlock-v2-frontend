@@ -71,7 +71,7 @@ export type Scalars = {
 export type Position = {
   __typename?: "Position"
   expiration: Scalars["BigInt"]
-  id: Scalars["Int"]
+  id: Scalars["BigInt"]
   owner: Scalars["String"]
   sherAmount: Scalars["BigInt"]
   usdcAmount: Scalars["BigInt"]
@@ -94,7 +94,7 @@ export type GetPositionsQuery = {
   __typename?: "Query"
   positions?: Array<{
     __typename?: "Position"
-    id: number
+    id: BigInt
     usdcAmount: BigInt
     sherAmount: BigInt
     expiration: BigInt

@@ -21,8 +21,8 @@ export const StakingPositionsList: React.FC = () => {
     <div className={styles.container}>
       {data?.positions?.map((position) => (
         <StakingPosition
-          key={position?.id.toString()}
-          id={position?.id as number}
+          key={position?.id?.toString()}
+          id={BigNumber.from(position?.id)}
           usdcBalance={BigNumber.from(position?.usdcAmount)}
           sherRewards={BigNumber.from(position?.sherAmount)}
           lockupEnd={BigNumber.from(position?.expiration)}

@@ -11,7 +11,7 @@ interface Props {
   /**
    * Position ID
    */
-  id: number
+  id: BigNumber
 
   /**
    * Current USDC balance, claimable at the end
@@ -67,7 +67,7 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
 
   return (
     <div className={styles.container}>
-      <p>ID: {id} </p>
+      <p>ID: {id.toString()} </p>
       {usdcBalance && <p>USDC Balance: {ethers.utils.commify(ethers.utils.formatUnits(usdcBalance, 6))} USDC</p>}
       {sherRewards && <p>SHER Balance: {ethers.utils.commify(ethers.utils.formatUnits(sherRewards, 18))} SHER</p>}
       {lockedForSeconds && <p>Position unlocks: {convertSecondsToDurationString(lockedForSeconds)}</p>}
