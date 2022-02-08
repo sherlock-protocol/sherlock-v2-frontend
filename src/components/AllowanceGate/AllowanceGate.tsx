@@ -1,6 +1,7 @@
-import { BigNumber } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import React from "react"
 import useERC20 from "../../hooks/useERC20"
+import useWaitTx from "../../hooks/useWaitTx"
 import { Button } from "../Button/Button"
 
 interface Props {
@@ -23,6 +24,7 @@ const AllowanceGate: React.FC<Props> = ({ children, spender, amount }) => {
   const [allowance, setAllowance] = React.useState<BigNumber>()
 
   const { getAllowance, approve } = useERC20("USDC")
+  const { waitForTx } = useWaitTx()
 
   /**
    * Fetch latest allowance
@@ -43,10 +45,10 @@ const AllowanceGate: React.FC<Props> = ({ children, spender, amount }) => {
       return
     }
 
-    const tx = await approve(spender, amount)
-    await tx?.wait()
+    await waitForTx(async () => (await approve(spender, amount)) as ethers.ContractTransaction)
+
     handleFetchAllowance(true)
-  }, [approve, spender, amount, handleFetchAllowance])
+  }, [approve, spender, amount, handleFetchAllowance, waitForTx])
 
   /**
    * Fetch allowance on initialization
