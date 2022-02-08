@@ -2,6 +2,7 @@ import { useCallback, useMemo } from "react"
 import { useContract, useProvider, useSigner } from "wagmi"
 import SherClaimInterface from "../abi/SherClaim.json"
 import { SherClaim } from "../contracts/SherClaim"
+import useWaitTx from "./useWaitTx"
 
 export const SHER_CLAIM_ADDRESS = process.env.REACT_APP_SHER_CLAIM_ADDRESS as string
 
@@ -21,6 +22,7 @@ export const useSherClaimContract = () => {
     contractInterface: SherClaimInterface.abi,
     signerOrProvider: signerData || provider,
   })
+  const { waitForTx } = useWaitTx()
 
   /**
    * Fetch date at which tokens become available to claim.
@@ -48,11 +50,9 @@ export const useSherClaimContract = () => {
    * Claim SHER tokens.
    */
   const claim = useCallback(async () => {
-    const tx = await contract.claim()
-    const txReceipt = await tx.wait()
-
+    const txReceipt = await waitForTx(async () => await contract.claim())
     return txReceipt
-  }, [contract])
+  }, [contract, waitForTx])
 
   /**
    * Fetch the amount of SHER an address can claim once they become claimable

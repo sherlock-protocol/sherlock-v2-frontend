@@ -8,6 +8,7 @@ import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
 import useERC20 from "../../hooks/useERC20"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
+import useWaitTx from "../../hooks/useWaitTx"
 
 export const ProtocolPage: React.FC = () => {
   const [selectedProtocol, setSelectedProtocol] = React.useState<keyof typeof COVERED_PROTOCOLS>("SQUEETH")
@@ -29,6 +30,7 @@ export const ProtocolPage: React.FC = () => {
     withdrawActiveBalance,
   } = useProtocolManager()
   const { balance: usdcBalance } = useERC20("USDC")
+  const { waitForTx } = useWaitTx()
 
   /**
    * Handler for changing the protocol
@@ -59,12 +61,11 @@ export const ProtocolPage: React.FC = () => {
       return
     }
 
-    const tx = await depositActiveBalance(selectedProtocol, amount)
-    await tx?.wait()
+    waitForTx(async () => await depositActiveBalance(selectedProtocol, amount))
 
     fetchProtocolDetails()
     setAmount(undefined)
-  }, [amount, selectedProtocol, depositActiveBalance, fetchProtocolDetails])
+  }, [amount, selectedProtocol, depositActiveBalance, fetchProtocolDetails, waitForTx])
 
   /**
    * Remove balance from selected protocol
@@ -74,12 +75,11 @@ export const ProtocolPage: React.FC = () => {
       return
     }
 
-    const tx = await withdrawActiveBalance(selectedProtocol, amount)
-    await tx?.wait()
+    await waitForTx(async () => await withdrawActiveBalance(selectedProtocol, amount))
 
     fetchProtocolDetails()
     setAmount(undefined)
-  }, [amount, selectedProtocol, withdrawActiveBalance, fetchProtocolDetails])
+  }, [amount, selectedProtocol, withdrawActiveBalance, fetchProtocolDetails, waitForTx])
 
   /**
    * Handle the inputted amount changed event

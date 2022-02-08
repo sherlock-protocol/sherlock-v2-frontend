@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import React from "react"
 import { useDebounce } from "use-debounce"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
@@ -8,6 +8,7 @@ import useAmountState from "../../hooks/useAmountState"
 import useERC20 from "../../hooks/useERC20"
 import useSherDistManager from "../../hooks/useSherDistManager"
 import useSherlock from "../../hooks/useSherlock"
+import useWaitTx from "../../hooks/useWaitTx"
 import styles from "./Staking.module.scss"
 
 /**
@@ -31,6 +32,7 @@ export const StakingPage: React.FC = () => {
   const { computeRewards } = useSherDistManager()
   const { format: formatSHER } = useERC20("SHER")
   const { balance, format: formatUSDC } = useERC20("USDC")
+  const { waitForTx } = useWaitTx()
 
   /**
    * Compute staking rewards for current amount and staking period
@@ -59,11 +61,10 @@ export const StakingPage: React.FC = () => {
       return
     }
 
-    const tx = await stake(amountBN, stakingPeriod)
-    await tx?.wait()
+    await waitForTx(async () => (await stake(amountBN, stakingPeriod)) as ethers.ContractTransaction)
 
     refreshTvl()
-  }, [amountBN, stakingPeriod, stake, refreshTvl])
+  }, [amountBN, stakingPeriod, stake, refreshTvl, waitForTx])
 
   // Compute rewards when amount or period is changed
   React.useEffect(() => {

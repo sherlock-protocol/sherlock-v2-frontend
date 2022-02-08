@@ -1,6 +1,7 @@
 import { BigNumber, ethers } from "ethers"
 import React from "react"
 import useSherlock from "../../hooks/useSherlock"
+import useWaitTx from "../../hooks/useWaitTx"
 import { PERIODS_IN_SECONDS } from "../../pages/Staking"
 import { convertSecondsToDurationString } from "../../utils/time"
 import { Button } from "../Button/Button"
@@ -21,6 +22,7 @@ const StakingPosition: React.FC<Props> = ({ id }) => {
   const isUnlocked = lockedForSeconds && lockedForSeconds <= 0
 
   const { getPositionLockupEnd, getPositionSherRewards, getPositionUsdcBalance, unstake, restake } = useSherlock()
+  const { waitForTx } = useWaitTx()
 
   /**
    * Fetch the timestamp at which the position
@@ -54,9 +56,8 @@ const StakingPosition: React.FC<Props> = ({ id }) => {
    * Unstake position
    */
   const handleUnstake = React.useCallback(async () => {
-    const tx = await unstake(id)
-    await tx.wait()
-  }, [unstake, id])
+    await waitForTx(async () => await unstake(id))
+  }, [unstake, id, waitForTx])
 
   /**
    * Restake position
@@ -66,9 +67,8 @@ const StakingPosition: React.FC<Props> = ({ id }) => {
       return
     }
 
-    const tx = await restake(id, stakingPeriod)
-    await tx.wait()
-  }, [restake, id, stakingPeriod])
+    await waitForTx(async () => await restake(id, stakingPeriod))
+  }, [restake, id, stakingPeriod, waitForTx])
 
   React.useEffect(() => {
     handleFetchLockupPeriod()
