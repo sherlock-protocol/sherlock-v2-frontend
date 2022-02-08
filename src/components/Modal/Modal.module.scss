@@ -1,0 +1,26 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: rgba(255, 255, 255, 0.85);
+
+  .container {
+    border: 1px solid black;
+    padding: 1rem;
+
+    .header {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+    }
+  }
+}
