@@ -4,5 +4,6 @@ query GetFundraisePosition($owner: String!) {
     stake
     contribution
     reward
+    claimableAt
   }
 }

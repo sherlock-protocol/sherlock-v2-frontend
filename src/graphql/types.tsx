@@ -70,6 +70,7 @@ export type Scalars = {
 
 export type FundraisePosition = {
   __typename?: "FundraisePosition"
+  claimableAt: Scalars["BigInt"]
   contribution: Scalars["BigInt"]
   id: Scalars["ID"]
   owner: Scalars["String"]
@@ -112,6 +113,7 @@ export type GetFundraisePositionQuery = {
     stake: BigInt
     contribution: BigInt
     reward: BigInt
+    claimableAt: BigInt
   } | null
 }
 
@@ -138,6 +140,7 @@ export const GetFundraisePositionDocument = gql`
       stake
       contribution
       reward
+      claimableAt
     }
   }
 `

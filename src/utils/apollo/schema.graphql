@@ -12,6 +12,7 @@ type FundraisePosition {
   stake: BigInt! # in USDC
   contribution: BigInt! # in USDC
   reward: BigInt! # in SHER
+  claimableAt: BigInt! # timestamp
 }
 
 type Query {
