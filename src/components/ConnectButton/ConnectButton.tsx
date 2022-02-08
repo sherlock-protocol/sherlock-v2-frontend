@@ -1,5 +1,6 @@
 import React from "react"
 import { useAccount, useConnect, useNetwork } from "wagmi"
+import { shortenAddress } from "../../utils/format"
 import { Button } from "../Button/Button"
 import WalletProviderModal from "../WalletProviderModal/WalletProviderModal"
 
@@ -48,7 +49,7 @@ const ConnectButton: React.FC = ({ children }) => {
 
   return (
     <div>
-      <pre>Connected {accountData?.address}</pre>
+      <pre>Connected {shortenAddress(accountData?.address)}</pre>
     </div>
   )
 }

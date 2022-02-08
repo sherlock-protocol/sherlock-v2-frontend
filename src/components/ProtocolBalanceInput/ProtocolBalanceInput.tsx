@@ -9,7 +9,7 @@ interface Props {
   /**
    * Called when amount has changed
    */
-  onChange?: (amount: BigNumber | null) => void
+  onChange?: (amount: BigNumber | undefined) => void
 
   /**
    * Protocol's per-second USDC premium
@@ -55,10 +55,16 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
       const totalAmount = protocolPremium.mul(seconds)
 
       setAmountBN(totalAmount)
-      onChange(totalAmount)
     },
-    [protocolPremium, onChange, setAmountBN]
+    [protocolPremium, setAmountBN]
   )
+
+  /**
+   * Propagate amountBN changes
+   */
+  React.useEffect(() => {
+    onChange(amountBN)
+  }, [amountBN, onChange])
 
   /**
    * Reset inputs on protocol premium change

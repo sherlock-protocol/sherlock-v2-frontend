@@ -7,13 +7,16 @@ import reportWebVitals from "./reportWebVitals"
 
 import { ApolloProvider } from "./utils/apollo/ApolloProvider"
 import { WagmiProvider } from "./utils/WagmiProvider"
+import { TxWaitProvider } from "./hooks/useWaitTx"
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <WagmiProvider>
         <ApolloProvider>
-          <App />
+          <TxWaitProvider>
+            <App />
+          </TxWaitProvider>
         </ApolloProvider>
       </WagmiProvider>
     </BrowserRouter>

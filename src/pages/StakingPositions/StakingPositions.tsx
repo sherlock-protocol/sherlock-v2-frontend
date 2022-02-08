@@ -1,7 +1,14 @@
 import React from "react"
+import ConnectGate from "../../components/ConnectGate/ConnectGate"
+import { StakingPositionsList } from "../../components/StakingPositionsList/StakingPositionsList"
+import styles from "./StakingPositions.module.scss"
 
-export type StakingPositionsPageProps = {}
-
-export const StakingPositionsPage: React.FC<StakingPositionsPageProps> = () => {
-  return <div>STAKING POSITIONS PAGE</div>
+export const StakingPositionsPage: React.FC = () => {
+  return (
+    <div className={styles.container}>
+      <ConnectGate>
+        <StakingPositionsList />
+      </ConnectGate>
+    </div>
+  )
 }

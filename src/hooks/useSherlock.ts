@@ -52,6 +52,26 @@ const useSherlock = () => {
   )
 
   /**
+   * Unsttake and cash out an unlocked position
+   */
+  const unstake = React.useCallback(
+    async (id: BigNumber) => {
+      return contract.redeemNFT(id)
+    },
+    [contract]
+  )
+
+  /**
+   * Unsttake and cash out an unlocked position
+   */
+  const restake = React.useCallback(
+    async (id: BigNumber, period: number) => {
+      return contract.ownerRestake(id, period)
+    },
+    [contract]
+  )
+
+  /**
    * Fetch TVL on initialization
    */
   React.useEffect(() => {
@@ -68,8 +88,10 @@ const useSherlock = () => {
       tvl,
       refreshTvl,
       stake,
+      restake,
+      unstake,
     }),
-    [tvl, stake, refreshTvl]
+    [tvl, stake, refreshTvl, restake, unstake]
   )
 }
 export default useSherlock

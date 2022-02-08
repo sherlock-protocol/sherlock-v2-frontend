@@ -1,12 +1,14 @@
-import { BigNumber } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import React from "react"
 import { useDebounce } from "use-debounce"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
+import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import useAmountState from "../../hooks/useAmountState"
 import useERC20 from "../../hooks/useERC20"
 import useSherDistManager from "../../hooks/useSherDistManager"
 import useSherlock from "../../hooks/useSherlock"
+import useWaitTx from "../../hooks/useWaitTx"
 import styles from "./Staking.module.scss"
 
 /**
@@ -14,7 +16,7 @@ import styles from "./Staking.module.scss"
  *
  * TODO: Should be fetched automatically or hardcoded?
  */
-const PERIODS_IN_SECONDS = {
+export const PERIODS_IN_SECONDS = {
   THREE_MONTHS: 60 * 60 * 24 * 7 * 13,
   SIX_MONTHS: 60 * 60 * 24 * 7 * 26,
   ONE_YEAR: 60 * 60 * 24 * 7 * 52,
@@ -30,6 +32,7 @@ export const StakingPage: React.FC = () => {
   const { computeRewards } = useSherDistManager()
   const { format: formatSHER } = useERC20("SHER")
   const { balance, format: formatUSDC } = useERC20("USDC")
+  const { waitForTx } = useWaitTx()
 
   /**
    * Compute staking rewards for current amount and staking period
@@ -58,11 +61,10 @@ export const StakingPage: React.FC = () => {
       return
     }
 
-    const tx = await stake(amountBN, stakingPeriod)
-    await tx?.wait()
+    await waitForTx(async () => (await stake(amountBN, stakingPeriod)) as ethers.ContractTransaction)
 
     refreshTvl()
-  }, [amountBN, stakingPeriod, stake, refreshTvl])
+  }, [amountBN, stakingPeriod, stake, refreshTvl, waitForTx])
 
   // Compute rewards when amount or period is changed
   React.useEffect(() => {
@@ -92,9 +94,11 @@ export const StakingPage: React.FC = () => {
           </div>
         )}
         {amountBN && stakingPeriod && (
-          <AllowanceGate amount={amountBN} spender={address}>
-            <Button onClick={handleOnStake}>Stake</Button>
-          </AllowanceGate>
+          <ConnectGate>
+            <AllowanceGate amount={amountBN} spender={address}>
+              <Button onClick={handleOnStake}>Stake</Button>
+            </AllowanceGate>
+          </ConnectGate>
         )}
       </div>
     </div>

@@ -7,6 +7,8 @@ import { Button } from "../../components/Button/Button"
 import { useSherBuyContract } from "../../hooks/useSherBuyContract"
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
 import useERC20 from "../../hooks/useERC20"
+import ConnectGate from "../../components/ConnectGate/ConnectGate"
+import useWaitTx from "../../hooks/useWaitTx"
 
 type Rewards = {
   /**
@@ -35,6 +37,7 @@ export const FundraisingPage: React.FC = () => {
   const sherBuyContract = useSherBuyContract()
   const sherClaimContract = useSherClaimContract()
   const sher = useERC20("SHER")
+  const { waitForTx } = useWaitTx()
 
   /**
    * User input. Amount of USDC willing to pay.
@@ -140,8 +143,7 @@ export const FundraisingPage: React.FC = () => {
     if (!rewards?.sherAmount) return
 
     try {
-      const tx = await sherBuyContract.execute(rewards?.sherAmount)
-      await tx.wait()
+      await waitForTx(async () => await sherBuyContract.execute(rewards?.sherAmount))
     } catch (error) {
       console.error(error)
     }
@@ -167,12 +169,14 @@ export const FundraisingPage: React.FC = () => {
               <li>{`USDC Contributed: ${utils.commify(utils.formatUnits(rewards.price, 6))}`}</li>
               <li>{`SHER Reward: ${utils.commify(utils.formatUnits(rewards.sherAmount, 18))} tokens`}</li>
             </ul>
-            <AllowanceGate
-              spender={sherBuyContract.address}
-              amount={usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0)}
-            >
-              <Button onClick={handleExecute}>Execute</Button>
-            </AllowanceGate>
+            <ConnectGate>
+              <AllowanceGate
+                spender={sherBuyContract.address}
+                amount={usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0)}
+              >
+                <Button onClick={handleExecute}>Execute</Button>
+              </AllowanceGate>
+            </ConnectGate>
           </div>
         )}
       </div>
