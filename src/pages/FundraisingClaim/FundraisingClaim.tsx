@@ -59,14 +59,26 @@ export const FundraisingClaimPage = () => {
     }
   }, [sherClaim, refetchFundraisePosition])
 
+  if (!fundraisePositionData?.fundraisePosition) return null
+
   const sherAmount =
     fundraisePositionData?.fundraisePosition?.reward && BigNumber.from(fundraisePositionData.fundraisePosition.reward)
-  const formattedSherAmount = sherAmount && ethers.utils.formatUnits(sherAmount)
+  const formattedSherAmount = ethers.utils.commify(ethers.utils.formatUnits(sherAmount))
+
+  const claimableAt = new Date(Number(fundraisePositionData.fundraisePosition.claimableAt))
+
+  const stake = BigNumber.from(fundraisePositionData.fundraisePosition.stake)
+  const contribution = BigNumber.from(fundraisePositionData.fundraisePosition.contribution)
+  const participation = stake.add(contribution)
 
   return (
     <div>
       <h1>CLAIM</h1>
-      {formattedSherAmount && <h2>Available for claim: {formattedSherAmount} SHER</h2>}
+      <h2>Participation: {ethers.utils.commify(ethers.utils.formatUnits(participation, 6))}</h2>
+      <h2>Stake: {ethers.utils.commify(ethers.utils.formatUnits(stake, 6))}</h2>
+      <h2>Contributed: {ethers.utils.commify(ethers.utils.formatUnits(contribution, 6))}</h2>
+      <h2>Reward: {formattedSherAmount} SHER</h2>
+      <h2>Claimable starts: {claimableAt.toDateString()}</h2>
       <button onClick={handleClaim} disabled={!claimIsActive}>
         {claimIsActive ? `Claim ${formattedSherAmount} SHER` : "Claim is not active yet"}
       </button>

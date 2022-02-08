@@ -60,6 +60,7 @@ const fundraisePositions = [
     stake: BigNumber.from("90000000000").toBigInt(),
     contribution: BigNumber.from("10000000000").toBigInt(),
     reward: BigNumber.from("10000000000000000000000").toBigInt(),
+    claimableAt: BigNumber.from(1644344664090 + 60 * 60 * 24 * 10).toBigInt(),
   },
   {
     id: "0x0B6a04b8D3d050cbeD9A4621A5D503F27743c942",
@@ -67,6 +68,7 @@ const fundraisePositions = [
     stake: BigNumber.from("90000000000").toBigInt(),
     contribution: BigNumber.from("10000000000").toBigInt(),
     reward: BigNumber.from("10000000000000000000000").toBigInt(),
+    claimableAt: BigNumber.from(1644344664090 + 60 * 60 * 24 * 10).toBigInt(),
   },
 ]
 
