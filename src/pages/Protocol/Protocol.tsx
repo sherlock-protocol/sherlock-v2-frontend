@@ -63,7 +63,7 @@ export const ProtocolPage: React.FC = () => {
     await tx?.wait()
 
     fetchProtocolDetails()
-    setAmount(null)
+    setAmount(undefined)
   }, [amount, selectedProtocol, depositActiveBalance, fetchProtocolDetails])
 
   /**
