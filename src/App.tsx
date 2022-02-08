@@ -14,15 +14,16 @@ function App() {
   return (
     <div className={styles.app}>
       <Header />
-      <h1>Sherlock v2</h1>
-      <Routes>
-        <Route index element={<StakingPage />} />
-        <Route path="stake" element={<StakingPage />} />
-        <Route path="positions" element={<StakingPositionsPage />} />
-        <Route path="fundraise" element={<FundraisingPage />} />
-        <Route path="fundraiseclaim" element={<FundraisingClaimPage />} />
-        <Route path="protocol" element={<ProtocolPage />} />
-      </Routes>
+      <div className={styles.content}>
+        <Routes>
+          <Route index element={<StakingPage />} />
+          <Route path="stake" element={<StakingPage />} />
+          <Route path="positions" element={<StakingPositionsPage />} />
+          <Route path="fundraise" element={<FundraisingPage />} />
+          <Route path="fundraiseclaim" element={<FundraisingClaimPage />} />
+          <Route path="protocol" element={<ProtocolPage />} />
+        </Routes>
+      </div>
     </div>
   )
 }
