@@ -7,6 +7,7 @@ type Position {
 }
 
 type FundraisePosition {
+  id: ID!
   owner: String! # owner's address
   stake: BigInt! # in USDC
   contribution: BigInt! # in USDC

@@ -71,6 +71,7 @@ export type Scalars = {
 export type FundraisePosition = {
   __typename?: "FundraisePosition"
   contribution: Scalars["BigInt"]
+  id: Scalars["ID"]
   owner: Scalars["String"]
   reward: Scalars["BigInt"]
   stake: Scalars["BigInt"]
