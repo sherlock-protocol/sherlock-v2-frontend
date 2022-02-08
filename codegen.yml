@@ -1,0 +1,20 @@
+overwrite: true
+schema:
+  - "./scalarsSchema.ts"
+  - "src/utils/apollo/schema.graphql"
+
+documents: "src/**/*.graphql"
+generates:
+  src/graphql/types.tsx:
+    config:
+      scalars:
+        BigInt: BigInt
+        Byte: string
+    plugins:
+      - "typescript"
+      - "typescript-operations":
+        "defaultScalarType": "unknown"
+      - "typescript-react-apollo"
+  ./graphql.schema.json:
+    plugins:
+      - "introspection"

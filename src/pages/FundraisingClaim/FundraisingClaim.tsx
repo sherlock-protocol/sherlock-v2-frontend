@@ -1,6 +1,7 @@
 import { BigNumber, ethers } from "ethers"
 import React, { useCallback, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
+
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
 
 export const FundraisingClaimPage = () => {
