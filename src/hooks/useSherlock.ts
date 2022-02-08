@@ -66,7 +66,7 @@ const useSherlock = () => {
    */
   const restake = React.useCallback(
     async (id: BigNumber, period: number) => {
-      return contract.redeemNFT(id)
+      return contract.ownerRestake(id, period)
     },
     [contract]
   )
