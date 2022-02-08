@@ -4,6 +4,7 @@ import PendingTx from "../components/TxStateModals/PendingTx"
 import RequestedTx from "../components/TxStateModals/RequestedTx"
 import RevertedTx from "../components/TxStateModals/RevertedTx"
 import SuccessTx from "../components/TxStateModals/SuccessTx"
+import UserDeniedTx from "../components/TxStateModals/UserDeniedTx"
 
 interface TxWaitContextType {
   waitForTx: (tx: () => Promise<ethers.ContractTransaction>) => Promise<ethers.ContractReceipt>
@@ -17,6 +18,7 @@ enum TxState {
   PENDING = 3,
   SUCCESS = 4,
   REVERTED = 5,
+  USER_DENIED = 6,
 }
 
 /**
@@ -36,8 +38,13 @@ export const TxWaitProvider: React.FC = ({ children }) => {
 
         setTxState(TxState.SUCCESS)
         return receipt
-      } catch (error) {
-        setTxState(TxState.REVERTED)
+      } catch (error: any) {
+        // User denied transaction (EIP-1193)
+        if (error?.code === 4001) {
+          setTxState(TxState.USER_DENIED)
+        } else {
+          setTxState(TxState.REVERTED)
+        }
 
         // Propagate error
         throw error
@@ -55,6 +62,7 @@ export const TxWaitProvider: React.FC = ({ children }) => {
       {txState === TxState.PENDING && <PendingTx />}
       {txState === TxState.SUCCESS && <SuccessTx />}
       {txState === TxState.REVERTED && <RevertedTx />}
+      {txState === TxState.USER_DENIED && <UserDeniedTx />}
     </TxWaitContext.Provider>
   )
 }
