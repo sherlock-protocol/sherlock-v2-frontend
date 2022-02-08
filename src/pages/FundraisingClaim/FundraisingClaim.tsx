@@ -3,15 +3,16 @@ import React, { useCallback, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
+import { useGetFundraisePositionLazyQuery } from "../../graphql/types"
 
 export const FundraisingClaimPage = () => {
   const [{ data: accountData }] = useAccount()
   const sherClaim = useSherClaimContract()
-
   /**
-   * Amount of SHER tokens available to be claimed once the fundraise event ends.
+   * GraphQL query to fetch fundraise position
    */
-  const [claimableAmount, setClaimableAmount] = useState<BigNumber>()
+  const [getFundraisePotision, { data: fundraisePositionData, refetch: refetchFundraisePosition }] =
+    useGetFundraisePositionLazyQuery()
 
   /**
    * Wheter the claim is active or not.
@@ -19,29 +20,20 @@ export const FundraisingClaimPage = () => {
   const [claimIsActive, setClaimIsActive] = useState(false)
 
   /**
-   * Refresh claimable amount from smart contract
-   */
-  const refreshClaimableAmount = useCallback(async () => {
-    if (!accountData?.address) return
-
-    try {
-      const sherAmount = await sherClaim.getClaimableAmount(accountData?.address)
-      setClaimableAmount(sherAmount)
-    } catch (error) {
-      console.error(error)
-      setClaimableAmount(undefined)
-    }
-  }, [sherClaim, setClaimableAmount, accountData?.address])
-
-  /**
-   * Fetch user's claimable amount
+   * Execute GraphQL query to fetch fundraise position once the user's account is available
    */
   useEffect(() => {
-    refreshClaimableAmount()
-  }, [refreshClaimableAmount])
+    if (accountData?.address) {
+      getFundraisePotision({
+        variables: {
+          owner: accountData.address,
+        },
+      })
+    }
+  }, [accountData?.address, getFundraisePotision])
 
   /**
-   * Fetch claim is active or not
+   * Fetch claim is active or not from smart contract
    */
   useEffect(() => {
     const fetchClaimIsActive = async () => {
@@ -57,28 +49,26 @@ export const FundraisingClaimPage = () => {
     fetchClaimIsActive()
   })
 
-  const handleClaim = useCallback(() => {
-    const claim = async () => {
-      try {
-        const txReceipt = await sherClaim.claim()
-        console.log(txReceipt)
-        await refreshClaimableAmount()
-      } catch (error) {
-        console.log(error)
-      }
+  const handleClaim = useCallback(async () => {
+    try {
+      const txReceipt = await sherClaim.claim()
+      console.log(txReceipt)
+      refetchFundraisePosition()
+    } catch (error) {
+      console.log(error)
     }
+  }, [sherClaim, refetchFundraisePosition])
 
-    claim()
-  }, [sherClaim, refreshClaimableAmount])
-
-  const sherAmount = claimableAmount && ethers.utils.formatUnits(claimableAmount)
+  const sherAmount =
+    fundraisePositionData?.fundraisePosition?.reward && BigNumber.from(fundraisePositionData.fundraisePosition.reward)
+  const formattedSherAmount = sherAmount && ethers.utils.formatUnits(sherAmount)
 
   return (
     <div>
       <h1>CLAIM</h1>
-      {sherAmount && <h2>Available for claim: {sherAmount} SHER</h2>}
+      {formattedSherAmount && <h2>Available for claim: {formattedSherAmount} SHER</h2>}
       <button onClick={handleClaim} disabled={!claimIsActive}>
-        {claimIsActive ? `Claim ${sherAmount} SHER` : "Claim is not active yet"}
+        {claimIsActive ? `Claim ${formattedSherAmount} SHER` : "Claim is not active yet"}
       </button>
     </div>
   )
