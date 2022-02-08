@@ -6,6 +6,14 @@ type Position {
   owner: String! # owner's address
 }
 
+type FundraisePosition {
+  owner: String! # owner's address
+  stake: BigInt! # in USDC
+  contribution: BigInt! # in USDC
+  reward: BigInt! # in SHER
+}
+
 type Query {
   positions(owner: String!): [Position]
+  fundraisePosition(owner: String!): FundraisePosition
 }
