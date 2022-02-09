@@ -3,6 +3,7 @@ import { BigNumber, ethers, utils } from "ethers"
 
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
+import { Box } from "../../components/Box"
 
 import { useSherBuyContract } from "../../hooks/useSherBuyContract"
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
@@ -154,8 +155,8 @@ export const FundraisingPage: React.FC = () => {
     usdcToSherRewardRatio && sherRemaining && Number(utils.formatUnits(sherRemaining, 18)) / usdcToSherRewardRatio
 
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ display: "flex", flexDirection: "column", maxWidth: "400px" }}>
+    <Box>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
         <h1>FUNDRAISING</h1>
         {formattedDeadline && <h2>{`Event ends: ${formattedDeadline[0]} hours ${formattedDeadline[1]} minutes`}</h2>}
         {usdcRemaining && <h2>{`USDC remaining: ${utils.commify(usdcRemaining)}`}</h2>}
@@ -180,6 +181,6 @@ export const FundraisingPage: React.FC = () => {
           </div>
         )}
       </div>
-    </div>
+    </Box>
   )
 }
