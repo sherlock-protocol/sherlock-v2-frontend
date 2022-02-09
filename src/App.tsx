@@ -7,6 +7,8 @@ import { FundraisingPage } from "./pages/Fundraising"
 import { FundraisingClaimPage } from "./pages/FundraisingClaim"
 import { ProtocolPage } from "./pages/Protocol"
 
+import { Footer } from "./components/Footer"
+
 import styles from "./App.module.scss"
 import Header from "./components/Header/Header"
 
@@ -24,6 +26,9 @@ function App() {
           <Route path="protocol" element={<ProtocolPage />} />
         </Routes>
       </div>
+      <Footer>
+        <small>Sherlock v2</small>
+      </Footer>
     </div>
   )
 }
