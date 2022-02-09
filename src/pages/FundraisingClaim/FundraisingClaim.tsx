@@ -11,7 +11,7 @@ export const FundraisingClaimPage = () => {
   /**
    * GraphQL query to fetch fundraise position
    */
-  const [getFundraisePotision, { data: fundraisePositionData, refetch: refetchFundraisePosition }] =
+  const [getFundraisePosition, { data: fundraisePositionData, refetch: refetchFundraisePosition }] =
     useGetFundraisePositionLazyQuery()
 
   /**
@@ -24,13 +24,13 @@ export const FundraisingClaimPage = () => {
    */
   useEffect(() => {
     if (accountData?.address) {
-      getFundraisePotision({
+      getFundraisePosition({
         variables: {
           owner: accountData.address,
         },
       })
     }
-  }, [accountData?.address, getFundraisePotision])
+  }, [accountData?.address, getFundraisePosition])
 
   /**
    * Fetch claim is active or not from smart contract
