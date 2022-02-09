@@ -68,6 +68,16 @@ export type Scalars = {
   Void: any
 }
 
+export type FundraisePosition = {
+  __typename?: "FundraisePosition"
+  claimableAt: Scalars["BigInt"]
+  contribution: Scalars["BigInt"]
+  id: Scalars["ID"]
+  owner: Scalars["String"]
+  reward: Scalars["BigInt"]
+  stake: Scalars["BigInt"]
+}
+
 export type Position = {
   __typename?: "Position"
   expiration: Scalars["BigInt"]
@@ -79,11 +89,32 @@ export type Position = {
 
 export type Query = {
   __typename?: "Query"
+  fundraisePosition?: Maybe<FundraisePosition>
   positions?: Maybe<Array<Maybe<Position>>>
+}
+
+export type QueryFundraisePositionArgs = {
+  owner: Scalars["String"]
 }
 
 export type QueryPositionsArgs = {
   owner: Scalars["String"]
+}
+
+export type GetFundraisePositionQueryVariables = Exact<{
+  owner: Scalars["String"]
+}>
+
+export type GetFundraisePositionQuery = {
+  __typename?: "Query"
+  fundraisePosition?: {
+    __typename?: "FundraisePosition"
+    owner: string
+    stake: BigInt
+    contribution: BigInt
+    reward: BigInt
+    claimableAt: BigInt
+  } | null
 }
 
 export type GetPositionsQueryVariables = Exact<{
@@ -102,6 +133,58 @@ export type GetPositionsQuery = {
   } | null> | null
 }
 
+export const GetFundraisePositionDocument = gql`
+  query GetFundraisePosition($owner: String!) {
+    fundraisePosition(owner: $owner) {
+      owner
+      stake
+      contribution
+      reward
+      claimableAt
+    }
+  }
+`
+
+/**
+ * __useGetFundraisePositionQuery__
+ *
+ * To run a query within a React component, call `useGetFundraisePositionQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFundraisePositionQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFundraisePositionQuery({
+ *   variables: {
+ *      owner: // value for 'owner'
+ *   },
+ * });
+ */
+export function useGetFundraisePositionQuery(
+  baseOptions: Apollo.QueryHookOptions<GetFundraisePositionQuery, GetFundraisePositionQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GetFundraisePositionQuery, GetFundraisePositionQueryVariables>(
+    GetFundraisePositionDocument,
+    options
+  )
+}
+export function useGetFundraisePositionLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GetFundraisePositionQuery, GetFundraisePositionQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GetFundraisePositionQuery, GetFundraisePositionQueryVariables>(
+    GetFundraisePositionDocument,
+    options
+  )
+}
+export type GetFundraisePositionQueryHookResult = ReturnType<typeof useGetFundraisePositionQuery>
+export type GetFundraisePositionLazyQueryHookResult = ReturnType<typeof useGetFundraisePositionLazyQuery>
+export type GetFundraisePositionQueryResult = Apollo.QueryResult<
+  GetFundraisePositionQuery,
+  GetFundraisePositionQueryVariables
+>
 export const GetPositionsDocument = gql`
   query GetPositions($owner: String!) {
     positions(owner: $owner) {

@@ -1,0 +1,9 @@
+query GetFundraisePosition($owner: String!) {
+  fundraisePosition(owner: $owner) {
+    owner
+    stake
+    contribution
+    reward
+    claimableAt
+  }
+}

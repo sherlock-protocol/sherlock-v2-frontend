@@ -42,7 +42,6 @@ const positions = [
     id: 2,
     owner: "0x0B6a04b8D3d050cbeD9A4621A5D503F27743c942",
     usdcAmount: BigNumber.from("1000000").toBigInt(),
-    sherAmount: BigNumber.from("1000000000000000000").toBigInt(),
     expiration: BigNumber.from(1644249926818).toBigInt(),
   },
   {
@@ -54,10 +53,30 @@ const positions = [
   },
 ]
 
+const fundraisePositions = [
+  {
+    id: "0x100F04C9B98AB9D22772Aacc469bEA466d54cc4A",
+    owner: "0x100F04C9B98AB9D22772Aacc469bEA466d54cc4A",
+    stake: BigNumber.from("90000000000").toBigInt(),
+    contribution: BigNumber.from("10000000000").toBigInt(),
+    reward: BigNumber.from("10000000000000000000000").toBigInt(),
+    claimableAt: BigNumber.from(1644344664090 + 60 * 60 * 24 * 10).toBigInt(),
+  },
+  {
+    id: "0x0B6a04b8D3d050cbeD9A4621A5D503F27743c942",
+    owner: "0x0B6a04b8D3d050cbeD9A4621A5D503F27743c942",
+    stake: BigNumber.from("90000000000").toBigInt(),
+    contribution: BigNumber.from("10000000000").toBigInt(),
+    reward: BigNumber.from("10000000000000000000000").toBigInt(),
+    claimableAt: BigNumber.from(1644344664090 + 60 * 60 * 24 * 10).toBigInt(),
+  },
+]
+
 const resolvers = {
   ...scalarResolvers,
   Query: {
     positions: (_ctx: any, { owner }: { owner: string }) => positions.filter((p) => p.owner === owner),
+    fundraisePosition: (_ctx: any, { owner }: { owner: string }) => fundraisePositions.find((p) => p.owner === owner),
   },
 }
 
