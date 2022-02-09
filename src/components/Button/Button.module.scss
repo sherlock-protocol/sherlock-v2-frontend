@@ -16,9 +16,13 @@
   }
 
   &.secondary {
-    background-color: transparent;
+    background-color: inherit;
     font-weight: 500;
     border: none;
+
+    &:hover {
+      background-color: inherit;
+    }
   }
 
   &:disabled {
