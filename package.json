@@ -11,6 +11,7 @@
     "@types/node": "^16.11.22",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
+    "classnames": "^2.3.1",
     "ethers": "^5.5.3",
     "graphql": "^16.3.0",
     "graphql-scalars": "^1.14.1",
@@ -65,14 +66,14 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.5.0",
+    "@graphql-codegen/introspection": "2.1.1",
+    "@graphql-codegen/typescript": "2.4.3",
+    "@graphql-codegen/typescript-operations": "2.2.4",
+    "@graphql-codegen/typescript-react-apollo": "3.2.5",
     "@typechain/ethers-v5": "^9.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.2",
     "prettier": "2.5.1",
-    "typechain": "^7.0.0",
-    "@graphql-codegen/typescript": "2.4.3",
-    "@graphql-codegen/typescript-react-apollo": "3.2.5",
-    "@graphql-codegen/typescript-operations": "2.2.4",
-    "@graphql-codegen/introspection": "2.1.1"
+    "typechain": "^7.0.0"
   }
 }
