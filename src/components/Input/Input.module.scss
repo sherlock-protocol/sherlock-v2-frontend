@@ -1,0 +1,13 @@
+@import "../../styles/variables";
+
+.input {
+  background-color: $primary-purple;
+  border: 3px solid #000;
+
+  font-family: $font-family;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 2.25rem;
+  padding: 0 0.5rem;
+  color: #fff;
+}
