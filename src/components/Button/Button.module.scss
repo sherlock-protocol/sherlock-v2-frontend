@@ -14,4 +14,10 @@
     cursor: pointer;
     background-color: darken($color: $primary-purple, $amount: 10%);
   }
+
+  &.secondary {
+    background-color: transparent;
+    font-weight: 500;
+    border: none;
+  }
 }
