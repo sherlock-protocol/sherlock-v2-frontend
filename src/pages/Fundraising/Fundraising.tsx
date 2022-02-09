@@ -161,9 +161,7 @@ export const FundraisingPage: React.FC = () => {
         {formattedDeadline && <h2>{`Event ends: ${formattedDeadline[0]} hours ${formattedDeadline[1]} minutes`}</h2>}
         {usdcRemaining && <h2>{`USDC remaining: ${utils.commify(usdcRemaining)}`}</h2>}
         <input type="number" placeholder="USDC" value={usdcInput ?? ""} onChange={handleUsdcChange} />
-        <Button variant="secondary" onClick={handleCalculateRewards}>
-          Calculate rewards
-        </Button>
+        <Button onClick={handleCalculateRewards}>Calculate rewards</Button>
         {isLoadingRewards && <span>Calculating rewards ...</span>}
         {rewards && (
           <div>
