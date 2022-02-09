@@ -1,6 +1,7 @@
 import React from "react"
 import { useConnect } from "wagmi"
 import { Button } from "../Button/Button"
+import Modal from "../Modal/Modal"
 import styles from "./WalletProviderModal.module.scss"
 
 interface Props {
@@ -39,15 +40,14 @@ const WalletProviderModal: React.FC<Props> = ({ onClose }) => {
   }, [data, onClose])
 
   return (
-    <div className={styles.backdrop} onClick={onClose}>
-      <div className={styles.container}>
-        {loading && <h1>Connecting...</h1>}
-        {error && <pre>{error?.message}</pre>}
-        <div>
-          <Button onClick={(e) => handleConnectWithConnector(e, "injected")}>MetaMask</Button>
-        </div>
+    <Modal closeable onClose={onClose}>
+      <h1>Connect wallet</h1>
+      {loading && <h1>Connecting...</h1>}
+      {error && <pre>{error?.message}</pre>}
+      <div>
+        <Button onClick={(e) => handleConnectWithConnector(e, "injected")}>MetaMask</Button>
       </div>
-    </div>
+    </Modal>
   )
 }
 

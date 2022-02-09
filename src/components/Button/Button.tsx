@@ -3,7 +3,7 @@ import cx from "classnames"
 
 import styles from "./Button.module.scss"
 
-type ButtonVariant = "primary" | "secondary"
+type ButtonVariant = "primary" | "secondary" | "alternate"
 
 type ButtonProps = {
   /**

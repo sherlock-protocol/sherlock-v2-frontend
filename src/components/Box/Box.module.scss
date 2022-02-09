@@ -5,7 +5,6 @@
   height: auto;
 
   min-width: 500px;
-  min-height: 350px;
   max-width: 80%;
   max-height: 70%;
 
@@ -17,10 +16,9 @@
 
   display: flex;
   flex-direction: column;
-  align-items: center;
 
   box-sizing: border-box;
-  padding: 1em;
+  padding: 2.5rem;
   transform-style: preserve-3d;
 
   & .shadow {

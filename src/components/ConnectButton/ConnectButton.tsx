@@ -3,6 +3,7 @@ import { useAccount, useConnect, useNetwork } from "wagmi"
 import { shortenAddress } from "../../utils/format"
 import { Button } from "../Button/Button"
 import WalletProviderModal from "../WalletProviderModal/WalletProviderModal"
+import styles from "./ConnectButton.module.scss"
 
 /**
  * Wallet connection component.
@@ -34,10 +35,10 @@ const ConnectButton: React.FC = ({ children }) => {
   // Check if any wallet is connected
   if (!connectionData.connected) {
     return (
-      <div>
+      <>
         <Button onClick={handleToggleConnectionModal}>Connect</Button>
         {isModalVisible && <WalletProviderModal onClose={handleToggleConnectionModal} />}
-      </div>
+      </>
     )
   }
 
