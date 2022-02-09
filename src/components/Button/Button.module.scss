@@ -1,0 +1,31 @@
+@import "../../styles/variables";
+
+.button {
+  background-color: $primary-purple;
+  color: white;
+  border: 3px solid black;
+
+  font-size: 1.125rem; // 18px if root is 16px
+  font-weight: bold;
+  line-height: 2.25rem; // 36px if root is 16px
+  padding: 0 0.5em;
+
+  &:hover:not(:disabled) {
+    cursor: pointer;
+    background-color: darken($color: $primary-purple, $amount: 10%);
+  }
+
+  &.secondary {
+    background-color: inherit;
+    font-weight: 500;
+    border: none;
+
+    &:hover {
+      background-color: inherit;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
