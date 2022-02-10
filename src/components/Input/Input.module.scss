@@ -1,5 +1,19 @@
 @import "../../styles/variables";
 
+.inputContainer {
+  position: relative;
+
+  & .placeholder {
+    position: absolute;
+    top: 50%;
+    right: 1em;
+    transform: translate(0, -50%);
+
+    font-weight: 600;
+    opacity: 0.3;
+  }
+}
+
 .input {
   background-color: $primary-purple;
   border: 3px solid #000;

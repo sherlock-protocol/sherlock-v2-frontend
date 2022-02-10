@@ -12,9 +12,14 @@ type InputProps = {
   onChange?: (value: BigNumber | null) => void
 
   /**
-   * token
+   * Token
    */
   token: InputToken
+
+  /**
+   * Placeholder
+   */
+  placeholder?: string
 }
 
 const decimalsByToken: Record<InputToken, number> = {
@@ -24,7 +29,7 @@ const decimalsByToken: Record<InputToken, number> = {
 
 const decommify = (value: string) => value.replaceAll(",", "")
 
-export const Input: React.FC<InputProps> = ({ onChange, token }) => {
+export const Input: React.FC<InputProps> = ({ onChange, token, placeholder }) => {
   const [stringValue, setStringValue] = useState<string>("")
 
   useEffect(() => {
@@ -48,5 +53,12 @@ export const Input: React.FC<InputProps> = ({ onChange, token }) => {
     [setStringValue]
   )
 
-  return <input className={styles.input} value={stringValue} onChange={handleInputChange} />
+  const displayPlaceholder = placeholder && (stringValue === "" || stringValue === "0")
+
+  return (
+    <div className={styles.inputContainer}>
+      {displayPlaceholder && <span className={styles.placeholder}>{placeholder}</span>}
+      <input className={styles.input} value={stringValue} onChange={handleInputChange} />
+    </div>
+  )
 }
