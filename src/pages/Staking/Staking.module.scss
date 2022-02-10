@@ -1,14 +1,17 @@
 @import "../../styles/variables";
 
-h1 {
-  font-size: 1.625rem;
-  font-weight: 700;
-  margin-bottom: $spacing-l;
-}
+// These selectors will apply to every h1 and input elements in the app.
+// We should aim for specifity to avoid nasty overlapping css issues.
 
-input {
-  margin-bottom: $spacing-l;
-}
+// h1 {
+//   font-size: 1.625rem;
+//   font-weight: 700;
+//   margin-bottom: $spacing-l;
+// }
+
+// input {
+//   margin-bottom: $spacing-l;
+// }
 
 .predefinedPeriods {
   display: grid;
