@@ -1,14 +1,26 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+@import "../../styles/variables";
 
-  .card {
-    padding: 2rem;
-    border: 1px solid black;
-  }
+h1 {
+  font-size: 1.625rem;
+  font-weight: 700;
+  margin-bottom: $spacing-l;
+}
 
-  .rewardsContainer {
-    margin-top: 1rem;
+input {
+  margin-bottom: $spacing-l;
+}
+
+.predefinedPeriods {
+  display: grid;
+  grid-gap: 1.25rem;
+  grid-template-columns: auto auto auto;
+  margin-bottom: $spacing-l;
+
+  &:last-child {
+    margin-bottom: 0;
   }
+}
+
+.cta {
+  align-self: center;
 }

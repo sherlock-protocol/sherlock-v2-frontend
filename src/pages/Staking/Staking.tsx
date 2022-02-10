@@ -2,6 +2,7 @@ import { BigNumber, ethers } from "ethers"
 import React from "react"
 import { useDebounce } from "use-debounce"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
+import { Box } from "../../components/Box"
 import { Button } from "../../components/Button/Button"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import useAmountState from "../../hooks/useAmountState"
@@ -72,35 +73,51 @@ export const StakingPage: React.FC = () => {
   }, [debouncedAmountBN, handleComputeRewards])
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
-        <div>{tvl && <p>TVL: {formatUSDC(tvl)} USDC</p>}</div>
-        <div>
-          <input
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder={balance && `max. ${formatUSDC(balance)} USDC`}
-          />
-          <span>USDC</span>
+    <Box>
+      <h1>Stake</h1>
+      <div>{tvl && <p>TVL: {formatUSDC(tvl)} USDC</p>}</div>
+      <div>
+        <input
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder={balance && `max. ${formatUSDC(balance)} USDC`}
+        />
+        <span>USDC</span>
+      </div>
+      <div className={styles.predefinedPeriods}>
+        <Button
+          variant={stakingPeriod === PERIODS_IN_SECONDS.THREE_MONTHS ? "primary" : "alternate"}
+          onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.THREE_MONTHS)}
+        >
+          3 months
+        </Button>
+        <Button
+          variant={stakingPeriod === PERIODS_IN_SECONDS.SIX_MONTHS ? "primary" : "alternate"}
+          onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.SIX_MONTHS)}
+        >
+          6 months
+        </Button>
+        <Button
+          variant={stakingPeriod === PERIODS_IN_SECONDS.ONE_YEAR ? "primary" : "alternate"}
+          onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.ONE_YEAR)}
+        >
+          12 months
+        </Button>
+      </div>
+      {sherRewards && (
+        <div className={styles.rewardsContainer}>
+          <p>SHER Reward: {formatSHER(sherRewards)}</p>
         </div>
-        <div className={styles.predefinedPeriods}>
-          <Button onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.THREE_MONTHS)}>3 months</Button>
-          <Button onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.SIX_MONTHS)}>6 months</Button>
-          <Button onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.ONE_YEAR)}>12 months</Button>
-        </div>
-        {sherRewards && (
-          <div className={styles.rewardsContainer}>
-            <p>SHER Reward: {formatSHER(sherRewards)}</p>
-          </div>
-        )}
-        {amountBN && stakingPeriod && (
+      )}
+      {amountBN && stakingPeriod && (
+        <div className={styles.cta}>
           <ConnectGate>
             <AllowanceGate amount={amountBN} spender={address}>
               <Button onClick={handleOnStake}>Stake</Button>
             </AllowanceGate>
           </ConnectGate>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </Box>
   )
 }

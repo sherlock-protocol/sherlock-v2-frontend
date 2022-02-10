@@ -8,7 +8,13 @@
   font-size: 1.125rem; // 18px if root is 16px
   font-weight: bold;
   line-height: 2.25rem; // 36px if root is 16px
-  padding: 0 0.5em;
+  height: 3.25rem;
+  min-width: 7.5rem;
+  width: 100%;
+
+  .content {
+    padding: 0 0.5em;
+  }
 
   &:hover:not(:disabled) {
     cursor: pointer;
@@ -22,6 +28,60 @@
 
     &:hover {
       background-color: inherit;
+    }
+  }
+
+  &.alternate {
+    background-color: $alternate-pink;
+    color: black;
+
+    &:hover:not(:disabled) {
+      cursor: pointer;
+      background-color: darken($color: $alternate-pink, $amount: 10%);
+    }
+  }
+
+  &.cta {
+    position: relative;
+    background-color: $background-color;
+    color: black;
+    border: 3px solid $primary-purple;
+    min-width: 9rem;
+
+    transition: 0.3s all ease;
+
+    .content {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      background-color: white;
+      border: 3px solid black;
+
+      z-index: 1;
+
+      top: -10px;
+      left: 5px;
+
+      justify-content: center;
+      align-items: center;
+      display: flex;
+
+      transition: 0.3s all ease;
+    }
+
+    &:hover {
+      background-color: $primary-purple;
+      .content {
+        top: -15px;
+        left: 10px;
+      }
+    }
+
+    &:active {
+      .content {
+        top: -5px;
+        left: 0px;
+      }
     }
   }
 

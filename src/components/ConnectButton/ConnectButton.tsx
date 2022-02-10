@@ -34,24 +34,25 @@ const ConnectButton: React.FC = ({ children }) => {
   // Check if any wallet is connected
   if (!connectionData.connected) {
     return (
-      <div>
-        <Button onClick={handleToggleConnectionModal}>Connect</Button>
+      <>
+        <Button onClick={handleToggleConnectionModal} variant="cta">
+          Connect
+        </Button>
         {isModalVisible && <WalletProviderModal onClose={handleToggleConnectionModal} />}
-      </div>
+      </>
     )
   }
 
   // Check if correct network is selected
   const isCorrectNetwork = networkData.chain?.id?.toString() === process.env.REACT_APP_NETWORK_ID
   if (!isCorrectNetwork) {
-    return <Button onClick={handleSwitchToCorrectNetwork}>Switch network</Button>
+    return (
+      <Button variant="cta" onClick={handleSwitchToCorrectNetwork}>
+        Switch network
+      </Button>
+    )
   }
-
-  return (
-    <div>
-      <pre>Connected {shortenAddress(accountData?.address)}</pre>
-    </div>
-  )
+  return <Button variant="cta">{shortenAddress(accountData?.address)}</Button>
 }
 
 export default ConnectButton
