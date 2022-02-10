@@ -3,6 +3,7 @@ import { BigNumber, ethers, utils } from "ethers"
 
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
+import { Input } from "../../components/Input"
 import { Box } from "../../components/Box"
 
 import { useSherBuyContract } from "../../hooks/useSherBuyContract"
@@ -43,7 +44,7 @@ export const FundraisingPage: React.FC = () => {
   /**
    * User input. Amount of USDC willing to pay.
    */
-  const [usdcInput, setUsdcInput] = useState<number>()
+  const [usdcInput, setUsdcInput] = useState<BigNumber>()
 
   /**
    * Ratio: converts USDC to amount of SHER available for claim.
@@ -119,10 +120,10 @@ export const FundraisingPage: React.FC = () => {
     setIsLoadingRewards(true)
 
     try {
-      const sherAmountWanted = usdcInput * usdcToSherRewardRatio
-      const { sherAmount, stake, price } = await sherBuyContract.getCapitalRequirements(
-        utils.parseUnits(sherAmountWanted.toString(), 18)
-      )
+      const sherAmountWanted = Number(ethers.utils.formatUnits(usdcInput, 6)) * usdcToSherRewardRatio
+      const sherAmountWantedAsBigNumber = ethers.utils.parseUnits(sherAmountWanted.toString(), 18)
+
+      const { sherAmount, stake, price } = await sherBuyContract.getCapitalRequirements(sherAmountWantedAsBigNumber)
 
       setRewards({
         sherAmount,
@@ -136,8 +137,10 @@ export const FundraisingPage: React.FC = () => {
     }
   }, [usdcInput, usdcToSherRewardRatio, sherBuyContract])
 
-  const handleUsdcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsdcInput(e.target.valueAsNumber)
+  const handleUsdcChange = (value: BigNumber | undefined) => {
+    if (!value) return
+
+    setUsdcInput(value)
   }
 
   const handleExecute = async () => {
@@ -160,10 +163,8 @@ export const FundraisingPage: React.FC = () => {
         <h1>FUNDRAISING</h1>
         {formattedDeadline && <h2>{`Event ends: ${formattedDeadline[0]} hours ${formattedDeadline[1]} minutes`}</h2>}
         {usdcRemaining && <h2>{`USDC remaining: ${utils.commify(usdcRemaining)}`}</h2>}
-        <input type="number" placeholder="USDC" value={usdcInput ?? ""} onChange={handleUsdcChange} />
-        <Button variant="secondary" onClick={handleCalculateRewards}>
-          Calculate rewards
-        </Button>
+        <Input onChange={handleUsdcChange} token="USDC" placeholder="Choose amount" />
+        <Button onClick={handleCalculateRewards}>Calculate rewards</Button>
         {isLoadingRewards && <span>Calculating rewards ...</span>}
         {rewards && (
           <div>

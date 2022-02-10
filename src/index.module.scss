@@ -130,6 +130,9 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
 }
+html {
+  font-family: $font-family;
+}
 
 body {
   margin: 0;
@@ -137,6 +140,7 @@ body {
   font-family: $font-family;
   font-size: 16px;
   color: $text-color;
+  letter-spacing: -0.02em;
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
