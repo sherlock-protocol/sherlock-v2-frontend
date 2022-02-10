@@ -1,5 +1,5 @@
+import React, { useCallback, useState, useEffect } from "react"
 import { BigNumber, ethers } from "ethers"
-import React, { useCallback } from "react"
 
 import styles from "./Input.module.scss"
 
@@ -9,12 +9,7 @@ type InputProps = {
   /**
    * onChange event handler
    */
-  onChange?: (value: BigNumber) => void
-
-  /**
-   * input's value
-   */
-  value?: BigNumber
+  onChange?: (value: BigNumber | null) => void
 
   /**
    * token
@@ -27,18 +22,31 @@ const decimalsByToken: Record<InputToken, number> = {
   USDC: 6,
 }
 
-export const Input: React.FC<InputProps> = ({ onChange, value, token }) => {
-  const onInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!e.target.validity.valid) return
+const decommify = (value: string) => value.replaceAll(",", "")
 
-      const valueAsBigNumber = ethers.utils.parseUnits(e.target.value, decimalsByToken[token])
+export const Input: React.FC<InputProps> = ({ onChange, token }) => {
+  const [stringValue, setStringValue] = useState<string>("")
+
+  useEffect(() => {
+    try {
+      const valueAsBigNumber = ethers.utils.parseUnits(decommify(stringValue), decimalsByToken[token])
+      console.log(valueAsBigNumber.toString())
       onChange && onChange(valueAsBigNumber)
+    } catch (error) {
+      onChange && onChange(null)
+    }
+  }, [stringValue])
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      try {
+        setStringValue(ethers.utils.commify(decommify(e.target.value)))
+      } catch (error) {
+        // the prev statement fails if the value is not a number, then we do nothing and input's value won't change.
+      }
     },
-    [onChange]
+    [setStringValue]
   )
 
-  const valueAsString = value ? ethers.utils.formatUnits(value, decimalsByToken[token]).slice(0, -2) : "0"
-
-  return <input className={styles.input} pattern="[0-9]*" value={valueAsString} onChange={onInputChange} />
+  return <input className={styles.input} value={stringValue} onChange={handleInputChange} />
 }

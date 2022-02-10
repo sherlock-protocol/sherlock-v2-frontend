@@ -137,7 +137,9 @@ export const FundraisingPage: React.FC = () => {
     }
   }, [usdcInput, usdcToSherRewardRatio, sherBuyContract])
 
-  const handleUsdcChange = (value: BigNumber) => {
+  const handleUsdcChange = (value: BigNumber | null) => {
+    if (!value) return
+
     setUsdcInput(value)
   }
 
@@ -161,7 +163,7 @@ export const FundraisingPage: React.FC = () => {
         <h1>FUNDRAISING</h1>
         {formattedDeadline && <h2>{`Event ends: ${formattedDeadline[0]} hours ${formattedDeadline[1]} minutes`}</h2>}
         {usdcRemaining && <h2>{`USDC remaining: ${utils.commify(usdcRemaining)}`}</h2>}
-        <Input value={usdcInput} onChange={handleUsdcChange} token="USDC" />
+        <Input onChange={handleUsdcChange} token="USDC" />
         <Button onClick={handleCalculateRewards}>Calculate rewards</Button>
         {isLoadingRewards && <span>Calculating rewards ...</span>}
         {rewards && (
