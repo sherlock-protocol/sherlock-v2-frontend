@@ -44,7 +44,7 @@ export const FundraisingPage: React.FC = () => {
   /**
    * User input. Amount of USDC willing to pay.
    */
-  const [usdcInput, setUsdcInput] = useState<number>()
+  const [usdcInput, setUsdcInput] = useState<BigNumber>()
 
   /**
    * Ratio: converts USDC to amount of SHER available for claim.
@@ -120,10 +120,10 @@ export const FundraisingPage: React.FC = () => {
     setIsLoadingRewards(true)
 
     try {
-      const sherAmountWanted = usdcInput * usdcToSherRewardRatio
-      const { sherAmount, stake, price } = await sherBuyContract.getCapitalRequirements(
-        utils.parseUnits(sherAmountWanted.toString(), 18)
-      )
+      const sherAmountWanted = Number(ethers.utils.formatUnits(usdcInput, 6)) * usdcToSherRewardRatio
+      const sherAmountWantedAsBigNumber = ethers.utils.parseUnits(sherAmountWanted.toString(), 18)
+
+      const { sherAmount, stake, price } = await sherBuyContract.getCapitalRequirements(sherAmountWantedAsBigNumber)
 
       setRewards({
         sherAmount,
@@ -137,8 +137,8 @@ export const FundraisingPage: React.FC = () => {
     }
   }, [usdcInput, usdcToSherRewardRatio, sherBuyContract])
 
-  const handleUsdcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsdcInput(Number(e.target.value))
+  const handleUsdcChange = (value: BigNumber) => {
+    setUsdcInput(value)
   }
 
   const handleExecute = async () => {
@@ -161,7 +161,7 @@ export const FundraisingPage: React.FC = () => {
         <h1>FUNDRAISING</h1>
         {formattedDeadline && <h2>{`Event ends: ${formattedDeadline[0]} hours ${formattedDeadline[1]} minutes`}</h2>}
         {usdcRemaining && <h2>{`USDC remaining: ${utils.commify(usdcRemaining)}`}</h2>}
-        <Input value={usdcInput?.toString() ?? ""} onChange={handleUsdcChange} />
+        <Input value={usdcInput} onChange={handleUsdcChange} token="USDC" />
         <Button onClick={handleCalculateRewards}>Calculate rewards</Button>
         {isLoadingRewards && <span>Calculating rewards ...</span>}
         {rewards && (
