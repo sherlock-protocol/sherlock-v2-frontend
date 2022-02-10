@@ -32,12 +32,12 @@
   }
 
   &.alternate {
-    background-color: #fe6e99;
+    background-color: $alternate-pink;
     color: black;
 
     &:hover:not(:disabled) {
       cursor: pointer;
-      background-color: darken($color: #fe6e99, $amount: 10%);
+      background-color: darken($color: $alternate-pink, $amount: 10%);
     }
   }
 

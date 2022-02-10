@@ -2,7 +2,6 @@ import React from "react"
 import { useConnect } from "wagmi"
 import { Button } from "../Button/Button"
 import Modal from "../Modal/Modal"
-import styles from "./WalletProviderModal.module.scss"
 
 interface Props {
   onClose: () => void

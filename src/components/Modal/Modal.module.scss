@@ -6,24 +6,19 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 200;
+  z-index: 201;
 
   display: flex;
   justify-content: center;
   align-items: center;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background-color: transparentize($color: $background-color, $amount: 0.1);
 
-  background-color: rgba(0, 0, 0, 0.5);
-
-  .container {
-    border: 1px solid black;
-    padding: 1rem;
-    background-color: $background-color;
-
-    .header {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-      margin-bottom: 1rem;
-    }
+  .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
   }
 }

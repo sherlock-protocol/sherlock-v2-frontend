@@ -1,4 +1,5 @@
 import React from "react"
+import { Box } from "../Box"
 import styles from "./Modal.module.scss"
 
 interface Props {
@@ -34,14 +35,14 @@ const Modal: React.FC<Props> = ({ closeable, children, onClose }) => {
 
   return (
     <div className={styles.modal} onClick={handleClose}>
-      <div className={styles.container}>
+      <Box>
         {closeable && (
           <div className={styles.header}>
             <button onClick={handleClose}>X</button>
           </div>
         )}
         {children}
-      </div>
+      </Box>
     </div>
   )
 }
