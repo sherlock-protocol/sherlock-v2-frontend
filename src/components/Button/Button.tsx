@@ -3,13 +3,13 @@ import cx from "classnames"
 
 import styles from "./Button.module.scss"
 
-type ButtonVariant = "primary" | "secondary" | "alternate"
+type ButtonVariant = "primary" | "secondary" | "alternate" | "cta"
 
-type ButtonProps = {
+export type ButtonProps = {
   /**
    * On Click event handler
    */
-  onClick: (e: React.SyntheticEvent) => void
+  onClick?: (e: React.SyntheticEvent) => void
 
   /**
    * If button should not be interactible
@@ -25,7 +25,7 @@ type ButtonProps = {
 export const Button: React.FC<ButtonProps> = ({ children, onClick, disabled, variant = "primary" }) => {
   return (
     <button className={cx(styles.button, styles[variant])} onClick={onClick} disabled={disabled}>
-      {children}
+      <div className={styles.content}>{children}</div>
     </button>
   )
 }

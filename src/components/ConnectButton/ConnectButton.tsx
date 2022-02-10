@@ -3,7 +3,6 @@ import { useAccount, useConnect, useNetwork } from "wagmi"
 import { shortenAddress } from "../../utils/format"
 import { Button } from "../Button/Button"
 import WalletProviderModal from "../WalletProviderModal/WalletProviderModal"
-import styles from "./ConnectButton.module.scss"
 
 /**
  * Wallet connection component.
@@ -36,7 +35,9 @@ const ConnectButton: React.FC = ({ children }) => {
   if (!connectionData.connected) {
     return (
       <>
-        <Button onClick={handleToggleConnectionModal}>Connect</Button>
+        <Button onClick={handleToggleConnectionModal} variant="cta">
+          Connect
+        </Button>
         {isModalVisible && <WalletProviderModal onClose={handleToggleConnectionModal} />}
       </>
     )
@@ -45,14 +46,13 @@ const ConnectButton: React.FC = ({ children }) => {
   // Check if correct network is selected
   const isCorrectNetwork = networkData.chain?.id?.toString() === process.env.REACT_APP_NETWORK_ID
   if (!isCorrectNetwork) {
-    return <Button onClick={handleSwitchToCorrectNetwork}>Switch network</Button>
+    return (
+      <Button variant="cta" onClick={handleSwitchToCorrectNetwork}>
+        Switch network
+      </Button>
+    )
   }
-
-  return (
-    <div>
-      <pre>Connected {shortenAddress(accountData?.address)}</pre>
-    </div>
-  )
+  return <Button variant="cta">{shortenAddress(accountData?.address)}</Button>
 }
 
 export default ConnectButton
