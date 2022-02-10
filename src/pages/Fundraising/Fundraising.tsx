@@ -137,7 +137,7 @@ export const FundraisingPage: React.FC = () => {
     }
   }, [usdcInput, usdcToSherRewardRatio, sherBuyContract])
 
-  const handleUsdcChange = (value: BigNumber | null) => {
+  const handleUsdcChange = (value: BigNumber | undefined) => {
     if (!value) return
 
     setUsdcInput(value)
