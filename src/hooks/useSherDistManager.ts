@@ -2,7 +2,7 @@ import React from "react"
 import { useContract, useProvider, useSigner } from "wagmi"
 import { SherDistributionManager } from "../contracts"
 import SherDistManagerABI from "../abi/SherDistributionManager.json"
-import { BigNumber, ethers } from "ethers"
+import { BigNumber } from "ethers"
 
 /**
  * Address of Sherlock Distribution Manager contract

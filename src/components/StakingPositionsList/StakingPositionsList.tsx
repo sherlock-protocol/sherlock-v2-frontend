@@ -11,7 +11,7 @@ const GET_POSITIONS = loader("../../graphql/queries/GetPositions.graphql")
 
 export const StakingPositionsList: React.FC = () => {
   const [{ data: accountData }] = useAccount()
-  const { loading, error, data } = useQuery<GetPositionsQuery>(GET_POSITIONS, {
+  const { data } = useQuery<GetPositionsQuery>(GET_POSITIONS, {
     variables: {
       owner: accountData?.address,
     },

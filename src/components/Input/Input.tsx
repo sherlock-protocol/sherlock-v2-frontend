@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react"
+import React, { useCallback, useEffect } from "react"
 import { BigNumber, ethers } from "ethers"
 
 import styles from "./Input.module.scss"
@@ -35,7 +35,7 @@ export const Input: React.FC<InputProps> = ({ onChange, token, placeholder }) =>
 
   useEffect(() => {
     onChange && onChange(amountBN)
-  }, [amountBN])
+  }, [amountBN, onChange])
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
