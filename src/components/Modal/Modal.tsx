@@ -44,7 +44,7 @@ const Modal: React.FC<Props> = ({ closeable, children, onClose }) => {
       <Box>
         {closeable && (
           <div className={styles.header}>
-            <CloseButton size={26} onClick={handleClose} />
+            <CloseButton size={22} onClick={handleClose} />
           </div>
         )}
         {children}
