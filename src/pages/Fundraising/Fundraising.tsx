@@ -66,6 +66,7 @@ export const FundraisingPage: React.FC = () => {
    * Amount of SHER left in SherBuy contract, available for sale during the fundraise.
    */
   const [sherRemaining, setSherRemaining] = useState<ethers.BigNumber>()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoadingRewards, setIsLoadingRewards] = useState(false)
 
   /**
