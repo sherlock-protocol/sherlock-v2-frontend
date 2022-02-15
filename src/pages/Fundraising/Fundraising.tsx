@@ -1,16 +1,22 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { BigNumber, ethers, utils } from "ethers"
+import { useDebounce } from "use-debounce"
+import cx from "classnames"
 
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
 import { Input } from "../../components/Input"
 import { Box } from "../../components/Box"
+import { Title } from "../../components/Title"
+import { Column, Row } from "../../components/Layout"
 
 import { useSherBuyContract } from "../../hooks/useSherBuyContract"
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
 import useERC20 from "../../hooks/useERC20"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import useWaitTx from "../../hooks/useWaitTx"
+
+import styles from "./Fundraising.module.scss"
 
 type Rewards = {
   /**
@@ -45,6 +51,7 @@ export const FundraisingPage: React.FC = () => {
    * User input. Amount of USDC willing to pay.
    */
   const [usdcInput, setUsdcInput] = useState<BigNumber>()
+  const [debouncedUsdcInput] = useDebounce(usdcInput, 500)
 
   /**
    * Ratio: converts USDC to amount of SHER available for claim.
@@ -114,28 +121,34 @@ export const FundraisingPage: React.FC = () => {
     fetchAmountRemaining()
   }, [sher, sherBuyContract.address, setSherRemaining])
 
-  const handleCalculateRewards = useCallback(async () => {
-    if (!usdcInput || !usdcToSherRewardRatio) return
+  /**
+   * Calculate rewards when debounced usdcInput changes (user stopped writing).
+   */
+  useEffect(() => {
+    const calculateRewards = async () => {
+      if (!debouncedUsdcInput || !usdcToSherRewardRatio) return
 
-    setIsLoadingRewards(true)
+      setIsLoadingRewards(true)
 
-    try {
-      const sherAmountWanted = Number(ethers.utils.formatUnits(usdcInput, 6)) * usdcToSherRewardRatio
-      const sherAmountWantedAsBigNumber = ethers.utils.parseUnits(sherAmountWanted.toString(), 18)
+      try {
+        const sherAmountWanted = Number(ethers.utils.formatUnits(debouncedUsdcInput, 6)) * usdcToSherRewardRatio
+        const sherAmountWantedAsBigNumber = ethers.utils.parseUnits(sherAmountWanted.toString(), 18)
 
-      const { sherAmount, stake, price } = await sherBuyContract.getCapitalRequirements(sherAmountWantedAsBigNumber)
+        const { sherAmount, stake, price } = await sherBuyContract.getCapitalRequirements(sherAmountWantedAsBigNumber)
 
-      setRewards({
-        sherAmount,
-        stake,
-        price,
-      })
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setIsLoadingRewards(false)
+        setRewards({
+          sherAmount,
+          stake,
+          price,
+        })
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setIsLoadingRewards(false)
+      }
     }
-  }, [usdcInput, usdcToSherRewardRatio, sherBuyContract])
+    calculateRewards()
+  }, [debouncedUsdcInput, setIsLoadingRewards, usdcToSherRewardRatio, setRewards, sherBuyContract])
 
   const handleUsdcChange = (value: BigNumber | undefined) => {
     if (!value) return
@@ -159,31 +172,72 @@ export const FundraisingPage: React.FC = () => {
 
   return (
     <Box>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-        <h1>FUNDRAISING</h1>
-        {formattedDeadline && <h2>{`Event ends: ${formattedDeadline[0]} hours ${formattedDeadline[1]} minutes`}</h2>}
-        {usdcRemaining && <h2>{`USDC remaining: ${utils.commify(usdcRemaining)}`}</h2>}
-        <Input onChange={handleUsdcChange} token="USDC" placeholder="Choose amount" />
-        <Button onClick={handleCalculateRewards}>Calculate rewards</Button>
-        {isLoadingRewards && <span>Calculating rewards ...</span>}
-        {rewards && (
-          <div>
-            <ul>
-              <li>{`USDC Stake (6 months): ${utils.commify(utils.formatUnits(rewards.stake, 6))}`}</li>
-              <li>{`USDC Contributed: ${utils.commify(utils.formatUnits(rewards.price, 6))}`}</li>
-              <li>{`SHER Reward: ${utils.commify(utils.formatUnits(rewards.sherAmount, 18))} tokens`}</li>
-            </ul>
-            <ConnectGate>
-              <AllowanceGate
-                spender={sherBuyContract.address}
-                amount={usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0)}
-              >
-                <Button onClick={handleExecute}>Execute</Button>
-              </AllowanceGate>
-            </ConnectGate>
-          </div>
-        )}
-      </div>
+      <Column spacing="m">
+        <Row>
+          <Title>Participate</Title>
+        </Row>
+        <Row alignment="space-between">
+          <Column>Event Ends</Column>
+          <Column>{formattedDeadline && `${formattedDeadline[0]} hours ${formattedDeadline[1]} minutes`}</Column>
+        </Row>
+        <Row alignment="space-between">
+          <Column>Participation Remaining</Column>
+          <Column>{usdcRemaining && utils.commify(usdcRemaining)}</Column>
+        </Row>
+        <Row className={styles.rewardsContainer}>
+          <Column grow={1} spacing="l">
+            <Row alignment={["space-between", "center"]} spacing="xl">
+              <Column grow={1}>
+                <Input onChange={handleUsdcChange} token="USDC" placeholder="Choose amount" />
+              </Column>
+              <Column grow={0} className={cx(styles.huge, styles.strong)}>
+                USDC
+              </Column>
+            </Row>
+            {rewards && (
+              <Row>
+                <Column grow={1} spacing="m">
+                  <Row alignment="space-between">
+                    <Column>USDC Stake (6 months)</Column>
+                    <Column>{utils.commify(utils.formatUnits(rewards.stake, 6))}</Column>
+                  </Row>
+                  <Row alignment="space-between">
+                    <Column>USDC Contributed</Column>
+                    <Column>{utils.commify(utils.formatUnits(rewards.price, 6))}</Column>
+                  </Row>
+                  <Row>
+                    <hr />
+                  </Row>
+                  <Row alignment="space-between">
+                    <Column>USDC Contributed</Column>
+                    <Column className={styles.strong}>
+                      <strong>{`${utils.commify(utils.formatUnits(rewards.sherAmount, 18))} tokens`}</strong>
+                    </Column>
+                  </Row>
+                  <Row alignment="space-between">
+                    <Column>
+                      <strong>SHER at $100M FDV</strong>
+                    </Column>
+                    <Column className={styles.strong}>
+                      <strong>{utils.commify(utils.formatUnits(rewards.sherAmount, 18))}</strong>
+                    </Column>
+                  </Row>
+                  <Row alignment="center">
+                    <ConnectGate>
+                      <AllowanceGate
+                        spender={sherBuyContract.address}
+                        amount={usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0)}
+                      >
+                        <Button onClick={handleExecute}>Execute</Button>
+                      </AllowanceGate>
+                    </ConnectGate>
+                  </Row>
+                </Column>
+              </Row>
+            )}
+          </Column>
+        </Row>
+      </Column>
     </Box>
   )
 }
