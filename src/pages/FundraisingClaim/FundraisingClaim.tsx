@@ -4,6 +4,15 @@ import { useAccount } from "wagmi"
 
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
 import { useGetFundraisePositionLazyQuery } from "../../graphql/types"
+import { Box } from "../../components/Box"
+import { Column, Row } from "../../components/Layout"
+import { Title } from "../../components/Title"
+import { Button } from "../../components/Button/Button"
+import { Text } from "../../components/Text"
+
+import styles from "./FundraisingClaim.module.scss"
+
+import { formattedTimeDifference } from "../../utils/dates"
 
 export const FundraisingClaimPage = () => {
   const [{ data: accountData }] = useAccount()
@@ -72,16 +81,72 @@ export const FundraisingClaimPage = () => {
   const participation = stake.add(contribution)
 
   return (
-    <div>
-      <h1>CLAIM</h1>
-      <h2>Participation: {ethers.utils.commify(ethers.utils.formatUnits(participation, 6))}</h2>
-      <h2>Stake: {ethers.utils.commify(ethers.utils.formatUnits(stake, 6))}</h2>
-      <h2>Contributed: {ethers.utils.commify(ethers.utils.formatUnits(contribution, 6))}</h2>
-      <h2>Reward: {formattedSherAmount} SHER</h2>
-      <h2>Claimable starts: {claimableAt.toDateString()}</h2>
-      <button onClick={handleClaim} disabled={!claimIsActive}>
-        {claimIsActive ? `Claim ${formattedSherAmount} SHER` : "Claim is not active yet"}
-      </button>
-    </div>
+    <Box>
+      <Column spacing="m">
+        <Row>
+          <Title>Position</Title>
+        </Row>
+        <Row alignment="space-between">
+          <Column>
+            <Text strong>Participation</Text>
+          </Column>
+          <Column>
+            <Text strong>{ethers.utils.commify(ethers.utils.formatUnits(participation, 6))} USDC</Text>
+          </Column>
+        </Row>
+        <Row alignment="space-between">
+          <Column>
+            <Text>Staked</Text>
+          </Column>
+          <Column>
+            <Text>{ethers.utils.commify(ethers.utils.formatUnits(stake, 6))}</Text>
+          </Column>
+        </Row>
+        <Row alignment="space-between">
+          <Column>
+            <Text>Contributed</Text>
+          </Column>
+          <Column>
+            <Text>{ethers.utils.commify(ethers.utils.formatUnits(contribution, 6))}</Text>
+          </Column>
+        </Row>
+        <Row className={styles.separator}>
+          <hr />
+        </Row>
+        <Row alignment="space-between">
+          <Column>
+            <Text strong>SHER Reward</Text>
+          </Column>
+          <Column>
+            <Text strong>{formattedSherAmount} tokens</Text>
+          </Column>
+        </Row>
+        <Row className={styles.claimContainer}>
+          <Column grow={1} spacing="m">
+            <Row alignment="space-between" className={styles.strong}>
+              <Column>
+                <Text strong>Claim Status</Text>
+              </Column>
+              <Column>
+                <Text strong>{formattedSherAmount} tokens</Text>
+              </Column>
+            </Row>
+            <Row alignment="space-between">
+              <Column>
+                <Text strong>Claimable Starts</Text>
+              </Column>
+              <Column>
+                <Text strong>{formattedTimeDifference(claimableAt)}</Text>
+              </Column>
+            </Row>
+            <Row alignment="center">
+              <Button onClick={handleClaim} disabled={!claimIsActive}>
+                Claim
+              </Button>
+            </Row>
+          </Column>
+        </Row>
+      </Column>
+    </Box>
   )
 }
