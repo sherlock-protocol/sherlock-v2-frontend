@@ -1,0 +1,57 @@
+@import "../../styles/variables";
+
+.layout {
+  display: flex;
+}
+
+.column {
+  flex-direction: column;
+
+  &.spacing {
+    &-xs > *:not(:last-child) {
+      margin-bottom: $spacing-xs;
+    }
+
+    &-s > *:not(:last-child) {
+      margin-bottom: $spacing-s;
+    }
+
+    &-m > *:not(:last-child) {
+      margin-bottom: $spacing-m;
+    }
+
+    &-l > *:not(:last-child) {
+      margin-bottom: $spacing-l;
+    }
+
+    &-xl > *:not(:last-child) {
+      margin-bottom: $spacing-xl;
+    }
+  }
+}
+
+.row {
+  flex-direction: row;
+
+  &.spacing {
+    &-xs > *:not(:last-child) {
+      margin-right: $spacing-xs;
+    }
+
+    &-s > *:not(:last-child) {
+      margin-right: $spacing-s;
+    }
+
+    &-m > *:not(:last-child) {
+      margin-right: $spacing-m;
+    }
+
+    &-l > *:not(:last-child) {
+      margin-right: $spacing-l;
+    }
+
+    &-xl > *:not(:last-child) {
+      margin-right: $spacing-xl;
+    }
+  }
+}
