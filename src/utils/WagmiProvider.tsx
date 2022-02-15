@@ -1,5 +1,5 @@
 import React from "react"
-import { Provider, defaultChains, developmentChains } from "wagmi"
+import { Provider, defaultChains, developmentChains, chain } from "wagmi"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 import { providers } from "ethers"
@@ -39,7 +39,7 @@ const provider = ({ chainId }: { chainId?: number | undefined }) => {
   console.log("Fetching provider for chain", chainId)
 
   // Use local node if working on a development chain
-  if (__DEV__) {
+  if (__DEV__ && chainId === 31337) {
     return new providers.JsonRpcProvider("http://127.0.0.1:8545")
   }
 
