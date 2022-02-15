@@ -27,16 +27,22 @@ enum TxState {
  */
 export const TxWaitProvider: React.FC = ({ children }) => {
   const [txState, setTxState] = React.useState(TxState.NONE)
+  const [txHash, setTxHash] = React.useState<string | undefined>()
 
   const waitForTx = React.useCallback(
     async (tx: () => Promise<ethers.ContractTransaction>): Promise<ethers.ContractReceipt> => {
+      setTxHash(undefined)
       setTxState(TxState.REQUESTED)
 
       try {
         const transaction = await tx()
-        const receipt = await transaction.wait()
 
+        setTxState(TxState.PENDING)
+        setTxHash(transaction.hash)
+
+        const receipt = await transaction.wait()
         setTxState(TxState.SUCCESS)
+
         return receipt
       } catch (error: any) {
         // User denied transaction (EIP-1193)
@@ -59,9 +65,9 @@ export const TxWaitProvider: React.FC = ({ children }) => {
     <TxWaitContext.Provider value={ctx}>
       {children}
       {txState === TxState.REQUESTED && <RequestedTx />}
-      {txState === TxState.PENDING && <PendingTx />}
-      {txState === TxState.SUCCESS && <SuccessTx />}
-      {txState === TxState.REVERTED && <RevertedTx />}
+      {txState === TxState.PENDING && <PendingTx hash={txHash} />}
+      {txState === TxState.SUCCESS && <SuccessTx hash={txHash} />}
+      {txState === TxState.REVERTED && <RevertedTx hash={txHash} />}
       {txState === TxState.USER_DENIED && <UserDeniedTx />}
     </TxWaitContext.Provider>
   )
