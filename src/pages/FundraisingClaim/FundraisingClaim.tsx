@@ -7,10 +7,12 @@ import { useGetFundraisePositionLazyQuery } from "../../graphql/types"
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
+import { Button } from "../../components/Button/Button"
 import { Text } from "../../components/Text"
 
 import styles from "./FundraisingClaim.module.scss"
-import { Button } from "../../components/Button/Button"
+
+import { formattedTimeDifference } from "../../utils/dates"
 
 export const FundraisingClaimPage = () => {
   const [{ data: accountData }] = useAccount()
@@ -134,7 +136,7 @@ export const FundraisingClaimPage = () => {
                 <Text strong>Claimable Starts</Text>
               </Column>
               <Column>
-                <Text strong>{formattedSherAmount} tokens</Text>
+                <Text strong>{formattedTimeDifference(claimableAt)}</Text>
               </Column>
             </Row>
             <Row alignment="center">
