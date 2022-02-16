@@ -4,14 +4,6 @@
   background-color: transparentize($color: $primary-purple, $amount: 0.7);
   padding: 1em;
 
-  & .strong {
-    font-weight: 700;
-  }
-
-  & .huge {
-    font-size: 1.5rem;
-  }
-
   & hr {
     width: 100%;
     height: 1px;
