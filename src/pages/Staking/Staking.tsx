@@ -35,6 +35,7 @@ export const StakingPage: React.FC = () => {
   const { tvl, address, stake, refreshTvl } = useSherlock()
   const { computeRewards } = useSherDistManager()
   const { format: formatSHER } = useERC20("SHER")
+  const { format: formatUSDC } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
 
   /**
@@ -78,6 +79,12 @@ export const StakingPage: React.FC = () => {
     <Box>
       <Column spacing="m">
         <Title>Stake</Title>
+        <Row alignment="space-between">
+          <Column>
+            <Text>Total Value Locked</Text>
+          </Column>
+          <Column>{tvl && <Text strong>$ {utils.commify(formatUSDC(tvl))}</Text>}</Column>
+        </Row>
         <Row className={styles.rewardsContainer}>
           <Column grow={1} spacing="l">
             <Row alignment={["space-between", "center"]} spacing="xl">
