@@ -14,6 +14,7 @@ function Header() {
         <Logotype height={60} width={60} />
       </div>
       <div className={styles.centerArea}>
+        <CustomLink to="fundraise">Fundraise</CustomLink>
         <CustomLink to="stake">Stake</CustomLink>
         <CustomLink to="positions">Positions</CustomLink>
       </div>
