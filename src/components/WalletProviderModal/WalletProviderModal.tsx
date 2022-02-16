@@ -14,7 +14,7 @@ interface Props {
  * wallet providers, in order to connect to the web application.
  */
 const WalletProviderModal: React.FC<Props> = ({ onClose }) => {
-  const [{ data, loading, error }, connect] = useConnect()
+  const [{ data }, connect] = useConnect()
 
   /**
    * Connects via given connector
