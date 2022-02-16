@@ -8,9 +8,9 @@ import { FundraisingClaimPage } from "./pages/FundraisingClaim"
 import { ProtocolPage } from "./pages/Protocol"
 
 import { Footer } from "./components/Footer"
+import { Header } from "./components/Header"
 
 import styles from "./App.module.scss"
-import Header from "./components/Header/Header"
 
 function App() {
   return (
