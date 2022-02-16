@@ -8,6 +8,7 @@ import { Button } from "../../components/Button/Button"
 import { Input } from "../../components/Input"
 import { Box } from "../../components/Box"
 import { Title } from "../../components/Title"
+import { Text } from "../../components/Text"
 import { Column, Row } from "../../components/Layout"
 
 import { useSherBuyContract } from "../../hooks/useSherBuyContract"
@@ -15,6 +16,8 @@ import { useSherClaimContract } from "../../hooks/useSherClaimContract"
 import useERC20 from "../../hooks/useERC20"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import useWaitTx from "../../hooks/useWaitTx"
+
+import { formattedTimeDifference } from "../../utils/dates"
 
 import styles from "./Fundraising.module.scss"
 
@@ -167,7 +170,6 @@ export const FundraisingPage: React.FC = () => {
     }
   }
 
-  const formattedDeadline = deadline && millisecondsToHoursAndMinutes(deadline.getTime() - Date.now())
   const usdcRemaining =
     usdcToSherRewardRatio && sherRemaining && Number(utils.formatUnits(sherRemaining, 18)) / usdcToSherRewardRatio
 
@@ -178,8 +180,12 @@ export const FundraisingPage: React.FC = () => {
           <Title>Participate</Title>
         </Row>
         <Row alignment="space-between">
-          <Column>Event Ends</Column>
-          <Column>{formattedDeadline && `${formattedDeadline[0]} hours ${formattedDeadline[1]} minutes`}</Column>
+          <Column>
+            <Text>Event Ends</Text>
+          </Column>
+          <Column>
+            <Text>{deadline && formattedTimeDifference(deadline)}</Text>
+          </Column>
         </Row>
         <Row alignment="space-between">
           <Column>Participation Remaining</Column>
@@ -195,6 +201,11 @@ export const FundraisingPage: React.FC = () => {
                 USDC
               </Column>
             </Row>
+            {isLoadingRewards && (
+              <Row alignment="center">
+                <Text>Calculating rewards ...</Text>
+              </Row>
+            )}
             {rewards && (
               <Row>
                 <Column grow={1} spacing="m">
