@@ -4,6 +4,9 @@ import Modal from "../Modal/Modal"
 import styles from "./WalletProviderModal.module.scss"
 import { ReactComponent as Metamask } from "../../assets/icons/metamask.svg"
 import { ReactComponent as WalletConnect } from "../../assets/icons/walletconnect.svg"
+import { Title } from "../Title"
+import { Text } from "../Text"
+import { Column, Row } from "../Layout"
 
 interface Props {
   onClose: () => void
@@ -42,19 +45,32 @@ const WalletProviderModal: React.FC<Props> = ({ onClose }) => {
 
   return (
     <Modal closeable onClose={onClose}>
-      <div className={styles.container}>
-        <div className={styles.provider} onClick={(e) => handleConnectWithConnector(e, "injected")}>
-          <Metamask height={45} width={45} />
-          <h1>MetaMask</h1>
-          <p>Connect to your MetaMask wallet</p>
-        </div>
-        <div className={styles.provider}>
-          <WalletConnect height={45} width={45} />
-          <h1>WalletConnect</h1>
-          <p>Scan with WalletConnect to connect</p>
-        </div>
-        {/* <Button onClick={(e) => handleConnectWithConnector(e, "injected")}>MetaMask</Button> */}
-      </div>
+      <Column>
+        <Row>
+          <Column
+            alignment="center"
+            grow={1}
+            className={styles.provider}
+            onClick={(e) => handleConnectWithConnector(e, "injected")}
+          >
+            <Metamask height={45} width={45} />
+            <Title>MetaMask</Title>
+            <Text>Connect to your MetaMask wallet</Text>
+          </Column>
+        </Row>
+        <Row>
+          <Column grow={1}>
+            <hr className={styles.divider} />
+          </Column>
+        </Row>
+        <Row>
+          <Column alignment="center" grow={1} className={styles.provider}>
+            <WalletConnect height={45} width={45} />
+            <Title>WalletConnect</Title>
+            <Text>Scan with WalletConnect to connect</Text>
+          </Column>
+        </Row>
+      </Column>
     </Modal>
   )
 }

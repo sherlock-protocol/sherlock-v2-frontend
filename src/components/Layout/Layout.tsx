@@ -2,6 +2,7 @@ import React from "react"
 import cx from "classnames"
 
 import styles from "./Layout.module.scss"
+import { DOMAttributes } from "react"
 
 type FlexboxAlignment = "start" | "end" | "center" | "space-between" | "space-around"
 
@@ -17,7 +18,7 @@ type FlexboxProps = {
   alignment?: FlexboxAlignment | FlexboxAlignment[]
   spacing?: Spacing
   className?: string
-}
+} & DOMAttributes<HTMLDivElement>
 
 export const Column: React.FC<FlexboxProps> = ({ children, ...props }) => {
   return (
@@ -43,6 +44,7 @@ const FlexboxElement: React.FC<FlexboxProps & { direction: "row" | "column" }> =
   alignment,
   spacing,
   className,
+  ...props
 }) => {
   const [alignItemsIndex, justifyContentIndex] = direction === "row" ? [1, 0] : [0, 1]
   const alignments = Array.isArray(alignment) ? alignment : [alignment]
@@ -55,6 +57,7 @@ const FlexboxElement: React.FC<FlexboxProps & { direction: "row" | "column" }> =
         [styles[`spacing-${spacing}`]]: spacing,
       })}
       style={{ flexGrow: grow, flexShrink: shrink, alignItems: alignItems, justifyContent: justifyContent }}
+      {...props}
     >
       {children}
     </div>

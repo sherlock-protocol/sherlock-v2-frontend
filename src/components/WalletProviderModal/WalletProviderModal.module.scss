@@ -1,36 +1,29 @@
 @import "../../styles/variables";
 
-.container {
-  .provider {
-    cursor: pointer;
-    padding: $spacing-xl;
-    border-bottom: 1px solid white;
-    border-image-slice: 1;
-    border-image-source: linear-gradient(136.33deg, rgba(135, 22, 232, 0.28) 7.74%, rgba(254, 110, 153, 0) 98.49%);
+.provider {
+  cursor: pointer;
+  padding: $spacing-l;
 
-    box-sizing: border-box;
+  transition: 0.2s all ease-out;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: 0.2s all ease-out;
-
-    &:last-of-type {
-      border-bottom: none;
-    }
-
-    &:hover {
-      background-color: rgba(195, 195, 195, 0.14);
-    }
-
-    h1 {
-      font-size: 1.175rem;
-      font-weight: 700;
-      margin: $spacing-s 0;
-    }
-
-    p {
-      color: rgb(169, 169, 188);
-    }
+  &:hover {
+    background-color: rgba(195, 195, 195, 0.14);
   }
+
+  h1 {
+    margin: $spacing-s 0;
+  }
+
+  p {
+    color: rgb(169, 169, 188);
+  }
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  border: 0;
+  border-bottom: 1px solid white;
+  border-image-slice: 1;
+  border-image-source: linear-gradient(136.33deg, rgba(135, 22, 232, 0.28) 7.74%, rgba(254, 110, 153, 0) 98.49%);
 }
