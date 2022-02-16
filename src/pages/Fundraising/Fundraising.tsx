@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react"
 import { BigNumber, ethers, utils } from "ethers"
 import { useDebounce } from "use-debounce"
-import cx from "classnames"
 
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
 import { Input } from "../../components/Input"
 import { Box } from "../../components/Box"
 import { Title } from "../../components/Title"
+import { Text } from "../../components/Text"
 import { Column, Row } from "../../components/Layout"
 
 import { useSherBuyContract } from "../../hooks/useSherBuyContract"
@@ -15,6 +15,8 @@ import { useSherClaimContract } from "../../hooks/useSherClaimContract"
 import useERC20 from "../../hooks/useERC20"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import useWaitTx from "../../hooks/useWaitTx"
+
+import { formattedTimeDifference } from "../../utils/dates"
 
 import styles from "./Fundraising.module.scss"
 
@@ -31,14 +33,6 @@ type Rewards = {
    * Amount of USDC that needs to be paid to get SHER rewards.
    */
   price: ethers.BigNumber
-}
-
-const millisecondsToHoursAndMinutes = (milliseconds: number): [number, number] => {
-  const seconds = milliseconds / 1000
-  const secondsInAnHour = 60 * 60
-  const hours = Math.round(seconds / secondsInAnHour)
-  const minutes = Math.round((seconds % secondsInAnHour) / 60)
-  return [hours, minutes]
 }
 
 export const FundraisingPage: React.FC = () => {
@@ -172,7 +166,6 @@ export const FundraisingPage: React.FC = () => {
     }
   }
 
-  const formattedDeadline = deadline && millisecondsToHoursAndMinutes(deadline.getTime() - Date.now())
   const usdcRemaining =
     usdcToSherRewardRatio && sherRemaining && Number(utils.formatUnits(sherRemaining, 18)) / usdcToSherRewardRatio
 
@@ -183,12 +176,20 @@ export const FundraisingPage: React.FC = () => {
           <Title>Participate</Title>
         </Row>
         <Row alignment="space-between">
-          <Column>Event Ends</Column>
-          <Column>{formattedDeadline && `${formattedDeadline[0]} hours ${formattedDeadline[1]} minutes`}</Column>
+          <Column>
+            <Text>Event Ends</Text>
+          </Column>
+          <Column>
+            <Text strong>{deadline && formattedTimeDifference(deadline)}</Text>
+          </Column>
         </Row>
         <Row alignment="space-between">
-          <Column>Participation Remaining</Column>
-          <Column>{usdcRemaining && utils.commify(usdcRemaining)}</Column>
+          <Column>
+            <Text>Participation Remaining</Text>
+          </Column>
+          <Column>
+            <Text strong>{usdcRemaining && utils.commify(usdcRemaining)}</Text>
+          </Column>
         </Row>
         <Row className={styles.rewardsContainer}>
           <Column grow={1} spacing="l">
@@ -196,36 +197,53 @@ export const FundraisingPage: React.FC = () => {
               <Column grow={1}>
                 <Input onChange={handleUsdcChange} token="USDC" placeholder="Choose amount" />
               </Column>
-              <Column grow={0} className={cx(styles.huge, styles.strong)}>
-                USDC
+              <Column grow={0}>
+                <Text size="extra-large" strong>
+                  USDC
+                </Text>
               </Column>
             </Row>
+            {isLoadingRewards && (
+              <Row alignment="center">
+                <Text>Calculating rewards ...</Text>
+              </Row>
+            )}
             {rewards && (
               <Row>
                 <Column grow={1} spacing="m">
                   <Row alignment="space-between">
-                    <Column>USDC Stake (6 months)</Column>
-                    <Column>{utils.commify(utils.formatUnits(rewards.stake, 6))}</Column>
+                    <Column>
+                      <Text>USDC Stake (6 months)</Text>
+                    </Column>
+                    <Column>
+                      <Text>{utils.commify(utils.formatUnits(rewards.stake, 6))}</Text>
+                    </Column>
                   </Row>
                   <Row alignment="space-between">
-                    <Column>USDC Contributed</Column>
-                    <Column>{utils.commify(utils.formatUnits(rewards.price, 6))}</Column>
+                    <Column>
+                      <Text>USDC Contributed</Text>
+                    </Column>
+                    <Column>
+                      <Text>{utils.commify(utils.formatUnits(rewards.price, 6))}</Text>
+                    </Column>
                   </Row>
                   <Row>
                     <hr />
                   </Row>
                   <Row alignment="space-between">
-                    <Column>USDC Contributed</Column>
+                    <Column>
+                      <Text strong>SHER Reward</Text>
+                    </Column>
                     <Column className={styles.strong}>
-                      <strong>{`${utils.commify(utils.formatUnits(rewards.sherAmount, 18))} tokens`}</strong>
+                      <Text strong>{`${utils.commify(utils.formatUnits(rewards.sherAmount, 18))} tokens`}</Text>
                     </Column>
                   </Row>
                   <Row alignment="space-between">
                     <Column>
-                      <strong>SHER at $100M FDV</strong>
+                      <Text strong>SHER at $100M FDV</Text>
                     </Column>
                     <Column className={styles.strong}>
-                      <strong>{utils.commify(utils.formatUnits(rewards.sherAmount, 18))}</strong>
+                      <Text strong>{utils.commify(utils.formatUnits(rewards.sherAmount, 18))}</Text>
                     </Column>
                   </Row>
                   <Row alignment="center">
