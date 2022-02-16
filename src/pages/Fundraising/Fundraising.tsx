@@ -121,7 +121,10 @@ export const FundraisingPage: React.FC = () => {
    */
   useEffect(() => {
     const calculateRewards = async () => {
-      if (!debouncedUsdcInput || !usdcToSherRewardRatio) return
+      if (!debouncedUsdcInput || !usdcToSherRewardRatio || debouncedUsdcInput.isZero()) {
+        setRewards(undefined)
+        return
+      }
 
       setIsLoadingRewards(true)
 
@@ -146,7 +149,9 @@ export const FundraisingPage: React.FC = () => {
   }, [debouncedUsdcInput, setIsLoadingRewards, usdcToSherRewardRatio, setRewards, sherBuyContract])
 
   const handleUsdcChange = (value: BigNumber | undefined) => {
-    if (!value) return
+    if (!value) {
+      setRewards(undefined)
+    }
 
     setUsdcInput(value)
   }
