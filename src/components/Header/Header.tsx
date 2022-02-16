@@ -1,12 +1,16 @@
 import React from "react"
-import ConnectButton from "../ConnectButton/ConnectButton"
-import styles from "./Header.module.scss"
-import { ReactComponent as Logotype } from "../../assets/icons/logotype.svg"
-import CustomLink from "../CustomLink/CustomLink"
 
-type NavigationLink = {
+import ConnectButton from "../ConnectButton/ConnectButton"
+import CustomLink from "../CustomLink/CustomLink"
+import { Route } from "../../utils/routes"
+
+import { ReactComponent as Logotype } from "../../assets/icons/logotype.svg"
+
+import styles from "./Header.module.scss"
+
+export type NavigationLink = {
   title: string
-  route: string
+  route: Route
 }
 
 type HeaderProps = {
