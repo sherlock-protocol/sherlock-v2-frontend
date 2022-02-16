@@ -1,6 +1,5 @@
 import React from "react"
 import { Box } from "../Box"
-import CloseButton from "../CloseButton/CloseButton"
 import styles from "./Modal.module.scss"
 
 interface Props {
@@ -23,11 +22,11 @@ const Modal: React.FC<Props> = ({ closeable, children, onClose }) => {
    */
   const handleClose = React.useCallback(
     (e: React.SyntheticEvent) => {
-      e.stopPropagation()
-
       if (!closeable) {
         return
       }
+
+      e.stopPropagation()
 
       setIsVisible(false)
       onClose?.()
@@ -40,15 +39,8 @@ const Modal: React.FC<Props> = ({ closeable, children, onClose }) => {
   }
 
   return (
-    <div className={styles.modal}>
-      <Box>
-        {closeable && (
-          <div className={styles.header}>
-            <CloseButton size={22} onClick={handleClose} />
-          </div>
-        )}
-        {children}
-      </Box>
+    <div className={styles.modal} onClick={handleClose}>
+      <Box>{children}</Box>
     </div>
   )
 }

@@ -14,11 +14,4 @@
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   background-color: transparentize($color: $background-color, $amount: 0.1);
-
-  .header {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    margin-bottom: 1rem;
-  }
 }

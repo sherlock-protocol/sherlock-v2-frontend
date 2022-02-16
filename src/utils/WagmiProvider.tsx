@@ -1,5 +1,5 @@
 import React from "react"
-import { Provider, defaultChains, developmentChains, chain } from "wagmi"
+import { Provider, defaultChains, developmentChains } from "wagmi"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 import { providers } from "ethers"
