@@ -9,6 +9,7 @@ import { Input } from "../../components/Input"
 import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
+import TokenInput from "../../components/TokenInput/TokenInput"
 import useERC20 from "../../hooks/useERC20"
 import useSherDistManager from "../../hooks/useSherDistManager"
 import useSherlock from "../../hooks/useSherlock"
@@ -35,7 +36,7 @@ export const StakingPage: React.FC = () => {
   const { tvl, address, stake, refreshTvl } = useSherlock()
   const { computeRewards } = useSherDistManager()
   const { format: formatSHER } = useERC20("SHER")
-  const { format: formatUSDC } = useERC20("USDC")
+  const { format: formatUSDC, balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
 
   /**
@@ -87,17 +88,7 @@ export const StakingPage: React.FC = () => {
         </Row>
         <Row className={styles.rewardsContainer}>
           <Column grow={1} spacing="l">
-            <Row alignment={["space-between", "center"]} spacing="xl">
-              <Column grow={1}>
-                <Input onChange={setAmount} token="USDC" placeholder="Choose amount" />
-              </Column>
-              <Column grow={0}>
-                <Text size="extra-large" strong>
-                  USDC
-                </Text>
-              </Column>
-            </Row>
-
+            <TokenInput onChange={setAmount} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
             <Row spacing="m">
               <Column grow={1}>
                 <Button

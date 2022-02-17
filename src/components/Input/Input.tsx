@@ -6,7 +6,7 @@ import useAmountState from "../../hooks/useAmountState"
 
 type InputToken = "SHER" | "USDC"
 
-type InputProps = {
+export type InputProps = {
   /**
    * onChange event handler
    */
@@ -21,21 +21,32 @@ type InputProps = {
    * Placeholder
    */
   placeholder?: string
+
+  /**
+   * Input value (if controlled input)
+   */
+  value?: BigNumber
 }
 
-const decimalsByToken: Record<InputToken, number> = {
+export const decimalsByToken: Record<InputToken, number> = {
   SHER: 18,
   USDC: 6,
 }
 
 const decommify = (value: string) => value.replaceAll(",", "")
 
-export const Input: React.FC<InputProps> = ({ onChange, token, placeholder }) => {
-  const [amount, amountBN, setAmount] = useAmountState(decimalsByToken[token])
+export const Input: React.FC<InputProps> = ({ onChange, token, placeholder, value }) => {
+  const [amount, amountBN, setAmount, setAmountBN] = useAmountState(decimalsByToken[token])
 
   useEffect(() => {
     onChange && onChange(amountBN)
   }, [amountBN, onChange])
+
+  useEffect(() => {
+    if (value) {
+      setAmountBN(value)
+    }
+  }, [value, setAmountBN])
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,6 +57,8 @@ export const Input: React.FC<InputProps> = ({ onChange, token, placeholder }) =>
 
   const displayPlaceholder = placeholder && (amount === "" || amount === "0")
 
+  console.log("Amount", amount)
+  console.log("Value", ethers.utils.commify(amount))
   return (
     <div className={styles.inputContainer}>
       {displayPlaceholder && <span className={styles.placeholder}>{placeholder}</span>}
