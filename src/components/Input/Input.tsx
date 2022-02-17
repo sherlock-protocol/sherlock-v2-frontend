@@ -57,8 +57,6 @@ export const Input: React.FC<InputProps> = ({ onChange, token, placeholder, valu
 
   const displayPlaceholder = placeholder && (amount === "" || amount === "0")
 
-  console.log("Amount", amount)
-  console.log("Value", ethers.utils.commify(amount))
   return (
     <div className={styles.inputContainer}>
       {displayPlaceholder && <span className={styles.placeholder}>{placeholder}</span>}
