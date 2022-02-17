@@ -1,11 +1,14 @@
-import { BigNumber, ethers } from "ethers"
+import { BigNumber, ethers, utils } from "ethers"
 import React from "react"
 import { useDebounce } from "use-debounce"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button/Button"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
-import useAmountState from "../../hooks/useAmountState"
+import { Input } from "../../components/Input"
+import { Column, Row } from "../../components/Layout"
+import { Text } from "../../components/Text"
+import { Title } from "../../components/Title"
 import useERC20 from "../../hooks/useERC20"
 import useSherDistManager from "../../hooks/useSherDistManager"
 import useSherlock from "../../hooks/useSherlock"
@@ -24,15 +27,15 @@ export const PERIODS_IN_SECONDS = {
 }
 
 export const StakingPage: React.FC = () => {
-  const [amount, amountBN, setAmount] = useAmountState(6)
-  const [debouncedAmountBN] = useDebounce(amountBN, 200)
+  const [amount, setAmount] = React.useState<BigNumber>()
+  const [debouncedAmountBN] = useDebounce(amount, 200)
   const [stakingPeriod, setStakingPeriod] = React.useState<number>()
   const [sherRewards, setSherRewards] = React.useState<BigNumber>()
 
   const { tvl, address, stake, refreshTvl } = useSherlock()
   const { computeRewards } = useSherDistManager()
   const { format: formatSHER } = useERC20("SHER")
-  const { balance, format: formatUSDC } = useERC20("USDC")
+  const { format: formatUSDC } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
 
   /**
@@ -58,14 +61,14 @@ export const StakingPage: React.FC = () => {
    * Stake USDC for a given period of time
    */
   const handleOnStake = React.useCallback(async () => {
-    if (!amountBN || !stakingPeriod) {
+    if (!amount || !stakingPeriod) {
       return
     }
 
-    await waitForTx(async () => (await stake(amountBN, stakingPeriod)) as ethers.ContractTransaction)
+    await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction)
 
     refreshTvl()
-  }, [amountBN, stakingPeriod, stake, refreshTvl, waitForTx])
+  }, [amount, stakingPeriod, stake, refreshTvl, waitForTx])
 
   // Compute rewards when amount or period is changed
   React.useEffect(() => {
@@ -74,50 +77,80 @@ export const StakingPage: React.FC = () => {
 
   return (
     <Box>
-      <h1>Stake</h1>
-      <div>{tvl && <p>TVL: {formatUSDC(tvl)} USDC</p>}</div>
-      <div>
-        <input
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder={balance && `max. ${formatUSDC(balance)} USDC`}
-        />
-        <span>USDC</span>
-      </div>
-      <div className={styles.predefinedPeriods}>
-        <Button
-          variant={stakingPeriod === PERIODS_IN_SECONDS.THREE_MONTHS ? "primary" : "alternate"}
-          onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.THREE_MONTHS)}
-        >
-          3 months
-        </Button>
-        <Button
-          variant={stakingPeriod === PERIODS_IN_SECONDS.SIX_MONTHS ? "primary" : "alternate"}
-          onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.SIX_MONTHS)}
-        >
-          6 months
-        </Button>
-        <Button
-          variant={stakingPeriod === PERIODS_IN_SECONDS.ONE_YEAR ? "primary" : "alternate"}
-          onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.ONE_YEAR)}
-        >
-          12 months
-        </Button>
-      </div>
-      {sherRewards && (
-        <div className={styles.rewardsContainer}>
-          <p>SHER Reward: {formatSHER(sherRewards)}</p>
-        </div>
-      )}
-      {amountBN && stakingPeriod && (
-        <div className={styles.cta}>
-          <ConnectGate>
-            <AllowanceGate amount={amountBN} spender={address}>
-              <Button onClick={handleOnStake}>Stake</Button>
-            </AllowanceGate>
-          </ConnectGate>
-        </div>
-      )}
+      <Column spacing="m">
+        <Title>Stake</Title>
+        <Row alignment="space-between">
+          <Column>
+            <Text>Total Value Locked</Text>
+          </Column>
+          <Column>{tvl && <Text strong>$ {utils.commify(formatUSDC(tvl))}</Text>}</Column>
+        </Row>
+        <Row className={styles.rewardsContainer}>
+          <Column grow={1} spacing="l">
+            <Row alignment={["space-between", "center"]} spacing="xl">
+              <Column grow={1}>
+                <Input onChange={setAmount} token="USDC" placeholder="Choose amount" />
+              </Column>
+              <Column grow={0}>
+                <Text size="extra-large" strong>
+                  USDC
+                </Text>
+              </Column>
+            </Row>
+
+            <Row spacing="m">
+              <Column grow={1}>
+                <Button
+                  variant={stakingPeriod === PERIODS_IN_SECONDS.THREE_MONTHS ? "primary" : "alternate"}
+                  onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.THREE_MONTHS)}
+                >
+                  3 months
+                </Button>
+              </Column>
+              <Column grow={1}>
+                <Button
+                  variant={stakingPeriod === PERIODS_IN_SECONDS.SIX_MONTHS ? "primary" : "alternate"}
+                  onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.SIX_MONTHS)}
+                >
+                  6 months
+                </Button>
+              </Column>
+              <Column grow={1}>
+                <Button
+                  variant={stakingPeriod === PERIODS_IN_SECONDS.ONE_YEAR ? "primary" : "alternate"}
+                  onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.ONE_YEAR)}
+                >
+                  12 months
+                </Button>
+              </Column>
+            </Row>
+            {sherRewards && (
+              <>
+                <Row>
+                  <hr />
+                </Row>
+                <Row alignment="space-between">
+                  <Column>
+                    <Text>SHER Reward</Text>
+                  </Column>
+                  <Column>
+                    <Text strong>{utils.commify(formatSHER(sherRewards))} SHER</Text>
+                  </Column>
+                </Row>
+              </>
+            )}
+            {amount && stakingPeriod && sherRewards && (
+              <Row alignment="center">
+                <ConnectGate>
+                  <AllowanceGate amount={amount} spender={address}>
+                    <Button onClick={handleOnStake}>Stake</Button>
+                  </AllowanceGate>
+                </ConnectGate>
+              </Row>
+            )}
+          </Column>
+        </Row>
+      </Column>
     </Box>
   )
 }
