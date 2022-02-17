@@ -42,6 +42,7 @@ function App() {
 
   return (
     <div className={styles.app}>
+      <div className={styles.noise} />
       <Header navigationLinks={navigationLinks} />
       <div className={styles.content}>
         <Routes>
