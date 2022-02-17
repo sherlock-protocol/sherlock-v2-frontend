@@ -11,12 +11,19 @@ type TextProps = {
   strong?: boolean
   size?: TextSize
   variant?: TextVariant
+  className?: string
 }
 
-export const Text: React.FC<TextProps> = ({ children, strong = false, variant = "normal", size = "normal" }) => {
+export const Text: React.FC<TextProps> = ({
+  children,
+  strong = false,
+  variant = "normal",
+  size = "normal",
+  className,
+}) => {
   return (
     <p
-      className={cx(styles.text, {
+      className={cx(styles.text, className, {
         [styles.strong]: strong,
         [styles[variant]]: variant,
         [styles[size]]: size,
