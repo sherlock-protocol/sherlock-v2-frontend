@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react"
 import { BigNumber, ethers, utils } from "ethers"
 import { useDebounce } from "use-debounce"
 
-import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
 import { Input } from "../../components/Input"
 import { Box } from "../../components/Box"
@@ -13,7 +12,6 @@ import { Column, Row } from "../../components/Layout"
 import { useSherBuyContract } from "../../hooks/useSherBuyContract"
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
 import useERC20 from "../../hooks/useERC20"
-import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import useWaitTx from "../../hooks/useWaitTx"
 
 import { formattedTimeDifference } from "../../utils/dates"
@@ -39,6 +37,7 @@ export const FundraisingPage: React.FC = () => {
   const sherBuyContract = useSherBuyContract()
   const sherClaimContract = useSherClaimContract()
   const sher = useERC20("SHER")
+  const usdc = useERC20("USDC")
   const { waitForTx } = useWaitTx()
 
   /**
@@ -169,6 +168,8 @@ export const FundraisingPage: React.FC = () => {
   const usdcRemaining =
     usdcToSherRewardRatio && sherRemaining && Number(utils.formatUnits(sherRemaining, 18)) / usdcToSherRewardRatio
 
+  const userHasEnoughBalance = usdc.balance && usdcInput && usdc.balance.gte(usdcInput)
+
   return (
     <Box>
       <Column spacing="m">
@@ -247,14 +248,17 @@ export const FundraisingPage: React.FC = () => {
                     </Column>
                   </Row>
                   <Row alignment="center">
-                    <ConnectGate>
-                      <AllowanceGate
-                        spender={sherBuyContract.address}
-                        amount={usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0)}
-                      >
-                        <Button onClick={handleExecute}>Execute</Button>
-                      </AllowanceGate>
-                    </ConnectGate>
+                    <Button
+                      onClick={handleExecute}
+                      requiresConnected
+                      allowance={{
+                        spender: sherBuyContract.address,
+                        amount: usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0),
+                      }}
+                      disabled={true}
+                    >
+                      Insufficient balance
+                    </Button>
                   </Row>
                 </Column>
               </Row>

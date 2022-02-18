@@ -42,6 +42,15 @@ export type ButtonProps = {
   allowance?: Allowance
 }
 
+const AllowanceGateOrEmptyFragment: React.FC<{ allowance?: Allowance }> = ({ allowance, children }) =>
+  allowance ? (
+    <AllowanceGate spender={allowance.spender} amount={allowance.amount}>
+      {children}
+    </AllowanceGate>
+  ) : (
+    <>{children}</>
+  )
+
 export const Button: React.FC<ButtonProps> = ({
   children,
   onClick,
@@ -51,13 +60,6 @@ export const Button: React.FC<ButtonProps> = ({
   allowance,
 }) => {
   const ConnectGateOrEmptyFragment = requiresConnected ? ConnectGate : React.Fragment
-  const AllowanceGateOrEmptyFragment: React.FC = allowance
-    ? (children) => (
-        <AllowanceGate spender={allowance.spender} amount={allowance.amount}>
-          {children}
-        </AllowanceGate>
-      )
-    : React.Fragment
 
   const button = (
     <button className={cx(styles.button, styles[variant])} onClick={onClick} disabled={disabled}>
@@ -69,7 +71,7 @@ export const Button: React.FC<ButtonProps> = ({
     button
   ) : (
     <ConnectGateOrEmptyFragment>
-      <AllowanceGateOrEmptyFragment>{button}</AllowanceGateOrEmptyFragment>
+      <AllowanceGateOrEmptyFragment allowance={allowance}>{button}</AllowanceGateOrEmptyFragment>
     </ConnectGateOrEmptyFragment>
   )
 }
