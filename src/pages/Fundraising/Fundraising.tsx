@@ -4,7 +4,6 @@ import { useDebounce } from "use-debounce"
 
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
-import { Input } from "../../components/Input"
 import { Box } from "../../components/Box"
 import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
@@ -19,6 +18,7 @@ import useWaitTx from "../../hooks/useWaitTx"
 import { formattedTimeDifference } from "../../utils/dates"
 
 import styles from "./Fundraising.module.scss"
+import TokenInput from "../../components/TokenInput/TokenInput"
 
 type Rewards = {
   /**
@@ -39,6 +39,7 @@ export const FundraisingPage: React.FC = () => {
   const sherBuyContract = useSherBuyContract()
   const sherClaimContract = useSherClaimContract()
   const sher = useERC20("SHER")
+  const { balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
 
   /**
@@ -193,16 +194,7 @@ export const FundraisingPage: React.FC = () => {
         </Row>
         <Row className={styles.rewardsContainer}>
           <Column grow={1} spacing="l">
-            <Row alignment={["space-between", "center"]} spacing="xl">
-              <Column grow={1}>
-                <Input onChange={handleUsdcChange} token="USDC" placeholder="Choose amount" />
-              </Column>
-              <Column grow={0}>
-                <Text size="extra-large" strong>
-                  USDC
-                </Text>
-              </Column>
-            </Row>
+            <TokenInput onChange={handleUsdcChange} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
             {isLoadingRewards && (
               <Row alignment="center">
                 <Text>Calculating rewards ...</Text>
