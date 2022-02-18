@@ -168,7 +168,7 @@ export const FundraisingPage: React.FC = () => {
   const usdcRemaining =
     usdcToSherRewardRatio && sherRemaining && Number(utils.formatUnits(sherRemaining, 18)) / usdcToSherRewardRatio
 
-  const userHasEnoughBalance = usdc.balance && usdcInput && usdc.balance.gte(usdcInput)
+  const userHasInsufficientBalance = (usdc.balance && usdcInput && usdcInput.gt(usdc.balance)) === true
 
   return (
     <Box>
@@ -255,9 +255,9 @@ export const FundraisingPage: React.FC = () => {
                         spender: sherBuyContract.address,
                         amount: usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0),
                       }}
-                      disabled={true}
+                      disabled={userHasInsufficientBalance}
                     >
-                      Insufficient balance
+                      {userHasInsufficientBalance ? "Insufficient Balance" : "Execute"}
                     </Button>
                   </Row>
                 </Column>
