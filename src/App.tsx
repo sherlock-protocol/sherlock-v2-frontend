@@ -53,9 +53,7 @@ function App() {
           <Route path={routes.Protocol} element={<ProtocolPage />} />
         </Routes>
       </div>
-      <Footer>
-        <small>Sherlock v2</small>
-      </Footer>
+      <Footer />
     </div>
   )
 }

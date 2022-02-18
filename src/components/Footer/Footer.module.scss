@@ -1,3 +1,5 @@
+@import "../../styles/variables";
+
 .footer {
   height: 260px;
   width: 100%;
@@ -36,5 +38,34 @@
 
     position: absolute;
     bottom: 0;
+
+    .contentContainer {
+      width: 100%;
+
+      div {
+        padding: 0 $spacing-m;
+        flex: 1;
+      }
+
+      p {
+        color: hsla(0, 0%, 100%, 0.59);
+        letter-spacing: 0.1em;
+      }
+
+      .links {
+        a {
+          svg {
+            fill: darken($color: $primary-purple, $amount: 40%);
+            transition: 0.2s all ease;
+          }
+
+          &:hover {
+            svg {
+              fill: $primary-purple;
+            }
+          }
+        }
+      }
+    }
   }
 }
