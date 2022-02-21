@@ -1,0 +1,130 @@
+@import "../../styles/variables";
+
+.scanContainer {
+  height: 120px;
+  width: 120px;
+
+  border: 1px solid transparentize($color: $primary-purple, $amount: 0.7);
+  background-color: $background-color;
+
+  .scan {
+    background-color: transparentize($color: $primary-purple, $amount: 0.9);
+    height: 100%;
+    width: 0%;
+    animation-name: scanning;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+
+    border-right: 2px solid $primary-purple;
+  }
+
+  @keyframes scanning {
+    0% {
+      width: 0%;
+    }
+    75% {
+      width: 100%;
+    }
+    100% {
+      width: 0%;
+    }
+  }
+}
+
+.layersContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 180px;
+  width: 220px;
+
+  .layer {
+    position: absolute;
+    height: 120px;
+    width: 120px;
+
+    border: 1px solid $alternate-pink;
+
+    -moz-transform: rotate(45deg) skew(-15deg, -15deg);
+    -webkit-transform: rotate(45deg) skew(-15deg, -15deg);
+    -o-transform: rotate(45deg) skew(-15deg, -15deg);
+    -ms-transform: rotate(45deg) skew(-15deg, -15deg);
+    transform: rotate(45deg) skew(-15deg, -15deg);
+
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+
+    &:nth-of-type(4) {
+      top: -30px;
+      background-color: transparentize($color: $primary-purple, $amount: 0.6);
+      animation-name: first-layer-animation;
+    }
+
+    &:nth-of-type(3) {
+      top: -10px;
+      background-color: transparentize($color: $primary-purple, $amount: 0.5);
+      animation-name: second-layer-animation;
+    }
+
+    &:nth-of-type(2) {
+      top: 10px;
+      background-color: transparentize($color: $primary-purple, $amount: 0.6);
+      animation-name: third-layer-animation;
+    }
+
+    &:nth-of-type(1) {
+      top: 30px;
+      background-color: transparentize($color: $primary-purple, $amount: 0.8);
+      animation-name: fourth-layer-animation;
+    }
+  }
+
+  @keyframes first-layer-animation {
+    0% {
+      margin-top: 0px;
+    }
+    50% {
+      margin-top: -20px;
+    }
+    100% {
+      margin-top: 0px;
+    }
+  }
+
+  @keyframes second-layer-animation {
+    0% {
+      margin-top: 0px;
+    }
+    50% {
+      margin-top: -5px;
+    }
+    100% {
+      margin-top: 0px;
+    }
+  }
+
+  @keyframes third-layer-animation {
+    0% {
+      margin-top: 0px;
+    }
+    50% {
+      margin-top: 5px;
+    }
+    100% {
+      margin-top: 0px;
+    }
+  }
+
+  @keyframes fourth-layer-animation {
+    0% {
+      margin-top: 0px;
+    }
+    50% {
+      margin-top: 20px;
+    }
+    100% {
+      margin-top: 0px;
+    }
+  }
+}
