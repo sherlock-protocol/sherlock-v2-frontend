@@ -64,7 +64,12 @@ const WalletProviderModal: React.FC<Props> = ({ onClose }) => {
           </Column>
         </Row>
         <Row>
-          <Column alignment="center" grow={1} className={styles.provider}>
+          <Column
+            alignment="center"
+            grow={1}
+            className={styles.provider}
+            onClick={(e) => handleConnectWithConnector(e, "walletConnect")}
+          >
             <WalletConnect height={45} width={45} />
             <Title>WalletConnect</Title>
             <Text>Scan with WalletConnect to connect</Text>
