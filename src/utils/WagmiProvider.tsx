@@ -27,6 +27,7 @@ const connectors = ({ chainId }: { chainId?: number | undefined }) => {
       chains,
       options: {
         qrcode: true,
+        chainId: networkId,
         rpc: {
           [networkId]: alchemyApiUrl,
         },
