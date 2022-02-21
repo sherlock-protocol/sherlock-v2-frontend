@@ -9,6 +9,8 @@ import { ApolloProvider } from "./utils/apollo/ApolloProvider"
 import { WagmiProvider } from "./utils/WagmiProvider"
 import { TxWaitProvider } from "./hooks/useWaitTx"
 
+global.Buffer = global.Buffer || require("buffer").Buffer
+
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
