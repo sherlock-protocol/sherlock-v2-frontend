@@ -3,6 +3,8 @@ import cx from "classnames"
 
 import styles from "./Button.module.scss"
 
+type ButtonSize = "small" | "normal"
+
 type ButtonVariant = "primary" | "secondary" | "alternate" | "cta"
 
 export type ButtonProps = {
@@ -20,11 +22,22 @@ export type ButtonProps = {
    * Button variant (@see ButtonVariant)
    */
   variant?: ButtonVariant
+
+  /**
+   * Button size (@see ButonSize)
+   */
+  size?: ButtonSize
 }
 
-export const Button: React.FC<ButtonProps> = ({ children, onClick, disabled, variant = "primary" }) => {
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  onClick,
+  disabled,
+  variant = "primary",
+  size = "normal",
+}) => {
   return (
-    <button className={cx(styles.button, styles[variant])} onClick={onClick} disabled={disabled}>
+    <button className={cx(styles.button, styles[variant], styles[size])} onClick={onClick} disabled={disabled}>
       <div className={styles.content}>{children}</div>
     </button>
   )

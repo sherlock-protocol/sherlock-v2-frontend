@@ -42,6 +42,7 @@ function App() {
 
   return (
     <div className={styles.app}>
+      <div className={styles.noise} />
       <Header navigationLinks={navigationLinks} />
       <div className={styles.content}>
         <Routes>
@@ -53,9 +54,7 @@ function App() {
           <Route path={routes.Protocol} element={<ProtocolPage />} />
         </Routes>
       </div>
-      <Footer>
-        <small>Sherlock v2</small>
-      </Footer>
+      <Footer />
     </div>
   )
 }
