@@ -26,7 +26,7 @@ export const Footer: React.FC = ({ children }) => (
           </Row>
         </Column>
         <Column alignment="center">
-          <Text size="small">©2022 SHERLOCK. ALL RIGHTS RESERVED</Text>
+          <Text size="tiny">©2022 SHERLOCK. ALL RIGHTS RESERVED</Text>
         </Column>
         <Column></Column>
       </Row>

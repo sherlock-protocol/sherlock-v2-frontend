@@ -1,7 +1,9 @@
 import React from "react"
 import Modal from "../Modal/Modal"
-import styles from "./TxStateModals.module.scss"
 import TxHash from "./TxHash"
+import { Column } from "../Layout"
+import SuccessIcon from "../SuccessIcon/SuccessIcon"
+import { Text } from "../Text"
 
 interface Props {
   /**
@@ -13,9 +15,14 @@ interface Props {
 const SuccessTx: React.FC<Props> = ({ hash }) => {
   return (
     <Modal closeable>
-      <h1 className={styles.statusMessage}>Transaction was successful!</h1>
-      <h2 className={styles.explanationMessage}>Yipeee! The transaction maade it's way on the blockchain!</h2>
-      {hash && <TxHash hash={hash} />}
+      <Column spacing="m" alignment="center">
+        <SuccessIcon />
+        <Text strong size="large">
+          Transaction was successful!
+        </Text>
+        <Text>Yipeee! The transaction maade it's way on the blockchain!</Text>
+        {hash && <TxHash hash={hash} />}
+      </Column>
     </Modal>
   )
 }

@@ -3,7 +3,7 @@ import cx from "classnames"
 
 import styles from "./Text.module.scss"
 
-type TextSize = "small" | "normal" | "large" | "extra-large"
+type TextSize = "tiny" | "small" | "normal" | "large" | "extra-large"
 
 type TextVariant = "normal" | "primary" | "secondary"
 
