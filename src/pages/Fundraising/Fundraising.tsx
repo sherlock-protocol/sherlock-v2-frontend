@@ -130,8 +130,10 @@ export const FundraisingPage: React.FC = () => {
       setIsLoadingRewards(true)
 
       try {
-        const sherAmountWanted = Number(ethers.utils.formatUnits(debouncedUsdcInput, 6)) * usdcToSherRewardRatio
-        const sherAmountWantedAsBigNumber = ethers.utils.parseUnits(sherAmountWanted.toString(), 18)
+        // From USDC to SHER (6 to 18 decimals) is 10**12
+        // But ratio is 0.1, (1 USDC == 0.1 SHER)
+        // So 10**11 for direct conversion
+        const sherAmountWantedAsBigNumber = debouncedUsdcInput.mul(10 ** 11)
 
         const { sherAmount, stake, price } = await sherBuyContract.getCapitalRequirements(sherAmountWantedAsBigNumber)
 
