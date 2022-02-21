@@ -55,13 +55,13 @@
       .links {
         a {
           svg {
-            fill: darken($color: $primary-purple, $amount: 40%);
+            fill: lighten($color: $primary-purple, $amount: 30%);
             transition: 0.2s all ease;
           }
 
           &:hover {
             svg {
-              fill: $primary-purple;
+              fill: lighten($color: $primary-purple, $amount: 80%);
             }
           }
         }
