@@ -41,12 +41,6 @@ export const useSherBuyContract = () => {
     signerOrProvider: signerData || provider,
   })
 
-  useEffect(() => {
-    contract.on("Purchase", () => {
-      console.log("Purchase!!!")
-    })
-  }, [contract])
-
   /**
    * Fetch stakeRate & buyRate values and calculates the USDC to SHER ratio.
    *
