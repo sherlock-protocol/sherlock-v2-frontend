@@ -1,3 +1,5 @@
+<img src="./src/assets/images/logo_horizontal.svg" height=125>
+
 # Sherlock V2 Interface
 ![GitHub](https://img.shields.io/github/license/sherlock-protocol/sherlock-v2-frontend)
 
