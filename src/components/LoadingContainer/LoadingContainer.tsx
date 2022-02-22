@@ -13,8 +13,6 @@ interface Props {
 
 const LoadingContainer: React.FC<Props> = ({ children, loading }) => {
   const [debouncedLoading] = useDebounce(loading, 200)
-  console.log("Loading", loading)
-  console.log("Debounced loading", debouncedLoading)
 
   return (
     <div className={styles.container}>
