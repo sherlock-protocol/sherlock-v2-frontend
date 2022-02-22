@@ -90,7 +90,13 @@ export const StakingPage: React.FC = () => {
             <Column>
               <Text>Total Value Locked</Text>
             </Column>
-            <Column>{tvl && <Text strong>$ {utils.commify(formatUSDC(tvl))}</Text>}</Column>
+            <Column>
+              {tvl && (
+                <Text strong variant="mono">
+                  ${utils.commify(formatUSDC(tvl))}
+                </Text>
+              )}
+            </Column>
           </Row>
           <Row className={styles.rewardsContainer}>
             <Column grow={1} spacing="l">
@@ -131,7 +137,9 @@ export const StakingPage: React.FC = () => {
                       <Text>SHER Reward</Text>
                     </Column>
                     <Column>
-                      <Text strong>{utils.commify(formatSHER(sherRewards))} SHER</Text>
+                      <Text strong variant="mono">
+                        {utils.commify(formatSHER(sherRewards.sub(sherRewards.mod(1e14))))} SHER
+                      </Text>
                     </Column>
                   </Row>
                 </>
