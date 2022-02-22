@@ -44,8 +44,6 @@ export const useFundraisePosition = () => {
       } = await axios.get<GetFundraisePositionResponseData>(getFundraisePositionUrl(account))
 
       if (ok) {
-        console.log(data)
-        console.log(parseResponseData(data))
         setData(parseResponseData(data))
       } else {
         setData(null)
