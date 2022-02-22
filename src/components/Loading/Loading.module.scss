@@ -14,6 +14,7 @@
     animation-name: scanning;
     animation-duration: 3s;
     animation-iteration-count: infinite;
+    animation-timing-function: linear;
 
     border-right: 2px solid $primary-purple;
   }
@@ -22,7 +23,7 @@
     0% {
       width: 0%;
     }
-    75% {
+    50% {
       width: 100%;
     }
     100% {
