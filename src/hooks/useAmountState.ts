@@ -5,7 +5,8 @@ import { escapeRegExp } from "../utils/format"
 /**
  * Regex for testing the amount against
  */
-const amountRegex = /^\d*(?:\\[.])?\d*$/
+const amountRegex = /^\d*$/ // Accepts only integer numbers
+// const amountRegex = /^\d*(?:\\[.])?\d*$/ // Accepts numbers with dot as decimal separator
 
 /**
  * React Hook for storing a validated and sanitized
@@ -27,12 +28,15 @@ const useAmountState = (
       // Replace commas with periods
       const sanitizedValue = value.replace(/,/g, ".")
 
+      // Strip decimal separator and following digits (a.k.a. extract integer part)
+      const integerPart = sanitizedValue.replace(/\.(.*?\d*)/, "")
+
       // Test the inputted amount for expected format
-      if (sanitizedValue === "" || amountRegex.test(escapeRegExp(sanitizedValue))) {
-        setAmount(sanitizedValue)
+      if (integerPart === "" || amountRegex.test(escapeRegExp(integerPart))) {
+        setAmount(integerPart)
 
         try {
-          setAmountBN(ethers.utils.parseUnits(value, decimals))
+          setAmountBN(ethers.utils.parseUnits(integerPart, decimals))
         } catch {
           setAmountBN(undefined)
         }
@@ -46,8 +50,13 @@ const useAmountState = (
    */
   const handleSetAmountBN = React.useCallback(
     (value: BigNumber) => {
-      setAmountBN(value)
-      setAmount(ethers.utils.formatUnits(value, decimals))
+      // Extract integer part only
+      const integerPart = value
+
+      console.log("Received", value.toString())
+
+      setAmountBN(integerPart)
+      setAmount(ethers.utils.formatUnits(integerPart, decimals))
     },
     [decimals]
   )
