@@ -1,7 +1,9 @@
 import React from "react"
+import { Column } from "../Layout"
+import Loading from "../Loading/Loading"
 import Modal from "../Modal/Modal"
+import { Text } from "../Text"
 import TxHash from "./TxHash"
-import styles from "./TxStateModals.module.scss"
 
 interface Props {
   /**
@@ -13,9 +15,11 @@ interface Props {
 const PendingTx: React.FC<Props> = ({ hash }) => {
   return (
     <Modal closeable>
-      <h1 className={styles.statusMessage}>Transaction approved and pending...</h1>
-      <h2 className={styles.explanationMessage}>Waiting for the transaction to make it's way on the blockchain.</h2>
-      {hash && <TxHash hash={hash} />}
+      <Column spacing="m" alignment="center">
+        <Loading variant="Layer" label="Transaction approved and pending" />
+        <Text>Waiting for the transaction to make it's way on the blockchain.</Text>
+        {hash && <TxHash hash={hash} />}
+      </Column>
     </Modal>
   )
 }

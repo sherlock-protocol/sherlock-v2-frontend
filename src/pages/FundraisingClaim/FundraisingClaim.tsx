@@ -82,7 +82,9 @@ export const FundraisingClaimPage = () => {
             <Text strong>Participation</Text>
           </Column>
           <Column>
-            <Text strong>{ethers.utils.commify(ethers.utils.formatUnits(participation, 6))} USDC</Text>
+            <Text strong variant="mono">
+              {ethers.utils.commify(ethers.utils.formatUnits(participation, 6))} USDC
+            </Text>
           </Column>
         </Row>
         <Row alignment="space-between">
@@ -90,7 +92,9 @@ export const FundraisingClaimPage = () => {
             <Text>Staked</Text>
           </Column>
           <Column>
-            <Text>{ethers.utils.commify(ethers.utils.formatUnits(fundraisePositionData.stake, 6))}</Text>
+            <Text variant="mono">
+              {ethers.utils.commify(ethers.utils.formatUnits(fundraisePositionData.stake, 6))} USDC
+            </Text>
           </Column>
         </Row>
         <Row alignment="space-between">
@@ -98,7 +102,9 @@ export const FundraisingClaimPage = () => {
             <Text>Contributed</Text>
           </Column>
           <Column>
-            <Text>{ethers.utils.commify(ethers.utils.formatUnits(fundraisePositionData.contribution, 6))}</Text>
+            <Text variant="mono">
+              {ethers.utils.commify(ethers.utils.formatUnits(fundraisePositionData.contribution, 6))} USDC
+            </Text>
           </Column>
         </Row>
         <Row className={styles.separator}>
@@ -109,7 +115,9 @@ export const FundraisingClaimPage = () => {
             <Text strong>SHER Reward</Text>
           </Column>
           <Column>
-            <Text strong>{formattedSherAmount} tokens</Text>
+            <Text strong variant="mono">
+              {formattedSherAmount} SHER
+            </Text>
           </Column>
         </Row>
         <Row className={styles.claimContainer}>
@@ -119,7 +127,9 @@ export const FundraisingClaimPage = () => {
                 <Text strong>Claim Status</Text>
               </Column>
               <Column>
-                <Text strong>{formattedSherAmount} tokens</Text>
+                <Text strong variant="mono">
+                  {formattedSherAmount} SHER
+                </Text>
               </Column>
             </Row>
             <Row alignment="space-between">
@@ -127,7 +137,9 @@ export const FundraisingClaimPage = () => {
                 <Text strong>Claimable Starts</Text>
               </Column>
               <Column>
-                <Text strong>{formattedTimeDifference(fundraisePositionData.claimableAt)}</Text>
+                <Text strong variant="mono">
+                  {formattedTimeDifference(fundraisePositionData.claimableAt)}
+                </Text>
               </Column>
             </Row>
             <Row alignment="center">

@@ -25,7 +25,7 @@ export type InputProps = {
   /**
    * Input value (if controlled input)
    */
-  value?: BigNumber
+  value?: string
 }
 
 export const decimalsByToken: Record<InputToken, number> = {
@@ -36,7 +36,7 @@ export const decimalsByToken: Record<InputToken, number> = {
 const decommify = (value: string) => value.replaceAll(",", "")
 
 export const Input: React.FC<InputProps> = ({ onChange, token, placeholder, value }) => {
-  const [amount, amountBN, setAmount, setAmountBN] = useAmountState(decimalsByToken[token])
+  const [amount, amountBN, setAmount] = useAmountState(decimalsByToken[token])
 
   useEffect(() => {
     onChange && onChange(amountBN)
@@ -44,9 +44,9 @@ export const Input: React.FC<InputProps> = ({ onChange, token, placeholder, valu
 
   useEffect(() => {
     if (value) {
-      setAmountBN(value)
+      setAmount(value)
     }
-  }, [value, setAmountBN])
+  }, [value, setAmount])
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

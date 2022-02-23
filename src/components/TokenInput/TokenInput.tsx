@@ -12,11 +12,13 @@ type Props = InputProps & {
 }
 
 const TokenInput: React.FC<Props> = ({ balance, ...props }) => {
-  const [value, setValue] = React.useState<BigNumber>()
+  const [value, setValue] = React.useState<string>()
 
   const handleSetMax = React.useCallback(() => {
-    setValue(balance)
-  }, [balance])
+    if (balance) {
+      setValue(utils.formatUnits(balance, decimalsByToken[props.token]))
+    }
+  }, [balance, props.token])
 
   return (
     <>

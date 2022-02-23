@@ -1,12 +1,19 @@
 import React from "react"
+import ErrorIcon from "../ErrorIcon/ErrorIcon"
+import { Column } from "../Layout"
 import Modal from "../Modal/Modal"
-import styles from "./TxStateModals.module.scss"
+import { Text } from "../Text"
 
 const UserDeniedTx: React.FC = () => {
   return (
     <Modal closeable>
-      <h1 className={styles.statusMessage}>Transaction denied.</h1>
-      <h2 className={styles.explanationMessage}>Wallet provider denied the transaction.</h2>
+      <Column spacing="m" alignment="center">
+        <ErrorIcon />
+        <Text size="large" strong>
+          Transaction denied.
+        </Text>
+        <Text>Wallet provider denied the transaction.</Text>
+      </Column>
     </Modal>
   )
 }

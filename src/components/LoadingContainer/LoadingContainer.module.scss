@@ -1,0 +1,22 @@
+@import "../../styles/variables";
+
+.container {
+  position: relative;
+}
+
+.loadingContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: transparentize($color: $background-color, $amount: 0.4);
+  backdrop-filter: blur(90px);
+
+  pointer-events: auto;
+}
