@@ -10,7 +10,7 @@ import { BigNumber } from "ethers"
 
 export const StakingPositionsList: React.FC = () => {
   const [{ data: accountData }] = useAccount()
-  const { getStakingPositions, data, loading, error } = useStakingPositions()
+  const { getStakingPositions, data } = useStakingPositions()
 
   useEffect(() => {
     if (accountData?.address) {
