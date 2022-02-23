@@ -47,18 +47,14 @@ export const useFundraisePosition = () => {
   const getFundraisePosition = useCallback(async (account: string) => {
     try {
       setLoading(true)
-      const { data: responseData } = await axios.get<GetFundraisePositionResponseData>(getFundraisePositionUrl(account))
 
-      if (responseData.ok) {
-        setData(parseResponse(responseData))
-      } else {
-        setData(null)
-        setError(new Error(responseData.error))
-      }
+      const response = await axios.get<GetFundraisePositionResponseData>(getFundraisePositionUrl(account))
+
+      setData(parseResponseData(response.data))
       setError(null)
     } catch (error) {
       setData(null)
-      setError(error as Error)
+      setError(error)
     } finally {
       setLoading(false)
     }
