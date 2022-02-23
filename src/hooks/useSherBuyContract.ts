@@ -1,5 +1,5 @@
 import { ethers, BigNumber } from "ethers"
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { useContract, useProvider, useSigner } from "wagmi"
 import SherBuyABI from "../abi/SherBuy.json"
 import { SherBuy } from "../contracts/SherBuy"
@@ -40,12 +40,6 @@ export const useSherBuyContract = () => {
     contractInterface: SherBuyABI.abi,
     signerOrProvider: signerData || provider,
   })
-
-  useEffect(() => {
-    contract.on("Purchase", () => {
-      console.log("Purchase!!!")
-    })
-  }, [contract])
 
   /**
    * Fetch stakeRate & buyRate values and calculates the USDC to SHER ratio.
