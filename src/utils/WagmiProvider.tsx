@@ -6,6 +6,7 @@ import { providers } from "ethers"
 
 // Working chain ID
 const networkId = parseInt(`${process.env.REACT_APP_NETWORK_ID}`)
+const localNetworkId = parseInt(`${process.env.REACT_APP_LOCALHOST_NETWORK_ID}`)
 
 // API key for Alchemy project
 const alchemyApiUrl = process.env.REACT_APP_ALCHEMY_API_URL as string
@@ -27,6 +28,7 @@ const connectors = ({ chainId }: { chainId?: number | undefined }) => {
       chains,
       options: {
         qrcode: true,
+        chainId: networkId,
         rpc: {
           [networkId]: alchemyApiUrl,
         },
@@ -39,7 +41,7 @@ const provider = ({ chainId }: { chainId?: number | undefined }) => {
   console.log("Fetching provider for chain", chainId)
 
   // Use local node if working on a development chain
-  if (__DEV__ && chainId === 31337) {
+  if ((__DEV__ && chainId === localNetworkId) || !chainId) {
     return new providers.JsonRpcProvider("http://127.0.0.1:8545")
   }
 
