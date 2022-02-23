@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { BigNumber, ethers } from "ethers"
+import { BigNumber } from "ethers"
 import axios from "./axios"
 import { getFundraisePosition as getFundraisePositionUrl } from "./urls"
 
@@ -11,37 +11,50 @@ type FundraisePosition = {
   owner: string
 }
 
-type GetFundraisePositionResponseData = {
-  claimable_at: number
-  contribution: string
-  id: string
-  reward: string
-  stake: string
-}
+type GetFundraisePositionResponseData =
+  | {
+      data: {
+        claimable_at: number
+        contribution: string
+        id: string
+        reward: string
+        stake: string
+      }
+      ok: true
+    }
+  | {
+      error: string
+      ok: false
+    }
 
-const parseResponseData = (data: GetFundraisePositionResponseData): FundraisePosition => ({
-  owner: data.id,
-  claimableAt: new Date(data.claimable_at),
-  contribution: ethers.utils.parseUnits(data.contribution, 6),
-  reward: ethers.utils.parseUnits(data.reward, 18),
-  stake: ethers.utils.parseUnits(data.stake, 6),
-})
+const parseResponse = (response: GetFundraisePositionResponseData): FundraisePosition | null => {
+  if (response.ok === false) return null
+
+  return {
+    owner: response.data.id,
+    claimableAt: new Date(response.data.claimable_at),
+    contribution: BigNumber.from(response.data.contribution),
+    reward: BigNumber.from(response.data.reward),
+    stake: BigNumber.from(response.data.stake),
+  }
+}
 
 export const useFundraisePosition = () => {
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<Error>()
-  const [data, setData] = useState<FundraisePosition>()
+  const [error, setError] = useState<Error | null>()
+  const [data, setData] = useState<FundraisePosition | null>()
 
   const getFundraisePosition = useCallback(async (account: string) => {
     try {
       setLoading(true)
+
       const response = await axios.get<GetFundraisePositionResponseData>(getFundraisePositionUrl(account))
 
-      setData(parseResponseData(response.data))
+      setData(parseResponse(response.data))
       setError(null)
     } catch (error) {
       setData(null)
-      setError(error)
+      setError(error as Error)
     } finally {
       setLoading(false)
     }
