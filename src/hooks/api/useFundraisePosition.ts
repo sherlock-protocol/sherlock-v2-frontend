@@ -41,7 +41,7 @@ export const useFundraisePosition = () => {
       setError(null)
     } catch (error) {
       setData(null)
-      setError(error)
+      setError(error as Error)
     } finally {
       setLoading(false)
     }
