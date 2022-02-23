@@ -12,16 +12,21 @@ type FundraisePosition = {
   owner: string
 }
 
-type GetFundraisePositionResponseData = {
-  data: {
-    claimable_at: number
-    contribution: string
-    id: string
-    reward: string
-    stake: string
-  }
-  ok: boolean
-}
+type GetFundraisePositionResponseData =
+  | {
+      data: {
+        claimable_at: number
+        contribution: string
+        id: string
+        reward: string
+        stake: string
+      }
+      ok: true
+    }
+  | {
+      error: string
+      ok: false
+    }
 
 const parseResponseData = (data: GetFundraisePositionResponseData["data"]): FundraisePosition => ({
   owner: data.id,
@@ -39,14 +44,13 @@ export const useFundraisePosition = () => {
   const getFundraisePosition = useCallback(async (account: string) => {
     try {
       setLoading(true)
-      const {
-        data: { data, ok },
-      } = await axios.get<GetFundraisePositionResponseData>(getFundraisePositionUrl(account))
+      const { data: responseData } = await axios.get<GetFundraisePositionResponseData>(getFundraisePositionUrl(account))
 
-      if (ok) {
-        setData(parseResponseData(data))
+      if (responseData.ok) {
+        setData(parseResponseData(responseData.data))
       } else {
         setData(null)
+        setError(new Error(responseData.error))
       }
       setError(null)
     } catch (error) {
