@@ -1,9 +1,10 @@
-import { BigNumber, ethers } from "ethers"
+import { ethers } from "ethers"
 import React, { useCallback, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
-import { useGetFundraisePositionLazyQuery } from "../../graphql/types"
+import { useFundraisePosition } from "../../hooks/api/useFundraisePosition"
+
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
@@ -18,10 +19,10 @@ export const FundraisingClaimPage = () => {
   const [{ data: accountData }] = useAccount()
   const sherClaim = useSherClaimContract()
   /**
-   * GraphQL query to fetch fundraise position
+   * Custom hook for fetching fundraise position from Indexer API
    */
-  const [getFundraisePosition, { data: fundraisePositionData, refetch: refetchFundraisePosition }] =
-    useGetFundraisePositionLazyQuery()
+
+  const { getFundraisePosition, data: fundraisePositionData } = useFundraisePosition()
 
   /**
    * Wheter the claim is active or not.
@@ -33,11 +34,7 @@ export const FundraisingClaimPage = () => {
    */
   useEffect(() => {
     if (accountData?.address) {
-      getFundraisePosition({
-        variables: {
-          owner: accountData.address,
-        },
-      })
+      getFundraisePosition(accountData.address)
     }
   }, [accountData?.address, getFundraisePosition])
 
@@ -62,23 +59,17 @@ export const FundraisingClaimPage = () => {
     try {
       const txReceipt = await sherClaim.claim()
       console.log(txReceipt)
-      refetchFundraisePosition()
+      accountData?.address && getFundraisePosition(accountData.address)
     } catch (error) {
       console.log(error)
     }
-  }, [sherClaim, refetchFundraisePosition])
+  }, [accountData?.address, sherClaim, getFundraisePosition])
 
-  if (!fundraisePositionData?.fundraisePosition) return null
+  if (!fundraisePositionData) return null
 
-  const sherAmount =
-    fundraisePositionData?.fundraisePosition?.reward && BigNumber.from(fundraisePositionData.fundraisePosition.reward)
-  const formattedSherAmount = ethers.utils.commify(ethers.utils.formatUnits(sherAmount))
+  const formattedSherAmount = ethers.utils.commify(ethers.utils.formatUnits(fundraisePositionData.reward))
 
-  const claimableAt = new Date(Number(fundraisePositionData.fundraisePosition.claimableAt))
-
-  const stake = BigNumber.from(fundraisePositionData.fundraisePosition.stake)
-  const contribution = BigNumber.from(fundraisePositionData.fundraisePosition.contribution)
-  const participation = stake.add(contribution)
+  const participation = fundraisePositionData.stake.add(fundraisePositionData.contribution)
 
   return (
     <Box>
@@ -101,7 +92,9 @@ export const FundraisingClaimPage = () => {
             <Text>Staked</Text>
           </Column>
           <Column>
-            <Text variant="mono">{ethers.utils.commify(ethers.utils.formatUnits(stake, 6))} USDC</Text>
+            <Text variant="mono">
+              {ethers.utils.commify(ethers.utils.formatUnits(fundraisePositionData.stake, 6))} USDC
+            </Text>
           </Column>
         </Row>
         <Row alignment="space-between">
@@ -109,7 +102,9 @@ export const FundraisingClaimPage = () => {
             <Text>Contributed</Text>
           </Column>
           <Column>
-            <Text variant="mono">{ethers.utils.commify(ethers.utils.formatUnits(contribution, 6))} USDC</Text>
+            <Text variant="mono">
+              {ethers.utils.commify(ethers.utils.formatUnits(fundraisePositionData.contribution, 6))} USDC
+            </Text>
           </Column>
         </Row>
         <Row className={styles.separator}>
@@ -143,7 +138,7 @@ export const FundraisingClaimPage = () => {
               </Column>
               <Column>
                 <Text strong variant="mono">
-                  {formattedTimeDifference(claimableAt)}
+                  {formattedTimeDifference(fundraisePositionData.claimableAt)}
                 </Text>
               </Column>
             </Row>
