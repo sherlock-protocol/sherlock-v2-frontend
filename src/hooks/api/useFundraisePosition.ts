@@ -50,7 +50,7 @@ export const useFundraisePosition = () => {
 
       const response = await axios.get<GetFundraisePositionResponseData>(getFundraisePositionUrl(account))
 
-      setData(parseResponseData(response.data))
+      setData(parseResponse(response.data))
       setError(null)
     } catch (error) {
       setData(null)
