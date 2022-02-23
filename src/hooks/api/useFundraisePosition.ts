@@ -1,8 +1,7 @@
 import { useCallback, useState } from "react"
-import { BigNumber, ethers } from "ethers"
+import { BigNumber } from "ethers"
 import axios from "./axios"
 import { getFundraisePosition as getFundraisePositionUrl } from "./urls"
-import { TypeOfTag } from "typescript"
 
 type FundraisePosition = {
   claimableAt: Date
@@ -28,13 +27,17 @@ type GetFundraisePositionResponseData =
       ok: false
     }
 
-const parseResponseData = (data: GetFundraisePositionResponseData["data"]): FundraisePosition => ({
-  owner: data.id,
-  claimableAt: new Date(data.claimable_at),
-  contribution: BigNumber.from(data.contribution),
-  reward: BigNumber.from(data.reward),
-  stake: BigNumber.from(data.stake),
-})
+const parseResponse = (response: GetFundraisePositionResponseData): FundraisePosition | null => {
+  if (response.ok === false) return null
+
+  return {
+    owner: response.data.id,
+    claimableAt: new Date(response.data.claimable_at),
+    contribution: BigNumber.from(response.data.contribution),
+    reward: BigNumber.from(response.data.reward),
+    stake: BigNumber.from(response.data.stake),
+  }
+}
 
 export const useFundraisePosition = () => {
   const [loading, setLoading] = useState(false)
@@ -47,7 +50,7 @@ export const useFundraisePosition = () => {
       const { data: responseData } = await axios.get<GetFundraisePositionResponseData>(getFundraisePositionUrl(account))
 
       if (responseData.ok) {
-        setData(parseResponseData(responseData.data))
+        setData(parseResponse(responseData))
       } else {
         setData(null)
         setError(new Error(responseData.error))
