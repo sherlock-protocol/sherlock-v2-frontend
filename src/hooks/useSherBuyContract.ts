@@ -1,5 +1,5 @@
 import { ethers, BigNumber } from "ethers"
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { useContract, useProvider, useSigner } from "wagmi"
 import SherBuyABI from "../abi/SherBuy.json"
 import { SherBuy } from "../contracts/SherBuy"
