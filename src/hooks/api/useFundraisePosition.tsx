@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react"
-import { BigNumber } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import axios from "./axios"
 import { getFundraisePosition as getFundraisePositionUrl } from "./urls"
 
@@ -61,7 +61,8 @@ export const FundraisePositionProvider: React.FC = ({ children }) => {
     try {
       setLoading(true)
 
-      const response = await axios.get<GetFundraisePositionResponseData>(getFundraisePositionUrl(account))
+      const checksummedAddress = ethers.utils.getAddress(account)
+      const response = await axios.get<GetFundraisePositionResponseData>(getFundraisePositionUrl(checksummedAddress))
 
       setData(parseResponse(response.data))
       setError(null)
