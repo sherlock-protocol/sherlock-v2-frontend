@@ -75,7 +75,6 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
       {isUnlocked && (
         <>
           <div>
-            <Button onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.THREE_MONTHS)}>3 months</Button>
             <Button onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.SIX_MONTHS)}>6 months</Button>
             <Button onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.ONE_YEAR)}>12 months</Button>
           </div>
