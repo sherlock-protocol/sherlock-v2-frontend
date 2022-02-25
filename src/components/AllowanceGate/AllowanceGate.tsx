@@ -3,6 +3,9 @@ import React from "react"
 import useERC20 from "../../hooks/useERC20"
 import useWaitTx from "../../hooks/useWaitTx"
 import { Button } from "../Button/Button"
+import { Column } from "../Layout"
+import { Text } from "../Text"
+import styles from "./AllowanceGate.module.scss"
 
 interface Props {
   /**
@@ -65,7 +68,21 @@ const AllowanceGate: React.FC<Props> = ({ children, spender, amount }) => {
     return <>{children}</>
   }
 
-  return <Button onClick={handleOnApprove}>Approve</Button>
+  return (
+    <Column alignment="center" spacing="xl">
+      <Button onClick={handleOnApprove}>Approve</Button>
+      <Column alignment="start" spacing="xs">
+        <Text size="small">
+          This is a two step process. Sherlock needs permission to transfer your funds, before initiating the transfer.
+        </Text>
+        <a href="https://docs.openzeppelin.com/contracts/2.x/api/token/erc20" target="_blank" rel="noreferrer">
+          <Text size="small" className={styles.link}>
+            Read more about ERC20 security measures
+          </Text>
+        </a>
+      </Column>
+    </Column>
+  )
 }
 
 export default AllowanceGate
