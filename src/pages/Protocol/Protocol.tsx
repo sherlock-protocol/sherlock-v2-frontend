@@ -9,9 +9,13 @@ import { Button } from "../../components/Button/Button"
 import useERC20 from "../../hooks/useERC20"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import useWaitTx from "../../hooks/useWaitTx"
+import { Box } from "../../components/Box"
+import { Column, Row } from "../../components/Layout"
+import { Title } from "../../components/Title"
+import { Text } from "../../components/Text"
 
 export const ProtocolPage: React.FC = () => {
-  const [selectedProtocol, setSelectedProtocol] = React.useState<keyof typeof COVERED_PROTOCOLS>("SQUEETH")
+  const [selectedProtocol, setSelectedProtocol] = React.useState<keyof typeof COVERED_PROTOCOLS>("EULER")
   const [balance, setBalance] = React.useState<BigNumber>()
   const [coverageLeft, setCoverageLeft] = React.useState<BigNumber>()
   const [premium, setPremium] = React.useState<BigNumber>()
@@ -95,36 +99,78 @@ export const ProtocolPage: React.FC = () => {
   }, [fetchProtocolDetails])
 
   return (
-    <div className={styles.container}>
-      Protocol:
-      <select value={selectedProtocol} onChange={handleOnProtocolChanged}>
-        {Object.entries(COVERED_PROTOCOLS).map(([key, protocol]) => (
-          <option key={key} value={key}>
-            {protocol.name}
-          </option>
-        ))}
-      </select>
-      {balance && <p>Active balance: {ethers.utils.formatUnits(balance, 6)} USDC</p>}
-      {coverageLeft && <p>Coverage left: {convertSecondsToDurationString(coverageLeft.toNumber())}</p>}
-      {balance && (
-        <ProtocolBalanceInput onChange={handleOnAmountChanged} protocolPremium={premium} usdcBalance={usdcBalance} />
-      )}
-      {amount && (
-        <ConnectGate>
-          <>
-            <div>
-              <AllowanceGate amount={amount} spender={address}>
-                <Button onClick={handleAddBalance} disabled={!amount}>
-                  Add balance {amount?.toString()}
-                </Button>
-              </AllowanceGate>
-            </div>
-            <div>
-              <Button onClick={handleRemoveBalance}>Remove balance</Button>
-            </div>
-          </>
-        </ConnectGate>
-      )}
-    </div>
+    <Box>
+      <Column spacing="m">
+        <Row alignment="space-between">
+          <Column>
+            <Title>Protocol</Title>
+          </Column>
+          <Column>
+            <select value={selectedProtocol} onChange={handleOnProtocolChanged}>
+              {Object.entries(COVERED_PROTOCOLS).map(([key, protocol]) => (
+                <option key={key} value={key}>
+                  {protocol.name}
+                </option>
+              ))}
+            </select>
+          </Column>
+        </Row>
+        <Row alignment="space-between">
+          <Column>
+            <Text>Coverage</Text>
+          </Column>
+          <Column>
+            <Text strong>Active</Text>
+          </Column>
+        </Row>
+        {balance && (
+          <Row alignment="space-between">
+            <Column>
+              <Text>Active balance</Text>
+            </Column>
+            <Column>
+              <Text strong>{ethers.utils.commify(ethers.utils.formatUnits(balance, 6))} USDC</Text>
+            </Column>
+          </Row>
+        )}
+        {coverageLeft && (
+          <Row alignment="space-between">
+            <Column>
+              <Text>Coverage left</Text>
+            </Column>
+            <Column>
+              <Text strong>{convertSecondsToDurationString(coverageLeft.toNumber())}</Text>
+            </Column>
+          </Row>
+        )}
+        <Column className={styles.rewardsContainer} spacing="m">
+          {balance && (
+            <ProtocolBalanceInput
+              onChange={handleOnAmountChanged}
+              protocolPremium={premium}
+              usdcBalance={usdcBalance}
+            />
+          )}
+          {amount && (
+            <ConnectGate>
+              <Row alignment="space-between" spacing="m">
+                <Column grow={1}>
+                  <Button variant="secondary" onClick={handleRemoveBalance}>
+                    Remove balance
+                  </Button>
+                </Column>
+                <Column grow={1}>
+                  <AllowanceGate amount={amount} spender={address}>
+                    <Button onClick={handleAddBalance} disabled={!amount}>
+                      Add balance {amount?.toString()}
+                    </Button>
+                  </AllowanceGate>
+                </Column>
+              </Row>
+            </ConnectGate>
+          )}
+        </Column>
+      </Column>
+    </Box>
   )
 }
