@@ -13,6 +13,12 @@ import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
+import Select from "../../components/Select/Select"
+
+const PROTOCOL_SELECT_OPTIONS = Object.entries(COVERED_PROTOCOLS).map(([key, item]) => ({
+  label: item.name,
+  value: key,
+}))
 
 export const ProtocolPage: React.FC = () => {
   const [selectedProtocol, setSelectedProtocol] = React.useState<keyof typeof COVERED_PROTOCOLS>("EULER")
@@ -39,8 +45,8 @@ export const ProtocolPage: React.FC = () => {
   /**
    * Handler for changing the protocol
    */
-  const handleOnProtocolChanged = React.useCallback((e) => {
-    setSelectedProtocol(e.target.value)
+  const handleOnProtocolChanged = React.useCallback((option: string) => {
+    setSelectedProtocol(option as keyof typeof COVERED_PROTOCOLS)
   }, [])
 
   /**
@@ -101,18 +107,12 @@ export const ProtocolPage: React.FC = () => {
   return (
     <Box>
       <Column spacing="m">
-        <Row alignment="space-between">
+        <Row alignment="space-between" className={styles.header}>
           <Column>
             <Title>Protocol</Title>
           </Column>
           <Column>
-            <select value={selectedProtocol} onChange={handleOnProtocolChanged}>
-              {Object.entries(COVERED_PROTOCOLS).map(([key, protocol]) => (
-                <option key={key} value={key}>
-                  {protocol.name}
-                </option>
-              ))}
-            </select>
+            <Select options={PROTOCOL_SELECT_OPTIONS} onChange={handleOnProtocolChanged} initialOption="EULER" />
           </Column>
         </Row>
         <Row alignment="space-between">
