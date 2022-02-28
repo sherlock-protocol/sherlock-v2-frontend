@@ -22,7 +22,6 @@ import styles from "./Staking.module.scss"
  * TODO: Should be fetched automatically or hardcoded?
  */
 export const PERIODS_IN_SECONDS = {
-  THREE_MONTHS: 60 * 60 * 24 * 7 * 13,
   SIX_MONTHS: 60 * 60 * 24 * 7 * 26,
   ONE_YEAR: 60 * 60 * 24 * 7 * 52,
 }
@@ -102,14 +101,6 @@ export const StakingPage: React.FC = () => {
             <Column grow={1} spacing="l">
               <TokenInput onChange={setAmount} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
               <Row spacing="m">
-                <Column grow={1}>
-                  <Button
-                    variant={stakingPeriod === PERIODS_IN_SECONDS.THREE_MONTHS ? "primary" : "alternate"}
-                    onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.THREE_MONTHS)}
-                  >
-                    3 months
-                  </Button>
-                </Column>
                 <Column grow={1}>
                   <Button
                     variant={stakingPeriod === PERIODS_IN_SECONDS.SIX_MONTHS ? "primary" : "alternate"}

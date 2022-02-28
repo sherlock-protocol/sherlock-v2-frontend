@@ -29,6 +29,7 @@ export const StakingPositionsList: React.FC = () => {
           usdcBalance={position.usdc}
           sherRewards={position.sher}
           lockupEnd={BigNumber.from(position.lockupEnd.getTime())}
+          apy={data?.usdcAPY}
         />
       ))}
     </div>

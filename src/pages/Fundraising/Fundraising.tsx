@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { BigNumber, ethers, utils } from "ethers"
 import { useDebounce } from "use-debounce"
+import { useNavigate } from "react-router-dom"
 
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
@@ -37,6 +38,7 @@ type Rewards = {
 }
 
 export const FundraisingPage: React.FC = () => {
+  const navigate = useNavigate()
   const sherBuyContract = useSherBuyContract()
   const sherClaimContract = useSherClaimContract()
   const sher = useERC20("SHER")
@@ -165,6 +167,7 @@ export const FundraisingPage: React.FC = () => {
 
     try {
       await waitForTx(async () => await sherBuyContract.execute(rewards?.sherAmount))
+      navigate("/fundraiseclaim")
     } catch (error) {
       console.error(error)
     }

@@ -1,9 +1,10 @@
-import { BigNumber, ethers } from "ethers"
+import { BigNumber } from "ethers"
 import React from "react"
 import { Button } from "../Button/Button"
-import styles from "./ProtocolBalanceInput.module.scss"
 import { useDebounce } from "use-debounce"
-import useAmountState from "../../hooks/useAmountState"
+import { Column, Row } from "../Layout"
+import TokenInput from "../TokenInput/TokenInput"
+import { Text } from "../Text"
 
 interface Props {
   /**
@@ -33,8 +34,9 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
   /**
    * Amount in USDC
    */
-  const [amount, amountBN, setAmount, setAmountBN] = useAmountState(6)
-  const [debouncedAmountBN] = useDebounce(amountBN, 200)
+  const [amount, setAmount] = React.useState<BigNumber>()
+  const [debouncedAmountBN] = useDebounce(amount, 200)
+  const [predefinedAmount, setPredefinedAmount] = React.useState<BigNumber>()
 
   /**
    * Duration in seconds
@@ -54,23 +56,23 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
       const seconds = weeks * 7 * 24 * 60 * 60
       const totalAmount = protocolPremium.mul(seconds)
 
-      setAmountBN(totalAmount)
+      setPredefinedAmount(totalAmount)
     },
-    [protocolPremium, setAmountBN]
+    [protocolPremium, setPredefinedAmount]
   )
 
   /**
    * Propagate amountBN changes
    */
   React.useEffect(() => {
-    onChange(amountBN)
-  }, [amountBN, onChange])
+    onChange(amount)
+  }, [amount, onChange])
 
   /**
    * Reset inputs on protocol premium change
    */
   React.useEffect(() => {
-    setAmount("")
+    setAmount(undefined)
     setAmountDuration(null)
   }, [protocolPremium, setAmount])
 
@@ -94,20 +96,35 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
   }, [debouncedAmountBN, protocolPremium])
 
   return (
-    <div className={styles.container}>
-      <div className={styles.predefinedPeriods}>
-        <Button onClick={() => handleSelectPredefinedPeriod(2)}>2 weeks</Button>
-        <Button onClick={() => handleSelectPredefinedPeriod(4)}>1 month</Button>
-        <Button onClick={() => handleSelectPredefinedPeriod(12)}>3 months</Button>
-      </div>
-      <input
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        placeholder={usdcBalance && `max. ${ethers.utils.formatUnits(usdcBalance, 6)} USDC`}
-      />
-      <span>USDC</span>
-      {amountDuration && <p>~{amountDuration.toString()} days</p>}
-    </div>
+    <Column grow={1} spacing="m">
+      <Row alignment="space-between" spacing="m">
+        <Column grow={1}>
+          <Button variant="alternate" onClick={() => handleSelectPredefinedPeriod(2)}>
+            2 weeks
+          </Button>
+        </Column>
+        <Column grow={1}>
+          <Button variant="alternate" onClick={() => handleSelectPredefinedPeriod(4)}>
+            1 month
+          </Button>
+        </Column>
+        <Column grow={1}>
+          <Button variant="alternate" onClick={() => handleSelectPredefinedPeriod(12)}>
+            3 months
+          </Button>
+        </Column>
+      </Row>
+      <TokenInput token="USDC" onChange={setAmount} balance={usdcBalance} value={predefinedAmount} />
+      {amountDuration && (
+        <>
+          <hr />
+          <Row alignment="space-between">
+            <Text>Coverage added</Text>
+            <Text strong>~{amountDuration.toString()} days</Text>
+          </Row>
+        </>
+      )}
+    </Column>
   )
 }
 
