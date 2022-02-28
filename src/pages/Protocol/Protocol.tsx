@@ -160,11 +160,15 @@ export const ProtocolPage: React.FC = () => {
                   </Button>
                 </Column>
                 <Column grow={1}>
-                  <AllowanceGate amount={amount} spender={address}>
-                    <Button onClick={handleAddBalance} disabled={!amount}>
-                      Add balance {amount?.toString()}
-                    </Button>
-                  </AllowanceGate>
+                  <AllowanceGate
+                    amount={amount}
+                    spender={address}
+                    render={(disabled) => (
+                      <Button onClick={handleAddBalance} disabled={!amount}>
+                        Add balance {amount?.toString()}
+                      </Button>
+                    )}
+                  />
                 </Column>
               </Row>
             </ConnectGate>

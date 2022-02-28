@@ -138,9 +138,15 @@ export const StakingPage: React.FC = () => {
               {amount && stakingPeriod && sherRewards && (
                 <Row alignment="center">
                   <ConnectGate>
-                    <AllowanceGate amount={amount} spender={address}>
-                      <Button onClick={handleOnStake}>Stake</Button>
-                    </AllowanceGate>
+                    <AllowanceGate
+                      amount={amount}
+                      spender={address}
+                      render={(disabled) => (
+                        <Button disabled={disabled} onClick={handleOnStake}>
+                          Stake
+                        </Button>
+                      )}
+                    ></AllowanceGate>
                   </ConnectGate>
                 </Row>
               )}
