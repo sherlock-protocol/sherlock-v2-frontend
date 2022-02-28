@@ -4,3 +4,20 @@
   grid-gap: 1rem;
   grid-template-columns: auto auto;
 }
+
+@media only screen and (max-width: 1024px) {
+  .container {
+    grid-template-columns: auto;
+
+    overflow-y: scroll;
+    overflow-x: hidden;
+    max-height: 60vh;
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .container::-webkit-scrollbar {
+    display: none;
+  }
+}
