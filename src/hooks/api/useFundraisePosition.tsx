@@ -1,5 +1,5 @@
-import { useCallback, useState } from "react"
-import { BigNumber } from "ethers"
+import React, { useCallback, useState } from "react"
+import { BigNumber, ethers } from "ethers"
 import axios from "./axios"
 import { getFundraisePosition as getFundraisePositionUrl } from "./urls"
 
@@ -39,16 +39,30 @@ const parseResponse = (response: GetFundraisePositionResponseData): FundraisePos
   }
 }
 
+type FundraisePositionContextType = {
+  getFundraisePosition: (account: string) => void
+  loading: boolean
+  data: FundraisePosition | null
+  error: Error | null
+}
+
+const FundraisePositionContext = React.createContext<FundraisePositionContextType>({} as FundraisePositionContextType)
+
 export const useFundraisePosition = () => {
+  return React.useContext(FundraisePositionContext)
+}
+
+export const FundraisePositionProvider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<Error | null>()
-  const [data, setData] = useState<FundraisePosition | null>()
+  const [error, setError] = useState<Error | null>(null)
+  const [data, setData] = useState<FundraisePosition | null>(null)
 
   const getFundraisePosition = useCallback(async (account: string) => {
     try {
       setLoading(true)
 
-      const response = await axios.get<GetFundraisePositionResponseData>(getFundraisePositionUrl(account))
+      const checksummedAddress = ethers.utils.getAddress(account)
+      const response = await axios.get<GetFundraisePositionResponseData>(getFundraisePositionUrl(checksummedAddress))
 
       setData(parseResponse(response.data))
       setError(null)
@@ -60,10 +74,15 @@ export const useFundraisePosition = () => {
     }
   }, [])
 
-  return {
-    getFundraisePosition,
-    loading,
-    data,
-    error,
-  }
+  const ctx = React.useMemo(
+    () => ({
+      getFundraisePosition,
+      loading,
+      data,
+      error,
+    }),
+    [getFundraisePosition, loading, data, error]
+  )
+
+  return <FundraisePositionContext.Provider value={ctx}>{children}</FundraisePositionContext.Provider>
 }

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Route, Routes, useLocation } from "react-router-dom"
 
 import { StakingPage } from "./pages/Staking"
@@ -13,32 +13,53 @@ import { Header, NavigationLink } from "./components/Header"
 import { routes } from "./utils/routes"
 
 import styles from "./App.module.scss"
+import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
+import { useAccount } from "wagmi"
 
 function App() {
   const location = useLocation()
+  const [{ data: accountData }] = useAccount()
+  const { getFundraisePosition, data: fundraisePositionData } = useFundraisePosition()
+  const [navigationLinks, setNavigationLinks] = useState<NavigationLink[]>([])
 
-  const navigationLinks: NavigationLink[] =
-    location.pathname.endsWith("fundraise") || location.pathname.endsWith("fundraiseclaim")
-      ? [
-          {
-            title: "FUNDRAISE",
-            route: routes.Fundraise,
-          },
+  useEffect(() => {
+    if (accountData?.address) {
+      getFundraisePosition(accountData.address)
+    }
+  }, [accountData?.address, getFundraisePosition])
+
+  useEffect(() => {
+    if (location.pathname.endsWith("fundraise") || location.pathname.endsWith("fundraiseclaim")) {
+      let links: NavigationLink[] = [
+        {
+          title: "FUNDRAISE",
+          route: routes.Fundraise,
+        },
+      ]
+
+      if (fundraisePositionData) {
+        links = [
+          ...links,
           {
             title: "CLAIM",
             route: routes.FundraiseClaim,
           },
         ]
-      : [
-          {
-            title: "STAKE",
-            route: routes.Stake,
-          },
-          {
-            title: "POSITIONS",
-            route: routes.Positions,
-          },
-        ]
+      }
+      setNavigationLinks(links)
+    } else {
+      setNavigationLinks([
+        {
+          title: "STAKE",
+          route: routes.Stake,
+        },
+        {
+          title: "POSITIONS",
+          route: routes.Positions,
+        },
+      ])
+    }
+  }, [location.pathname, fundraisePositionData])
 
   return (
     <div className={styles.app}>
