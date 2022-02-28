@@ -51,12 +51,15 @@ const useAmountState = (
   const handleSetAmountBN = React.useCallback(
     (value: BigNumber) => {
       // Extract integer part only
-      const integerPart = value
+      const integerPart = value.sub(value.mod(10 ** decimals))
 
-      console.log("Received", value.toString())
+      // Even though we removed decimals, formatUnits outputs a number XXXX.0
+      // We strip the useless 0 decimal.
+      const formattedAmount = ethers.utils.formatUnits(integerPart, decimals)
+      const strippedFormattedAmount = formattedAmount.replace(/\.(.*?\d*)/, "")
 
       setAmountBN(integerPart)
-      setAmount(ethers.utils.formatUnits(integerPart, decimals))
+      setAmount(strippedFormattedAmount)
     },
     [decimals]
   )

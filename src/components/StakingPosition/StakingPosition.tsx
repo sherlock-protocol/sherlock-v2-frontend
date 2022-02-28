@@ -4,7 +4,11 @@ import useSherlock from "../../hooks/useSherlock"
 import useWaitTx from "../../hooks/useWaitTx"
 import { PERIODS_IN_SECONDS } from "../../pages/Staking"
 import { convertSecondsToDurationString } from "../../utils/time"
+import { Box } from "../Box"
 import { Button } from "../Button/Button"
+import { Column, Row } from "../Layout"
+import { Text } from "../Text"
+import { Title } from "../Title"
 import styles from "./StakingPosition.module.scss"
 
 interface Props {
@@ -29,9 +33,14 @@ interface Props {
    * can be unstaked or restaked
    */
   lockupEnd: BigNumber
+
+  /**
+   * Annual Percentage Yield
+   */
+  apy?: number
 }
 
-const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockupEnd }) => {
+const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockupEnd, apy }) => {
   const [lockedForSeconds, setLockedForSeconds] = React.useState<number>()
   const [stakingPeriod, setStakingPeriod] = React.useState<number>()
   const isUnlocked = lockedForSeconds && lockedForSeconds <= 0
@@ -66,29 +75,89 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
   }, [restake, id, stakingPeriod, waitForTx])
 
   return (
-    <div className={styles.container}>
-      <p>ID: {id.toString()} </p>
-      {usdcBalance && <p>USDC Balance: {ethers.utils.commify(ethers.utils.formatUnits(usdcBalance, 6))} USDC</p>}
-      {sherRewards && <p>SHER Balance: {ethers.utils.commify(ethers.utils.formatUnits(sherRewards, 18))} SHER</p>}
-      {lockedForSeconds && <p>Position unlocks: {convertSecondsToDurationString(lockedForSeconds)}</p>}
-      <p>Current APY: 82%</p>
-      {isUnlocked && (
-        <>
-          <div>
-            <Button onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.SIX_MONTHS)}>6 months</Button>
-            <Button onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.ONE_YEAR)}>12 months</Button>
-          </div>
-          <div>
-            <Button onClick={handleRestake} disabled={!stakingPeriod}>
-              Restake
-            </Button>
-          </div>
-          <div>
-            <Button onClick={handleUnstake}>Unstake</Button>
-          </div>
-        </>
-      )}
-    </div>
+    <Box>
+      <Column spacing="m">
+        <Title>Position #{id.toString()}</Title>
+        <Row alignment="space-between" spacing="m">
+          <Column>
+            <Text>USDC Balance</Text>
+          </Column>
+          <Column>
+            <Text strong variant="mono">
+              {ethers.utils.commify(ethers.utils.formatUnits(usdcBalance, 6))} USDC
+            </Text>
+          </Column>
+        </Row>
+        <Row alignment="space-between" spacing="m">
+          <Column>
+            <Text>SHER Balance</Text>
+          </Column>
+          <Column>
+            <Text strong variant="mono">
+              {ethers.utils.commify(ethers.utils.formatUnits(sherRewards, 18))} SHER
+            </Text>
+          </Column>
+        </Row>
+        {lockedForSeconds && (
+          <Row alignment="space-between" spacing="m">
+            <Column>
+              <Text>Unlocks in</Text>
+            </Column>
+            <Column>
+              <Text strong variant="mono">
+                {convertSecondsToDurationString(lockedForSeconds)}
+              </Text>
+            </Column>
+          </Row>
+        )}
+        {apy !== null && apy !== undefined && (
+          <Row alignment="space-between" spacing="m">
+            <Column>
+              <Text>USDC APY</Text>
+            </Column>
+            <Column>
+              <Text strong variant="mono">
+                {apy * 100}%
+              </Text>
+            </Column>
+          </Row>
+        )}
+        {isUnlocked && (
+          <Column className={styles.container} spacing="m">
+            <Row spacing="m">
+              <Column grow={1}>
+                <Button
+                  variant={stakingPeriod === PERIODS_IN_SECONDS.SIX_MONTHS ? "primary" : "alternate"}
+                  onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.SIX_MONTHS)}
+                >
+                  6 months
+                </Button>
+              </Column>
+              <Column grow={1}>
+                <Button
+                  variant={stakingPeriod === PERIODS_IN_SECONDS.ONE_YEAR ? "primary" : "alternate"}
+                  onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.ONE_YEAR)}
+                >
+                  12 months
+                </Button>
+              </Column>
+            </Row>
+            <Row spacing="m">
+              <Column grow={1}>
+                <Button variant="secondary" onClick={handleUnstake}>
+                  Unstake
+                </Button>
+              </Column>
+              <Column grow={1}>
+                <Button variant="primary" onClick={handleRestake} disabled={!stakingPeriod}>
+                  Restake
+                </Button>
+              </Column>
+            </Row>
+          </Column>
+        )}
+      </Column>
+    </Box>
   )
 }
 
