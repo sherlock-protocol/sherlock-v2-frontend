@@ -8,6 +8,7 @@ import reportWebVitals from "./reportWebVitals"
 import { ApolloProvider } from "./utils/apollo/ApolloProvider"
 import { WagmiProvider } from "./utils/WagmiProvider"
 import { TxWaitProvider } from "./hooks/useWaitTx"
+import { FundraisePositionProvider } from "./hooks/api/useFundraisePosition"
 
 global.Buffer = global.Buffer || require("buffer").Buffer
 
@@ -17,7 +18,9 @@ ReactDOM.render(
       <WagmiProvider>
         <ApolloProvider>
           <TxWaitProvider>
-            <App />
+            <FundraisePositionProvider>
+              <App />
+            </FundraisePositionProvider>
           </TxWaitProvider>
         </ApolloProvider>
       </WagmiProvider>
