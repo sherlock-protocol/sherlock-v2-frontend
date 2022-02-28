@@ -122,7 +122,7 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
             </Column>
           </Row>
         )}
-        {true && (
+        {isUnlocked && (
           <Column className={styles.container} spacing="m">
             <Row spacing="m">
               <Column grow={1}>
