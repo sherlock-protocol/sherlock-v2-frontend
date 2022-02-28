@@ -1,4 +1,6 @@
+@import "../../styles/variables";
+
 .container {
-  border: 1px solid black;
-  padding: 2rem;
+  background-color: transparentize($color: $primary-purple, $amount: 0.7);
+  padding: 1em;
 }
