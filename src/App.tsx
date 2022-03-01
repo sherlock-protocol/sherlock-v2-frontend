@@ -19,7 +19,7 @@ import { useAccount } from "wagmi"
 import useCountdown from "./hooks/useCountdown"
 
 // TODO: Set launch timestamp
-export const LAUNCH_TIMESTAMP = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 3.75 - 8
+export const LAUNCH_TIMESTAMP = Math.floor(Date.now() / 1000) - 1
 
 function App() {
   const location = useLocation()
