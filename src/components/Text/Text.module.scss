@@ -8,6 +8,14 @@
   }
 
   &.small {
+    font-size: 0.875rem;
+  }
+
+  &.tiny {
     font-size: 0.6rem;
+  }
+
+  &.mono {
+    font-variant-numeric: tabular-nums;
   }
 }

@@ -1,8 +1,11 @@
 import { BigNumber, ethers } from "ethers"
 import React from "react"
+import { FaArrowRight } from "react-icons/fa"
 import useERC20 from "../../hooks/useERC20"
 import useWaitTx from "../../hooks/useWaitTx"
 import { Button } from "../Button/Button"
+import { Row } from "../Layout"
+import styles from "./AllowanceGate.module.scss"
 
 interface Props {
   /**
@@ -14,13 +17,15 @@ interface Props {
    * Required amount to spend
    */
   amount?: BigNumber
+
+  render?: (disabled: boolean) => React.ReactNode
 }
 
 /**
  * HOC for requesting the approval for spending a token
  * before another action
  */
-const AllowanceGate: React.FC<Props> = ({ children, spender, amount }) => {
+const AllowanceGate: React.FC<Props> = ({ children, spender, amount, render }) => {
   const [allowance, setAllowance] = React.useState<BigNumber>()
 
   const { getAllowance, approve } = useERC20("USDC")
@@ -61,11 +66,29 @@ const AllowanceGate: React.FC<Props> = ({ children, spender, amount }) => {
     handleFetchAllowance()
   }, [spender, amount, handleFetchAllowance])
 
-  if (amount && allowance && amount.lte(allowance)) {
+  const hasEnoughAllowance = (amount && allowance && amount.lte(allowance)) ?? true
+
+  if (render) {
+    return (
+      <Row alignment="center" spacing="l" className={styles.steps}>
+        <Button disabled={hasEnoughAllowance} onClick={handleOnApprove}>
+          Approve
+        </Button>
+        <FaArrowRight size={18} color="rgba(255,255,255, 0.9)" />
+        {render(!hasEnoughAllowance)}
+      </Row>
+    )
+  }
+
+  if (hasEnoughAllowance) {
     return <>{children}</>
   }
 
-  return <Button onClick={handleOnApprove}>Approve</Button>
+  return (
+    <Row alignment="center" spacing="s">
+      <Button onClick={handleOnApprove}>Approve</Button>
+    </Row>
+  )
 }
 
 export default AllowanceGate

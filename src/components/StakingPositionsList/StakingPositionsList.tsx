@@ -1,31 +1,35 @@
-import { useQuery } from "@apollo/client"
-import { loader } from "graphql.macro"
-import React from "react"
+import React, { useEffect } from "react"
 import { useAccount } from "wagmi"
-import styles from "./StakingPositionsList.module.scss"
-import { GetPositionsQuery } from "../../graphql/types"
-import StakingPosition from "../StakingPosition/StakingPosition"
-import { BigNumber } from "ethers"
 
-const GET_POSITIONS = loader("../../graphql/queries/GetPositions.graphql")
+import StakingPosition from "../StakingPosition/StakingPosition"
+
+import { useStakingPositions } from "../../hooks/api/useStakingPositions"
+
+import styles from "./StakingPositionsList.module.scss"
+import { BigNumber } from "ethers"
 
 export const StakingPositionsList: React.FC = () => {
   const [{ data: accountData }] = useAccount()
-  const { data } = useQuery<GetPositionsQuery>(GET_POSITIONS, {
-    variables: {
-      owner: accountData?.address,
-    },
-  })
+  const { getStakingPositions, data } = useStakingPositions()
+
+  useEffect(() => {
+    if (accountData?.address) {
+      getStakingPositions(accountData.address)
+    }
+  }, [accountData?.address, getStakingPositions])
+
+  if (!data) return null
 
   return (
     <div className={styles.container}>
-      {data?.positions?.map((position) => (
+      {data.positions.map((position) => (
         <StakingPosition
-          key={position?.id?.toString()}
-          id={BigNumber.from(position?.id)}
-          usdcBalance={BigNumber.from(position?.usdcAmount)}
-          sherRewards={BigNumber.from(position?.sherAmount)}
-          lockupEnd={BigNumber.from(position?.expiration)}
+          key={position.id.toString()}
+          id={BigNumber.from(position.id)}
+          usdcBalance={position.usdc}
+          sherRewards={position.sher}
+          lockupEnd={BigNumber.from(position.lockupEnd.getTime())}
+          apy={data?.usdcAPY}
         />
       ))}
     </div>

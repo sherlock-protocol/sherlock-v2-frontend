@@ -1,12 +1,16 @@
 import React from "react"
+import { Column } from "../Layout"
+import Loading from "../Loading/Loading"
 import Modal from "../Modal/Modal"
-import styles from "./TxStateModals.module.scss"
+import { Text } from "../Text"
 
 const RequestedTx: React.FC = () => {
   return (
     <Modal>
-      <h1 className={styles.statusMessage}>Transaction requested...</h1>
-      <h2 className={styles.explanationMessage}>Check your wallet in order to approve the transaction.</h2>
+      <Column spacing="m" alignment="center">
+        <Loading variant="Scan" label="Transaction requested" />
+        <Text>Check your wallet in order to approve the transaction.</Text>
+      </Column>
     </Modal>
   )
 }
