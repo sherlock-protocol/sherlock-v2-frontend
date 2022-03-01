@@ -5,7 +5,8 @@ import { SherClaim } from "../contracts/SherClaim"
 import useWaitTx from "./useWaitTx"
 
 export const SHER_CLAIM_ADDRESS = process.env.REACT_APP_SHER_CLAIM_ADDRESS as string
-
+const ENV_DEADLINE = parseInt(process.env.REACT_APP_SHER_BUY_ENTRY_DEADLINE || "")
+export const SHER_BUY_ENTRY_DEADLINE = Number.isInteger(ENV_DEADLINE) ? ENV_DEADLINE : 0
 /**
  * React Hook for interacting with Sherlock's SerClaim smart contract.
  *
@@ -31,10 +32,9 @@ export const useSherClaimContract = () => {
    * @see `claimableAt` smart contract property.
    */
   const getClaimableAt = useCallback(async () => {
-    const timestampInSeconds = await contract.claimableAt()
     // Convert timestamp to milliseconds and return date obj
-    return new Date(timestampInSeconds.toNumber() * 1000)
-  }, [contract])
+    return new Date(SHER_BUY_ENTRY_DEADLINE * 1000)
+  }, [])
 
   /**
    * Fetch wether the claim is active (users can claim) or not.

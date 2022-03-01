@@ -9,25 +9,31 @@ import { BigNumber, ethers } from "ethers"
  *
  * Adding a new token will update type definitions as well.
  */
-const TokenContracts = {
-  USDC: process.env.REACT_APP_USDC_ADDRESS as string,
-  SHER: process.env.REACT_APP_SHER_ADDRESS as string,
+const TokenData = {
+  USDC: {
+    contract: process.env.REACT_APP_USDC_ADDRESS as string,
+    decimals: 6,
+  },
+  SHER: {
+    contract: process.env.REACT_APP_SHER_ADDRESS as string,
+    decimals: 18,
+  },
 }
 
-type AvailableERC20Tokens = keyof typeof TokenContracts
+type AvailableERC20Tokens = keyof typeof TokenData
 
 /**
  * Hook for interacting with an ERC20 token contract
  * @param token ERC20 Token
  * @param contractAddress Contract address for an ERC20 token
  */
-const useERC20 = (token?: AvailableERC20Tokens, contractAddress?: string) => {
-  const address = token ? TokenContracts[token] : contractAddress
+const useERC20 = (token: AvailableERC20Tokens) => {
+  const address = TokenData[token].contract
   if (!address) {
     throw Error("Address or token name required")
   }
 
-  const [decimals, setDecimals] = React.useState<number>(18)
+  const decimals = TokenData[token].decimals
   const [balance, setBalance] = React.useState<BigNumber>()
   const [allowances, setAllowances] = React.useState<{ [key: string]: BigNumber }>({})
 
@@ -118,24 +124,6 @@ const useERC20 = (token?: AvailableERC20Tokens, contractAddress?: string) => {
 
     refreshBalance()
   }, [accountData?.address, refreshBalance])
-
-  /**
-   * Fetch ERC20 metadata on initialization
-   */
-  React.useEffect(() => {
-    if (!contract) {
-      return
-    }
-
-    const fetchERC20metadata = async () => {
-      const tokenDecimals = await contract.decimals()
-      if (tokenDecimals) {
-        setDecimals(tokenDecimals)
-      }
-    }
-
-    fetchERC20metadata()
-  }, [contract])
 
   return React.useMemo(
     () => ({ balance, refreshBalance, getBalanceOf, getAllowance, approve, decimals, format }),
