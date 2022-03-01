@@ -34,7 +34,7 @@ export const useSherClaimContract = () => {
   const getClaimableAt = useCallback(async () => {
     // Convert timestamp to milliseconds and return date obj
     return new Date(SHER_BUY_ENTRY_DEADLINE * 1000)
-  }, [contract])
+  }, [])
 
   /**
    * Fetch wether the claim is active (users can claim) or not.
