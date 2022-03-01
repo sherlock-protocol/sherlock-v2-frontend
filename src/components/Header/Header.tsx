@@ -7,7 +7,7 @@ import { Route } from "../../utils/routes"
 import { ReactComponent as Logotype } from "../../assets/icons/logotype.svg"
 
 import styles from "./Header.module.scss"
-import { Column, Row } from "../Layout"
+import { Row } from "../Layout"
 
 export type NavigationLink = {
   title: string
@@ -23,24 +23,24 @@ type HeaderProps = {
  */
 export const Header: React.FC<HeaderProps> = ({ navigationLinks = [] }) => {
   return (
-    <Row spacing="m" className={styles.container}>
-      <Column grow={1}>
+    <div className={styles.container}>
+      <div className={styles.leftArea}>
         <Logotype height={60} width={60} />
-      </Column>
-      <Column grow={1} className={styles.centerArea}>
-        <Row alignment="center" spacing="m">
+      </div>
+      <div className={styles.centerArea}>
+        <Row alignment="center">
           {navigationLinks.map((navLink) => (
             <CustomLink key={navLink.route} to={navLink.route}>
               {navLink.title}
             </CustomLink>
           ))}
         </Row>
-      </Column>
-      <Column grow={1}>
+      </div>
+      <div className={styles.rightArea}>
         <Row alignment="end" grow={0}>
           <ConnectButton />
         </Row>
-      </Column>
-    </Row>
+      </div>
+    </div>
   )
 }

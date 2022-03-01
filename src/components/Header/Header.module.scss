@@ -2,8 +2,17 @@
 
 .container {
   padding: 2rem 3rem;
-  align-self: stretch;
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-self: stretch;
+  align-self: stretch;
+
+  .leftArea,
+  .centerArea,
+  .rightArea {
+    flex: 1;
+  }
 
   .centerArea {
     a {
