@@ -18,8 +18,7 @@ import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
 import { useAccount } from "wagmi"
 import useCountdown from "./hooks/useCountdown"
 
-// TODO: Set launch timestamp
-export const LAUNCH_TIMESTAMP = Math.floor(Date.now() / 1000) - 1
+export const LAUNCH_TIMESTAMP = 1647100800
 
 function App() {
   const location = useLocation()
