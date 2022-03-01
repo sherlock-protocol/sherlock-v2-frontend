@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react"
-import { Route, Routes, useLocation } from "react-router-dom"
+import { Route, Routes, useLocation, Navigate } from "react-router-dom"
 
 import { StakingPage } from "./pages/Staking"
 import { StakingPositionsPage } from "./pages/StakingPositions"
 import { FundraisingPage } from "./pages/Fundraising"
 import { FundraisingClaimPage } from "./pages/FundraisingClaim"
+import { CountdownPage } from "./pages/Countdown"
 import { ProtocolPage } from "./pages/Protocol"
 
 import { Footer } from "./components/Footer"
@@ -15,12 +16,17 @@ import { routes } from "./utils/routes"
 import styles from "./App.module.scss"
 import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
 import { useAccount } from "wagmi"
+import useCountdown from "./hooks/useCountdown"
+
+// TODO: Set launch timestamp
+export const LAUNCH_TIMESTAMP = Math.floor(Date.now() / 1000) - 1
 
 function App() {
   const location = useLocation()
   const [{ data: accountData }] = useAccount()
   const { getFundraisePosition, data: fundraisePositionData } = useFundraisePosition()
   const [navigationLinks, setNavigationLinks] = useState<NavigationLink[]>([])
+  const { ended, secondsLeft } = useCountdown(LAUNCH_TIMESTAMP)
 
   useEffect(() => {
     if (accountData?.address) {
@@ -64,15 +70,23 @@ function App() {
   return (
     <div className={styles.app}>
       <div className={styles.noise} />
-      <Header navigationLinks={navigationLinks} />
+      <Header navigationLinks={navigationLinks} logoOnly={!ended} />
       <div className={styles.content}>
         <Routes>
-          <Route index element={<StakingPage />} />
-          <Route path={routes.Stake} element={<StakingPage />} />
-          <Route path={routes.Positions} element={<StakingPositionsPage />} />
-          <Route path={routes.Fundraise} element={<FundraisingPage />} />
-          <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
-          <Route path={routes.Protocol} element={<ProtocolPage />} />
+          {ended ? (
+            <>
+              <Route index element={<StakingPage />} />
+              <Route path={routes.Stake} element={<StakingPage />} />
+              <Route path={routes.Positions} element={<StakingPositionsPage />} />
+              <Route path={routes.Fundraise} element={<FundraisingPage />} />
+              <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
+              <Route path={routes.Protocol} element={<ProtocolPage />} />
+              <Route path="*" element={<Navigate replace to="/" />} />
+            </>
+          ) : (
+            <Route index element={<CountdownPage secondsLeft={secondsLeft} />} />
+          )}
+          <Route path="*" element={<Navigate replace to="/" />} />
         </Routes>
       </div>
       <Footer />
