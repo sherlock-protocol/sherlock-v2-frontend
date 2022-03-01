@@ -18,7 +18,7 @@ import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
 import { useAccount } from "wagmi"
 import useCountdown from "./hooks/useCountdown"
 
-export const LAUNCH_TIMESTAMP = parseInt(REACT_APP_LAUNCH_TIMESTAMP as string)
+export const LAUNCH_TIMESTAMP = parseInt(process.env.REACT_APP_LAUNCH_TIMESTAMP as string)
 
 function App() {
   const location = useLocation()
