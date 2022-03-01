@@ -18,7 +18,7 @@ import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
 import { useAccount } from "wagmi"
 import useCountdown from "./hooks/useCountdown"
 
-export const LAUNCH_TIMESTAMP = 1646668800 // March 7th 2022, 16:00:00 GMT
+export const LAUNCH_TIMESTAMP = parseInt(REACT_APP_LAUNCH_TIMESTAMP as string)
 
 function App() {
   const location = useLocation()
