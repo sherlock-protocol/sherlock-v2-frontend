@@ -4,6 +4,7 @@ export const routes = {
   Fundraise: "fundraise",
   FundraiseClaim: "fundraiseclaim",
   Protocol: "protocol",
+  USForbidden: "us",
 } as const
 
 type R = typeof routes
