@@ -17,6 +17,7 @@ import styles from "./App.module.scss"
 import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
 import { useAccount } from "wagmi"
 import useCountdown from "./hooks/useCountdown"
+import { USForbiddenPage } from "./pages/USForbidden"
 
 export const LAUNCH_TIMESTAMP = parseInt(process.env.REACT_APP_LAUNCH_TIMESTAMP as string)
 
@@ -80,10 +81,14 @@ function App() {
               <Route path={routes.Fundraise} element={<FundraisingPage />} />
               <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
               <Route path={routes.Protocol} element={<ProtocolPage />} />
+              <Route path={routes.USForbidden} element={<USForbiddenPage />} />
               <Route path="*" element={<Navigate replace to="/" />} />
             </>
           ) : (
-            <Route index element={<CountdownPage secondsLeft={secondsLeft} />} />
+            <>
+              <Route index element={<CountdownPage secondsLeft={secondsLeft} />} />
+              <Route path={routes.USForbidden} element={<USForbiddenPage />} />
+            </>
           )}
           <Route path="*" element={<Navigate replace to="/" />} />
         </Routes>

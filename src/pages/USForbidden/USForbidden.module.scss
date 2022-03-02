@@ -1,0 +1,32 @@
+@import "../../styles/variables";
+
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: transparentize($color: $background-color, $amount: 0.2);
+  backdrop-filter: blur(10px);
+
+  .v1 {
+    color: rgba(255, 255, 255, 0.8);
+
+    a {
+      color: inherit;
+      transition: 0.2s all ease;
+      text-decoration: none;
+
+      &:hover {
+        color: white;
+        text-decoration: underline;
+      }
+    }
+  }
+}
