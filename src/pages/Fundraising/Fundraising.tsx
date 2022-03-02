@@ -78,7 +78,7 @@ export const FundraisingPage: React.FC = () => {
   useEffect(() => {
     const fetchConversionRatio = async () => {
       try {
-        const ratio = await sherBuyContract.getUsdcToSherRewardRatio()
+        const ratio = await sherBuyContract.getUsdcToSherRewardRatio
         setUsdcToSherRewardRatio(ratio)
       } catch (error) {
         console.error(error)

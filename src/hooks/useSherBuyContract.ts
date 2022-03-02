@@ -51,18 +51,8 @@ export const useSherBuyContract = () => {
    * @returns USDC/SHER ratio
    * @see https://github.com/sherlock-protocol/sherlock-v2-core/blob/main/contracts/SherBuy.sol
    */
-  const getUsdcToSherRewardRatio = useCallback(async () => {
-    const stakeRate = await contract.stakeRate()
-    const buyRate = await contract.buyRate()
-
-    const convertedStakeRate = Number(ethers.utils.formatUnits(stakeRate, 6))
-    const convertedBuyRate = Number(ethers.utils.formatUnits(buyRate, 6))
-
-    const ratio = convertedBuyRate / (convertedBuyRate + convertedStakeRate)
-
-    return ratio
-  }, [contract])
-
+  // This will be 0.1 (not going to change ever)
+  const getUsdcToSherRewardRatio = 0.1
   /**
    * Fetch USDC needed to buy up to `sherAmountWant` SHER tokens
    *
