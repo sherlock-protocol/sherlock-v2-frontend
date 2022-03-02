@@ -8,7 +8,7 @@ import { DateTime } from "luxon"
 export const SHER_CLAIM_ADDRESS = process.env.REACT_APP_SHER_CLAIM_ADDRESS as string
 const ENV_DEADLINE = parseInt(process.env.REACT_APP_SHER_BUY_ENTRY_DEADLINE || "")
 export const SHER_BUY_ENTRY_DEADLINE = Number.isInteger(ENV_DEADLINE) ? ENV_DEADLINE : 0
-export const SHER_CLAIM_DEADLINE = SHER_BUY_ENTRY_DEADLINE + 60 * 60 * 24 * 7 * 26 //(26 weeks)
+export const SHER_CLAIM_START = SHER_BUY_ENTRY_DEADLINE + 60 * 60 * 24 * 7 * 26 //(26 weeks)
 /**
  * React Hook for interacting with Sherlock's SerClaim smart contract.
  *
@@ -44,10 +44,9 @@ export const useSherClaimContract = () => {
    * @returns true|false
    */
   const claimIsActive = useCallback(async () => {
-    const claimStartDate = DateTime.fromMillis(SHER_BUY_ENTRY_DEADLINE * 1000)
-    const claimEndDate = DateTime.fromMillis(SHER_CLAIM_DEADLINE * 1000)
+    const claimStartDate = DateTime.fromMillis(SHER_CLAIM_START * 1000)
     const now = DateTime.now()
-    return now > claimStartDate && now < claimEndDate
+    return now > claimStartDate
   }, [])
 
   /**
