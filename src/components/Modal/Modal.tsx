@@ -20,14 +20,19 @@ const Modal: React.FC<Props> = ({ closeable, children, onClose }) => {
   /**
    * Hide the modal
    */
-  const handleClose = React.useCallback(() => {
-    if (!closeable) {
-      return
-    }
+  const handleClose = React.useCallback(
+    (e: React.SyntheticEvent) => {
+      if (!closeable) {
+        return
+      }
 
-    setIsVisible(false)
-    onClose?.()
-  }, [onClose, closeable])
+      e.stopPropagation()
+
+      setIsVisible(false)
+      onClose?.()
+    },
+    [onClose, closeable]
+  )
 
   if (!isVisible) {
     return null
@@ -35,14 +40,7 @@ const Modal: React.FC<Props> = ({ closeable, children, onClose }) => {
 
   return (
     <div className={styles.modal} onClick={handleClose}>
-      <Box>
-        {closeable && (
-          <div className={styles.header}>
-            <button onClick={handleClose}>X</button>
-          </div>
-        )}
-        {children}
-      </Box>
+      <Box>{children}</Box>
     </div>
   )
 }

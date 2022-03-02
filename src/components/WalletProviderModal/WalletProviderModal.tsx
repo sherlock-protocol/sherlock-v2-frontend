@@ -1,7 +1,12 @@
 import React from "react"
 import { useConnect } from "wagmi"
-import { Button } from "../Button/Button"
 import Modal from "../Modal/Modal"
+import styles from "./WalletProviderModal.module.scss"
+import { ReactComponent as Metamask } from "../../assets/icons/metamask.svg"
+import { ReactComponent as WalletConnect } from "../../assets/icons/walletconnect.svg"
+import { Title } from "../Title"
+import { Text } from "../Text"
+import { Column, Row } from "../Layout"
 
 interface Props {
   onClose: () => void
@@ -12,7 +17,7 @@ interface Props {
  * wallet providers, in order to connect to the web application.
  */
 const WalletProviderModal: React.FC<Props> = ({ onClose }) => {
-  const [{ data, loading, error }, connect] = useConnect()
+  const [{ data }, connect] = useConnect()
 
   /**
    * Connects via given connector
@@ -40,12 +45,37 @@ const WalletProviderModal: React.FC<Props> = ({ onClose }) => {
 
   return (
     <Modal closeable onClose={onClose}>
-      <h1>Connect wallet</h1>
-      {loading && <h1>Connecting...</h1>}
-      {error && <pre>{error?.message}</pre>}
-      <div>
-        <Button onClick={(e) => handleConnectWithConnector(e, "injected")}>MetaMask</Button>
-      </div>
+      <Column>
+        <Row>
+          <Column
+            alignment="center"
+            grow={1}
+            className={styles.provider}
+            onClick={(e) => handleConnectWithConnector(e, "injected")}
+          >
+            <Metamask height={45} width={45} />
+            <Title>MetaMask</Title>
+            <Text>Connect to your MetaMask wallet</Text>
+          </Column>
+        </Row>
+        <Row>
+          <Column grow={1}>
+            <hr className={styles.divider} />
+          </Column>
+        </Row>
+        <Row>
+          <Column
+            alignment="center"
+            grow={1}
+            className={styles.provider}
+            onClick={(e) => handleConnectWithConnector(e, "walletConnect")}
+          >
+            <WalletConnect height={45} width={45} />
+            <Title>WalletConnect</Title>
+            <Text>Scan with WalletConnect to connect</Text>
+          </Column>
+        </Row>
+      </Column>
     </Modal>
   )
 }

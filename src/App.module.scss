@@ -18,3 +18,17 @@
     flex-grow: 1;
   }
 }
+
+.noise {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-image: url("./assets/images/noise.png");
+  background-position: 0px 0px;
+  background-size: cover;
+  opacity: 0.4;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}

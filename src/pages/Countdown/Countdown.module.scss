@@ -1,0 +1,29 @@
+@import "../../styles/variables";
+
+.column {
+  width: 4rem;
+}
+
+.value {
+  font-variant-numeric: tabular-nums;
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.label,
+.v1 {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.v1 {
+  a {
+    color: inherit;
+    transition: 0.2s all ease;
+    text-decoration: none;
+
+    &:hover {
+      color: white;
+      text-decoration: underline;
+    }
+  }
+}

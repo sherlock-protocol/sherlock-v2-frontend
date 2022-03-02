@@ -1,0 +1,15 @@
+@import "../../styles/variables";
+
+.caption {
+  color: #aaa;
+
+  .link {
+    cursor: pointer;
+    text-decoration: none;
+    color: #aaa;
+
+    &:hover {
+      color: white;
+    }
+  }
+}

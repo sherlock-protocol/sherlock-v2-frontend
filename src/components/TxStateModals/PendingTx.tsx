@@ -1,10 +1,25 @@
 import React from "react"
+import { Column } from "../Layout"
+import Loading from "../Loading/Loading"
 import Modal from "../Modal/Modal"
+import { Text } from "../Text"
+import TxHash from "./TxHash"
 
-const PendingTx: React.FC = () => {
+interface Props {
+  /**
+   * Transaction hash
+   */
+  hash?: string
+}
+
+const PendingTx: React.FC<Props> = ({ hash }) => {
   return (
     <Modal closeable>
-      <p>Tx pending...</p>
+      <Column spacing="m" alignment="center">
+        <Loading variant="Layer" label="Transaction approved and pending" />
+        <Text>Waiting for the transaction to make it's way on the blockchain.</Text>
+        {hash && <TxHash hash={hash} />}
+      </Column>
     </Modal>
   )
 }

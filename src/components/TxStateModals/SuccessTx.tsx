@@ -1,10 +1,28 @@
 import React from "react"
 import Modal from "../Modal/Modal"
+import TxHash from "./TxHash"
+import { Column } from "../Layout"
+import SuccessIcon from "../SuccessIcon/SuccessIcon"
+import { Text } from "../Text"
 
-const SuccessTx: React.FC = () => {
+interface Props {
+  /**
+   * Transaction hash
+   */
+  hash?: string
+}
+
+const SuccessTx: React.FC<Props> = ({ hash }) => {
   return (
     <Modal closeable>
-      <p>Tx success!</p>
+      <Column spacing="m" alignment="center">
+        <SuccessIcon />
+        <Text strong size="large">
+          Transaction was successful!
+        </Text>
+        <Text>Yipeee! The transaction maade it's way on the blockchain!</Text>
+        {hash && <TxHash hash={hash} />}
+      </Column>
     </Modal>
   )
 }

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react"
 import { BigNumber, ethers, utils } from "ethers"
 import { useDebounce } from "use-debounce"
-import cx from "classnames"
+import { useNavigate } from "react-router-dom"
 
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
-import { Input } from "../../components/Input"
 import { Box } from "../../components/Box"
 import { Title } from "../../components/Title"
+import { Text } from "../../components/Text"
 import { Column, Row } from "../../components/Layout"
 
 import { useSherBuyContract } from "../../hooks/useSherBuyContract"
@@ -16,7 +16,11 @@ import useERC20 from "../../hooks/useERC20"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import useWaitTx from "../../hooks/useWaitTx"
 
+import { formattedTimeDifference } from "../../utils/dates"
+
 import styles from "./Fundraising.module.scss"
+import TokenInput from "../../components/TokenInput/TokenInput"
+import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 
 type Rewards = {
   /**
@@ -33,18 +37,12 @@ type Rewards = {
   price: ethers.BigNumber
 }
 
-const millisecondsToHoursAndMinutes = (milliseconds: number): [number, number] => {
-  const seconds = milliseconds / 1000
-  const secondsInAnHour = 60 * 60
-  const hours = Math.round(seconds / secondsInAnHour)
-  const minutes = Math.round((seconds % secondsInAnHour) / 60)
-  return [hours, minutes]
-}
-
 export const FundraisingPage: React.FC = () => {
+  const navigate = useNavigate()
   const sherBuyContract = useSherBuyContract()
   const sherClaimContract = useSherClaimContract()
   const sher = useERC20("SHER")
+  const { balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
 
   /**
@@ -66,6 +64,7 @@ export const FundraisingPage: React.FC = () => {
    * Amount of SHER left in SherBuy contract, available for sale during the fundraise.
    */
   const [sherRemaining, setSherRemaining] = useState<ethers.BigNumber>()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoadingRewards, setIsLoadingRewards] = useState(false)
 
   /**
@@ -79,7 +78,7 @@ export const FundraisingPage: React.FC = () => {
   useEffect(() => {
     const fetchConversionRatio = async () => {
       try {
-        const ratio = await sherBuyContract.getUsdcToSherRewardRatio()
+        const ratio = await sherBuyContract.getUsdcToSherRewardRatio
         setUsdcToSherRewardRatio(ratio)
       } catch (error) {
         console.error(error)
@@ -126,13 +125,18 @@ export const FundraisingPage: React.FC = () => {
    */
   useEffect(() => {
     const calculateRewards = async () => {
-      if (!debouncedUsdcInput || !usdcToSherRewardRatio) return
+      if (!debouncedUsdcInput || !usdcToSherRewardRatio || debouncedUsdcInput.isZero()) {
+        setRewards(undefined)
+        return
+      }
 
       setIsLoadingRewards(true)
 
       try {
-        const sherAmountWanted = Number(ethers.utils.formatUnits(debouncedUsdcInput, 6)) * usdcToSherRewardRatio
-        const sherAmountWantedAsBigNumber = ethers.utils.parseUnits(sherAmountWanted.toString(), 18)
+        // From USDC to SHER (6 to 18 decimals) is 10**12
+        // But ratio is 0.1, (1 USDC == 0.1 SHER)
+        // So 10**11 for direct conversion
+        const sherAmountWantedAsBigNumber = debouncedUsdcInput.mul(10 ** 11)
 
         const { sherAmount, stake, price } = await sherBuyContract.getCapitalRequirements(sherAmountWantedAsBigNumber)
 
@@ -151,7 +155,9 @@ export const FundraisingPage: React.FC = () => {
   }, [debouncedUsdcInput, setIsLoadingRewards, usdcToSherRewardRatio, setRewards, sherBuyContract])
 
   const handleUsdcChange = (value: BigNumber | undefined) => {
-    if (!value) return
+    if (!value) {
+      setRewards(undefined)
+    }
 
     setUsdcInput(value)
   }
@@ -161,83 +167,101 @@ export const FundraisingPage: React.FC = () => {
 
     try {
       await waitForTx(async () => await sherBuyContract.execute(rewards?.sherAmount))
+      navigate("/fundraiseclaim")
     } catch (error) {
       console.error(error)
     }
   }
 
-  const formattedDeadline = deadline && millisecondsToHoursAndMinutes(deadline.getTime() - Date.now())
   const usdcRemaining =
     usdcToSherRewardRatio && sherRemaining && Number(utils.formatUnits(sherRemaining, 18)) / usdcToSherRewardRatio
 
   return (
     <Box>
-      <Column spacing="m">
-        <Row>
-          <Title>Participate</Title>
-        </Row>
-        <Row alignment="space-between">
-          <Column>Event Ends</Column>
-          <Column>{formattedDeadline && `${formattedDeadline[0]} hours ${formattedDeadline[1]} minutes`}</Column>
-        </Row>
-        <Row alignment="space-between">
-          <Column>Participation Remaining</Column>
-          <Column>{usdcRemaining && utils.commify(usdcRemaining)}</Column>
-        </Row>
-        <Row className={styles.rewardsContainer}>
-          <Column grow={1} spacing="l">
-            <Row alignment={["space-between", "center"]} spacing="xl">
-              <Column grow={1}>
-                <Input onChange={handleUsdcChange} token="USDC" placeholder="Choose amount" />
-              </Column>
-              <Column grow={0} className={cx(styles.huge, styles.strong)}>
-                USDC
-              </Column>
-            </Row>
-            {rewards && (
-              <Row>
-                <Column grow={1} spacing="m">
-                  <Row alignment="space-between">
-                    <Column>USDC Stake (6 months)</Column>
-                    <Column>{utils.commify(utils.formatUnits(rewards.stake, 6))}</Column>
-                  </Row>
-                  <Row alignment="space-between">
-                    <Column>USDC Contributed</Column>
-                    <Column>{utils.commify(utils.formatUnits(rewards.price, 6))}</Column>
-                  </Row>
-                  <Row>
-                    <hr />
-                  </Row>
-                  <Row alignment="space-between">
-                    <Column>USDC Contributed</Column>
-                    <Column className={styles.strong}>
-                      <strong>{`${utils.commify(utils.formatUnits(rewards.sherAmount, 18))} tokens`}</strong>
-                    </Column>
-                  </Row>
-                  <Row alignment="space-between">
-                    <Column>
-                      <strong>SHER at $100M FDV</strong>
-                    </Column>
-                    <Column className={styles.strong}>
-                      <strong>{utils.commify(utils.formatUnits(rewards.sherAmount, 18))}</strong>
-                    </Column>
-                  </Row>
-                  <Row alignment="center">
-                    <ConnectGate>
-                      <AllowanceGate
-                        spender={sherBuyContract.address}
-                        amount={usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0)}
-                      >
-                        <Button onClick={handleExecute}>Execute</Button>
-                      </AllowanceGate>
-                    </ConnectGate>
-                  </Row>
-                </Column>
-              </Row>
-            )}
-          </Column>
-        </Row>
-      </Column>
+      <LoadingContainer loading={isLoadingRewards}>
+        <Column spacing="m">
+          <Row>
+            <Title>Participate</Title>
+          </Row>
+          <Row alignment="space-between">
+            <Column>
+              <Text>Event Ends</Text>
+            </Column>
+            <Column>
+              <Text strong>{deadline && formattedTimeDifference(deadline)}</Text>
+            </Column>
+          </Row>
+          <Row alignment="space-between">
+            <Column>
+              <Text>Participation Remaining</Text>
+            </Column>
+            <Column>
+              <Text strong>{usdcRemaining && utils.commify(usdcRemaining)} USDC</Text>
+            </Column>
+          </Row>
+          <Row className={styles.rewardsContainer}>
+            <Column grow={1} spacing="l">
+              <TokenInput onChange={handleUsdcChange} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
+              {rewards && (
+                <Row>
+                  <Column grow={1} spacing="m">
+                    <Row alignment="space-between">
+                      <Column>
+                        <Text>Staking (6 months)</Text>
+                      </Column>
+                      <Column>
+                        <Text variant="mono">{utils.commify(utils.formatUnits(rewards.stake, 6))} USDC</Text>
+                      </Column>
+                    </Row>
+                    <Row alignment="space-between">
+                      <Column>
+                        <Text>Treasury Contribution</Text>
+                      </Column>
+                      <Column>
+                        <Text variant="mono">{utils.commify(utils.formatUnits(rewards.price, 6))} USDC</Text>
+                      </Column>
+                    </Row>
+                    <Row>
+                      <hr />
+                    </Row>
+                    <Row alignment="space-between">
+                      <Column>
+                        <Text strong>SHER Reward</Text>
+                      </Column>
+                      <Column className={styles.strong}>
+                        <Text strong>{`${utils.commify(utils.formatUnits(rewards.sherAmount, 18))} SHER`}</Text>
+                      </Column>
+                    </Row>
+                    <Row alignment="space-between">
+                      <Column>
+                        <Text strong>SHER at $100M FDV</Text>
+                      </Column>
+                      <Column className={styles.strong}>
+                        <Text strong variant="mono">
+                          ${utils.commify(utils.formatUnits(rewards.sherAmount, 18))}
+                        </Text>
+                      </Column>
+                    </Row>
+                    <Row alignment="center">
+                      <ConnectGate>
+                        <AllowanceGate
+                          spender={sherBuyContract.address}
+                          amount={usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0)}
+                          render={(disabled) => (
+                            <Button disabled={disabled} onClick={handleExecute}>
+                              Execute
+                            </Button>
+                          )}
+                        ></AllowanceGate>
+                      </ConnectGate>
+                    </Row>
+                  </Column>
+                </Row>
+              )}
+            </Column>
+          </Row>
+        </Column>
+      </LoadingContainer>
     </Box>
   )
 }
