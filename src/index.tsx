@@ -9,6 +9,7 @@ import { ApolloProvider } from "./utils/apollo/ApolloProvider"
 import { WagmiProvider } from "./utils/WagmiProvider"
 import { TxWaitProvider } from "./hooks/useWaitTx"
 import { FundraisePositionProvider } from "./hooks/api/useFundraisePosition"
+import { StakingPositionsProvider } from "./hooks/api/useStakingPositions"
 
 global.Buffer = global.Buffer || require("buffer").Buffer
 
@@ -19,7 +20,9 @@ ReactDOM.render(
         <ApolloProvider>
           <TxWaitProvider>
             <FundraisePositionProvider>
-              <App />
+              <StakingPositionsProvider>
+                <App />
+              </StakingPositionsProvider>
             </FundraisePositionProvider>
           </TxWaitProvider>
         </ApolloProvider>

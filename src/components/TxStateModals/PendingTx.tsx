@@ -14,7 +14,7 @@ interface Props {
 
 const PendingTx: React.FC<Props> = ({ hash }) => {
   return (
-    <Modal closeable>
+    <Modal>
       <Column spacing="m" alignment="center">
         <Loading variant="Layer" label="Transaction approved and pending" />
         <Text>Waiting for the transaction to make it's way on the blockchain.</Text>
