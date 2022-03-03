@@ -1,5 +1,6 @@
 import React from "react"
 import { useAccount, useConnect, useNetwork } from "wagmi"
+import config from "../../config"
 import { shortenAddress } from "../../utils/format"
 import { Button } from "../Button/Button"
 import WalletProviderModal from "../WalletProviderModal/WalletProviderModal"
@@ -21,7 +22,7 @@ const ConnectButton: React.FC = ({ children }) => {
    * Triggers a network switch to the correct network
    */
   const handleSwitchToCorrectNetwork = React.useCallback(() => {
-    switchNetwork?.(parseInt(`${process.env.REACT_APP_NETWORK_ID}`))
+    switchNetwork?.(config.networkId)
   }, [switchNetwork])
 
   /**
@@ -44,7 +45,7 @@ const ConnectButton: React.FC = ({ children }) => {
   }
 
   // Check if correct network is selected
-  const isCorrectNetwork = networkData.chain?.id?.toString() === process.env.REACT_APP_NETWORK_ID
+  const isCorrectNetwork = networkData.chain?.id === config.networkId
   if (!isCorrectNetwork) {
     return (
       <Button variant="cta" onClick={handleSwitchToCorrectNetwork}>

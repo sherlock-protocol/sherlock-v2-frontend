@@ -3,6 +3,7 @@ import { ERC20 } from "../contracts"
 import ERC20ABI from "../abi/ERC20.json"
 import { useAccount, useContract, useProvider, useSigner } from "wagmi"
 import { BigNumber, ethers } from "ethers"
+import config from "../config"
 
 /**
  * Object containing used ERC20 tokens.
@@ -11,11 +12,11 @@ import { BigNumber, ethers } from "ethers"
  */
 const TokenData = {
   USDC: {
-    contract: process.env.REACT_APP_USDC_ADDRESS as string,
+    contract: config.usdcAddress,
     decimals: 6,
   },
   SHER: {
-    contract: process.env.REACT_APP_SHER_ADDRESS as string,
+    contract: config.sherAddress,
     decimals: 18,
   },
 }

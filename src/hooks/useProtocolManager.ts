@@ -3,11 +3,12 @@ import { useContract, useProvider, useSigner } from "wagmi"
 import { SherlockProtocolManager } from "../contracts"
 import SherlockProtocolManagerABI from "../abi/SherlockProtocolManager.json"
 import { BigNumber, ethers } from "ethers"
+import config from "../config"
 
 /**
  * Address of Sherlock Protocol Manager contract
  */
-export const SHERLOCK_PROTOCOL_MANAGER_ADDRESS = process.env.REACT_APP_SHERLOCK_PROTOCOL_MANAGER_ADDRESS as string
+export const SHERLOCK_PROTOCOL_MANAGER_ADDRESS = config.sherlockProtocolManagerAddress
 
 /**
  * Array of protocols covered by Sherlock

@@ -1,4 +1,4 @@
-const networkId = parseInt(`${process.env.REACT_APP_NETWORK_ID}`)
+import config from "../config"
 
 /**
  *
@@ -6,7 +6,7 @@ const networkId = parseInt(`${process.env.REACT_APP_NETWORK_ID}`)
  * @returns Transaction explorer URL if using a supported chain, undefined otherwise.
  */
 export const getTxUrl = (hash: string) => {
-  switch (networkId) {
+  switch (config.networkId) {
     case 1:
       // Mainnet
       return `https://etherscan.io/tx/${hash}`
