@@ -246,7 +246,7 @@ export const FundraisingPage: React.FC = () => {
                       <ConnectGate>
                         <AllowanceGate
                           spender={sherBuyContract.address}
-                          amount={usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0)}
+                          amount={usdcInput ?? BigNumber.from(0)}
                           render={(disabled) => (
                             <Button disabled={disabled} onClick={handleExecute}>
                               Execute
