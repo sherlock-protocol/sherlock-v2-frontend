@@ -232,16 +232,6 @@ export const FundraisingPage: React.FC = () => {
                         <Text strong>{`${utils.commify(utils.formatUnits(rewards.sherAmount, 18))} SHER`}</Text>
                       </Column>
                     </Row>
-                    <Row alignment="space-between">
-                      <Column>
-                        <Text strong>SHER at $100M FDV</Text>
-                      </Column>
-                      <Column className={styles.strong}>
-                        <Text strong variant="mono">
-                          ${utils.commify(utils.formatUnits(rewards.sherAmount, 18))}
-                        </Text>
-                      </Column>
-                    </Row>
                     <Row alignment="center">
                       <ConnectGate>
                         <AllowanceGate
