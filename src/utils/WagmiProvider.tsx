@@ -10,6 +10,7 @@ const localNetworkId = parseInt(`${process.env.REACT_APP_LOCALHOST_NETWORK_ID}`)
 
 // API key for Alchemy project
 const alchemyApiUrl = process.env.REACT_APP_ALCHEMY_API_URL as string
+const alchemyApiUrlHttp = alchemyApiUrl.replace("ws", "http")
 const alchemyApiKey = alchemyApiUrl?.split("/").slice(-1)[0] as string
 
 // Chains for connectors to support
@@ -30,7 +31,7 @@ const connectors = ({ chainId }: { chainId?: number | undefined }) => {
         qrcode: true,
         chainId: networkId,
         rpc: {
-          [networkId]: alchemyApiUrl,
+          [networkId]: alchemyApiUrlHttp,
         },
       },
     }),
