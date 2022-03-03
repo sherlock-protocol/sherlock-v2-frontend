@@ -3,9 +3,12 @@ import { useContract, useProvider, useSigner } from "wagmi"
 import SherClaimInterface from "../abi/SherClaim.json"
 import { SherClaim } from "../contracts/SherClaim"
 import useWaitTx from "./useWaitTx"
+import { DateTime } from "luxon"
 
 export const SHER_CLAIM_ADDRESS = process.env.REACT_APP_SHER_CLAIM_ADDRESS as string
-
+const ENV_DEADLINE = parseInt(process.env.REACT_APP_SHER_BUY_ENTRY_DEADLINE || "")
+export const SHER_BUY_ENTRY_DEADLINE = Number.isInteger(ENV_DEADLINE) ? ENV_DEADLINE : 0
+export const SHER_CLAIM_START = SHER_BUY_ENTRY_DEADLINE + 60 * 60 * 24 * 7 * 26 //(26 weeks)
 /**
  * React Hook for interacting with Sherlock's SerClaim smart contract.
  *
@@ -31,10 +34,9 @@ export const useSherClaimContract = () => {
    * @see `claimableAt` smart contract property.
    */
   const getClaimableAt = useCallback(async () => {
-    const timestampInSeconds = await contract.claimableAt()
     // Convert timestamp to milliseconds and return date obj
-    return new Date(timestampInSeconds.toNumber() * 1000)
-  }, [contract])
+    return new Date(SHER_BUY_ENTRY_DEADLINE * 1000)
+  }, [])
 
   /**
    * Fetch wether the claim is active (users can claim) or not.
@@ -42,9 +44,10 @@ export const useSherClaimContract = () => {
    * @returns true|false
    */
   const claimIsActive = useCallback(async () => {
-    const active = await contract.active()
-    return active
-  }, [contract])
+    const claimStartDate = DateTime.fromMillis(SHER_CLAIM_START * 1000)
+    const now = DateTime.now()
+    return now > claimStartDate
+  }, [])
 
   /**
    * Claim SHER tokens.

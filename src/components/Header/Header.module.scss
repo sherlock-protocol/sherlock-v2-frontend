@@ -1,23 +1,20 @@
 @import "../../styles/variables";
 
 .container {
+  padding: 2rem 3rem;
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 2rem 3rem;
+  justify-self: stretch;
   align-self: stretch;
 
-  .leftArea {
-    flex: 0;
+  .leftArea,
+  .centerArea,
+  .rightArea {
+    flex: 1;
   }
 
   .centerArea {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-
     a {
       padding: 0 1rem;
       text-decoration: none;
@@ -26,9 +23,5 @@
       font-weight: 700;
       color: white;
     }
-  }
-
-  .rightArea {
-    flex: 0;
   }
 }

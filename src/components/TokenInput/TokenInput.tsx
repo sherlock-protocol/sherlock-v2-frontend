@@ -7,24 +7,35 @@ import { Column, Row } from "../Layout"
 import { Text } from "../Text"
 import styles from "./TokenInput.module.scss"
 
-type Props = InputProps & {
+type Props = Omit<InputProps, "value"> & {
   balance?: BigNumber
+  value?: BigNumber
 }
 
-const TokenInput: React.FC<Props> = ({ balance, ...props }) => {
-  const [value, setValue] = React.useState<string>()
+const TokenInput: React.FC<Props> = ({ balance, value, ...props }) => {
+  const [controlledValue, setControlledValue] = React.useState<BigNumber>()
 
   const handleSetMax = React.useCallback(() => {
     if (balance) {
-      setValue(utils.formatUnits(balance, decimalsByToken[props.token]))
+      // Because we are passing the same BigNumber reference, the input will not update
+      // on a second call with the same value.
+      // We create a new BigNumber instance to workaround it
+      // TODO: Find a better method to copy balance to a new instance
+      setControlledValue(balance?.sub(0))
     }
-  }, [balance, props.token])
+  }, [balance])
+
+  React.useEffect(() => {
+    if (value) {
+      setControlledValue(value)
+    }
+  }, [value])
 
   return (
     <>
       <Row alignment={["space-between", "center"]} spacing="xl">
         <Column grow={1}>
-          <Input value={value} {...props} />
+          <Input value={controlledValue} {...props} />
         </Column>
         <Column grow={0}>
           <Text size="extra-large" strong>

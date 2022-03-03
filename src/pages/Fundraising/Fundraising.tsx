@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { BigNumber, ethers, utils } from "ethers"
 import { useDebounce } from "use-debounce"
+import { useNavigate } from "react-router-dom"
 
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Button } from "../../components/Button/Button"
@@ -37,6 +38,7 @@ type Rewards = {
 }
 
 export const FundraisingPage: React.FC = () => {
+  const navigate = useNavigate()
   const sherBuyContract = useSherBuyContract()
   const sherClaimContract = useSherClaimContract()
   const sher = useERC20("SHER")
@@ -76,7 +78,7 @@ export const FundraisingPage: React.FC = () => {
   useEffect(() => {
     const fetchConversionRatio = async () => {
       try {
-        const ratio = await sherBuyContract.getUsdcToSherRewardRatio()
+        const ratio = await sherBuyContract.getUsdcToSherRewardRatio
         setUsdcToSherRewardRatio(ratio)
       } catch (error) {
         console.error(error)
@@ -165,6 +167,7 @@ export const FundraisingPage: React.FC = () => {
 
     try {
       await waitForTx(async () => await sherBuyContract.execute(rewards?.sherAmount))
+      navigate("/fundraiseclaim")
     } catch (error) {
       console.error(error)
     }
@@ -244,9 +247,12 @@ export const FundraisingPage: React.FC = () => {
                         <AllowanceGate
                           spender={sherBuyContract.address}
                           amount={usdcInput ? utils.parseUnits(usdcInput.toString(), 6) : BigNumber.from(0)}
-                        >
-                          <Button onClick={handleExecute}>Execute</Button>
-                        </AllowanceGate>
+                          render={(disabled) => (
+                            <Button disabled={disabled} onClick={handleExecute}>
+                              Execute
+                            </Button>
+                          )}
+                        ></AllowanceGate>
                       </ConnectGate>
                     </Row>
                   </Column>
