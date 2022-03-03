@@ -4,10 +4,10 @@ import SherClaimInterface from "../abi/SherClaim.json"
 import { SherClaim } from "../contracts/SherClaim"
 import useWaitTx from "./useWaitTx"
 import { DateTime } from "luxon"
+import config from "../config"
 
-export const SHER_CLAIM_ADDRESS = process.env.REACT_APP_SHER_CLAIM_ADDRESS as string
-const ENV_DEADLINE = parseInt(process.env.REACT_APP_SHER_BUY_ENTRY_DEADLINE || "")
-export const SHER_BUY_ENTRY_DEADLINE = Number.isInteger(ENV_DEADLINE) ? ENV_DEADLINE : 0
+export const SHER_CLAIM_ADDRESS = config.sherClaimAddress
+export const SHER_BUY_ENTRY_DEADLINE = Number.isInteger(config.sherBuyEntryDeadline) ? config.sherBuyEntryDeadline : 0
 export const SHER_CLAIM_START = SHER_BUY_ENTRY_DEADLINE + 60 * 60 * 24 * 7 * 26 //(26 weeks)
 /**
  * React Hook for interacting with Sherlock's SerClaim smart contract.

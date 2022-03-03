@@ -3,11 +3,12 @@ import { useAccount, useContract, useProvider, useSigner } from "wagmi"
 import { Sherlock } from "../contracts"
 import SherlockABI from "../abi/Sherlock.json"
 import { BigNumber } from "ethers"
+import config from "../config"
 
 /**
  * Address of Sherlock contract
  */
-export const SHERLOCK_ADDRESS = process.env.REACT_APP_SHERLOCK_ADDRESS as string
+export const SHERLOCK_ADDRESS = config.sherlockAddress
 
 /**
  * React Hook for interacting with Sherlock contract.

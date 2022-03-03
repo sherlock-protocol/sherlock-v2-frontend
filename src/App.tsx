@@ -18,8 +18,9 @@ import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
 import { useAccount } from "wagmi"
 import useCountdown from "./hooks/useCountdown"
 import { USForbiddenPage } from "./pages/USForbidden"
+import config from "./config"
 
-export const LAUNCH_TIMESTAMP = parseInt(process.env.REACT_APP_LAUNCH_TIMESTAMP as string)
+export const LAUNCH_TIMESTAMP = config.launchTimestamp
 
 function App() {
   const location = useLocation()
