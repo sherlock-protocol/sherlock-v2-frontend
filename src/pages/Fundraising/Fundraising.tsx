@@ -173,8 +173,8 @@ export const FundraisingPage: React.FC = () => {
     }
   }
 
-  const usdcRemaining =
-    usdcToSherRewardRatio && sherRemaining && Number(utils.formatUnits(sherRemaining, 18)) / usdcToSherRewardRatio
+  const usdcRemaining = sherRemaining && sherRemaining.div(10 ** 11)
+  const usdcRemainingRounded = usdcRemaining && usdcRemaining.sub(usdcRemaining.mod(1e6)) //sherRemaining && sherRemaining.div(10 ** 11)
 
   return (
     <Box>
@@ -196,7 +196,9 @@ export const FundraisingPage: React.FC = () => {
               <Text>Participation Remaining</Text>
             </Column>
             <Column>
-              <Text strong>{usdcRemaining && utils.commify(usdcRemaining)} USDC</Text>
+              <Text strong>
+                {usdcRemainingRounded && utils.commify(utils.formatUnits(usdcRemainingRounded, 6))} USDC
+              </Text>
             </Column>
           </Row>
           <Row className={styles.rewardsContainer}>
