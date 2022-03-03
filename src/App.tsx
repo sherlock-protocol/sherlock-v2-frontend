@@ -43,15 +43,15 @@ function App() {
         },
       ]
 
-      // if (fundraisePositionData) {
-      links = [
-        ...links,
-        {
-          title: "CLAIM",
-          route: routes.FundraiseClaim,
-        },
-      ]
-      // }
+      if (fundraisePositionData) {
+        links = [
+          ...links,
+          {
+            title: "CLAIM",
+            route: routes.FundraiseClaim,
+          },
+        ]
+      }
       setNavigationLinks(links)
     } else {
       setNavigationLinks([
