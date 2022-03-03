@@ -41,7 +41,7 @@ const provider = ({ chainId }: { chainId?: number | undefined }) => {
   console.log("Fetching provider for chain", chainId)
 
   // Use local node if working on a development chain
-  if (__DEV__ && (chainId === localNetworkId || !chainId)) {
+  if (__DEV__ && chainId && chainId === localNetworkId) {
     return new providers.JsonRpcProvider("http://127.0.0.1:8545")
   }
 
