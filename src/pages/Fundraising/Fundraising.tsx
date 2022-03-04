@@ -21,6 +21,7 @@ import { formattedTimeDifference } from "../../utils/dates"
 import styles from "./Fundraising.module.scss"
 import TokenInput from "../../components/TokenInput/TokenInput"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
+import { TxType } from "../../utils/txModalMessages"
 
 type Rewards = {
   /**
@@ -166,7 +167,9 @@ export const FundraisingPage: React.FC = () => {
     if (!rewards?.sherAmount) return
 
     try {
-      await waitForTx(async () => await sherBuyContract.execute(rewards?.sherAmount))
+      await waitForTx(async () => await sherBuyContract.execute(rewards?.sherAmount), {
+        transactionType: TxType.EXECUTE,
+      })
       navigate("/fundraiseclaim")
     } catch (error) {
       console.error(error)
@@ -177,8 +180,8 @@ export const FundraisingPage: React.FC = () => {
     return deadline && formattedTimeDifference(deadline, ["days", "hours", "minutes"])
   }, [deadline])
 
-  const usdcRemaining =
-    usdcToSherRewardRatio && sherRemaining && Number(utils.formatUnits(sherRemaining, 18)) / usdcToSherRewardRatio
+  const usdcRemaining = sherRemaining && sherRemaining.div(10 ** 11)
+  const usdcRemainingRounded = usdcRemaining && usdcRemaining.sub(usdcRemaining.mod(1e6)) //sherRemaining && sherRemaining.div(10 ** 11)
 
   return (
     <Box>
@@ -200,7 +203,9 @@ export const FundraisingPage: React.FC = () => {
               <Text>Participation Remaining</Text>
             </Column>
             <Column>
-              <Text strong>{usdcRemaining && utils.commify(usdcRemaining)} USDC</Text>
+              <Text strong>
+                {usdcRemainingRounded && utils.commify(utils.formatUnits(usdcRemainingRounded, 6))} USDC
+              </Text>
             </Column>
           </Row>
           <Row className={styles.rewardsContainer}>
@@ -234,16 +239,6 @@ export const FundraisingPage: React.FC = () => {
                       </Column>
                       <Column className={styles.strong}>
                         <Text strong>{`${utils.commify(utils.formatUnits(rewards.sherAmount, 18))} SHER`}</Text>
-                      </Column>
-                    </Row>
-                    <Row alignment="space-between">
-                      <Column>
-                        <Text strong>SHER at $100M FDV</Text>
-                      </Column>
-                      <Column className={styles.strong}>
-                        <Text strong variant="mono">
-                          ${utils.commify(utils.formatUnits(rewards.sherAmount, 18))}
-                        </Text>
                       </Column>
                     </Row>
                     <Row alignment="center">
