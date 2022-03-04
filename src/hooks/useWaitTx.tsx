@@ -8,7 +8,12 @@ import UserDeniedTx from "../components/TxStateModals/UserDeniedTx"
 import { TxState, TxType } from "../utils/txModalMessages"
 
 interface TxWaitContextType {
-  waitForTx: (tx: () => Promise<ethers.ContractTransaction>) => Promise<ethers.ContractReceipt>
+  waitForTx: (
+    tx: () => Promise<ethers.ContractTransaction>,
+    options?: {
+      transactionType?: TxType
+    }
+  ) => Promise<ethers.ContractReceipt>
 }
 
 const TxWaitContext = React.createContext<TxWaitContextType>({} as TxWaitContextType)
