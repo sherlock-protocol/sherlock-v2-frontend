@@ -2,7 +2,7 @@ import { Config } from "./ConfigType"
 
 export const config: Config = {
   networkId: 1,
-  launchTimestamp: 1646668800,
+  launchTimestamp: 0,
   sherBuyEntryDeadline: 1647100800,
   alchemyApiUrl: "wss://eth-mainnet.alchemyapi.io/v2/H7GQZq65vKCHEh5cnz_luQmYM8HWWcr-",
   indexerBaseUrl: "https://mainnet.indexer.sherlock.xyz/",
