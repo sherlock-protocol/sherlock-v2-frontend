@@ -7,7 +7,7 @@ export enum TxType {
   APPROVE = "APPROVE",
   EXECUTE = "EXECUTE",
   STAKE = "STAKE",
-  RESTAKE = "RESTAKE",
+  ADD_PROTOCOL_BALANCE = "ADD_PROTOCOL_BALANCE",
 }
 
 /**
@@ -70,7 +70,7 @@ const TransactionTypeMessages: TxTypeMessages = {
     },
     [TxState.SUCCESS]: {
       title: "Transaction was successful!",
-      messages: ["Yipeee!!Approval transaction (2/2) is completed. The next transaction (2/2) is ready to be signed."],
+      messages: ["Yipeee!! Approval transaction (2/2) is completed. The next transaction (2/2) is ready to be signed."],
     },
   },
   [TxType.EXECUTE]: {
@@ -86,21 +86,21 @@ const TransactionTypeMessages: TxTypeMessages = {
   [TxType.STAKE]: {
     [TxState.PENDING]: {
       title: "Transaction approved and pending",
-      messages: ["Waiting for the transaction to make its way onto the blockchain."],
+      messages: ["Waiting for the stake transaction (2/2) to make its way onto the blockchain."],
     },
     [TxState.SUCCESS]: {
       title: "Transaction was successful!",
-      messages: ["Yipeee!! The transaction made its way onto the blockchain!"],
+      messages: ["Yipeee!! Stake transaction (2/2) is completed. Look into your wallet for the receipt NFT."],
     },
   },
-  [TxType.RESTAKE]: {
+  [TxType.ADD_PROTOCOL_BALANCE]: {
     [TxState.PENDING]: {
       title: "Transaction approved and pending",
-      messages: ["Waiting for the transaction to make its way onto the blockchain."],
+      messages: ["Waiting for the add balance transaction (2/2) to make its way onto the blockchain."],
     },
     [TxState.SUCCESS]: {
       title: "Transaction was successful!",
-      messages: ["Yipeee!! The transaction made its way onto the blockchain!"],
+      messages: ["Yipeee!! Add balance transaction (2/2) is completed. Protocol's balance will update shortly."],
     },
   },
 }

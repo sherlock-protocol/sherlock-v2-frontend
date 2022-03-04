@@ -21,6 +21,7 @@ import { formattedTimeDifference } from "../../utils/dates"
 import styles from "./Fundraising.module.scss"
 import TokenInput from "../../components/TokenInput/TokenInput"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
+import { TxType } from "../../utils/txModalMessages"
 
 type Rewards = {
   /**
@@ -166,7 +167,9 @@ export const FundraisingPage: React.FC = () => {
     if (!rewards?.sherAmount) return
 
     try {
-      await waitForTx(async () => await sherBuyContract.execute(rewards?.sherAmount))
+      await waitForTx(async () => await sherBuyContract.execute(rewards?.sherAmount), {
+        transactionType: TxType.EXECUTE,
+      })
       navigate("/fundraiseclaim")
     } catch (error) {
       console.error(error)

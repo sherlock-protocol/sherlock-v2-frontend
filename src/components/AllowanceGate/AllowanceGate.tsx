@@ -3,6 +3,7 @@ import React from "react"
 import { FaArrowRight } from "react-icons/fa"
 import useERC20 from "../../hooks/useERC20"
 import useWaitTx from "../../hooks/useWaitTx"
+import { TxType } from "../../utils/txModalMessages"
 import { Button } from "../Button/Button"
 import { Row } from "../Layout"
 import styles from "./AllowanceGate.module.scss"
@@ -50,7 +51,9 @@ const AllowanceGate: React.FC<Props> = ({ children, spender, amount, render }) =
       return
     }
 
-    await waitForTx(async () => (await approve(spender, amount)) as ethers.ContractTransaction)
+    await waitForTx(async () => (await approve(spender, amount)) as ethers.ContractTransaction, {
+      transactionType: TxType.APPROVE,
+    })
 
     handleFetchAllowance(true)
   }, [approve, spender, amount, handleFetchAllowance, waitForTx])
