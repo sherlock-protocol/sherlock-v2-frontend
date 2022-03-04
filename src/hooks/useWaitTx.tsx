@@ -5,21 +5,18 @@ import RequestedTx from "../components/TxStateModals/RequestedTx"
 import RevertedTx from "../components/TxStateModals/RevertedTx"
 import SuccessTx from "../components/TxStateModals/SuccessTx"
 import UserDeniedTx from "../components/TxStateModals/UserDeniedTx"
+import { TxState, TxType } from "../utils/txModalMessages"
 
 interface TxWaitContextType {
-  waitForTx: (tx: () => Promise<ethers.ContractTransaction>) => Promise<ethers.ContractReceipt>
+  waitForTx: (
+    tx: () => Promise<ethers.ContractTransaction>,
+    options?: {
+      transactionType?: TxType
+    }
+  ) => Promise<ethers.ContractReceipt>
 }
 
 const TxWaitContext = React.createContext<TxWaitContextType>({} as TxWaitContextType)
-
-enum TxState {
-  NONE = 1,
-  REQUESTED = 2,
-  PENDING = 3,
-  SUCCESS = 4,
-  REVERTED = 5,
-  USER_DENIED = 6,
-}
 
 /**
  * Provider for waiting for a pending transaction and show
@@ -28,11 +25,22 @@ enum TxState {
 export const TxWaitProvider: React.FC = ({ children }) => {
   const [txState, setTxState] = React.useState(TxState.NONE)
   const [txHash, setTxHash] = React.useState<string | undefined>()
+  const [txType, setTxType] = React.useState<TxType>(TxType.GENERIC)
 
+  /**
+   * Wrap a contract transaction and follow transaction state changes
+   * with visual updates.
+   */
   const waitForTx = React.useCallback(
-    async (tx: () => Promise<ethers.ContractTransaction>): Promise<ethers.ContractReceipt> => {
+    async (
+      tx: () => Promise<ethers.ContractTransaction>,
+      options?: {
+        transactionType?: TxType
+      }
+    ): Promise<ethers.ContractReceipt> => {
       setTxHash(undefined)
       setTxState(TxState.REQUESTED)
+      setTxType(options?.transactionType ?? TxType.GENERIC)
 
       try {
         const transaction = await tx()
@@ -65,8 +73,8 @@ export const TxWaitProvider: React.FC = ({ children }) => {
     <TxWaitContext.Provider value={ctx}>
       {children}
       {txState === TxState.REQUESTED && <RequestedTx />}
-      {txState === TxState.PENDING && <PendingTx hash={txHash} />}
-      {txState === TxState.SUCCESS && <SuccessTx hash={txHash} />}
+      {txState === TxState.PENDING && <PendingTx type={txType} hash={txHash} />}
+      {txState === TxState.SUCCESS && <SuccessTx type={txType} hash={txHash} />}
       {txState === TxState.REVERTED && <RevertedTx hash={txHash} />}
       {txState === TxState.USER_DENIED && <UserDeniedTx />}
     </TxWaitContext.Provider>

@@ -16,6 +16,7 @@ import useERC20 from "../../hooks/useERC20"
 import useSherDistManager from "../../hooks/useSherDistManager"
 import useSherlock from "../../hooks/useSherlock"
 import useWaitTx from "../../hooks/useWaitTx"
+import { TxType } from "../../utils/txModalMessages"
 import styles from "./Staking.module.scss"
 
 /**
@@ -74,7 +75,9 @@ export const StakingPage: React.FC = () => {
       return
     }
 
-    await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction)
+    await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
+      transactionType: TxType.STAKE,
+    })
 
     refreshTvl()
   }, [amount, stakingPeriod, stake, refreshTvl, waitForTx])
