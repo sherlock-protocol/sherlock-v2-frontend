@@ -70,7 +70,7 @@ const TransactionTypeMessages: TxTypeMessages = {
     },
     [TxState.SUCCESS]: {
       title: "Transaction was successful!",
-      messages: ["Yipeee!! Approval transaction (2/2) is completed. The next transaction (2/2) is ready to be signed."],
+      messages: ["Yipeee!! Approval transaction (1/2) is completed. The next transaction (2/2) is ready to be signed."],
     },
   },
   [TxType.EXECUTE]: {
