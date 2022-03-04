@@ -60,7 +60,7 @@ const TransactionTypeMessages: TxTypeMessages = {
     },
     [TxState.SUCCESS]: {
       title: "Transaction was successful!",
-      messages: ["Yipeee!! The transaction made its way onto the blockchain!"],
+      messages: ["Success!! The transaction made its way onto the blockchain!"],
     },
   },
   [TxType.APPROVE]: {
@@ -70,7 +70,9 @@ const TransactionTypeMessages: TxTypeMessages = {
     },
     [TxState.SUCCESS]: {
       title: "Transaction was successful!",
-      messages: ["Yipeee!! Approval transaction (1/2) is completed. The next transaction (2/2) is ready to be signed."],
+      messages: [
+        "Success!! Approval transaction (1/2) is completed. The next transaction (2/2) is ready to be signed.",
+      ],
     },
   },
   [TxType.EXECUTE]: {
@@ -80,7 +82,7 @@ const TransactionTypeMessages: TxTypeMessages = {
     },
     [TxState.SUCCESS]: {
       title: "Transaction was successful!",
-      messages: ["Yipeee!! Execute transaction (2/2) is completed. Look into your wallet for the receipt NFT."],
+      messages: ["Success!! Execute transaction (2/2) is completed. Look into your wallet for the receipt NFT."],
     },
   },
   [TxType.STAKE]: {
@@ -90,7 +92,7 @@ const TransactionTypeMessages: TxTypeMessages = {
     },
     [TxState.SUCCESS]: {
       title: "Transaction was successful!",
-      messages: ["Yipeee!! Stake transaction (2/2) is completed. Look into your wallet for the receipt NFT."],
+      messages: ["Success!! Stake transaction (2/2) is completed. Look into your wallet for the receipt NFT."],
     },
   },
   [TxType.ADD_PROTOCOL_BALANCE]: {
@@ -100,7 +102,7 @@ const TransactionTypeMessages: TxTypeMessages = {
     },
     [TxState.SUCCESS]: {
       title: "Transaction was successful!",
-      messages: ["Yipeee!! Add balance transaction (2/2) is completed. Protocol's balance will update shortly."],
+      messages: ["Success!! Add balance transaction (2/2) is completed. Protocol's balance will update shortly."],
     },
   },
 }
