@@ -66,7 +66,6 @@ export const FundraisingClaimPage = () => {
   }, [accountData?.address, sherClaim, getFundraisePosition])
 
   const claimStartString = useMemo(() => {
-    console.log(fundraisePositionData?.claimableAt)
     return (
       fundraisePositionData?.claimableAt &&
       formattedTimeDifference(fundraisePositionData.claimableAt, ["days", "hours", "minutes"])

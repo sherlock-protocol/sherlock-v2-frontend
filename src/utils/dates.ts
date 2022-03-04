@@ -7,8 +7,6 @@ export const formattedTimeDifference = (d: Date, units: TimeUnit[] = ["hours", "
   const diff = date.diffNow(units)
   const isPast = date < DateTime.now()
 
-  console.log(diff)
-
   const daySingularOrPlural = Math.abs(diff.days) > 0 ? "days" : "day"
   const daysString = diff.days !== 0 ? `${Math.abs(diff.days)} ${daySingularOrPlural} ` : ""
 
