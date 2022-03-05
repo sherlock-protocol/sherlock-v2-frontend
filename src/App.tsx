@@ -16,6 +16,7 @@ import { useAccount } from "wagmi"
 import useCountdown from "./hooks/useCountdown"
 import { USForbiddenPage } from "./pages/USForbidden"
 import config from "./config"
+import { StakingPage } from "./pages/Staking"
 
 export const LAUNCH_TIMESTAMP = config.launchTimestamp
 
@@ -76,6 +77,7 @@ function App() {
               <Route path={routes.Fundraise} element={<FundraisingPage />} />
               <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
               <Route path={routes.USForbidden} element={<USForbiddenPage />} />
+              <Route path={routes.Stake} element={<StakingPage />} />
               <Route path="*" element={<Navigate replace to={routes.Fundraise} />} />
             </>
           ) : (
