@@ -122,16 +122,6 @@ export const FundraisingClaimPage = () => {
         </Row>
         <Row className={styles.claimContainer}>
           <Column grow={1} spacing="m">
-            <Row alignment="space-between" className={styles.strong}>
-              <Column>
-                <Text strong>Claim Status</Text>
-              </Column>
-              <Column>
-                <Text strong variant="mono">
-                  {formattedSherAmount} SHER
-                </Text>
-              </Column>
-            </Row>
             <Row alignment="space-between">
               <Column>
                 <Text strong>Claimable Starts</Text>
