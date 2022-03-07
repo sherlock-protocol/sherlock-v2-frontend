@@ -1,5 +1,5 @@
 import { ethers } from "ethers"
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useAccount } from "wagmi"
 
 import { useSherClaimContract } from "../../hooks/useSherClaimContract"
@@ -65,6 +65,13 @@ export const FundraisingClaimPage = () => {
     }
   }, [accountData?.address, sherClaim, getFundraisePosition])
 
+  const claimStartString = useMemo(() => {
+    return (
+      fundraisePositionData?.claimableAt &&
+      formattedTimeDifference(fundraisePositionData.claimableAt, ["days", "hours", "minutes"])
+    )
+  }, [fundraisePositionData?.claimableAt])
+
   if (!fundraisePositionData) return null
 
   const formattedSherAmount = ethers.utils.commify(ethers.utils.formatUnits(fundraisePositionData.reward))
@@ -128,7 +135,7 @@ export const FundraisingClaimPage = () => {
               </Column>
               <Column>
                 <Text strong variant="mono">
-                  {formattedTimeDifference(fundraisePositionData.claimableAt)}
+                  {claimStartString}
                 </Text>
               </Column>
             </Row>

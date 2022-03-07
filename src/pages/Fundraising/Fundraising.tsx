@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { BigNumber, ethers, utils } from "ethers"
 import { useDebounce } from "use-debounce"
 import { useNavigate } from "react-router-dom"
@@ -176,6 +176,10 @@ export const FundraisingPage: React.FC = () => {
     }
   }
 
+  const eventEndsString = useMemo(() => {
+    return deadline && formattedTimeDifference(deadline, ["days", "hours", "minutes"])
+  }, [deadline])
+
   const usdcRemaining = sherRemaining && sherRemaining.div(10 ** 11)
   const usdcRemainingRounded = usdcRemaining && usdcRemaining.sub(usdcRemaining.mod(1e6)) //sherRemaining && sherRemaining.div(10 ** 11)
 
@@ -191,7 +195,7 @@ export const FundraisingPage: React.FC = () => {
               <Text>Event Ends</Text>
             </Column>
             <Column>
-              <Text strong>{deadline && formattedTimeDifference(deadline)}</Text>
+              <Text strong>{eventEndsString}</Text>
             </Column>
           </Row>
           <Row alignment="space-between">
