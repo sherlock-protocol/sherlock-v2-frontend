@@ -54,7 +54,7 @@ export const TxWaitProvider: React.FC = ({ children }) => {
         return receipt
       } catch (error: any) {
         // User denied transaction (EIP-1193)
-        if (error?.code === 4001) {
+        if (error?.code === 4001 || error === "User rejected the transaction") {
           setTxState(TxState.USER_DENIED)
         } else {
           setTxState(TxState.REVERTED)
