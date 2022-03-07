@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom"
 import "./index.module.scss"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
+import "./polyfills"
 
 import { ApolloProvider } from "./utils/apollo/ApolloProvider"
 import { WagmiProvider } from "./utils/WagmiProvider"
