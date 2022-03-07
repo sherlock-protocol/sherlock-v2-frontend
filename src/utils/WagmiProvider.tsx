@@ -3,13 +3,15 @@ import { Provider, defaultChains, developmentChains } from "wagmi"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 import { providers } from "ethers"
+import config from "../config"
 
 // Working chain ID
-const networkId = parseInt(`${process.env.REACT_APP_NETWORK_ID}`)
-const localNetworkId = parseInt(`${process.env.REACT_APP_LOCALHOST_NETWORK_ID}`)
+const networkId = config.networkId
+const localNetworkId = config.localNetworkId
 
 // API key for Alchemy project
-const alchemyApiUrl = process.env.REACT_APP_ALCHEMY_API_URL as string
+const alchemyApiUrl = config.alchemyApiUrl
+const alchemyApiUrlHttp = alchemyApiUrl.replace("ws", "http")
 const alchemyApiKey = alchemyApiUrl?.split("/").slice(-1)[0] as string
 
 // Chains for connectors to support
@@ -30,7 +32,7 @@ const connectors = ({ chainId }: { chainId?: number | undefined }) => {
         qrcode: true,
         chainId: networkId,
         rpc: {
-          [networkId]: alchemyApiUrl,
+          [networkId]: alchemyApiUrlHttp,
         },
       },
     }),
@@ -41,7 +43,7 @@ const provider = ({ chainId }: { chainId?: number | undefined }) => {
   console.log("Fetching provider for chain", chainId)
 
   // Use local node if working on a development chain
-  if (__DEV__ && (chainId === localNetworkId || !chainId)) {
+  if (__DEV__ && chainId && chainId === localNetworkId) {
     return new providers.JsonRpcProvider("http://127.0.0.1:8545")
   }
 

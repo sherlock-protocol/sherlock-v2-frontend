@@ -1,7 +1,8 @@
 import axios from "axios"
+import config from "../../config"
 
 const instance = axios.create({
-  baseURL: process.env.REACT_APP_INDEXER_BASE_URL,
+  baseURL: config.indexerBaseUrl,
   timeout: 1000,
 })
 

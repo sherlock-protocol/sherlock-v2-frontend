@@ -3,11 +3,12 @@ import { useContract, useProvider, useSigner } from "wagmi"
 import { SherDistributionManager } from "../contracts"
 import SherDistManagerABI from "../abi/SherDistributionManager.json"
 import { BigNumber } from "ethers"
+import config from "../config"
 
 /**
- * Address of Sherlock Distribution Manager contract
+ * Address of Sher Distribution Manager contract
  */
-export const SHERLOCK_DIST_MANAGER_ADDRESS = process.env.REACT_APP_SHER_DIST_MANAGER_ADDRESS as string
+export const SHERLOCK_DIST_MANAGER_ADDRESS = config.sherDistributionManagerAddress
 
 /**
  * React Hook for interacting with Sher Distribution Manager contract.

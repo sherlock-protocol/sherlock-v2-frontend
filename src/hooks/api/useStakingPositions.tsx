@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import React, { useCallback, useState } from "react"
 import { BigNumber } from "ethers"
 import axios from "./axios"
 import { getStakePositions as getStakePositionUrl } from "./urls"
@@ -44,17 +44,30 @@ const parseResponse = (response: GetStakingPositionsResponseData): StakingPositi
       owner: p.owner,
       sher: BigNumber.from(p.sher),
       usdc: BigNumber.from(p.usdc),
-      lockupEnd: new Date(p.lockup_end),
+      lockupEnd: new Date(p.lockup_end * 1000),
     })),
     usdcAPY: response.usdc_apy,
     usdcIncrementFactor50ms: response.usdc_increment_50ms_factor,
   }
 }
 
+type StakingPositionContextType = {
+  getStakingPositions: (account: string) => void
+  loading: boolean
+  data: StakingPositions | null
+  error: Error | null
+}
+
+const StakingPositionsContext = React.createContext<StakingPositionContextType>({} as StakingPositionContextType)
+
 export const useStakingPositions = () => {
+  return React.useContext(StakingPositionsContext)
+}
+
+export const StakingPositionsProvider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<Error | null>()
-  const [data, setData] = useState<StakingPositions | null>()
+  const [error, setError] = useState<Error | null>(null)
+  const [data, setData] = useState<StakingPositions | null>(null)
 
   const getStakingPositions = useCallback(async (account: string) => {
     try {
@@ -76,10 +89,15 @@ export const useStakingPositions = () => {
     }
   }, [])
 
-  return {
-    getStakingPositions,
-    loading,
-    data,
-    error,
-  }
+  const ctx = React.useMemo(
+    () => ({
+      getStakingPositions,
+      loading,
+      data,
+      error,
+    }),
+    [getStakingPositions, loading, data, error]
+  )
+
+  return <StakingPositionsContext.Provider value={ctx}>{children}</StakingPositionsContext.Provider>
 }

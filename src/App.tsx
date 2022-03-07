@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react"
 import { Route, Routes, useLocation, Navigate } from "react-router-dom"
 
-import { StakingPage } from "./pages/Staking"
-import { StakingPositionsPage } from "./pages/StakingPositions"
 import { FundraisingPage } from "./pages/Fundraising"
 import { FundraisingClaimPage } from "./pages/FundraisingClaim"
 import { CountdownPage } from "./pages/Countdown"
-import { ProtocolPage } from "./pages/Protocol"
 
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
@@ -18,8 +15,9 @@ import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
 import { useAccount } from "wagmi"
 import useCountdown from "./hooks/useCountdown"
 import { USForbiddenPage } from "./pages/USForbidden"
+import config from "./config"
 
-export const LAUNCH_TIMESTAMP = parseInt(process.env.REACT_APP_LAUNCH_TIMESTAMP as string)
+export const LAUNCH_TIMESTAMP = config.launchTimestamp
 
 function App() {
   const location = useLocation()
@@ -75,14 +73,10 @@ function App() {
         <Routes>
           {ended ? (
             <>
-              <Route index element={<StakingPage />} />
-              <Route path={routes.Stake} element={<StakingPage />} />
-              <Route path={routes.Positions} element={<StakingPositionsPage />} />
               <Route path={routes.Fundraise} element={<FundraisingPage />} />
               <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
-              <Route path={routes.Protocol} element={<ProtocolPage />} />
               <Route path={routes.USForbidden} element={<USForbiddenPage />} />
-              <Route path="*" element={<Navigate replace to="/" />} />
+              <Route path="*" element={<Navigate replace to={routes.Fundraise} />} />
             </>
           ) : (
             <>

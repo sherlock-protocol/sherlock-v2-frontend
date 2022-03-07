@@ -32,7 +32,7 @@ const parseResponse = (response: GetFundraisePositionResponseData): FundraisePos
 
   return {
     owner: response.data.id,
-    claimableAt: new Date(response.data.claimable_at),
+    claimableAt: new Date(response.data.claimable_at * 1000),
     contribution: BigNumber.from(response.data.contribution),
     reward: BigNumber.from(response.data.reward),
     stake: BigNumber.from(response.data.stake),

@@ -1,6 +1,7 @@
 import { BigNumber, ethers, utils } from "ethers"
 import React from "react"
 import { useDebounce } from "use-debounce"
+import { useAccount } from "wagmi"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button/Button"
@@ -10,10 +11,12 @@ import LoadingContainer from "../../components/LoadingContainer/LoadingContainer
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
 import TokenInput from "../../components/TokenInput/TokenInput"
+import { useStakingPositions } from "../../hooks/api/useStakingPositions"
 import useERC20 from "../../hooks/useERC20"
 import useSherDistManager from "../../hooks/useSherDistManager"
 import useSherlock from "../../hooks/useSherlock"
 import useWaitTx from "../../hooks/useWaitTx"
+import { TxType } from "../../utils/txModalMessages"
 import styles from "./Staking.module.scss"
 
 /**
@@ -32,12 +35,14 @@ export const StakingPage: React.FC = () => {
   const [stakingPeriod, setStakingPeriod] = React.useState<number>()
   const [sherRewards, setSherRewards] = React.useState<BigNumber>()
   const [isLoadingRewards, setIsLoadingRewards] = React.useState(false)
+  const { data: stakePositionsData, getStakingPositions } = useStakingPositions()
 
   const { tvl, address, stake, refreshTvl } = useSherlock()
   const { computeRewards } = useSherDistManager()
   const { format: formatSHER } = useERC20("SHER")
   const { format: formatUSDC, balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
+  const [{ data: accountData }] = useAccount()
 
   /**
    * Compute staking rewards for current amount and staking period
@@ -70,7 +75,9 @@ export const StakingPage: React.FC = () => {
       return
     }
 
-    await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction)
+    await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
+      transactionType: TxType.STAKE,
+    })
 
     refreshTvl()
   }, [amount, stakingPeriod, stake, refreshTvl, waitForTx])
@@ -79,6 +86,15 @@ export const StakingPage: React.FC = () => {
   React.useEffect(() => {
     handleComputeRewards()
   }, [debouncedAmountBN, handleComputeRewards])
+
+  /**
+   * Fetch USDC APY
+   */
+  React.useEffect(() => {
+    if (accountData?.address) {
+      getStakingPositions(accountData?.address)
+    }
+  }, [getStakingPositions, accountData?.address])
 
   return (
     <Box>
@@ -133,8 +149,21 @@ export const StakingPage: React.FC = () => {
                       </Text>
                     </Column>
                   </Row>
+                  {stakePositionsData && (
+                    <Row alignment="space-between">
+                      <Column>
+                        <Text>USDC APY</Text>
+                      </Column>
+                      <Column>
+                        <Text strong variant="mono">
+                          {utils.commify(stakePositionsData?.usdcAPY.toString())}%
+                        </Text>
+                      </Column>
+                    </Row>
+                  )}
                 </>
               )}
+
               {amount && stakingPeriod && sherRewards && (
                 <Row alignment="center">
                   <ConnectGate>

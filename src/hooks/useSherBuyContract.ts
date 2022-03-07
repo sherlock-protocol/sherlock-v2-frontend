@@ -2,6 +2,7 @@ import { ethers, BigNumber } from "ethers"
 import { useCallback, useMemo } from "react"
 import { useContract, useProvider, useSigner } from "wagmi"
 import SherBuyABI from "../abi/SherBuy.json"
+import config from "../config"
 import { SherBuy } from "../contracts/SherBuy"
 
 export type { PurchaseEvent } from "../contracts/SherBuy"
@@ -9,7 +10,7 @@ export type { PurchaseEvent } from "../contracts/SherBuy"
 /**
  * SherBuy smart contract address
  */
-export const SHER_BUY_ADDRESS = process.env.REACT_APP_SHER_BUY_ADDRESS as string
+export const SHER_BUY_ADDRESS = config.sherBuyAddress
 
 /**
  * Capital requirements indicate how much USDC is needed to get `sherAmount` of SHER tokens
