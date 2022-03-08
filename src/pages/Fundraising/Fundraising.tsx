@@ -259,6 +259,12 @@ export const FundraisingPage: React.FC = () => {
               )}
             </Column>
           </Row>
+          <Text size="small" className={styles.v1}>
+            V1 pool is still available at{" "}
+            <a href="https://v1.sherlock.xyz" rel="noreferrer" target="_blank">
+              https://v1.sherlock.xyz
+            </a>
+          </Text>
         </Column>
       </LoadingContainer>
     </Box>
