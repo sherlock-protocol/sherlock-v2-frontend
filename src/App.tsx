@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { Route, Routes, useLocation, Navigate } from "react-router-dom"
 
 import { FundraisingPage } from "./pages/Fundraising"
@@ -26,6 +26,8 @@ function App() {
   const { getFundraisePosition, data: fundraisePositionData } = useFundraisePosition()
   const [navigationLinks, setNavigationLinks] = useState<NavigationLink[]>([])
 
+  const fundraiseIsFinished = useMemo(() => Date.now() > SHER_BUY_ENTRY_DEADLINE * 1000, [])
+
   useEffect(() => {
     if (accountData?.address) {
       getFundraisePosition(accountData.address)
@@ -33,16 +35,23 @@ function App() {
   }, [accountData?.address, getFundraisePosition])
 
   useEffect(() => {
-    let links: NavigationLink[] = [
-      {
-        title: "STAKE",
-        route: routes.Stake,
-      },
-      {
-        title: "POSITIONS",
-        route: routes.Positions,
-      },
-    ]
+    let links: NavigationLink[] = fundraiseIsFinished
+      ? [
+          {
+            title: "STAKE",
+            route: routes.Stake,
+          },
+          {
+            title: "POSITIONS",
+            route: routes.Positions,
+          },
+        ]
+      : [
+          {
+            title: "FUNDRAISE",
+            route: routes.Fundraise,
+          },
+        ]
 
     if (fundraisePositionData) {
       links = [
@@ -55,8 +64,6 @@ function App() {
     }
     setNavigationLinks(links)
   }, [location.pathname, fundraisePositionData])
-
-  const fundraiseIsFinished = Date.now() > SHER_BUY_ENTRY_DEADLINE * 1000
 
   return (
     <div className={styles.app}>
