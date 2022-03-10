@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react"
 import { Route, Routes, useLocation, Navigate } from "react-router-dom"
 
+import { FundraisingPage } from "./pages/Fundraising"
 import { FundraisingClaimPage } from "./pages/FundraisingClaim"
 import { StakingPage } from "./pages/Staking"
 import { StakingPositionsPage } from "./pages/StakingPositions"
+import { USForbiddenPage } from "./pages/USForbidden"
 
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
@@ -16,6 +18,7 @@ import { useAccount } from "wagmi"
 import config from "./config"
 
 export const LAUNCH_TIMESTAMP = config.launchTimestamp
+export const SHER_BUY_ENTRY_DEADLINE = Number.isInteger(config.sherBuyEntryDeadline) ? config.sherBuyEntryDeadline : 0
 
 function App() {
   const location = useLocation()
@@ -53,16 +56,29 @@ function App() {
     setNavigationLinks(links)
   }, [location.pathname, fundraisePositionData])
 
+  const fundraiseIsFinished = Date.now() > SHER_BUY_ENTRY_DEADLINE * 1000
+
   return (
     <div className={styles.app}>
       <div className={styles.noise} />
       <Header navigationLinks={navigationLinks} />
       <div className={styles.content}>
         <Routes>
-          <Route path={routes.Stake} element={<StakingPage />} />
-          <Route path={routes.Positions} element={<StakingPositionsPage />} />
-          <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
-          <Route path="*" element={<Navigate replace to={routes.Stake} />} />
+          {fundraiseIsFinished ? (
+            <>
+              <Route path={routes.Stake} element={<StakingPage />} />
+              <Route path={routes.Positions} element={<StakingPositionsPage />} />
+              <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
+              <Route path="*" element={<Navigate replace to={routes.Stake} />} />
+            </>
+          ) : (
+            <>
+              <Route path={routes.Fundraise} element={<FundraisingPage />} />
+              <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
+              <Route path={routes.USForbidden} element={<USForbiddenPage />} />
+              <Route path="*" element={<Navigate replace to={routes.Fundraise} />} />
+            </>
+          )}
         </Routes>
       </div>
       <Footer />
