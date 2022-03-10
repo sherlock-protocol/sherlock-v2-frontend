@@ -63,7 +63,7 @@ function App() {
       ]
     }
     setNavigationLinks(links)
-  }, [location.pathname, fundraisePositionData])
+  }, [location.pathname, fundraisePositionData, fundraiseIsFinished])
 
   return (
     <div className={styles.app}>
