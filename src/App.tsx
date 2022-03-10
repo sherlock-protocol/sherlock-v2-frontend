@@ -33,26 +33,18 @@ function App() {
   }, [accountData?.address, getFundraisePosition])
 
   useEffect(() => {
+    let links: NavigationLink[] = []
     if (location.pathname.endsWith("fundraise") || location.pathname.endsWith("fundraiseclaim")) {
-      let links: NavigationLink[] = [
+      links = [
+        ...links,
         {
           title: "FUNDRAISE",
           route: routes.Fundraise,
         },
       ]
-
-      if (fundraisePositionData) {
-        links = [
-          ...links,
-          {
-            title: "CLAIM",
-            route: routes.FundraiseClaim,
-          },
-        ]
-      }
-      setNavigationLinks(links)
     } else {
-      setNavigationLinks([
+      links = [
+        ...links,
         {
           title: "STAKE",
           route: routes.Stake,
@@ -61,8 +53,19 @@ function App() {
           title: "POSITIONS",
           route: routes.Positions,
         },
-      ])
+      ]
     }
+
+    if (fundraisePositionData) {
+      links = [
+        ...links,
+        {
+          title: "CLAIM",
+          route: routes.FundraiseClaim,
+        },
+      ]
+    }
+    setNavigationLinks(links)
   }, [location.pathname, fundraisePositionData])
 
   return (
