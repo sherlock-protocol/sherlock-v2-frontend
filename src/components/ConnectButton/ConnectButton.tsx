@@ -2,9 +2,9 @@ import React from "react"
 import { useAccount, useConnect, useNetwork } from "wagmi"
 import config from "../../config"
 import { shortenAddress } from "../../utils/format"
+import { setUser } from "../../utils/sentry"
 import { Button } from "../Button/Button"
 import WalletProviderModal from "../WalletProviderModal/WalletProviderModal"
-import * as Sentry from "@sentry/react"
 
 /**
  * Wallet connection component.
@@ -23,7 +23,7 @@ const ConnectButton: React.FC = ({ children }) => {
    * Set Sentry User
    */
   React.useEffect(() => {
-    Sentry.setUser(accountData?.address ? { username: accountData?.address } : null)
+    setUser(accountData?.address ? { username: accountData?.address } : null)
   }, [accountData?.address])
 
   /**

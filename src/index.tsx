@@ -5,32 +5,19 @@ import "./index.module.scss"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import "./polyfills"
-import * as Sentry from "@sentry/react"
-import { BrowserTracing } from "@sentry/tracing"
 
 import { ApolloProvider } from "./utils/apollo/ApolloProvider"
 import { WagmiProvider } from "./utils/WagmiProvider"
 import { TxWaitProvider } from "./hooks/useWaitTx"
 import { FundraisePositionProvider } from "./hooks/api/useFundraisePosition"
 import { StakingPositionsProvider } from "./hooks/api/useStakingPositions"
-import ErrorBoundary from "./components/ErrorBoundary/ErrorBoundary"
-import { FallbackRender } from "@sentry/react/dist/errorboundary"
-
-const ErrorBoundaryComponent: FallbackRender = (props) => <ErrorBoundary {...props} />
-
-Sentry.init({
-  dsn: process.env.REACT_APP_SENTRY_DSN,
-  environment: process.env.REACT_APP_SENTRY_ENVIRONMENT,
-  integrations: [new BrowserTracing()],
-  tracesSampleRate: 1.0,
-  release: process.env.REACT_APP_VERSION,
-})
+import { SentryErrorBoundary } from "./utils/sentry"
 
 global.Buffer = global.Buffer || require("buffer").Buffer
 
 ReactDOM.render(
   <React.StrictMode>
-    <Sentry.ErrorBoundary fallback={ErrorBoundaryComponent}>
+    <SentryErrorBoundary>
       <BrowserRouter>
         <WagmiProvider>
           <ApolloProvider>
@@ -44,7 +31,7 @@ ReactDOM.render(
           </ApolloProvider>
         </WagmiProvider>
       </BrowserRouter>
-    </Sentry.ErrorBoundary>
+    </SentryErrorBoundary>
   </React.StrictMode>,
   document.getElementById("root")
 )
