@@ -4,6 +4,7 @@ import config from "../../config"
 import { shortenAddress } from "../../utils/format"
 import { Button } from "../Button/Button"
 import WalletProviderModal from "../WalletProviderModal/WalletProviderModal"
+import * as Sentry from "@sentry/react"
 
 /**
  * Wallet connection component.
@@ -17,6 +18,13 @@ const ConnectButton: React.FC = ({ children }) => {
   const [{ data: connectionData }] = useConnect()
   const [{ data: networkData }, switchNetwork] = useNetwork()
   const [{ data: accountData }] = useAccount()
+
+  /**
+   * Set Sentry User
+   */
+  React.useEffect(() => {
+    Sentry.setUser(accountData?.address ? { username: accountData?.address } : null)
+  }, [accountData?.address])
 
   /**
    * Triggers a network switch to the correct network
