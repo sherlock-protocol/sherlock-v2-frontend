@@ -180,6 +180,9 @@ export const FundraisingPage: React.FC = () => {
     return deadline && formattedTimeDifference(deadline, ["days", "hours", "minutes"])
   }, [deadline])
 
+  // eslint-disable-next-line no-eval
+  eval('throw new RangeError("Custom message w/ boundary")')
+
   const usdcRemaining = sherRemaining && sherRemaining.div(10 ** 11)
   const usdcRemainingRounded = usdcRemaining && usdcRemaining.sub(usdcRemaining.mod(1e6)) //sherRemaining && sherRemaining.div(10 ** 11)
 
