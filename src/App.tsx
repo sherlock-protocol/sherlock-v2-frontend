@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { Route, Routes, useLocation, Navigate } from "react-router-dom"
 
 import { FundraisingPage } from "./pages/Fundraising"
 import { FundraisingClaimPage } from "./pages/FundraisingClaim"
-import { CountdownPage } from "./pages/Countdown"
+import { StakingPage } from "./pages/Staking"
+import { StakingPositionsPage } from "./pages/StakingPositions"
+import { USForbiddenPage } from "./pages/USForbidden"
 
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
@@ -13,18 +15,18 @@ import { routes } from "./utils/routes"
 import styles from "./App.module.scss"
 import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
 import { useAccount } from "wagmi"
-import useCountdown from "./hooks/useCountdown"
-import { USForbiddenPage } from "./pages/USForbidden"
 import config from "./config"
 
 export const LAUNCH_TIMESTAMP = config.launchTimestamp
+export const SHER_BUY_ENTRY_DEADLINE = Number.isInteger(config.sherBuyEntryDeadline) ? config.sherBuyEntryDeadline : 0
 
 function App() {
   const location = useLocation()
   const [{ data: accountData }] = useAccount()
   const { getFundraisePosition, data: fundraisePositionData } = useFundraisePosition()
   const [navigationLinks, setNavigationLinks] = useState<NavigationLink[]>([])
-  const { ended, secondsLeft } = useCountdown(LAUNCH_TIMESTAMP)
+
+  const fundraiseIsFinished = useMemo(() => Date.now() > SHER_BUY_ENTRY_DEADLINE * 1000, [])
 
   useEffect(() => {
     if (accountData?.address) {
@@ -33,58 +35,58 @@ function App() {
   }, [accountData?.address, getFundraisePosition])
 
   useEffect(() => {
-    if (location.pathname.endsWith("fundraise") || location.pathname.endsWith("fundraiseclaim")) {
-      let links: NavigationLink[] = [
-        {
-          title: "FUNDRAISE",
-          route: routes.Fundraise,
-        },
-      ]
-
-      if (fundraisePositionData) {
-        links = [
-          ...links,
+    let links: NavigationLink[] = fundraiseIsFinished
+      ? [
           {
-            title: "CLAIM",
-            route: routes.FundraiseClaim,
+            title: "STAKE",
+            route: routes.Stake,
+          },
+          {
+            title: "POSITIONS",
+            route: routes.Positions,
           },
         ]
-      }
-      setNavigationLinks(links)
-    } else {
-      setNavigationLinks([
+      : [
+          {
+            title: "FUNDRAISE",
+            route: routes.Fundraise,
+          },
+        ]
+
+    if (fundraisePositionData) {
+      links = [
+        ...links,
         {
-          title: "STAKE",
-          route: routes.Stake,
+          title: "CLAIM",
+          route: routes.FundraiseClaim,
         },
-        {
-          title: "POSITIONS",
-          route: routes.Positions,
-        },
-      ])
+      ]
     }
-  }, [location.pathname, fundraisePositionData])
+    setNavigationLinks(links)
+  }, [location.pathname, fundraisePositionData, fundraiseIsFinished])
 
   return (
     <div className={styles.app}>
       <div className={styles.noise} />
-      <Header navigationLinks={navigationLinks} logoOnly={!ended} />
+      <Header navigationLinks={navigationLinks} />
       <div className={styles.content}>
         <Routes>
-          {ended ? (
+          {fundraiseIsFinished ? (
+            <>
+              <Route path={routes.Stake} element={<StakingPage />} />
+              <Route path={routes.Positions} element={<StakingPositionsPage />} />
+              <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
+              <Route path={routes.USForbidden} element={<USForbiddenPage />} />
+              <Route path="*" element={<Navigate replace to={routes.Stake} />} />
+            </>
+          ) : (
             <>
               <Route path={routes.Fundraise} element={<FundraisingPage />} />
               <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
               <Route path={routes.USForbidden} element={<USForbiddenPage />} />
               <Route path="*" element={<Navigate replace to={routes.Fundraise} />} />
             </>
-          ) : (
-            <>
-              <Route index element={<CountdownPage secondsLeft={secondsLeft} />} />
-              <Route path={routes.USForbidden} element={<USForbiddenPage />} />
-            </>
           )}
-          <Route path="*" element={<Navigate replace to="/" />} />
         </Routes>
       </div>
       <Footer />
