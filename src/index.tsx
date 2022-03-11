@@ -15,7 +15,6 @@ import { FundraisePositionProvider } from "./hooks/api/useFundraisePosition"
 import { StakingPositionsProvider } from "./hooks/api/useStakingPositions"
 import ErrorBoundary from "./components/ErrorBoundary/ErrorBoundary"
 import { FallbackRender } from "@sentry/react/dist/errorboundary"
-import packageInfo from "../package.json"
 
 const ErrorBoundaryComponent: FallbackRender = (props) => <ErrorBoundary {...props} />
 
@@ -24,7 +23,7 @@ Sentry.init({
   environment: process.env.REACT_APP_SENTRY_ENVIRONMENT,
   integrations: [new BrowserTracing()],
   tracesSampleRate: 1.0,
-  release: packageInfo.version,
+  release: process.env.REACT_APP_VERSION,
 })
 
 global.Buffer = global.Buffer || require("buffer").Buffer
