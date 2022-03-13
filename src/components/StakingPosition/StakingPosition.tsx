@@ -3,7 +3,7 @@ import React from "react"
 import useSherlock from "../../hooks/useSherlock"
 import useWaitTx from "../../hooks/useWaitTx"
 import { PERIODS_IN_SECONDS } from "../../pages/Staking"
-import { convertSecondsToDurationString } from "../../utils/time"
+import { formattedTimeDifference } from "../../utils/dates"
 import { Box } from "../Box"
 import { Button } from "../Button/Button"
 import { Column, Row } from "../Layout"
@@ -29,10 +29,10 @@ interface Props {
   sherRewards: BigNumber
 
   /**
-   * The timestampt at which the position
+   * The timestamp at which the position
    * can be unstaked or restaked
    */
-  lockupEnd: BigNumber
+  lockupEnd: Date
 
   /**
    * Annual Percentage Yield
@@ -41,20 +41,11 @@ interface Props {
 }
 
 const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockupEnd, apy }) => {
-  const [lockedForSeconds, setLockedForSeconds] = React.useState<number>()
   const [stakingPeriod, setStakingPeriod] = React.useState<number>()
-  const isUnlocked = lockedForSeconds && lockedForSeconds <= 0
+  const isUnlocked = lockupEnd <= new Date()
 
   const { unstake, restake } = useSherlock()
   const { waitForTx } = useWaitTx()
-
-  /**
-   * Compute time left until position unlocks
-   */
-  React.useEffect(() => {
-    const timeLeft = lockupEnd.sub(BigNumber.from((new Date().valueOf() / 1000).toFixed(0))).toNumber()
-    setLockedForSeconds(timeLeft)
-  }, [lockupEnd])
 
   /**
    * Unstake position
@@ -98,18 +89,16 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
             </Text>
           </Column>
         </Row>
-        {lockedForSeconds && (
-          <Row alignment="space-between" spacing="m">
-            <Column>
-              <Text>Unlocks in</Text>
-            </Column>
-            <Column>
-              <Text strong variant="mono">
-                {convertSecondsToDurationString(lockedForSeconds)}
-              </Text>
-            </Column>
-          </Row>
-        )}
+        <Row alignment="space-between" spacing="m">
+          <Column>
+            <Text>Unlocks in</Text>
+          </Column>
+          <Column>
+            <Text strong variant="mono">
+              {formattedTimeDifference(lockupEnd, ["days", "hours", "minutes"])}
+            </Text>
+          </Column>
+        </Row>
         {apy !== null && apy !== undefined && (
           <Row alignment="space-between" spacing="m">
             <Column>
