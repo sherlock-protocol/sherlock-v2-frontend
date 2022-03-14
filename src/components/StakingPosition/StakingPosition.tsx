@@ -106,7 +106,7 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
             </Column>
             <Column>
               <Text strong variant="mono">
-                {apy * 100}%
+                {apy}%
               </Text>
             </Column>
           </Row>
