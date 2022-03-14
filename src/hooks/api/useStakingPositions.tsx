@@ -3,7 +3,7 @@ import { BigNumber } from "ethers"
 import axios from "./axios"
 import { getStakePositions as getStakePositionUrl } from "./urls"
 
-type StakingPosition = {
+export type StakingPosition = {
   id: number
   owner: string
   sher: BigNumber
@@ -15,6 +15,7 @@ type StakingPositions = {
   positions: StakingPosition[]
   usdcAPY: number
   usdcIncrementFactor50ms: number
+  usdcLastUpdated: Date
 }
 
 type GetStakingPositionsResponseData =
@@ -29,6 +30,7 @@ type GetStakingPositionsResponseData =
       }[]
       usdc_apy: number
       usdc_increment_50ms_factor: number
+      positions_usdc_last_updated: number
     }
   | {
       ok: false
@@ -48,6 +50,7 @@ const parseResponse = (response: GetStakingPositionsResponseData): StakingPositi
     })),
     usdcAPY: response.usdc_apy,
     usdcIncrementFactor50ms: response.usdc_increment_50ms_factor,
+    usdcLastUpdated: new Date(response.positions_usdc_last_updated * 1000),
   }
 }
 
