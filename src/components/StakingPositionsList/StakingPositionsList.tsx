@@ -37,7 +37,7 @@ export const StakingPositionsList: React.FC = () => {
           id={BigNumber.from(position.id)}
           usdcBalance={position.usdc}
           sherRewards={position.sher}
-          lockupEnd={BigNumber.from(position.lockupEnd.getTime())}
+          lockupEnd={position.lockupEnd}
           apy={data?.usdcAPY}
         />
       ))}
