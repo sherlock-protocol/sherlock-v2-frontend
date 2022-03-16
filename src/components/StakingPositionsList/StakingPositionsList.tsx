@@ -28,14 +28,11 @@ export const StakingPositionsList: React.FC = () => {
     }
 
     const rawPositions = data?.positions
-    const diff = new Date().valueOf() - data?.usdcLastUpdated.valueOf()
-
-    // TODO: Use API increment factor
-    // const usdcIncrementFactor50ms = 1.01
-    // const factor = 1 + (diff / 20) * usdcIncrementFactor50ms
-
     // Set positions USDC balance at the moment
-    const updatedPositions = rawPositions?.map((item) => ({ ...item, usdc: item.usdc.mul(101).div(100) }))
+    const updatedPositions = rawPositions?.map((item) => ({
+      ...item,
+      usdc: item.updatedUsdc,
+    }))
 
     setPositions(updatedPositions)
   }, [data?.positions, data?.usdcLastUpdated])
@@ -44,12 +41,13 @@ export const StakingPositionsList: React.FC = () => {
    * Trigger recomputing of accrued USDC balance on an interval.
    */
   useInterval(() => {
-    // TODO: Use API increment factor
-    // TODO: Compute the multiplier and the divisor in order to compute
-    // floating point division (e.g. multiply by 101 and divide by 100 in order to
-    // compute the multiplication by 1.01, in case of an 1% increase for example)
-    setPositions(positions.map((item) => ({ ...item, usdc: item.usdc.mul(101).div(100) })))
-  }, 50)
+    setPositions(
+      positions.map((item) => ({
+        ...item,
+        usdc: item.usdc.add(item.usdcIncrement50ms.mul),
+      }))
+    )
+  }, 1000)
 
   useEffect(() => {
     if (accountData?.address) {

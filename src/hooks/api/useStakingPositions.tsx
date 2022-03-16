@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react"
-import { BigNumber } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import axios from "./axios"
 import { getStakePositions as getStakePositionUrl } from "./urls"
 
@@ -8,6 +8,8 @@ export type StakingPosition = {
   owner: string
   sher: BigNumber
   usdc: BigNumber
+  updatedUsdc: BigNumber
+  usdcIncrement50ms: BigNumber
   lockupEnd: Date
 }
 
@@ -27,6 +29,8 @@ type GetStakingPositionsResponseData =
         owner: string
         sher: string
         usdc: string
+        usdc_increment_50ms: string
+        updated_usdc: string
       }[]
       usdc_apy: number
       usdc_increment_50ms_factor: number
@@ -46,6 +50,8 @@ const parseResponse = (response: GetStakingPositionsResponseData): StakingPositi
       owner: p.owner,
       sher: BigNumber.from(p.sher),
       usdc: BigNumber.from(p.usdc),
+      updatedUsdc: BigNumber.from(p.updated_usdc),
+      usdcIncrement50ms: ethers.utils.parseUnits(p.usdc_increment_50ms, 6),
       lockupEnd: new Date(p.lockup_end * 1000),
     })),
     usdcAPY: response.usdc_apy,
@@ -85,6 +91,7 @@ export const StakingPositionsProvider: React.FC = ({ children }) => {
       }
       setError(null)
     } catch (error) {
+      console.error(error)
       setData(null)
       setError(error as Error)
     } finally {
