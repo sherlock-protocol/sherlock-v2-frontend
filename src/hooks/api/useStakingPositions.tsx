@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react"
-import { BigNumber, ethers } from "ethers"
+import { BigNumber } from "ethers"
 import axios from "./axios"
 import { getStakePositions as getStakePositionUrl } from "./urls"
 
@@ -8,15 +8,14 @@ export type StakingPosition = {
   owner: string
   sher: BigNumber
   usdc: BigNumber
-  updatedUsdc: BigNumber
-  usdcIncrement50ms: BigNumber
+  scaledUsdcIncrement50ms: number
   lockupEnd: Date
+  scaledUsdc?: BigNumber
 }
 
 type StakingPositions = {
   positions: StakingPosition[]
   usdcAPY: number
-  usdcIncrementFactor50ms: number
   usdcLastUpdated: Date
 }
 
@@ -30,7 +29,6 @@ type GetStakingPositionsResponseData =
         sher: string
         usdc: string
         usdc_increment_50ms: string
-        updated_usdc: string
       }[]
       usdc_apy: number
       usdc_increment_50ms_factor: number
@@ -50,12 +48,10 @@ const parseResponse = (response: GetStakingPositionsResponseData): StakingPositi
       owner: p.owner,
       sher: BigNumber.from(p.sher),
       usdc: BigNumber.from(p.usdc),
-      updatedUsdc: BigNumber.from(p.updated_usdc),
-      usdcIncrement50ms: ethers.utils.parseUnits(p.usdc_increment_50ms, 6),
+      scaledUsdcIncrement50ms: parseFloat((parseFloat(p.usdc_increment_50ms) * 1e6).toFixed(0)),
       lockupEnd: new Date(p.lockup_end * 1000),
     })),
     usdcAPY: response.usdc_apy,
-    usdcIncrementFactor50ms: response.usdc_increment_50ms_factor,
     usdcLastUpdated: new Date(response.positions_usdc_last_updated * 1000),
   }
 }

@@ -27,11 +27,11 @@ export const StakingPositionsList: React.FC = () => {
       return
     }
 
-    const rawPositions = data?.positions
-    // Set positions USDC balance at the moment
-    const updatedPositions = rawPositions?.map((item) => ({
+    // Initialize scaled USDC balance, to be used for
+    // real-time balance updates.
+    const updatedPositions = data?.positions?.map((item) => ({
       ...item,
-      usdc: item.updatedUsdc,
+      scaledUsdc: item.usdc.mul(1e6),
     }))
 
     setPositions(updatedPositions)
@@ -42,12 +42,19 @@ export const StakingPositionsList: React.FC = () => {
    */
   useInterval(() => {
     setPositions(
-      positions.map((item) => ({
-        ...item,
-        usdc: item.usdc.add(item.usdcIncrement50ms.mul),
-      }))
+      positions.map((item) => {
+        const oldBalance = item.scaledUsdc
+        const newBalanceScaled = oldBalance?.add(item.scaledUsdcIncrement50ms ?? 0)
+        const newBalance = newBalanceScaled?.div(1e6) as BigNumber
+
+        return {
+          ...item,
+          usdc: newBalance,
+          scaledUsdc: newBalanceScaled,
+        }
+      })
     )
-  }, 1000)
+  }, 50)
 
   useEffect(() => {
     if (accountData?.address) {
