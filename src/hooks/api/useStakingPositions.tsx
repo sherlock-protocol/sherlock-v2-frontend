@@ -48,7 +48,7 @@ const parseResponse = (response: GetStakingPositionsResponseData): StakingPositi
       owner: p.owner,
       sher: BigNumber.from(p.sher),
       usdc: BigNumber.from(p.usdc),
-      scaledUsdcIncrement50ms: parseFloat((parseFloat(p.usdc_increment_50ms) * 1e6).toFixed(0)),
+      scaledUsdcIncrement50ms: parseFloat((parseFloat(p.usdc_increment_50ms ?? 0) * 1e6).toFixed(0)),
       lockupEnd: new Date(p.lockup_end * 1000),
     })),
     usdcAPY: response.usdc_apy,
