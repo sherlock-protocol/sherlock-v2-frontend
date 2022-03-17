@@ -6,6 +6,7 @@ import RevertedTx from "../components/TxStateModals/RevertedTx"
 import SuccessTx from "../components/TxStateModals/SuccessTx"
 import UserDeniedTx from "../components/TxStateModals/UserDeniedTx"
 import { TxState, TxType } from "../utils/txModalMessages"
+import { addTransactionBreadcrumb, captureException } from "../utils/sentry"
 
 interface TxWaitContextType {
   waitForTx: (
@@ -45,6 +46,8 @@ export const TxWaitProvider: React.FC = ({ children }) => {
       try {
         const transaction = await tx()
 
+        addTransactionBreadcrumb(transaction)
+
         setTxState(TxState.PENDING)
         setTxHash(transaction.hash)
 
@@ -57,6 +60,12 @@ export const TxWaitProvider: React.FC = ({ children }) => {
         if (error?.code === 4001 || error === "User rejected the transaction") {
           setTxState(TxState.USER_DENIED)
         } else {
+          captureException(new Error(error?.message), {
+            extra: error,
+            tags: {
+              section: "transactions",
+            },
+          })
           setTxState(TxState.REVERTED)
         }
 
