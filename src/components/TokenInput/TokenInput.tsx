@@ -1,5 +1,6 @@
 import { BigNumber, utils } from "ethers"
 import React from "react"
+import { formatAmount } from "../../utils/format"
 import { Button } from "../Button/Button"
 import { Input } from "../Input"
 import { decimalsByToken, InputProps } from "../Input/Input"
@@ -46,7 +47,7 @@ const TokenInput: React.FC<Props> = ({ balance, value, ...props }) => {
       {balance && (
         <Row alignment={["end", "center"]} spacing="m">
           <Text className={styles.balance}>
-            Balance: {utils.commify(utils.formatUnits(balance, decimalsByToken[props.token]))}
+            Balance: {formatAmount(utils.formatUnits(balance, decimalsByToken[props.token]))}
           </Text>
           <Button variant="primary" size="small" onClick={handleSetMax}>
             MAX

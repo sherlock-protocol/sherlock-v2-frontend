@@ -8,7 +8,7 @@ export type StakingPosition = {
   owner: string
   sher: BigNumber
   usdc: BigNumber
-  scaledUsdcIncrement50ms: number
+  scaledUsdcIncrement: number
   lockupEnd: Date
   scaledUsdc?: BigNumber
 }
@@ -28,10 +28,9 @@ type GetStakingPositionsResponseData =
         owner: string
         sher: string
         usdc: string
-        usdc_increment_50ms: string
+        usdc_increment: string
       }[]
       usdc_apy: number
-      usdc_increment_50ms_factor: number
       positions_usdc_last_updated: number
     }
   | {
@@ -48,7 +47,7 @@ const parseResponse = (response: GetStakingPositionsResponseData): StakingPositi
       owner: p.owner,
       sher: BigNumber.from(p.sher),
       usdc: BigNumber.from(p.usdc),
-      scaledUsdcIncrement50ms: parseFloat((parseFloat(p.usdc_increment_50ms ?? 0) * 1e6).toFixed(0)),
+      scaledUsdcIncrement: parseFloat((parseFloat(p.usdc_increment ?? 0) * 1e6).toFixed(0)),
       lockupEnd: new Date(p.lockup_end * 1000),
     })),
     usdcAPY: response.usdc_apy,

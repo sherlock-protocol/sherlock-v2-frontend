@@ -29,10 +29,19 @@ export const StakingPositionsList: React.FC = () => {
 
     // Initialize scaled USDC balance, to be used for
     // real-time balance updates.
-    const updatedPositions = data?.positions?.map((item) => ({
-      ...item,
-      scaledUsdc: item.usdc.mul(1e6),
-    }))
+    // Also, compensate for the gap between now and
+    // indexer's last update time.
+    const diff = Math.floor((new Date().valueOf() - data?.usdcLastUpdated.valueOf()) / 1000)
+    const updatedPositions = data?.positions?.map((item) => {
+      const delta = BigNumber.from(item?.scaledUsdcIncrement ?? 0).mul(diff)
+      const scaledUsdc = item.usdc.mul(1e6).add(delta)
+
+      return {
+        ...item,
+        scaledUsdc,
+        usdc: scaledUsdc.div(1e6),
+      }
+    })
 
     setPositions(updatedPositions)
   }, [data?.positions, data?.usdcLastUpdated])
@@ -44,7 +53,7 @@ export const StakingPositionsList: React.FC = () => {
     setPositions(
       positions.map((item) => {
         const oldBalance = item.scaledUsdc
-        const newBalanceScaled = oldBalance?.add(item.scaledUsdcIncrement50ms ?? 0)
+        const newBalanceScaled = oldBalance?.add(item.scaledUsdcIncrement ?? 0)
         const newBalance = newBalanceScaled?.div(1e6) as BigNumber
 
         return {
@@ -54,7 +63,7 @@ export const StakingPositionsList: React.FC = () => {
         }
       })
     )
-  }, 50)
+  }, 1000)
 
   useEffect(() => {
     if (accountData?.address) {

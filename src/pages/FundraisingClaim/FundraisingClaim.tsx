@@ -14,6 +14,7 @@ import { Text } from "../../components/Text"
 import styles from "./FundraisingClaim.module.scss"
 
 import { formattedTimeDifference } from "../../utils/dates"
+import { formatAmount } from "../../utils/format"
 
 export const FundraisingClaimPage = () => {
   const [{ data: accountData }] = useAccount()
@@ -74,7 +75,7 @@ export const FundraisingClaimPage = () => {
 
   if (!fundraisePositionData) return null
 
-  const formattedSherAmount = ethers.utils.commify(ethers.utils.formatUnits(fundraisePositionData.reward))
+  const formattedSherAmount = formatAmount(ethers.utils.formatUnits(fundraisePositionData.reward))
 
   const participation = fundraisePositionData.stake.add(fundraisePositionData.contribution)
 
@@ -90,7 +91,7 @@ export const FundraisingClaimPage = () => {
           </Column>
           <Column>
             <Text strong variant="mono">
-              {ethers.utils.commify(ethers.utils.formatUnits(participation, 6))} USDC
+              {formatAmount(ethers.utils.formatUnits(participation, 6))} USDC
             </Text>
           </Column>
         </Row>
@@ -99,9 +100,7 @@ export const FundraisingClaimPage = () => {
             <Text>Staked</Text>
           </Column>
           <Column>
-            <Text variant="mono">
-              {ethers.utils.commify(ethers.utils.formatUnits(fundraisePositionData.stake, 6))} USDC
-            </Text>
+            <Text variant="mono">{formatAmount(ethers.utils.formatUnits(fundraisePositionData.stake, 6))} USDC</Text>
           </Column>
         </Row>
         <Row alignment="space-between">
@@ -110,7 +109,7 @@ export const FundraisingClaimPage = () => {
           </Column>
           <Column>
             <Text variant="mono">
-              {ethers.utils.commify(ethers.utils.formatUnits(fundraisePositionData.contribution, 6))} USDC
+              {formatAmount(ethers.utils.formatUnits(fundraisePositionData.contribution, 6))} USDC
             </Text>
           </Column>
         </Row>

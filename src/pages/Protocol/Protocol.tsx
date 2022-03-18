@@ -14,6 +14,7 @@ import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
 import Select from "../../components/Select/Select"
+import { formatAmount } from "../../utils/format"
 
 const PROTOCOL_SELECT_OPTIONS = Object.entries(COVERED_PROTOCOLS).map(([key, item]) => ({
   label: item.name,
@@ -129,7 +130,7 @@ export const ProtocolPage: React.FC = () => {
               <Text>Active balance</Text>
             </Column>
             <Column>
-              <Text strong>{ethers.utils.commify(ethers.utils.formatUnits(balance, 6))} USDC</Text>
+              <Text strong>{formatAmount(ethers.utils.formatUnits(balance, 6))} USDC</Text>
             </Column>
           </Row>
         )}
