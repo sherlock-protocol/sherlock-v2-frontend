@@ -184,24 +184,30 @@ export const ProtocolPage: React.FC = () => {
           )}
           {amount && (
             <ConnectGate>
-              <Row alignment="space-between" spacing="m">
-                <Column grow={1}>
-                  <Button variant="secondary" onClick={handleRemoveBalance}>
-                    Remove balance
-                  </Button>
-                </Column>
-                <Column grow={1}>
-                  <AllowanceGate
-                    amount={amount}
-                    spender={address}
-                    render={(disabled) => (
-                      <Button onClick={handleAddBalance} disabled={!amount}>
-                        Add balance {amount?.toString()}
-                      </Button>
-                    )}
-                  />
-                </Column>
-              </Row>
+              <Column>
+                <Row alignment={["space-between", "center"]} spacing="m">
+                  <Column grow={1}>
+                    <Button variant="secondary" onClick={handleRemoveBalance}>
+                      Remove balance
+                    </Button>
+                  </Column>
+                  <Column grow={0}>
+                    <Text size="small">or</Text>
+                  </Column>
+
+                  <Column grow={1}>
+                    <AllowanceGate
+                      amount={amount}
+                      spender={address}
+                      render={(disabled) => (
+                        <Button onClick={handleAddBalance} disabled={disabled}>
+                          Add balance
+                        </Button>
+                      )}
+                    />
+                  </Column>
+                </Row>
+              </Column>
             </ConnectGate>
           )}
         </Column>
