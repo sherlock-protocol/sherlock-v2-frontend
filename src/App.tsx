@@ -6,6 +6,7 @@ import { FundraisingClaimPage } from "./pages/FundraisingClaim"
 import { StakingPage } from "./pages/Staking"
 import { StakingPositionsPage } from "./pages/StakingPositions"
 import { USForbiddenPage } from "./pages/USForbidden"
+import { ProtocolPage } from "./pages/Protocol"
 
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
@@ -45,6 +46,10 @@ function App() {
             title: "POSITIONS",
             route: routes.Positions,
           },
+          {
+            title: "PROTOCOLS",
+            route: routes.Protocol,
+          },
         ]
       : [
           {
@@ -77,6 +82,7 @@ function App() {
               <Route path={routes.Positions} element={<StakingPositionsPage />} />
               <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
               <Route path={routes.USForbidden} element={<USForbiddenPage />} />
+              <Route path={routes.Protocol} element={<ProtocolPage />} />
               <Route path="*" element={<Navigate replace to={routes.Stake} />} />
             </>
           ) : (
