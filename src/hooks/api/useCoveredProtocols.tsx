@@ -39,6 +39,11 @@ export type CoveredProtocol = {
    * Covered protocol's description
    */
   description?: string
+
+  /**
+   * URL to covered protocol's Statement of Coverage
+   */
+  agreement?: string
 }
 
 type GetCoveredProtocolsResponseData =

@@ -4,6 +4,7 @@ export type CoveredProtocolMeta = {
   website?: string
   logo?: string
   description?: string
+  agreement?: string
 }
 
 type CoveredProtocolsMetas = {

@@ -86,6 +86,7 @@ const main = async () => {
     website?: string
     logo?: string
     description?: string
+    agreement?: string
   }
 
   type CoveredProtocolsMetas = {
