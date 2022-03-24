@@ -1,7 +1,7 @@
 import { BigNumber, ethers } from "ethers"
 import React from "react"
 import ProtocolBalanceInput from "../../components/ProtocolBalanceInput/ProtocolBalanceInput"
-import useProtocolManager, { COVERED_PROTOCOLS } from "../../hooks/useProtocolManager"
+import useProtocolManager from "../../hooks/useProtocolManager"
 import styles from "./Protocol.module.scss"
 import { convertSecondsToDurationString } from "../../utils/time"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
@@ -15,17 +15,29 @@ import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
 import Select from "../../components/Select/Select"
 import { formatAmount } from "../../utils/format"
-
-const PROTOCOL_SELECT_OPTIONS = Object.entries(COVERED_PROTOCOLS).map(([key, item]) => ({
-  label: item.name,
-  value: key,
-}))
+import { useCoveredProtocols, CoveredProtocol } from "../../hooks/api/useCoveredProtocols"
+import { DateTime } from "luxon"
 
 export const ProtocolPage: React.FC = () => {
-  const [selectedProtocol, setSelectedProtocol] = React.useState<keyof typeof COVERED_PROTOCOLS>("EULER")
+  const [selectedProtocolId, setSelectedProtocolId] = React.useState<string>()
   const [balance, setBalance] = React.useState<BigNumber>()
   const [coverageLeft, setCoverageLeft] = React.useState<BigNumber>()
   const [premium, setPremium] = React.useState<BigNumber>()
+
+  const { data: coveredProtocols, getCoveredProtocols } = useCoveredProtocols()
+
+  const protocolSelectOptions = React.useMemo(
+    () =>
+      Object.entries(coveredProtocols)?.map(([key, item]) => ({
+        label: item.name ?? "Unknown",
+        value: key,
+      })) ?? [],
+    [coveredProtocols]
+  )
+  const selectedProtocol = React.useMemo<CoveredProtocol | null>(
+    () => (selectedProtocolId ? coveredProtocols?.[selectedProtocolId] ?? null : null),
+    [selectedProtocolId, coveredProtocols]
+  )
 
   /**
    * Amount to add to/remove from active balance
@@ -47,50 +59,54 @@ export const ProtocolPage: React.FC = () => {
    * Handler for changing the protocol
    */
   const handleOnProtocolChanged = React.useCallback((option: string) => {
-    setSelectedProtocol(option as keyof typeof COVERED_PROTOCOLS)
+    setSelectedProtocolId(option)
   }, [])
 
   /**
    * Fetch latest protocol details: active balance, coverage left and premium
    */
   const fetchProtocolDetails = React.useCallback(async () => {
-    const protocolBalance = await getProtocolActiveBalance(selectedProtocol)
+    if (!selectedProtocolId) {
+      return
+    }
+
+    const protocolBalance = await getProtocolActiveBalance(selectedProtocolId)
     setBalance(protocolBalance)
 
-    const protocolCoverageleft = await getProtocolCoverageLeft(selectedProtocol)
+    const protocolCoverageleft = await getProtocolCoverageLeft(selectedProtocolId)
     setCoverageLeft(protocolCoverageleft)
 
-    const protocolPremium = await getProtocolPremium(selectedProtocol)
+    const protocolPremium = await getProtocolPremium(selectedProtocolId)
     setPremium(protocolPremium)
-  }, [selectedProtocol, getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium])
+  }, [selectedProtocolId, getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium])
 
   /**
    * Add balance to selected protocol
    */
   const handleAddBalance = React.useCallback(async () => {
-    if (!amount) {
+    if (!amount || !selectedProtocolId) {
       return
     }
 
-    waitForTx(async () => await depositActiveBalance(selectedProtocol, amount))
+    waitForTx(async () => await depositActiveBalance(selectedProtocolId, amount))
 
     fetchProtocolDetails()
     setAmount(undefined)
-  }, [amount, selectedProtocol, depositActiveBalance, fetchProtocolDetails, waitForTx])
+  }, [amount, selectedProtocolId, depositActiveBalance, fetchProtocolDetails, waitForTx])
 
   /**
    * Remove balance from selected protocol
    */
   const handleRemoveBalance = React.useCallback(async () => {
-    if (!amount) {
+    if (!amount || !selectedProtocolId) {
       return
     }
 
-    await waitForTx(async () => await withdrawActiveBalance(selectedProtocol, amount))
+    await waitForTx(async () => await withdrawActiveBalance(selectedProtocolId, amount))
 
     fetchProtocolDetails()
     setAmount(undefined)
-  }, [amount, selectedProtocol, withdrawActiveBalance, fetchProtocolDetails, waitForTx])
+  }, [amount, selectedProtocolId, withdrawActiveBalance, fetchProtocolDetails, waitForTx])
 
   /**
    * Handle the inputted amount changed event
@@ -98,6 +114,14 @@ export const ProtocolPage: React.FC = () => {
   const handleOnAmountChanged = React.useCallback((amount: BigNumber | undefined) => {
     setAmount(amount)
   }, [])
+
+  // Fetch covered protocols
+  React.useEffect(() => {
+    const fetchCoveredProtocols = async () => {
+      await getCoveredProtocols()
+    }
+    fetchCoveredProtocols()
+  }, [getCoveredProtocols])
 
   // Fetch protocol coverage information
   React.useEffect(() => {
@@ -113,7 +137,7 @@ export const ProtocolPage: React.FC = () => {
             <Title>Protocol</Title>
           </Column>
           <Column>
-            <Select options={PROTOCOL_SELECT_OPTIONS} onChange={handleOnProtocolChanged} initialOption="EULER" />
+            <Select value={selectedProtocolId} options={protocolSelectOptions} onChange={handleOnProtocolChanged} />
           </Column>
         </Row>
         <Row alignment="space-between">
@@ -121,7 +145,13 @@ export const ProtocolPage: React.FC = () => {
             <Text>Coverage</Text>
           </Column>
           <Column>
-            <Text strong>Active</Text>
+            <Text strong>
+              {!selectedProtocol?.coverageEndedAt
+                ? "Active"
+                : `Ended at ${DateTime.fromJSDate(selectedProtocol?.coverageEndedAt)
+                    .setLocale("en")
+                    .toLocaleString(DateTime.DATETIME_FULL)}`}
+            </Text>
           </Column>
         </Row>
         {balance && (
