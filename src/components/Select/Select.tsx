@@ -13,28 +13,27 @@ type OptionType = {
 type Props = {
   options: Array<OptionType>
   onChange: (value: string) => void
-  initialOption: string
+  value?: string
 }
 
 /**
  * Custom Select/Dropdown component
  */
-const Select: React.FC<Props> = ({ options, onChange, initialOption }) => {
-  const [selectedOption, setSelectedOption] = React.useState<string>()
+const Select: React.FC<Props> = ({ options, onChange, value }) => {
+  // const [selectedOption, setSelectedOption] = React.useState<string>()
   const selectedOptionLabel = React.useMemo(
-    () => options?.find((item) => item.value === selectedOption)?.label,
-    [selectedOption, options]
+    () => options?.find((item) => item.value === value)?.label,
+    [value, options]
   )
   const orderedOptions = React.useMemo(
-    () => [...options].sort((a, b) => (a.value === selectedOption ? -1 : 1)),
-    [options, selectedOption]
+    () => [...options].sort((a, b) => (a.value === value ? -1 : 1)),
+    [options, value]
   )
   const [optionsVisible, setOptionsVisible] = React.useState(false)
 
   const handleUpdateSelectedOption = React.useCallback(
     (option: string) => {
       setOptionsVisible(false)
-      setSelectedOption(option)
       onChange?.(option)
     },
     [onChange]
@@ -49,8 +48,10 @@ const Select: React.FC<Props> = ({ options, onChange, initialOption }) => {
   )
 
   React.useEffect(() => {
-    setSelectedOption(initialOption)
-  }, [initialOption])
+    if (options && options.length > 0 && !value) {
+      handleUpdateSelectedOption(options[0].value)
+    }
+  }, [options, value, handleUpdateSelectedOption])
 
   return (
     <Column className={styles.container}>
@@ -71,7 +72,7 @@ const Select: React.FC<Props> = ({ options, onChange, initialOption }) => {
                 value={item.value}
                 label={item.label}
                 onSelect={handleUpdateSelectedOption}
-                selected={selectedOption === item.value}
+                selected={value === item.value}
               />
             ))}
           </div>
