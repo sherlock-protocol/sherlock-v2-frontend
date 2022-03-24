@@ -142,80 +142,84 @@ export const ProtocolPage: React.FC = () => {
             <Select value={selectedProtocolId} options={protocolSelectOptions} onChange={handleOnProtocolChanged} />
           </Column>
         </Row>
-        <Row alignment="space-between">
-          <Column>
-            <Text>Coverage</Text>
-          </Column>
-          <Column>
-            <Text strong>
-              {!selectedProtocol?.coverageEndedAt
-                ? "Active"
-                : `Ended at ${DateTime.fromJSDate(selectedProtocol?.coverageEndedAt)
-                    .setLocale("en")
-                    .toLocaleString(DateTime.DATETIME_FULL)}`}
-            </Text>
-          </Column>
-        </Row>
-        {balance && (
-          <Row alignment="space-between">
-            <Column>
-              <Text>Active balance</Text>
-            </Column>
-            <Column>
-              <Text strong>{formatAmount(ethers.utils.formatUnits(balance, 6))} USDC</Text>
-            </Column>
-          </Row>
-        )}
-        {coverageLeft && (
-          <Row alignment="space-between">
-            <Column>
-              <Text>Coverage left</Text>
-            </Column>
-            <Column>
-              <Text strong>{convertSecondsToDurationString(coverageLeft.toNumber())}</Text>
-            </Column>
-          </Row>
-        )}
-        <Column className={styles.rewardsContainer} spacing="m">
-          {balance && (
-            <ProtocolBalanceInput
-              onChange={handleOnAmountChanged}
-              protocolPremium={premium}
-              usdcBalance={usdcBalance}
-            />
-          )}
-          {amount && (
-            <ConnectGate>
+        {selectedProtocol && (
+          <>
+            <Row alignment="space-between">
               <Column>
-                <Row alignment={["space-between", "center"]} spacing="m">
-                  {accountData?.address === selectedProtocol?.agent && (
-                    <>
-                      <Column grow={1}>
-                        <Button variant="secondary" onClick={handleRemoveBalance}>
-                          Remove balance
-                        </Button>
-                      </Column>
-                      <Column grow={0}>
-                        <Text size="small">or</Text>
-                      </Column>
-                    </>
-                  )}
-                  <Column grow={1}>
-                    <AllowanceGate
-                      amount={amount}
-                      spender={address}
-                      render={(disabled) => (
-                        <Button onClick={handleAddBalance} disabled={disabled}>
-                          Add balance
-                        </Button>
-                      )}
-                    />
-                  </Column>
-                </Row>
+                <Text>Coverage</Text>
               </Column>
-            </ConnectGate>
-          )}
-        </Column>
+              <Column>
+                <Text strong>
+                  {!selectedProtocol?.coverageEndedAt
+                    ? "Active"
+                    : `Ended ${DateTime.fromJSDate(selectedProtocol?.coverageEndedAt)
+                        .setLocale("en")
+                        .toLocaleString(DateTime.DATETIME_MED)}`}
+                </Text>
+              </Column>
+            </Row>
+            {balance && (
+              <Row alignment="space-between">
+                <Column>
+                  <Text>Active balance</Text>
+                </Column>
+                <Column>
+                  <Text strong>{formatAmount(ethers.utils.formatUnits(balance, 6))} USDC</Text>
+                </Column>
+              </Row>
+            )}
+            {coverageLeft && (
+              <Row alignment="space-between">
+                <Column>
+                  <Text>Coverage left</Text>
+                </Column>
+                <Column>
+                  <Text strong>{convertSecondsToDurationString(coverageLeft.toNumber())}</Text>
+                </Column>
+              </Row>
+            )}
+            <Column className={styles.rewardsContainer} spacing="m">
+              {balance && (
+                <ProtocolBalanceInput
+                  onChange={handleOnAmountChanged}
+                  protocolPremium={premium}
+                  usdcBalance={usdcBalance}
+                />
+              )}
+              {amount && (
+                <ConnectGate>
+                  <Column>
+                    <Row alignment={["space-between", "center"]} spacing="m">
+                      {accountData?.address === selectedProtocol?.agent && (
+                        <>
+                          <Column grow={1}>
+                            <Button variant="secondary" onClick={handleRemoveBalance}>
+                              Remove balance
+                            </Button>
+                          </Column>
+                          <Column grow={0}>
+                            <Text size="small">or</Text>
+                          </Column>
+                        </>
+                      )}
+                      <Column grow={1}>
+                        <AllowanceGate
+                          amount={amount}
+                          spender={address}
+                          render={(disabled) => (
+                            <Button onClick={handleAddBalance} disabled={disabled}>
+                              Add balance
+                            </Button>
+                          )}
+                        />
+                      </Column>
+                    </Row>
+                  </Column>
+                </ConnectGate>
+              )}
+            </Column>
+          </>
+        )}
       </Column>
     </Box>
   )
