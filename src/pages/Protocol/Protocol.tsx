@@ -17,6 +17,7 @@ import Select from "../../components/Select/Select"
 import { formatAmount } from "../../utils/format"
 import { useCoveredProtocols, CoveredProtocol } from "../../hooks/api/useCoveredProtocols"
 import { DateTime } from "luxon"
+import { useAccount } from "wagmi"
 
 export const ProtocolPage: React.FC = () => {
   const [selectedProtocolId, setSelectedProtocolId] = React.useState<string>()
@@ -25,6 +26,7 @@ export const ProtocolPage: React.FC = () => {
   const [premium, setPremium] = React.useState<BigNumber>()
 
   const { data: coveredProtocols, getCoveredProtocols } = useCoveredProtocols()
+  const [{ data: accountData }] = useAccount()
 
   const protocolSelectOptions = React.useMemo(
     () =>
@@ -186,15 +188,18 @@ export const ProtocolPage: React.FC = () => {
             <ConnectGate>
               <Column>
                 <Row alignment={["space-between", "center"]} spacing="m">
-                  <Column grow={1}>
-                    <Button variant="secondary" onClick={handleRemoveBalance}>
-                      Remove balance
-                    </Button>
-                  </Column>
-                  <Column grow={0}>
-                    <Text size="small">or</Text>
-                  </Column>
-
+                  {accountData?.address === selectedProtocol?.agent && (
+                    <>
+                      <Column grow={1}>
+                        <Button variant="secondary" onClick={handleRemoveBalance}>
+                          Remove balance
+                        </Button>
+                      </Column>
+                      <Column grow={0}>
+                        <Text size="small">or</Text>
+                      </Column>
+                    </>
+                  )}
                   <Column grow={1}>
                     <AllowanceGate
                       amount={amount}
