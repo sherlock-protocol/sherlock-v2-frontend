@@ -3,18 +3,20 @@ import { BigNumber } from "ethers"
 import axios from "./axios"
 import { getStakePositions as getStakePositionUrl } from "./urls"
 
-type StakingPosition = {
+export type StakingPosition = {
   id: number
   owner: string
   sher: BigNumber
   usdc: BigNumber
+  scaledUsdcIncrement: number
   lockupEnd: Date
+  scaledUsdc?: BigNumber
 }
 
 type StakingPositions = {
   positions: StakingPosition[]
   usdcAPY: number
-  usdcIncrementFactor50ms: number
+  usdcLastUpdated: Date
 }
 
 type GetStakingPositionsResponseData =
@@ -26,9 +28,10 @@ type GetStakingPositionsResponseData =
         owner: string
         sher: string
         usdc: string
+        usdc_increment: string
       }[]
       usdc_apy: number
-      usdc_increment_50ms_factor: number
+      positions_usdc_last_updated: number
     }
   | {
       ok: false
@@ -44,10 +47,11 @@ const parseResponse = (response: GetStakingPositionsResponseData): StakingPositi
       owner: p.owner,
       sher: BigNumber.from(p.sher),
       usdc: BigNumber.from(p.usdc),
+      scaledUsdcIncrement: parseFloat((parseFloat(p.usdc_increment ?? 0) * 1e6).toFixed(0)),
       lockupEnd: new Date(p.lockup_end * 1000),
     })),
     usdcAPY: response.usdc_apy,
-    usdcIncrementFactor50ms: response.usdc_increment_50ms_factor,
+    usdcLastUpdated: new Date(response.positions_usdc_last_updated * 1000),
   }
 }
 
@@ -82,6 +86,7 @@ export const StakingPositionsProvider: React.FC = ({ children }) => {
       }
       setError(null)
     } catch (error) {
+      console.error(error)
       setData(null)
       setError(error as Error)
     } finally {

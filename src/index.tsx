@@ -11,24 +11,27 @@ import { WagmiProvider } from "./utils/WagmiProvider"
 import { TxWaitProvider } from "./hooks/useWaitTx"
 import { FundraisePositionProvider } from "./hooks/api/useFundraisePosition"
 import { StakingPositionsProvider } from "./hooks/api/useStakingPositions"
+import { SentryErrorBoundary } from "./utils/sentry"
 
 global.Buffer = global.Buffer || require("buffer").Buffer
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <WagmiProvider>
-        <ApolloProvider>
-          <TxWaitProvider>
-            <FundraisePositionProvider>
-              <StakingPositionsProvider>
-                <App />
-              </StakingPositionsProvider>
-            </FundraisePositionProvider>
-          </TxWaitProvider>
-        </ApolloProvider>
-      </WagmiProvider>
-    </BrowserRouter>
+    <SentryErrorBoundary>
+      <BrowserRouter>
+        <WagmiProvider>
+          <ApolloProvider>
+            <TxWaitProvider>
+              <FundraisePositionProvider>
+                <StakingPositionsProvider>
+                  <App />
+                </StakingPositionsProvider>
+              </FundraisePositionProvider>
+            </TxWaitProvider>
+          </ApolloProvider>
+        </WagmiProvider>
+      </BrowserRouter>
+    </SentryErrorBoundary>
   </React.StrictMode>,
   document.getElementById("root")
 )

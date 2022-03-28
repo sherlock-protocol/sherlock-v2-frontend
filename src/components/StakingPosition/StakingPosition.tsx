@@ -4,6 +4,7 @@ import useSherlock from "../../hooks/useSherlock"
 import useWaitTx from "../../hooks/useWaitTx"
 import { PERIODS_IN_SECONDS } from "../../pages/Staking"
 import { formattedTimeDifference } from "../../utils/dates"
+import { formatAmount } from "../../utils/format"
 import { Box } from "../Box"
 import { Button } from "../Button/Button"
 import { Column, Row } from "../Layout"
@@ -75,7 +76,7 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
           </Column>
           <Column>
             <Text strong variant="mono">
-              {ethers.utils.commify(ethers.utils.formatUnits(usdcBalance, 6))} USDC
+              {formatAmount(ethers.utils.formatUnits(usdcBalance, 6))} USDC
             </Text>
           </Column>
         </Row>
@@ -85,7 +86,7 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
           </Column>
           <Column>
             <Text strong variant="mono">
-              {ethers.utils.commify(ethers.utils.formatUnits(sherRewards, 18))} SHER
+              {formatAmount(ethers.utils.formatUnits(sherRewards, 18))} SHER
             </Text>
           </Column>
         </Row>
@@ -106,7 +107,7 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
             </Column>
             <Column>
               <Text strong variant="mono">
-                {apy}%
+                {formatAmount(apy)}%
               </Text>
             </Column>
           </Row>

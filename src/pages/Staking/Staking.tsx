@@ -1,4 +1,4 @@
-import { BigNumber, ethers, utils } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import React from "react"
 import { useDebounce } from "use-debounce"
 import { useAccount } from "wagmi"
@@ -16,6 +16,7 @@ import useERC20 from "../../hooks/useERC20"
 import useSherDistManager from "../../hooks/useSherDistManager"
 import useSherlock from "../../hooks/useSherlock"
 import useWaitTx from "../../hooks/useWaitTx"
+import { formatAmount } from "../../utils/format"
 import { TxType } from "../../utils/txModalMessages"
 import styles from "./Staking.module.scss"
 
@@ -108,7 +109,7 @@ export const StakingPage: React.FC = () => {
             <Column>
               {tvl && (
                 <Text strong variant="mono">
-                  ${utils.commify(formatUSDC(tvl))}
+                  ${formatAmount(formatUSDC(tvl))}
                 </Text>
               )}
             </Column>
@@ -145,7 +146,7 @@ export const StakingPage: React.FC = () => {
                     </Column>
                     <Column>
                       <Text strong variant="mono">
-                        {utils.commify(formatSHER(sherRewards.sub(sherRewards.mod(1e14))))} SHER
+                        {formatAmount(formatSHER(sherRewards))} SHER
                       </Text>
                     </Column>
                   </Row>
@@ -156,7 +157,7 @@ export const StakingPage: React.FC = () => {
                       </Column>
                       <Column>
                         <Text strong variant="mono">
-                          {utils.commify(stakePositionsData?.usdcAPY.toString())}%
+                          {formatAmount(stakePositionsData?.usdcAPY)}%
                         </Text>
                       </Column>
                     </Row>
@@ -181,6 +182,12 @@ export const StakingPage: React.FC = () => {
               )}
             </Column>
           </Row>
+          <Text size="small" className={styles.v1}>
+            For the Sherlock V1, please see{" "}
+            <a href="https://v1.sherlock.xyz" rel="noreferrer" target="_blank">
+              https://v1.sherlock.xyz
+            </a>
+          </Text>
         </Column>
       </LoadingContainer>
     </Box>
