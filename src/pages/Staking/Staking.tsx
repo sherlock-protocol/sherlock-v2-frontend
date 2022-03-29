@@ -32,11 +32,12 @@ export const PERIODS_IN_SECONDS = {
 
 export const StakingPage: React.FC = () => {
   const [amount, setAmount] = React.useState<BigNumber>()
-  const [debouncedAmountBN] = useDebounce(amount, 200)
-  const [stakingPeriod, setStakingPeriod] = React.useState<number>()
+  const [debouncedAmountBN] = useDebounce(amount, 500)
+  // We're removing the 12 months period just for March 30th liquidity event.
+  const [stakingPeriod] = React.useState<number>(PERIODS_IN_SECONDS.SIX_MONTHS)
   const [sherRewards, setSherRewards] = React.useState<BigNumber>()
   const [isLoadingRewards, setIsLoadingRewards] = React.useState(false)
-  const { data: stakePositionsData, getStakingPositions } = useStakingPositions()
+  const { getStakingPositions } = useStakingPositions()
 
   const { tvl, address, stake, refreshTvl } = useSherlock()
   const { computeRewards } = useSherDistManager()
@@ -117,6 +118,8 @@ export const StakingPage: React.FC = () => {
           <Row className={styles.rewardsContainer}>
             <Column grow={1} spacing="l">
               <TokenInput onChange={setAmount} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
+              {/* 
+              We're removing the 12 months period just for March 30th liquidity event. 6 months by default.
               <Row spacing="m">
                 <Column grow={1}>
                   <Button
@@ -134,7 +137,7 @@ export const StakingPage: React.FC = () => {
                     12 months
                   </Button>
                 </Column>
-              </Row>
+              </Row> */}
               {sherRewards && (
                 <>
                   <Row>
