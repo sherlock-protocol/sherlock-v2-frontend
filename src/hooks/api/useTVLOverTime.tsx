@@ -50,7 +50,7 @@ export const useTVLOverTime = () => {
     } catch (error) {
       console.error(error)
       setData(null)
-      setError(error)
+      setError(error as Error)
     } finally {
       setLoading(false)
     }

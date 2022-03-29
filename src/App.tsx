@@ -6,6 +6,7 @@ import { FundraisingClaimPage } from "./pages/FundraisingClaim"
 import { StakingPage } from "./pages/Staking"
 import { StakingPositionsPage } from "./pages/StakingPositions"
 import { USForbiddenPage } from "./pages/USForbidden"
+import { SherlockDashboardPage } from "./pages/SherlockDashboard"
 
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
@@ -76,6 +77,7 @@ function App() {
               <Route path={routes.Stake} element={<StakingPage />} />
               <Route path={routes.Positions} element={<StakingPositionsPage />} />
               <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
+              <Route path={routes.Stats} element={<SherlockDashboardPage />} />
               <Route path={routes.USForbidden} element={<USForbiddenPage />} />
               <Route path="*" element={<Navigate replace to={routes.Stake} />} />
             </>
