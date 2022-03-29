@@ -150,18 +150,22 @@ export const StakingPage: React.FC = () => {
                       </Text>
                     </Column>
                   </Row>
-                  {stakePositionsData && (
-                    <Row alignment="space-between">
-                      <Column>
-                        <Text>USDC APY</Text>
-                      </Column>
-                      <Column>
-                        <Text strong variant="mono">
-                          {formatAmount(stakePositionsData?.usdcAPY)}%
-                        </Text>
-                      </Column>
-                    </Row>
-                  )}
+                  {/* {stakePositionsData && ( */}
+                  <Row alignment="space-between">
+                    <Column>
+                      <Text>USDC APY</Text>
+                    </Column>
+                    <Column>
+                      <Text strong variant="mono">
+                        {/* 
+                            We're making the APY fixed to 15% for March 30th liquidity event.
+                            {formatAmount(stakePositionsData?.usdcAPY)}% 
+                          */}
+                        15%
+                      </Text>
+                    </Column>
+                  </Row>
+                  {/* )} */}
                 </>
               )}
 
