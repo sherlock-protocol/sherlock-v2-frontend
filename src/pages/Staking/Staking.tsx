@@ -50,7 +50,7 @@ export const StakingPage: React.FC = () => {
    * March 30th event: Disable staking once 10M TVL is reached.
    */
   const disableStaking = useMemo(() => {
-    return tvl && tvl.gte(BigNumber.from("10000000000000000000000000"))
+    return tvl && tvl.gte(BigNumber.from("10000000000000"))
   }, [tvl])
 
   /**
