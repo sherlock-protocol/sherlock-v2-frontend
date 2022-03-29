@@ -78,14 +78,16 @@ const parseResponse = (response: GetCoveredProtocolsResponseData): CoveredProtoc
     // Try to find protocol's metadata
     const metas = coveredProtocolMetas[p.bytes_identifier]
 
-    map[p.bytes_identifier] = {
-      agent: p.agent,
-      bytesIdentifier: p.bytes_identifier,
-      premium: BigNumber.from(p.premium),
-      coverageEndedAt: p.coverage_ended_at ? new Date(p.coverage_ended_at * 1000) : null,
-      premiumSetAt: p.premium_set_at ? new Date(p.premium_set_at * 1000) : null,
-      ...metas,
-    } as CoveredProtocol
+    if (metas) {
+      map[p.bytes_identifier] = {
+        agent: p.agent,
+        bytesIdentifier: p.bytes_identifier,
+        premium: BigNumber.from(p.premium),
+        coverageEndedAt: p.coverage_ended_at ? new Date(p.coverage_ended_at * 1000) : null,
+        premiumSetAt: p.premium_set_at ? new Date(p.premium_set_at * 1000) : null,
+        ...metas,
+      } as CoveredProtocol
+    }
 
     return map
   }, {} as CoveredProtocols)
