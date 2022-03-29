@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 import { BigNumber } from "ethers"
-import axios from "axios"
+import axios from "./axios"
 import { getTVLOverTime as getTVLOverTimeUrl } from "./urls"
 
 type TVLDataPoint = {
