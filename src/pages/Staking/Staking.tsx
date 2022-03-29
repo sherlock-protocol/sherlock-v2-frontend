@@ -1,5 +1,5 @@
 import { BigNumber, ethers } from "ethers"
-import React from "react"
+import React, { useMemo } from "react"
 import { useDebounce } from "use-debounce"
 import { useAccount } from "wagmi"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
@@ -45,6 +45,13 @@ export const StakingPage: React.FC = () => {
   const { format: formatUSDC, balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
   const [{ data: accountData }] = useAccount()
+
+  /**
+   * March 30th event: Disable staking once 10M TVL is reached.
+   */
+  const disableStaking = useMemo(() => {
+    return tvl && tvl.gte(BigNumber.from("10000000000000000000000000"))
+  }, [tvl])
 
   /**
    * Compute staking rewards for current amount and staking period
@@ -115,9 +122,16 @@ export const StakingPage: React.FC = () => {
               )}
             </Column>
           </Row>
+          {disableStaking && <Row>Early Adopters LP Round has ended. Please check back in next week.</Row>}
           <Row className={styles.rewardsContainer}>
             <Column grow={1} spacing="l">
-              <TokenInput onChange={setAmount} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
+              <TokenInput
+                onChange={setAmount}
+                token="USDC"
+                placeholder="Choose amount"
+                balance={usdcBalance}
+                disabled={disableStaking}
+              />
               {/* 
               We're removing the 12 months period just for March 30th liquidity event. 6 months by default.
               <Row spacing="m">
@@ -142,6 +156,16 @@ export const StakingPage: React.FC = () => {
                 <>
                   <Row>
                     <hr />
+                  </Row>
+                  <Row alignment="space-between">
+                    <Column>
+                      <Text>Lockup period</Text>
+                    </Column>
+                    <Column>
+                      <Text strong variant="mono">
+                        6 months
+                      </Text>
+                    </Column>
                   </Row>
                   <Row alignment="space-between">
                     <Column>
