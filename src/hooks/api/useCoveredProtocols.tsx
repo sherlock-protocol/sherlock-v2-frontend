@@ -21,6 +21,11 @@ export type CoveredProtocol = {
   coverageEndedAt: Date | null
 
   /**
+   * Premium amount
+   */
+  premium: BigNumber
+
+  /**
    * Covered protocol's name
    */
   name?: string

@@ -23,7 +23,6 @@ export const ProtocolPage: React.FC = () => {
   const [selectedProtocolId, setSelectedProtocolId] = React.useState<string>()
   const [balance, setBalance] = React.useState<BigNumber>()
   const [coverageLeft, setCoverageLeft] = React.useState<BigNumber>()
-  const [premium, setPremium] = React.useState<BigNumber>()
 
   const { data: coveredProtocols, getCoveredProtocols } = useCoveredProtocols()
   const [{ data: accountData }] = useAccount()
@@ -46,14 +45,8 @@ export const ProtocolPage: React.FC = () => {
    */
   const [amount, setAmount] = React.useState<BigNumber>()
 
-  const {
-    address,
-    getProtocolActiveBalance,
-    getProtocolCoverageLeft,
-    getProtocolPremium,
-    depositActiveBalance,
-    withdrawActiveBalance,
-  } = useProtocolManager()
+  const { address, getProtocolActiveBalance, getProtocolCoverageLeft, depositActiveBalance, withdrawActiveBalance } =
+    useProtocolManager()
   const { balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
 
@@ -77,10 +70,7 @@ export const ProtocolPage: React.FC = () => {
 
     const protocolCoverageleft = await getProtocolCoverageLeft(selectedProtocolId)
     setCoverageLeft(protocolCoverageleft)
-
-    const protocolPremium = await getProtocolPremium(selectedProtocolId)
-    setPremium(protocolPremium)
-  }, [selectedProtocolId, getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium])
+  }, [selectedProtocolId, getProtocolActiveBalance, getProtocolCoverageLeft])
 
   /**
    * Add balance to selected protocol
@@ -182,7 +172,7 @@ export const ProtocolPage: React.FC = () => {
               {balance && (
                 <ProtocolBalanceInput
                   onChange={handleOnAmountChanged}
-                  protocolPremium={premium}
+                  protocolPremium={selectedProtocol.premium}
                   usdcBalance={usdcBalance}
                 />
               )}
