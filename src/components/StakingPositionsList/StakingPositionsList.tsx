@@ -94,7 +94,7 @@ export const StakingPositionsList: React.FC = () => {
           usdcBalance={position.usdc}
           sherRewards={position.sher}
           lockupEnd={position.lockupEnd}
-          apy={data?.usdcAPY}
+          apy={position?.usdcAPY ?? data?.usdcAPY}
         />
       ))}
       {!loading && data?.positions?.length === 0 && (
