@@ -1,5 +1,5 @@
 import { BigNumber, ethers } from "ethers"
-import React from "react"
+import React, { useMemo } from "react"
 import { useDebounce } from "use-debounce"
 import { useAccount } from "wagmi"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
@@ -32,11 +32,12 @@ export const PERIODS_IN_SECONDS = {
 
 export const StakingPage: React.FC = () => {
   const [amount, setAmount] = React.useState<BigNumber>()
-  const [debouncedAmountBN] = useDebounce(amount, 200)
-  const [stakingPeriod, setStakingPeriod] = React.useState<number>()
+  const [debouncedAmountBN] = useDebounce(amount, 500)
+  // We're removing the 12 months period just for March 30th liquidity event.
+  const [stakingPeriod] = React.useState<number>(PERIODS_IN_SECONDS.SIX_MONTHS)
   const [sherRewards, setSherRewards] = React.useState<BigNumber>()
   const [isLoadingRewards, setIsLoadingRewards] = React.useState(false)
-  const { data: stakePositionsData, getStakingPositions } = useStakingPositions()
+  const { getStakingPositions } = useStakingPositions()
 
   const { tvl, address, stake, refreshTvl } = useSherlock()
   const { computeRewards } = useSherDistManager()
@@ -44,6 +45,13 @@ export const StakingPage: React.FC = () => {
   const { format: formatUSDC, balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
   const [{ data: accountData }] = useAccount()
+
+  /**
+   * March 30th event: Disable staking once 10M TVL is reached.
+   */
+  const disableStaking = useMemo(() => {
+    return tvl && tvl.gte(BigNumber.from("10000000000000"))
+  }, [tvl])
 
   /**
    * Compute staking rewards for current amount and staking period
@@ -114,9 +122,18 @@ export const StakingPage: React.FC = () => {
               )}
             </Column>
           </Row>
+          {disableStaking && <Row>Early Adopters LP Round has ended. Please check back in next week.</Row>}
           <Row className={styles.rewardsContainer}>
             <Column grow={1} spacing="l">
-              <TokenInput onChange={setAmount} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
+              <TokenInput
+                onChange={setAmount}
+                token="USDC"
+                placeholder="Choose amount"
+                balance={usdcBalance}
+                disabled={disableStaking}
+              />
+              {/* 
+              We're removing the 12 months period just for March 30th liquidity event. 6 months by default.
               <Row spacing="m">
                 <Column grow={1}>
                   <Button
@@ -134,11 +151,21 @@ export const StakingPage: React.FC = () => {
                     12 months
                   </Button>
                 </Column>
-              </Row>
+              </Row> */}
               {sherRewards && (
                 <>
                   <Row>
                     <hr />
+                  </Row>
+                  <Row alignment="space-between">
+                    <Column>
+                      <Text>Lockup period</Text>
+                    </Column>
+                    <Column>
+                      <Text strong variant="mono">
+                        6 months
+                      </Text>
+                    </Column>
                   </Row>
                   <Row alignment="space-between">
                     <Column>
@@ -150,18 +177,22 @@ export const StakingPage: React.FC = () => {
                       </Text>
                     </Column>
                   </Row>
-                  {stakePositionsData && (
-                    <Row alignment="space-between">
-                      <Column>
-                        <Text>USDC APY</Text>
-                      </Column>
-                      <Column>
-                        <Text strong variant="mono">
-                          {formatAmount(stakePositionsData?.usdcAPY)}%
-                        </Text>
-                      </Column>
-                    </Row>
-                  )}
+                  {/* {stakePositionsData && ( */}
+                  <Row alignment="space-between">
+                    <Column>
+                      <Text>USDC APY</Text>
+                    </Column>
+                    <Column>
+                      <Text strong variant="mono">
+                        {/* 
+                            We're making the APY fixed to 15% for March 30th liquidity event.
+                            {formatAmount(stakePositionsData?.usdcAPY)}% 
+                          */}
+                        15%
+                      </Text>
+                    </Column>
+                  </Row>
+                  {/* )} */}
                 </>
               )}
 
