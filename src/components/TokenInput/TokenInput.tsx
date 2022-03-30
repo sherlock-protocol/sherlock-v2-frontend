@@ -1,5 +1,6 @@
 import { BigNumber, utils } from "ethers"
 import React from "react"
+import cx from "classnames"
 import { formatAmount } from "../../utils/format"
 import { Button } from "../Button/Button"
 import { Input } from "../Input"
@@ -15,6 +16,7 @@ type Props = Omit<InputProps, "value"> & {
 
 const TokenInput: React.FC<Props> = ({ balance, value, ...props }) => {
   const [controlledValue, setControlledValue] = React.useState<BigNumber>()
+  const { disabled } = props
 
   const handleSetMax = React.useCallback(() => {
     if (balance) {
@@ -34,7 +36,7 @@ const TokenInput: React.FC<Props> = ({ balance, value, ...props }) => {
 
   return (
     <>
-      <Row alignment={["space-between", "center"]} spacing="xl">
+      <Row alignment={["space-between", "center"]} spacing="xl" className={cx({ [styles.disabled]: disabled })}>
         <Column grow={1}>
           <Input value={controlledValue} {...props} />
         </Column>
