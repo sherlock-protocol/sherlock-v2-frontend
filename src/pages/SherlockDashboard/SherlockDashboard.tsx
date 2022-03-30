@@ -27,20 +27,62 @@ export const SherlockDashboardPage: React.FC = () => {
   }))
 
   return (
-    <Box>
-      <Column spacing="m">
-        <Row>
-          <Title variant="h3">STAKING POOL</Title>
-        </Row>
-        <Row>
-          <Title>
-            {tvlData &&
-              tvlData.length > 0 &&
-              `$ ${utils.commify(utils.formatUnits(tvlData[tvlData.length - 1].value, 6))}`}
-          </Title>
-        </Row>
-        <Row>{chartData && <Chart width={800} height={200} data={chartData} />}</Row>
-      </Column>
-    </Box>
+    <Column spacing="m">
+      <Row>
+        <Box shadow={false} fullWidth>
+          <Column spacing="m">
+            <Row>
+              <Title variant="h3">STAKING POOL</Title>
+            </Row>
+            <Row>
+              <Title>
+                {tvlData &&
+                  tvlData.length > 0 &&
+                  `$ ${utils.commify(utils.formatUnits(tvlData[tvlData.length - 1].value, 6))}`}
+              </Title>
+            </Row>
+            <Row alignment="center">
+              <Chart width={900} height={200} data={chartData} />
+            </Row>
+          </Column>
+        </Box>
+      </Row>
+      <Row spacing="m">
+        <Box shadow={false}>
+          <Column spacing="m">
+            <Row>
+              <Title variant="h3">STAKING POOL</Title>
+            </Row>
+            <Row>
+              <Title>
+                {tvlData &&
+                  tvlData.length > 0 &&
+                  `$ ${utils.commify(utils.formatUnits(tvlData[tvlData.length - 1].value, 6))}`}
+              </Title>
+            </Row>
+            <Row>
+              <Chart width={450} height={200} data={chartData} />
+            </Row>
+          </Column>
+        </Box>
+        <Box shadow={false}>
+          <Column spacing="m">
+            <Row>
+              <Title variant="h3">STAKING POOL</Title>
+            </Row>
+            <Row>
+              <Title>
+                {tvlData &&
+                  tvlData.length > 0 &&
+                  `$ ${utils.commify(utils.formatUnits(tvlData[tvlData.length - 1].value, 6))}`}
+              </Title>
+            </Row>
+            <Row>
+              <Chart width={450} height={200} data={chartData} />
+            </Row>
+          </Column>
+        </Box>
+      </Row>
+    </Column>
   )
 }

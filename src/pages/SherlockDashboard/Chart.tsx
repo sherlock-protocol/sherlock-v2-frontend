@@ -20,7 +20,6 @@ export const Chart: React.FC<Props> = ({ width, height, data }) => {
         </linearGradient>
       </defs>
       <YAxis
-        width={80}
         orientation="right"
         tick={{ fill: "white", fontSize: "12px" }}
         tickMargin={5}
@@ -32,7 +31,7 @@ export const Chart: React.FC<Props> = ({ width, height, data }) => {
         itemStyle={{ color: "#19032d" }}
         labelStyle={{ color: "gray" }}
       />
-      <Area type="monotone" dataKey="tvl" stroke="#8414EC" fill="url(#tvl)" fillOpacity={1} />
+      <Area type="monotone" dataKey="tvl" stroke="#8414EC" fill="url(#tvl)" fillOpacity={1} isAnimationActive={true} />
     </AreaChart>
   )
 }
