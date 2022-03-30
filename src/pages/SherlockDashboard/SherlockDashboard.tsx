@@ -33,7 +33,11 @@ export const SherlockDashboardPage: React.FC = () => {
           <Title variant="h3">STAKING POOL</Title>
         </Row>
         <Row>
-          <Title>$22,056,005.00</Title>
+          <Title>
+            {tvlData &&
+              tvlData.length > 0 &&
+              `$ ${utils.commify(utils.formatUnits(tvlData[tvlData.length - 1].value, 6))}`}
+          </Title>
         </Row>
         <Row>{chartData && <Chart width={800} height={200} data={chartData} />}</Row>
       </Column>
