@@ -46,7 +46,7 @@ const TokenInput: React.FC<Props> = ({ balance, value, ...props }) => {
           </Text>
         </Column>
       </Row>
-      {balance && (
+      {balance && !disabled && (
         <Row alignment={["end", "center"]} spacing="m">
           <Text className={styles.balance}>
             Balance: {formatAmount(utils.formatUnits(balance, decimalsByToken[props.token]))}
