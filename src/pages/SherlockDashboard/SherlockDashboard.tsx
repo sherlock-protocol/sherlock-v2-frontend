@@ -47,7 +47,7 @@ export const SherlockDashboardPage: React.FC = () => {
               <defs>
                 <linearGradient id="tvl" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#8414eC" stopOpacity={0.5} />
-                  <stop offset="100%" stopColor="#8884d8" stopOpacity={0} />
+                  <stop offset="100%" stopColor="#8414eC" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <YAxis
@@ -63,7 +63,11 @@ export const SherlockDashboardPage: React.FC = () => {
                 tickMargin={5}
                 allowDuplicatedCategory={false}
               />
-              <Tooltip formatter={(v: any, name: string) => [v, name.toUpperCase()]} />
+              <Tooltip
+                formatter={(v: number, name: string) => [`$${utils.commify(v)}`, name.toUpperCase()]}
+                itemStyle={{ color: "#19032d" }}
+                labelStyle={{ color: "gray" }}
+              />
               <Area type="monotone" dataKey="tvl" stroke="#8414EC" fill="url(#tvl)" fillOpacity={1} />
             </AreaChart>
           )}
