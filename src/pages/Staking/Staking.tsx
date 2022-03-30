@@ -196,7 +196,7 @@ export const StakingPage: React.FC = () => {
                 </>
               )}
 
-              {amount && stakingPeriod && sherRewards && (
+              {amount && stakingPeriod && sherRewards && !disableStaking && (
                 <Row alignment="center">
                   <ConnectGate>
                     <AllowanceGate
