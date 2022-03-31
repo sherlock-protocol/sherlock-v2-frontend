@@ -7,15 +7,23 @@
   height: 100vh;
   background-color: $background-color;
 
-  & .content {
+  & .contentContainer {
     width: 100%;
-    max-width: 1080px;
-
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     flex-grow: 1;
+    overflow-y: scroll;
+
+    & .content {
+      width: 100%;
+      max-width: 1080px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 

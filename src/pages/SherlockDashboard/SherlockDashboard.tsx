@@ -9,7 +9,7 @@ import { Chart } from "./Chart"
 
 import { useTVLOverTime } from "../../hooks/api/useTVLOverTime"
 
-import styles from "./SherlockDashboardPage.module.scss"
+import styles from "./SherlockDashboard.module.scss"
 
 export const SherlockDashboardPage: React.FC = () => {
   const { getTVLOverTime, data: tvlData, loading, error } = useTVLOverTime()
@@ -27,7 +27,7 @@ export const SherlockDashboardPage: React.FC = () => {
   }))
 
   return (
-    <Column spacing="m">
+    <Column spacing="m" className={styles.container}>
       <Row>
         <Box shadow={false} fullWidth>
           <Column spacing="m">
