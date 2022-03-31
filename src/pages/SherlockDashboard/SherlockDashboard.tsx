@@ -4,9 +4,9 @@ import { DateTime } from "luxon"
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
-import { Text } from "../../components/Text"
 import { Chart } from "./Chart"
 
+import { commify } from "../../utils/units"
 import { useTVLOverTime } from "../../hooks/api/useTVLOverTime"
 
 import styles from "./SherlockDashboard.module.scss"
@@ -38,7 +38,7 @@ export const SherlockDashboardPage: React.FC = () => {
               <Title>
                 {tvlData &&
                   tvlData.length > 0 &&
-                  `$ ${utils.commify(utils.formatUnits(tvlData[tvlData.length - 1].value, 6))}`}
+                  `$ ${commify(utils.formatUnits(tvlData[tvlData.length - 1].value, 6))}`}
               </Title>
             </Row>
             <Row alignment="center">
