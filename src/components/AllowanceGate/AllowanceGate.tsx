@@ -34,11 +34,6 @@ interface Props {
   action: () => void
 
   /**
-   * Mark the action as successfull and show the checkmark
-   */
-  success?: boolean
-
-  /**
    * On Succes event handler
    */
   onSuccess?: () => void
