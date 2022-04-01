@@ -80,11 +80,8 @@ export const ProtocolPage: React.FC = () => {
       return
     }
 
-    waitForTx(async () => await depositActiveBalance(selectedProtocolId, amount))
-
-    fetchProtocolDetails()
-    setAmount(undefined)
-  }, [amount, selectedProtocolId, depositActiveBalance, fetchProtocolDetails, waitForTx])
+    await waitForTx(async () => await depositActiveBalance(selectedProtocolId, amount))
+  }, [amount, selectedProtocolId, depositActiveBalance, waitForTx])
 
   /**
    * Remove balance from selected protocol
@@ -178,32 +175,23 @@ export const ProtocolPage: React.FC = () => {
               )}
               {amount && (
                 <ConnectGate>
-                  <Column>
-                    <Row alignment={["space-between", "center"]} spacing="m">
-                      {accountData?.address === selectedProtocol?.agent && (
-                        <>
-                          <Column grow={1}>
-                            <Button variant="secondary" onClick={handleRemoveBalance}>
-                              Remove balance
-                            </Button>
-                          </Column>
-                          <Column grow={0}>
-                            <Text size="small">or</Text>
-                          </Column>
-                        </>
-                      )}
-                      <Column grow={1}>
-                        <AllowanceGate
-                          amount={amount}
-                          spender={address}
-                          render={(disabled) => (
-                            <Button onClick={handleAddBalance} disabled={disabled}>
-                              Add balance
-                            </Button>
-                          )}
-                        />
-                      </Column>
-                    </Row>
+                  <Column grow={1} alignment="start" spacing="m">
+                    <AllowanceGate
+                      amount={amount}
+                      spender={address}
+                      actionName="Add Balance"
+                      action={handleAddBalance}
+                      onSuccess={fetchProtocolDetails}
+                    />
+                    {accountData?.address === selectedProtocol?.agent && (
+                      <Row>
+                        <Column grow={1}>
+                          <Button variant="secondary" onClick={handleRemoveBalance}>
+                            Remove balance
+                          </Button>
+                        </Column>
+                      </Row>
+                    )}
                   </Column>
                 </ConnectGate>
               )}

@@ -87,9 +87,7 @@ export const StakingPage: React.FC = () => {
     await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
       transactionType: TxType.STAKE,
     })
-
-    refreshTvl()
-  }, [amount, stakingPeriod, stake, refreshTvl, waitForTx])
+  }, [amount, stakingPeriod, stake, waitForTx])
 
   // Compute rewards when amount or period is changed
   React.useEffect(() => {
@@ -202,11 +200,9 @@ export const StakingPage: React.FC = () => {
                     <AllowanceGate
                       amount={amount}
                       spender={address}
-                      render={(disabled) => (
-                        <Button disabled={disabled} onClick={handleOnStake}>
-                          Stake
-                        </Button>
-                      )}
+                      actionName="Stake"
+                      action={handleOnStake}
+                      onSuccess={refreshTvl}
                     ></AllowanceGate>
                   </ConnectGate>
                 </Row>

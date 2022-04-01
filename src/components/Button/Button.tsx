@@ -27,6 +27,11 @@ export type ButtonProps = {
    * Button size (@see ButonSize)
    */
   size?: ButtonSize
+
+  /**
+   * Class name
+   */
+  className?: string
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -35,9 +40,14 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   variant = "primary",
   size = "normal",
+  className,
 }) => {
   return (
-    <button className={cx(styles.button, styles[variant], styles[size])} onClick={onClick} disabled={disabled}>
+    <button
+      className={cx(styles.button, styles[variant], styles[size], className)}
+      onClick={onClick}
+      disabled={disabled}
+    >
       <div className={styles.content}>{children}</div>
     </button>
   )
