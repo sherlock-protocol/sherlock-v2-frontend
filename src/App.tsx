@@ -46,10 +46,6 @@ function App() {
             title: "POSITIONS",
             route: routes.Positions,
           },
-          {
-            title: "PROTOCOLS",
-            route: routes.Protocol,
-          },
         ]
       : [
           {
