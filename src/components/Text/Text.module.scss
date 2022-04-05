@@ -1,4 +1,8 @@
 .text {
+  &.warning {
+    color: red;
+  }
+
   &.strong {
     font-weight: 700;
   }
