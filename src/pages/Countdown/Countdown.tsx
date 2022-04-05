@@ -45,7 +45,7 @@ export const CountdownPage: React.FC<Props> = ({ secondsLeft }) => {
     <Box>
       <Column spacing="xl">
         <Column alignment="center" spacing="xl">
-          <Title>Fundraise starts in</Title>
+          <Title>Staking starts in</Title>
           <Row alignment="center" spacing="xl">
             <Column alignment="center" spacing="xs" className={styles.column}>
               <Text className={styles.value}>{timeLeft?.days?.toString().padStart(2, "0")}</Text>
