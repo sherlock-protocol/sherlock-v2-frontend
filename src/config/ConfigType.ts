@@ -10,9 +10,14 @@ export type Config = {
   localNetworkId?: number
 
   /**
-   * UNIX timestamp when fundraise starts
+   * UNIX timestamp when countdown should start
    */
-  launchTimestamp: number
+  countdownStartTimestamp: number
+
+  /**
+   * UNIX timestamp when countdown should end
+   */
+  countdownEndTimestamp: number
 
   /**
    * UNIX timestamp when fundraise SHER tokens can start to be claimed
