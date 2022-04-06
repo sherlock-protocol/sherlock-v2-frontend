@@ -4,33 +4,34 @@ const getNow = () => {
   return Math.floor(Date.now() / 1000)
 }
 
-const useCountdown = (timestamp: number) => {
-  const [ended, setEnded] = React.useState(getNow() > timestamp ? true : false)
+const useCountdown = (startTimestamp: number, endTimestamp: number) => {
+  const [started] = React.useState(getNow() > startTimestamp)
+  const [ended, setEnded] = React.useState(started ? getNow() > endTimestamp : false)
   const [secondsLeft, setSecondsLeft] = React.useState(0)
 
   const tick = React.useCallback(() => {
     const now = getNow()
 
-    if (now > timestamp) {
+    if (now > endTimestamp) {
       setEnded(true)
+    } else {
+      setSecondsLeft(endTimestamp - now)
     }
-
-    setSecondsLeft(timestamp - now)
-  }, [timestamp])
+  }, [endTimestamp])
 
   /**
    * Set initial state
    */
   React.useEffect(() => {
-    if (ended) {
+    if (ended || !started) {
       return
     }
 
     tick()
-  }, [ended, tick])
+  }, [ended, tick, started])
 
   React.useEffect(() => {
-    if (ended) {
+    if (ended || !started) {
       return
     }
 
@@ -39,9 +40,9 @@ const useCountdown = (timestamp: number) => {
     return () => {
       clearInterval(interval)
     }
-  }, [tick, ended])
+  }, [tick, ended, started])
 
-  return React.useMemo(() => ({ ended, secondsLeft }), [ended, secondsLeft])
+  return React.useMemo(() => ({ ended, secondsLeft, started }), [ended, secondsLeft, started])
 }
 
 export default useCountdown
