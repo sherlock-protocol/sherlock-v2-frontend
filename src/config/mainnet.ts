@@ -12,6 +12,6 @@ export const config: Config = {
   sherClaimAddress: "0x7289C61C75dCdB8Fe4DF0b937c08c9c40902BDd3",
   sherDistributionManagerAddress: "0xe91693d47e88a0f17a827f2d4b1e7e9716326740",
   usdcAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-  countdownStartTimestamp: 0,
-  countdownEndTimestamp: 0,
+  countdownStartTimestamp: 1649260800,
+  countdownEndTimestamp: 1649347200,
 }
