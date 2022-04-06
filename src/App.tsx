@@ -63,7 +63,7 @@ function App() {
   return (
     <div className={styles.app}>
       <div className={styles.noise} />
-      <Header navigationLinks={navigationLinks} />
+      <Header navigationLinks={countdownVisible ? [] : navigationLinks} />
       <div className={styles.content}>
         <Routes>
           {!countdownVisible ? (
