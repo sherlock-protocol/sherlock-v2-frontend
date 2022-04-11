@@ -49,6 +49,26 @@ export type CoveredProtocol = {
    * URL to covered protocol's Statement of Coverage
    */
   agreement?: string
+
+  /**
+   * Current (and previous, if exists) coverages
+   */
+  coverages: Array<{
+    /**
+     * Amount covered
+     */
+    coverageAmount: BigNumber
+
+    /**
+     * Timestamp when coverage started
+     */
+    coverageAmountSetAt: Date
+    /**
+     * If set, marks the timestamp until protocol agent
+     * can submit a claim for this coverage amount
+     */
+    claimableUntil: Date | null
+  }>
 }
 
 type GetCoveredProtocolsResponseData =
@@ -60,6 +80,7 @@ type GetCoveredProtocolsResponseData =
         coverage_ended_at: number
         premium: string
         premium_set_at: number
+        coverages: Array<{ claimable_until: number | null; coverage_amount: string; coverage_amount_set_at: number }>
       }[]
     }
   | {
@@ -85,6 +106,11 @@ const parseResponse = (response: GetCoveredProtocolsResponseData): CoveredProtoc
         premium: BigNumber.from(p.premium),
         coverageEndedAt: p.coverage_ended_at ? new Date(p.coverage_ended_at * 1000) : null,
         premiumSetAt: p.premium_set_at ? new Date(p.premium_set_at * 1000) : null,
+        coverages: p.coverages.map((item) => ({
+          claimableUntil: item.claimable_until ? new Date(item.claimable_until * 1000) : null,
+          coverageAmount: BigNumber.from(item.coverage_amount),
+          coverageAmountSetAt: new Date(item.coverage_amount_set_at * 1000),
+        })),
         ...metas,
       } as CoveredProtocol
     }

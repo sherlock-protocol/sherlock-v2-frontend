@@ -118,6 +118,20 @@ export const ProtocolPage: React.FC = () => {
     fetchProtocolDetails()
   }, [fetchProtocolDetails])
 
+  const maxClaimableAmount = React.useMemo(() => {
+    if (selectedProtocol) {
+      const [current, previous] = selectedProtocol.coverages.map((item) => item.coverageAmount)
+
+      if (previous?.gt(current)) {
+        return previous
+      } else {
+        return current
+      }
+    }
+
+    return null
+  }, [selectedProtocol])
+
   return (
     <Box>
       <Column spacing="m">
@@ -145,6 +159,16 @@ export const ProtocolPage: React.FC = () => {
                 </Text>
               </Column>
             </Row>
+            {maxClaimableAmount && (
+              <Row alignment="space-between">
+                <Column>
+                  <Text>Claimable up to</Text>
+                </Column>
+                <Column>
+                  <Text strong>{formatAmount(ethers.utils.formatUnits(maxClaimableAmount, 6))} USDC</Text>
+                </Column>
+              </Row>
+            )}
             {balance && (
               <Row alignment="space-between">
                 <Column>
