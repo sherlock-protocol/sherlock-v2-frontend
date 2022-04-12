@@ -95,9 +95,7 @@ export const StakingPage: React.FC = () => {
    * Fetch USDC APY
    */
   React.useEffect(() => {
-    if (accountData?.address) {
-      getStakingPositions(accountData?.address)
-    }
+    getStakingPositions(accountData?.address ?? undefined)
   }, [getStakingPositions, accountData?.address])
 
   return (
