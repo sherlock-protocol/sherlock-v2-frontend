@@ -151,16 +151,6 @@ export const StakingPage: React.FC = () => {
                   </Row>
                   <Row alignment="space-between">
                     <Column>
-                      <Text>Lockup period</Text>
-                    </Column>
-                    <Column>
-                      <Text strong variant="mono">
-                        6 months
-                      </Text>
-                    </Column>
-                  </Row>
-                  <Row alignment="space-between">
-                    <Column>
                       <Text>SHER Reward</Text>
                     </Column>
                     <Column>
