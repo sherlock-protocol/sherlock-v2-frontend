@@ -59,7 +59,7 @@ const parseResponse = (response: GetStakingPositionsResponseData): StakingPositi
 }
 
 type StakingPositionContextType = {
-  getStakingPositions: (account: string) => void
+  getStakingPositions: (account?: string) => void
   loading: boolean
   data: StakingPositions | null
   error: Error | null
@@ -76,7 +76,7 @@ export const StakingPositionsProvider: React.FC = ({ children }) => {
   const [error, setError] = useState<Error | null>(null)
   const [data, setData] = useState<StakingPositions | null>(null)
 
-  const getStakingPositions = useCallback(async (account: string) => {
+  const getStakingPositions = useCallback(async (account?: string) => {
     try {
       setLoading(true)
       const { data: responseData } = await axios.get<GetStakingPositionsResponseData>(getStakePositionUrl(account))

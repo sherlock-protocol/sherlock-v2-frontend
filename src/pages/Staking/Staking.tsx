@@ -95,9 +95,7 @@ export const StakingPage: React.FC = () => {
    * Fetch USDC APY
    */
   React.useEffect(() => {
-    if (accountData?.address) {
-      getStakingPositions(accountData?.address)
-    }
+    getStakingPositions(accountData?.address ?? undefined)
   }, [getStakingPositions, accountData?.address])
 
   return (
@@ -148,16 +146,6 @@ export const StakingPage: React.FC = () => {
                 <>
                   <Row>
                     <hr />
-                  </Row>
-                  <Row alignment="space-between">
-                    <Column>
-                      <Text>Lockup period</Text>
-                    </Column>
-                    <Column>
-                      <Text strong variant="mono">
-                        6 months
-                      </Text>
-                    </Column>
                   </Row>
                   <Row alignment="space-between">
                     <Column>
