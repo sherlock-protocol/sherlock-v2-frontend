@@ -20,7 +20,6 @@ import useWaitTx from "../../hooks/useWaitTx"
 import { formatAmount } from "../../utils/format"
 import { TxType } from "../../utils/txModalMessages"
 import styles from "./Staking.module.scss"
-import { formatUnits } from "ethers/lib/utils"
 
 /**
  * Available staking periods, in seconds.
@@ -32,19 +31,15 @@ export const PERIODS_IN_SECONDS = {
   ONE_YEAR: 60 * 60 * 24 * 7 * 52,
 }
 
-const TVL_TRESHOLD = BigNumber.from("20000000000000")
-
 export const StakingPage: React.FC = () => {
   const [amount, setAmount] = React.useState<BigNumber>()
-  const [hardcapAmount, setHardcapAmount] = useState<BigNumber>()
   const [debouncedAmountBN] = useDebounce(amount, 500, {
     equalityFn: (l, r) => (r ? !!l?.eq(r) : l === undefined),
   })
-  // We're removing the 12 months period just for March 30th liquidity event.
-  const [stakingPeriod] = React.useState<number>(PERIODS_IN_SECONDS.SIX_MONTHS)
+  const [stakingPeriod, setStakingPeriod] = React.useState<number>()
   const [sherRewards, setSherRewards] = React.useState<BigNumber>()
   const [isLoadingRewards, setIsLoadingRewards] = React.useState(false)
-  const { getStakingPositions } = useStakingPositions()
+  const { getStakingPositions, data: stakePositionsData } = useStakingPositions()
 
   const { tvl, address, stake, refreshTvl } = useSherlock()
   const { computeRewards } = useSherDistManager()
@@ -52,13 +47,6 @@ export const StakingPage: React.FC = () => {
   const { format: formatUSDC, balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
   const [{ data: accountData }] = useAccount()
-
-  /**
-   * April 7th event: Disable staking once 20M TVL is reached.
-   */
-  const disableStaking = useMemo(() => {
-    return tvl && tvl.gte(TVL_TRESHOLD)
-  }, [tvl])
 
   /**
    * Compute staking rewards for current amount and staking period
@@ -75,24 +63,9 @@ export const StakingPage: React.FC = () => {
 
     setIsLoadingRewards(true)
 
-    /**
-     * For April 7th event, we're setting a hardcap of 20M.
-     * If the last deposit goes above 20M, we fix that amount to be: 20M - tvl
-     */
-    const futureTVL = tvl.add(debouncedAmountBN)
-    const actualAmount = futureTVL.gt(TVL_TRESHOLD)
-      ? TVL_TRESHOLD.sub(tvl).add(BigNumber.from("1000000"))
-      : debouncedAmountBN
-
-    const sher = await computeRewards(tvl, actualAmount, stakingPeriod)
+    const sher = await computeRewards(tvl, debouncedAmountBN, stakingPeriod)
     if (sher) {
       setSherRewards(sher)
-    }
-
-    if (futureTVL.gt(TVL_TRESHOLD)) {
-      setHardcapAmount(actualAmount)
-    } else {
-      setHardcapAmount(undefined)
     }
 
     setIsLoadingRewards(false)
@@ -144,27 +117,15 @@ export const StakingPage: React.FC = () => {
               )}
             </Column>
           </Row>
-          {disableStaking && <Row>Early Adopters LP Round has ended. Please check back in next week.</Row>}
           <Row className={styles.rewardsContainer}>
             <Column grow={1} spacing="l">
               <TokenInput
-                value={hardcapAmount}
+                value={debouncedAmountBN}
                 onChange={setAmount}
                 token="USDC"
                 placeholder="Choose amount"
                 balance={usdcBalance}
-                disabled={disableStaking}
               />
-              {hardcapAmount && (
-                <Row alignment="center">
-                  <Text variant="warning" size="small" strong>
-                    Warning: Only {utils.commify(formatUnits(hardcapAmount, 6))} USDC will be staked because <br />
-                    the maximum for this round has been reached.
-                  </Text>
-                </Row>
-              )}
-              {/* 
-              We're removing the 12 months period just for March 30th liquidity event. 6 months by default.
               <Row spacing="m">
                 <Column grow={1}>
                   <Button
@@ -182,7 +143,7 @@ export const StakingPage: React.FC = () => {
                     12 months
                   </Button>
                 </Column>
-              </Row> */}
+              </Row>
               {sherRewards && (
                 <>
                   <Row>
@@ -208,26 +169,22 @@ export const StakingPage: React.FC = () => {
                       </Text>
                     </Column>
                   </Row>
-                  {/* {stakePositionsData && ( */}
-                  <Row alignment="space-between">
-                    <Column>
-                      <Text>USDC APY</Text>
-                    </Column>
-                    <Column>
-                      <Text strong variant="mono">
-                        {/* 
-                            We're making the APY fixed to 15% for March 30th liquidity event.
-                            {formatAmount(stakePositionsData?.usdcAPY)}% 
-                          */}
-                        15%
-                      </Text>
-                    </Column>
-                  </Row>
-                  {/* )} */}
+                  {stakePositionsData && (
+                    <Row alignment="space-between">
+                      <Column>
+                        <Text>USDC APY</Text>
+                      </Column>
+                      <Column>
+                        <Text strong variant="mono">
+                          {formatAmount(stakePositionsData?.usdcAPY)}%
+                        </Text>
+                      </Column>
+                    </Row>
+                  )}
                 </>
               )}
 
-              {amount && stakingPeriod && sherRewards && !disableStaking && (
+              {amount && stakingPeriod && sherRewards && (
                 <Row alignment="center">
                   <ConnectGate>
                     <AllowanceGate
