@@ -4,11 +4,16 @@ import tempus_finance from "./tempus_finance"
 
 export type CoveredProtocolMeta = {
   id: string
+  tag: string
   name?: string
   website?: string
   logo?: string
   description?: string
   agreement?: string
+  agreement_hash?: string
+  agent?: string
+  pay_year?: string
+  pay_contracts?: string
 }
 
 type CoveredProtocolsMetas = {
