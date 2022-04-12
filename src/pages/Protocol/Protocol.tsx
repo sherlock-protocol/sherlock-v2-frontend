@@ -198,26 +198,28 @@ export const ProtocolPage: React.FC = () => {
                 />
               )}
               {amount && (
-                <ConnectGate>
-                  <Column grow={1} alignment="start" spacing="m">
-                    <AllowanceGate
-                      amount={amount}
-                      spender={address}
-                      actionName="Add Balance"
-                      action={handleAddBalance}
-                      onSuccess={fetchProtocolDetails}
-                    />
-                    {accountData?.address === selectedProtocol?.agent && (
-                      <Row>
-                        <Column grow={1}>
-                          <Button variant="secondary" onClick={handleRemoveBalance}>
-                            Remove balance
-                          </Button>
-                        </Column>
-                      </Row>
-                    )}
-                  </Column>
-                </ConnectGate>
+                <Row alignment="center">
+                  <ConnectGate>
+                    <Column grow={1} alignment="start" spacing="m">
+                      <AllowanceGate
+                        amount={amount}
+                        spender={address}
+                        actionName="Add Balance"
+                        action={handleAddBalance}
+                        onSuccess={fetchProtocolDetails}
+                      />
+                      {accountData?.address === selectedProtocol?.agent && (
+                        <Row>
+                          <Column grow={1}>
+                            <Button variant="secondary" onClick={handleRemoveBalance}>
+                              Remove balance
+                            </Button>
+                          </Column>
+                        </Row>
+                      )}
+                    </Column>
+                  </ConnectGate>
+                </Row>
               )}
             </Column>
           </>
