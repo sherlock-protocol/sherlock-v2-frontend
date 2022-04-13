@@ -26,7 +26,7 @@ const Select: React.FC<Props> = ({ options, onChange, value }) => {
     [value, options]
   )
   const orderedOptions = React.useMemo(
-    () => [...options].sort((a, b) => (a.value === value ? -1 : 1)),
+    () => [...options].sort((a, b) => b.label.localeCompare(a.label)).sort((a, b) => (a.value === value ? -1 : 1)),
     [options, value]
   )
   const hasOptions = React.useMemo(() => {
