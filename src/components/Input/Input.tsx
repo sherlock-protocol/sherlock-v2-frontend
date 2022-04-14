@@ -26,6 +26,11 @@ export type InputProps = {
    * Input value (if controlled input)
    */
   value?: BigNumber
+
+  /**
+   * Disable input
+   */
+  disabled?: boolean
 }
 
 export const decimalsByToken: Record<InputToken, number> = {
@@ -35,7 +40,7 @@ export const decimalsByToken: Record<InputToken, number> = {
 
 const decommify = (value: string) => value.replaceAll(",", "")
 
-export const Input: React.FC<InputProps> = ({ onChange, token, placeholder, value }) => {
+export const Input: React.FC<InputProps> = ({ onChange, token, placeholder, value, disabled = false }) => {
   const [amount, amountBN, setAmount, setAmountBN] = useAmountState(decimalsByToken[token])
 
   useEffect(() => {
@@ -60,7 +65,12 @@ export const Input: React.FC<InputProps> = ({ onChange, token, placeholder, valu
   return (
     <div className={styles.inputContainer}>
       {displayPlaceholder && <span className={styles.placeholder}>{placeholder}</span>}
-      <input className={styles.input} value={ethers.utils.commify(amount)} onChange={handleInputChange} />
+      <input
+        className={styles.input}
+        value={ethers.utils.commify(amount)}
+        onChange={handleInputChange}
+        disabled={disabled}
+      />
     </div>
   )
 }

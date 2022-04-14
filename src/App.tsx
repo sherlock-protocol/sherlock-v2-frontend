@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Route, Routes, useLocation, Navigate } from "react-router-dom"
 
-import { FundraisingPage } from "./pages/Fundraising"
 import { FundraisingClaimPage } from "./pages/FundraisingClaim"
 import { StakingPage } from "./pages/Staking"
 import { StakingPositionsPage } from "./pages/StakingPositions"
@@ -16,18 +15,12 @@ import { routes } from "./utils/routes"
 import styles from "./App.module.scss"
 import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
 import { useAccount } from "wagmi"
-import config from "./config"
-
-export const LAUNCH_TIMESTAMP = config.launchTimestamp
-export const SHER_BUY_ENTRY_DEADLINE = Number.isInteger(config.sherBuyEntryDeadline) ? config.sherBuyEntryDeadline : 0
 
 function App() {
   const location = useLocation()
   const [{ data: accountData }] = useAccount()
   const { getFundraisePosition, data: fundraisePositionData } = useFundraisePosition()
   const [navigationLinks, setNavigationLinks] = useState<NavigationLink[]>([])
-
-  const fundraiseIsFinished = useMemo(() => Date.now() > SHER_BUY_ENTRY_DEADLINE * 1000, [])
 
   useEffect(() => {
     if (accountData?.address) {
@@ -36,23 +29,16 @@ function App() {
   }, [accountData?.address, getFundraisePosition])
 
   useEffect(() => {
-    let links: NavigationLink[] = fundraiseIsFinished
-      ? [
-          {
-            title: "STAKE",
-            route: routes.Stake,
-          },
-          {
-            title: "POSITIONS",
-            route: routes.Positions,
-          },
-        ]
-      : [
-          {
-            title: "FUNDRAISE",
-            route: routes.Fundraise,
-          },
-        ]
+    let links: NavigationLink[] = [
+      {
+        title: "STAKE",
+        route: routes.Stake,
+      },
+      {
+        title: "POSITIONS",
+        route: routes.Positions,
+      },
+    ]
 
     if (fundraisePositionData) {
       links = [
@@ -64,34 +50,20 @@ function App() {
       ]
     }
     setNavigationLinks(links)
-  }, [location.pathname, fundraisePositionData, fundraiseIsFinished])
+  }, [location.pathname, fundraisePositionData])
 
   return (
     <div className={styles.app}>
       <div className={styles.noise} />
       <Header navigationLinks={navigationLinks} />
-      <div className={styles.contentContainer}>
-        <div className={styles.content}>
-          <Routes>
-            {fundraiseIsFinished ? (
-              <>
-                <Route path={routes.Stake} element={<StakingPage />} />
-                <Route path={routes.Positions} element={<StakingPositionsPage />} />
-                <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
-                <Route path={routes.Stats} element={<SherlockDashboardPage />} />
-                <Route path={routes.USForbidden} element={<USForbiddenPage />} />
-                <Route path="*" element={<Navigate replace to={routes.Stake} />} />
-              </>
-            ) : (
-              <>
-                <Route path={routes.Fundraise} element={<FundraisingPage />} />
-                <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
-                <Route path={routes.USForbidden} element={<USForbiddenPage />} />
-                <Route path="*" element={<Navigate replace to={routes.Fundraise} />} />
-              </>
-            )}
-          </Routes>
-        </div>
+      <div className={styles.content}>
+        <Routes>
+          <Route path={routes.Stake} element={<StakingPage />} />
+          <Route path={routes.Positions} element={<StakingPositionsPage />} />
+          <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
+          <Route path={routes.USForbidden} element={<USForbiddenPage />} />
+          <Route path="*" element={<Navigate replace to={routes.Stake} />} />
+        </Routes>
       </div>
       <Footer />
     </div>

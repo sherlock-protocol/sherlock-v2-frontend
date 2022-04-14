@@ -1,7 +1,8 @@
 import { BigNumber, ethers } from "ethers"
-import React from "react"
+import React, { useMemo, useState } from "react"
 import { useDebounce } from "use-debounce"
 import { useAccount } from "wagmi"
+import { utils } from "ethers"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button/Button"
@@ -32,11 +33,13 @@ export const PERIODS_IN_SECONDS = {
 
 export const StakingPage: React.FC = () => {
   const [amount, setAmount] = React.useState<BigNumber>()
-  const [debouncedAmountBN] = useDebounce(amount, 200)
+  const [debouncedAmountBN] = useDebounce(amount, 500, {
+    equalityFn: (l, r) => (r ? !!l?.eq(r) : l === undefined),
+  })
   const [stakingPeriod, setStakingPeriod] = React.useState<number>()
   const [sherRewards, setSherRewards] = React.useState<BigNumber>()
   const [isLoadingRewards, setIsLoadingRewards] = React.useState(false)
-  const { data: stakePositionsData, getStakingPositions } = useStakingPositions()
+  const { getStakingPositions, data: stakePositionsData } = useStakingPositions()
 
   const { tvl, address, stake, refreshTvl } = useSherlock()
   const { computeRewards } = useSherDistManager()
@@ -92,9 +95,7 @@ export const StakingPage: React.FC = () => {
    * Fetch USDC APY
    */
   React.useEffect(() => {
-    if (accountData?.address) {
-      getStakingPositions(accountData?.address)
-    }
+    getStakingPositions(accountData?.address ?? undefined)
   }, [getStakingPositions, accountData?.address])
 
   return (
@@ -116,7 +117,13 @@ export const StakingPage: React.FC = () => {
           </Row>
           <Row className={styles.rewardsContainer}>
             <Column grow={1} spacing="l">
-              <TokenInput onChange={setAmount} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
+              <TokenInput
+                value={debouncedAmountBN}
+                onChange={setAmount}
+                token="USDC"
+                placeholder="Choose amount"
+                balance={usdcBalance}
+              />
               <Row spacing="m">
                 <Column grow={1}>
                   <Button

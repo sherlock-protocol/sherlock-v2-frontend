@@ -5,7 +5,7 @@ import styles from "./Text.module.scss"
 
 type TextSize = "tiny" | "small" | "normal" | "large" | "extra-large"
 
-type TextVariant = "normal" | "primary" | "secondary" | "mono"
+type TextVariant = "normal" | "primary" | "secondary" | "mono" | "warning"
 
 type TextProps = {
   strong?: boolean
