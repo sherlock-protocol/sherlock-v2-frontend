@@ -40,7 +40,8 @@
     "eject": "react-scripts eject",
     "contract-typings": "typechain --target=ethers-v5 --out-dir src/contracts src/abi/*.json",
     "graphql-codegen": "graphql-codegen --config codegen.yml",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "generate-metas": "node ./scripts/GenerateProtocolMeta.ts"
   },
   "husky": {
     "hooks": {
@@ -78,6 +79,7 @@
     "@graphql-codegen/typescript-react-apollo": "3.2.5",
     "@typechain/ethers-v5": "^9.0.0",
     "@types/luxon": "^2.0.9",
+    "csv-parser": "^3.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.2",
     "prettier": "2.5.1",

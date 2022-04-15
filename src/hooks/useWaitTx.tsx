@@ -52,7 +52,13 @@ export const TxWaitProvider: React.FC = ({ children }) => {
         setTxHash(transaction.hash)
 
         const receipt = await transaction.wait()
-        setTxState(TxState.SUCCESS)
+
+        // Skip success state if it's an approval transaction
+        if (options?.transactionType === TxType.APPROVE) {
+          setTxState(TxState.NONE)
+        } else {
+          setTxState(TxState.SUCCESS)
+        }
 
         return receipt
       } catch (error: any) {

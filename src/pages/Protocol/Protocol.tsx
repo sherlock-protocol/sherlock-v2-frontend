@@ -1,7 +1,7 @@
 import { BigNumber, ethers } from "ethers"
 import React from "react"
 import ProtocolBalanceInput from "../../components/ProtocolBalanceInput/ProtocolBalanceInput"
-import useProtocolManager, { COVERED_PROTOCOLS } from "../../hooks/useProtocolManager"
+import useProtocolManager from "../../hooks/useProtocolManager"
 import styles from "./Protocol.module.scss"
 import { convertSecondsToDurationString } from "../../utils/time"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
@@ -15,31 +15,38 @@ import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
 import Select from "../../components/Select/Select"
 import { formatAmount } from "../../utils/format"
-
-const PROTOCOL_SELECT_OPTIONS = Object.entries(COVERED_PROTOCOLS).map(([key, item]) => ({
-  label: item.name,
-  value: key,
-}))
+import { useCoveredProtocols, CoveredProtocol } from "../../hooks/api/useCoveredProtocols"
+import { DateTime } from "luxon"
+import { useAccount } from "wagmi"
 
 export const ProtocolPage: React.FC = () => {
-  const [selectedProtocol, setSelectedProtocol] = React.useState<keyof typeof COVERED_PROTOCOLS>("EULER")
+  const [selectedProtocolId, setSelectedProtocolId] = React.useState<string>()
   const [balance, setBalance] = React.useState<BigNumber>()
   const [coverageLeft, setCoverageLeft] = React.useState<BigNumber>()
-  const [premium, setPremium] = React.useState<BigNumber>()
+
+  const { data: coveredProtocols, getCoveredProtocols } = useCoveredProtocols()
+  const [{ data: accountData }] = useAccount()
+
+  const protocolSelectOptions = React.useMemo(
+    () =>
+      Object.entries(coveredProtocols)?.map(([key, item]) => ({
+        label: item.name ?? "Unknown",
+        value: key,
+      })) ?? [],
+    [coveredProtocols]
+  )
+  const selectedProtocol = React.useMemo<CoveredProtocol | null>(
+    () => (selectedProtocolId ? coveredProtocols?.[selectedProtocolId] ?? null : null),
+    [selectedProtocolId, coveredProtocols]
+  )
 
   /**
    * Amount to add to/remove from active balance
    */
   const [amount, setAmount] = React.useState<BigNumber>()
 
-  const {
-    address,
-    getProtocolActiveBalance,
-    getProtocolCoverageLeft,
-    getProtocolPremium,
-    depositActiveBalance,
-    withdrawActiveBalance,
-  } = useProtocolManager()
+  const { address, getProtocolActiveBalance, getProtocolCoverageLeft, depositActiveBalance, withdrawActiveBalance } =
+    useProtocolManager()
   const { balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
 
@@ -47,50 +54,48 @@ export const ProtocolPage: React.FC = () => {
    * Handler for changing the protocol
    */
   const handleOnProtocolChanged = React.useCallback((option: string) => {
-    setSelectedProtocol(option as keyof typeof COVERED_PROTOCOLS)
+    setSelectedProtocolId(option)
   }, [])
 
   /**
    * Fetch latest protocol details: active balance, coverage left and premium
    */
   const fetchProtocolDetails = React.useCallback(async () => {
-    const protocolBalance = await getProtocolActiveBalance(selectedProtocol)
+    if (!selectedProtocolId) {
+      return
+    }
+
+    const protocolBalance = await getProtocolActiveBalance(selectedProtocolId)
     setBalance(protocolBalance)
 
-    const protocolCoverageleft = await getProtocolCoverageLeft(selectedProtocol)
+    const protocolCoverageleft = await getProtocolCoverageLeft(selectedProtocolId)
     setCoverageLeft(protocolCoverageleft)
-
-    const protocolPremium = await getProtocolPremium(selectedProtocol)
-    setPremium(protocolPremium)
-  }, [selectedProtocol, getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium])
+  }, [selectedProtocolId, getProtocolActiveBalance, getProtocolCoverageLeft])
 
   /**
    * Add balance to selected protocol
    */
   const handleAddBalance = React.useCallback(async () => {
-    if (!amount) {
+    if (!amount || !selectedProtocolId) {
       return
     }
 
-    waitForTx(async () => await depositActiveBalance(selectedProtocol, amount))
-
-    fetchProtocolDetails()
-    setAmount(undefined)
-  }, [amount, selectedProtocol, depositActiveBalance, fetchProtocolDetails, waitForTx])
+    await waitForTx(async () => await depositActiveBalance(selectedProtocolId, amount))
+  }, [amount, selectedProtocolId, depositActiveBalance, waitForTx])
 
   /**
    * Remove balance from selected protocol
    */
   const handleRemoveBalance = React.useCallback(async () => {
-    if (!amount) {
+    if (!amount || !selectedProtocolId) {
       return
     }
 
-    await waitForTx(async () => await withdrawActiveBalance(selectedProtocol, amount))
+    await waitForTx(async () => await withdrawActiveBalance(selectedProtocolId, amount))
 
     fetchProtocolDetails()
     setAmount(undefined)
-  }, [amount, selectedProtocol, withdrawActiveBalance, fetchProtocolDetails, waitForTx])
+  }, [amount, selectedProtocolId, withdrawActiveBalance, fetchProtocolDetails, waitForTx])
 
   /**
    * Handle the inputted amount changed event
@@ -99,11 +104,32 @@ export const ProtocolPage: React.FC = () => {
     setAmount(amount)
   }, [])
 
+  // Fetch covered protocols
+  React.useEffect(() => {
+    const fetchCoveredProtocols = async () => {
+      await getCoveredProtocols()
+    }
+    fetchCoveredProtocols()
+  }, [getCoveredProtocols])
+
   // Fetch protocol coverage information
   React.useEffect(() => {
-    setAmount(undefined)
     fetchProtocolDetails()
   }, [fetchProtocolDetails])
+
+  const maxClaimableAmount = React.useMemo(() => {
+    if (selectedProtocol) {
+      const [current, previous] = selectedProtocol.coverages.map((item) => item.coverageAmount)
+
+      if (previous?.gt(current)) {
+        return previous
+      } else {
+        return current
+      }
+    }
+
+    return null
+  }, [selectedProtocol])
 
   return (
     <Box>
@@ -113,68 +139,90 @@ export const ProtocolPage: React.FC = () => {
             <Title>Protocol</Title>
           </Column>
           <Column>
-            <Select options={PROTOCOL_SELECT_OPTIONS} onChange={handleOnProtocolChanged} initialOption="EULER" />
+            <Select value={selectedProtocolId} options={protocolSelectOptions} onChange={handleOnProtocolChanged} />
           </Column>
         </Row>
-        <Row alignment="space-between">
-          <Column>
-            <Text>Coverage</Text>
-          </Column>
-          <Column>
-            <Text strong>Active</Text>
-          </Column>
-        </Row>
-        {balance && (
-          <Row alignment="space-between">
-            <Column>
-              <Text>Active balance</Text>
-            </Column>
-            <Column>
-              <Text strong>{formatAmount(ethers.utils.formatUnits(balance, 6))} USDC</Text>
-            </Column>
-          </Row>
-        )}
-        {coverageLeft && (
-          <Row alignment="space-between">
-            <Column>
-              <Text>Coverage left</Text>
-            </Column>
-            <Column>
-              <Text strong>{convertSecondsToDurationString(coverageLeft.toNumber())}</Text>
-            </Column>
-          </Row>
-        )}
-        <Column className={styles.rewardsContainer} spacing="m">
-          {balance && (
-            <ProtocolBalanceInput
-              onChange={handleOnAmountChanged}
-              protocolPremium={premium}
-              usdcBalance={usdcBalance}
-            />
-          )}
-          {amount && (
-            <ConnectGate>
-              <Row alignment="space-between" spacing="m">
-                <Column grow={1}>
-                  <Button variant="secondary" onClick={handleRemoveBalance}>
-                    Remove balance
-                  </Button>
+        {selectedProtocol && (
+          <>
+            <Row alignment="space-between">
+              <Column>
+                <Text>Coverage</Text>
+              </Column>
+              <Column>
+                <Text strong>
+                  {!selectedProtocol?.coverageEndedAt
+                    ? "Active"
+                    : `Ended ${DateTime.fromJSDate(selectedProtocol?.coverageEndedAt)
+                        .setLocale("en")
+                        .toLocaleString(DateTime.DATETIME_MED)}`}
+                </Text>
+              </Column>
+            </Row>
+            {maxClaimableAmount && (
+              <Row alignment="space-between">
+                <Column>
+                  <Text>Claimable up to</Text>
                 </Column>
-                <Column grow={1}>
-                  <AllowanceGate
-                    amount={amount}
-                    spender={address}
-                    render={(disabled) => (
-                      <Button onClick={handleAddBalance} disabled={!amount}>
-                        Add balance {amount?.toString()}
-                      </Button>
-                    )}
-                  />
+                <Column>
+                  <Text strong>{formatAmount(ethers.utils.formatUnits(maxClaimableAmount, 6))} USDC</Text>
                 </Column>
               </Row>
-            </ConnectGate>
-          )}
-        </Column>
+            )}
+            {balance && (
+              <Row alignment="space-between">
+                <Column>
+                  <Text>Active balance</Text>
+                </Column>
+                <Column>
+                  <Text strong>{formatAmount(ethers.utils.formatUnits(balance, 6))} USDC</Text>
+                </Column>
+              </Row>
+            )}
+            {coverageLeft && (
+              <Row alignment="space-between">
+                <Column>
+                  <Text>Coverage left</Text>
+                </Column>
+                <Column>
+                  <Text strong>{convertSecondsToDurationString(coverageLeft.toNumber())}</Text>
+                </Column>
+              </Row>
+            )}
+            <Column className={styles.rewardsContainer} spacing="m">
+              {balance && (
+                <ProtocolBalanceInput
+                  onChange={handleOnAmountChanged}
+                  protocolPremium={selectedProtocol.premium}
+                  usdcBalance={usdcBalance}
+                />
+              )}
+              {amount && (
+                <Row alignment="center">
+                  <ConnectGate>
+                    <Column grow={1} alignment="start" spacing="m">
+                      <AllowanceGate
+                        amount={amount}
+                        spender={address}
+                        actionName="Add Balance"
+                        action={handleAddBalance}
+                        onSuccess={fetchProtocolDetails}
+                      />
+                      {accountData?.address === selectedProtocol?.agent && (
+                        <Row>
+                          <Column grow={1}>
+                            <Button variant="secondary" onClick={handleRemoveBalance}>
+                              Remove balance
+                            </Button>
+                          </Column>
+                        </Row>
+                      )}
+                    </Column>
+                  </ConnectGate>
+                </Row>
+              )}
+            </Column>
+          </>
+        )}
       </Column>
     </Box>
   )
