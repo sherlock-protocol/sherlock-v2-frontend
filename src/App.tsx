@@ -59,6 +59,7 @@ function App() {
       <div className={styles.content}>
         <Routes>
           <Route path={routes.Stake} element={<StakingPage />} />
+          <Route path={routes.Stats} element={<SherlockDashboardPage />} />
           <Route path={routes.Positions} element={<StakingPositionsPage />} />
           <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
           <Route path={routes.USForbidden} element={<USForbiddenPage />} />
