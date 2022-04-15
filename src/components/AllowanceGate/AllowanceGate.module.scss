@@ -1,8 +1,66 @@
-.link {
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: underline;
-}
+@import "../../styles/variables";
 
-.steps {
-  align-items: center;
+.buttonGroup {
+  width: 100%;
+  border: 3px solid black;
+
+  .checkmark {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: transparentize($color: $primary-purple, $amount: 0.4);
+
+    &.success {
+      color: #00feb3;
+    }
+  }
+
+  .button {
+    position: relative;
+    border: 0;
+    flex: 3;
+
+    &.success {
+      background-color: #00feb3;
+      color: black;
+      opacity: 1;
+
+      &::after {
+        border-left: 13px solid #00feb3;
+      }
+    }
+
+    &:hover:not(:disabled) {
+      &::after {
+        border-left: 13px solid darken($color: $primary-purple, $amount: 10%);
+      }
+    }
+  }
+
+  .button::after {
+    content: "";
+    position: absolute;
+    right: -13px;
+    top: 0px;
+    width: 0;
+    height: 0;
+
+    border-top: 26px solid transparent;
+    border-left: 13px solid $primary-purple;
+    border-bottom: 26px solid transparent;
+  }
+
+  .approveButton {
+    z-index: 2;
+    border-right: 0;
+  }
+
+  .actionButton {
+    z-index: 1;
+    margin-left: -26px;
+    padding-left: 26px;
+    border-left: 0;
+    border-right: 0;
+  }
 }
