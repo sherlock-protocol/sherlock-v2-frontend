@@ -114,7 +114,6 @@ export const ProtocolPage: React.FC = () => {
 
   // Fetch protocol coverage information
   React.useEffect(() => {
-    setAmount(undefined)
     fetchProtocolDetails()
   }, [fetchProtocolDetails])
 
