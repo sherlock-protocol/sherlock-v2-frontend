@@ -8,20 +8,25 @@ import { Chart } from "./Chart"
 
 import { commify } from "../../utils/units"
 import { useTVLOverTime } from "../../hooks/api/useTVLOverTime"
+import { useTVCOverTime } from "../../hooks/api/useTVCOverTime"
 
 import styles from "./SherlockDashboard.module.scss"
 
 export const SherlockDashboardPage: React.FC = () => {
-  const { getTVLOverTime, data: tvlData, loading, error } = useTVLOverTime()
+  const { getTVLOverTime, data: tvlData } = useTVLOverTime()
+  const { getTVCOverTime, data: tvcData } = useTVCOverTime()
 
   useEffect(() => {
-    const loadData = async () => {
-      await getTVLOverTime()
-    }
-    loadData()
-  }, [getTVLOverTime])
+    getTVLOverTime()
+    getTVCOverTime()
+  }, [getTVLOverTime, getTVCOverTime])
 
   const chartData = tvlData?.map((d) => ({
+    name: DateTime.fromMillis(d.timestamp * 1000).toFormat("M/d"),
+    tvl: Number(utils.formatUnits(d.value, 6)),
+  }))
+
+  const tvcChartData = tvcData?.map((d) => ({
     name: DateTime.fromMillis(d.timestamp * 1000).toFormat("M/d"),
     tvl: Number(utils.formatUnits(d.value, 6)),
   }))
@@ -32,17 +37,17 @@ export const SherlockDashboardPage: React.FC = () => {
         <Box shadow={false} fullWidth>
           <Column spacing="m">
             <Row>
-              <Title variant="h3">STAKING POOL</Title>
+              <Title variant="h3">TOTAL COVERED VALUE</Title>
             </Row>
             <Row>
               <Title>
-                {tvlData &&
-                  tvlData.length > 0 &&
-                  `$ ${commify(utils.formatUnits(tvlData[tvlData.length - 1].value, 6))}`}
+                {tvcData &&
+                  tvcData.length > 0 &&
+                  `$ ${commify(utils.formatUnits(tvcData[tvcData.length - 1].value, 6))}`}
               </Title>
             </Row>
             <Row alignment="center">
-              <Chart width={900} height={200} data={chartData} />
+              <Chart width={900} height={200} data={tvcChartData} />
             </Row>
           </Column>
         </Box>

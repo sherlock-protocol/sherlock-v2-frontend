@@ -30,12 +30,12 @@ const parseResponse = (response: GetTVCOverTimeResponseData): TVCDataPoint[] | n
   }))
 }
 
-export const useTVLOverTime = () => {
+export const useTVCOverTime = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const [data, setData] = useState<TVCDataPoint[] | null>(null)
 
-  const getTVLOverTime = useCallback(async () => {
+  const getTVCOverTime = useCallback(async () => {
     try {
       setLoading(true)
 
@@ -60,6 +60,6 @@ export const useTVLOverTime = () => {
     loading,
     data,
     error,
-    getTVLOverTime,
+    getTVCOverTime,
   }
 }

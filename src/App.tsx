@@ -56,15 +56,17 @@ function App() {
     <div className={styles.app}>
       <div className={styles.noise} />
       <Header navigationLinks={navigationLinks} />
-      <div className={styles.content}>
-        <Routes>
-          <Route path={routes.Stake} element={<StakingPage />} />
-          <Route path={routes.Stats} element={<SherlockDashboardPage />} />
-          <Route path={routes.Positions} element={<StakingPositionsPage />} />
-          <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
-          <Route path={routes.USForbidden} element={<USForbiddenPage />} />
-          <Route path="*" element={<Navigate replace to={routes.Stake} />} />
-        </Routes>
+      <div className={styles.contentContainer}>
+        <div className={styles.content}>
+          <Routes>
+            <Route path={routes.Stake} element={<StakingPage />} />
+            <Route path={routes.Stats} element={<SherlockDashboardPage />} />
+            <Route path={routes.Positions} element={<StakingPositionsPage />} />
+            <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
+            <Route path={routes.USForbidden} element={<USForbiddenPage />} />
+            <Route path="*" element={<Navigate replace to={routes.Stake} />} />
+          </Routes>
+        </div>
       </div>
       <Footer />
     </div>
