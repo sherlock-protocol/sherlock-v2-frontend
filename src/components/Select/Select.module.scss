@@ -28,7 +28,7 @@
     top: 0;
     left: 0;
     right: 0;
-    z-index: 2;
+    z-index: 101;
     border: 3px solid black;
   }
 }
@@ -50,7 +50,7 @@
   right: 0;
   left: 0;
   background-color: transparentize($color: $background-color, $amount: 0.2);
-  z-index: 1;
+  z-index: 100;
 }
 
 .option {

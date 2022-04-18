@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers"
+import { BigNumber, utils } from "ethers"
 import React from "react"
 import { Button } from "../Button/Button"
 import { useDebounce } from "use-debounce"
@@ -120,7 +120,7 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
           <hr />
           <Row alignment="space-between">
             <Text>Coverage added</Text>
-            <Text strong>~{amountDuration.toString()} days</Text>
+            <Text strong>~{utils.commify(amountDuration.toString())} days</Text>
           </Row>
         </>
       )}

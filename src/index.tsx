@@ -12,6 +12,7 @@ import { TxWaitProvider } from "./hooks/useWaitTx"
 import { FundraisePositionProvider } from "./hooks/api/useFundraisePosition"
 import { StakingPositionsProvider } from "./hooks/api/useStakingPositions"
 import { SentryErrorBoundary } from "./utils/sentry"
+import { CoveredProtocolsProvider } from "./hooks/api/useCoveredProtocols"
 
 global.Buffer = global.Buffer || require("buffer").Buffer
 
@@ -24,7 +25,9 @@ ReactDOM.render(
             <TxWaitProvider>
               <FundraisePositionProvider>
                 <StakingPositionsProvider>
-                  <App />
+                  <CoveredProtocolsProvider>
+                    <App />
+                  </CoveredProtocolsProvider>
                 </StakingPositionsProvider>
               </FundraisePositionProvider>
             </TxWaitProvider>
