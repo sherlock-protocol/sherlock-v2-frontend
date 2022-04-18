@@ -26,16 +26,6 @@ export const SherlockDashboardPage: React.FC = () => {
     getTVCOverTime()
   }, [getTVLOverTime, getTVCOverTime])
 
-  const chartData = tvlData?.map((d) => ({
-    name: DateTime.fromMillis(d.timestamp * 1000).toFormat("M/d"),
-    tvl: Number(utils.formatUnits(d.value, 6)),
-  }))
-
-  // const tvcChartData = tvcData?.map((d) => ({
-  //   name: DateTime.fromMillis(d.timestamp * 1000).toFormat("M/d"),
-  //   tvl: Number(utils.formatUnits(d.value, 6)),
-  // }))
-
   const chartsData = useMemo(() => {
     if (!tvlData || !tvcData) return
 
