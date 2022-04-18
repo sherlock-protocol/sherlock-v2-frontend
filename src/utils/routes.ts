@@ -4,7 +4,7 @@ export const routes = {
   Fundraise: "fundraise",
   FundraiseClaim: "fundraiseclaim",
   Protocol: "protocol",
-  Stats: "stats",
+  Overview: "overview",
   USForbidden: "us",
 } as const
 

@@ -5,7 +5,7 @@ import { FundraisingClaimPage } from "./pages/FundraisingClaim"
 import { StakingPage } from "./pages/Staking"
 import { StakingPositionsPage } from "./pages/StakingPositions"
 import { USForbiddenPage } from "./pages/USForbidden"
-import { SherlockDashboardPage } from "./pages/SherlockDashboard"
+import { OverviewPage } from "./pages/Overview"
 import { ProtocolPage } from "./pages/Protocol"
 
 import { Footer } from "./components/Footer"
@@ -31,6 +31,10 @@ function App() {
 
   useEffect(() => {
     let links: NavigationLink[] = [
+      {
+        title: "OVERVIEW",
+        route: routes.Overview,
+      },
       {
         title: "STAKE",
         route: routes.Stake,
@@ -61,7 +65,7 @@ function App() {
         <div className={styles.content}>
           <Routes>
             <Route path={routes.Stake} element={<StakingPage />} />
-            <Route path={routes.Stats} element={<SherlockDashboardPage />} />
+            <Route path={routes.Overview} element={<OverviewPage />} />
             <Route path={routes.Positions} element={<StakingPositionsPage />} />
             <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
             <Route path={routes.Protocol} element={<ProtocolPage />} />
