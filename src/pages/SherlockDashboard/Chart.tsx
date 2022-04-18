@@ -1,16 +1,23 @@
 import React from "react"
 import { AreaChart, YAxis, XAxis, Tooltip, Area } from "recharts"
-import { utils } from "ethers"
 
-import { shortenNumber } from "../../utils/units"
+import { commify, shortenNumber } from "../../utils/units"
 
 type Props = {
   width?: number
   height?: number
   data?: any[]
+  yTickFormatter?: (v: number) => string
+  tooltipFormatter?: (v: number, name: string) => [string, string]
 }
 
-export const Chart: React.FC<Props> = ({ width, height, data }) => {
+export const Chart: React.FC<Props> = ({
+  width,
+  height,
+  data,
+  yTickFormatter = (v) => (v > 0 ? `$ ${shortenNumber(v)}` : ""),
+  tooltipFormatter = (v: number, name: string) => [`$${commify(v)}`, name.toUpperCase()],
+}) => {
   return (
     <AreaChart width={width} height={height} data={data}>
       <defs>
@@ -23,15 +30,19 @@ export const Chart: React.FC<Props> = ({ width, height, data }) => {
         orientation="right"
         tick={{ fill: "white", fontSize: "12px" }}
         tickMargin={5}
-        tickFormatter={(v) => (v > 0 ? `$ ${shortenNumber(v)}` : "")}
+        width={80}
+        tickFormatter={yTickFormatter}
       />
       <XAxis dataKey="name" tick={{ fill: "white", fontSize: "12px" }} tickMargin={5} allowDuplicatedCategory={false} />
-      <Tooltip
-        formatter={(v: number, name: string) => [`$${utils.commify(v)}`, name.toUpperCase()]}
-        itemStyle={{ color: "#19032d" }}
-        labelStyle={{ color: "gray" }}
+      <Tooltip formatter={tooltipFormatter} itemStyle={{ color: "#19032d" }} labelStyle={{ color: "gray" }} />
+      <Area
+        type="monotone"
+        dataKey="value"
+        stroke="#8414EC"
+        fill="url(#tvl)"
+        fillOpacity={1}
+        isAnimationActive={true}
       />
-      <Area type="monotone" dataKey="tvl" stroke="#8414EC" fill="url(#tvl)" fillOpacity={1} isAnimationActive={true} />
     </AreaChart>
   )
 }

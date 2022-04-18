@@ -4,7 +4,7 @@
  * Source: https://github.com/ethers-io/ethers.js/blob/b1c7f5c21abd4e21388a25d9aa4382da9e36387b/packages/units/src.ts/index.ts#L23
  * Updated version that does not strip the ending 0 decimal.
  */
-export function commify(value: string | number): string {
+export function commify(value: string | number, fixed?: number): string {
   const comps = String(value).split(".")
 
   if (
@@ -36,7 +36,7 @@ export function commify(value: string | number): string {
 
   let suffix = ""
   if (comps.length === 2) {
-    suffix = "." + (comps[1] || "0")
+    suffix = "." + (fixed ? comps[1].slice(0, fixed) : comps[1] || "0")
   }
 
   const formatted = []
