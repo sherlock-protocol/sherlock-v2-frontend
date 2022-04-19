@@ -13,7 +13,7 @@ import { Button } from "../Button/Button"
 import { useLocation, useNavigate } from "react-router-dom"
 import useInterval from "../../hooks/useInterval"
 import { useWaitForBlock } from "../../hooks/api/useWaitForBlock"
-import Loading from "../Loading/Loading"
+import LoadingContainer from "../LoadingContainer/LoadingContainer"
 
 type LocationState = {
   refreshAfterBlockNumber?: number
@@ -138,12 +138,7 @@ export const StakingPositionsList: React.FC = () => {
   if (!data) return null
 
   return (
-    <Column grow={1}>
-      {isRefreshing && (
-        <Column spacing="xl">
-          <Loading size={40} label="Refreshing..." />
-        </Column>
-      )}
+    <LoadingContainer loading={isRefreshing} label="Refreshing...">
       <div className={styles.container}>
         {positions.map((position) => (
           <StakingPositionItem
@@ -163,6 +158,6 @@ export const StakingPositionsList: React.FC = () => {
           </Column>
         )}
       </div>
-    </Column>
+    </LoadingContainer>
   )
 }
