@@ -4,7 +4,7 @@
   height: 80px;
   width: 100%;
   position: relative;
-  // overflow: hidden;
+  z-index: 200;
 
   box-sizing: border-box;
   flex-shrink: 0;
