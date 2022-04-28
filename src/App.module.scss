@@ -6,16 +6,26 @@
   align-items: center;
   height: 100vh;
   background-color: $background-color;
+  z-index: 100;
 
-  & .content {
-    width: 100%;
-    max-width: 1080px;
-
+  & .contentContainer {
+    align-self: stretch;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     flex-grow: 1;
+    overflow-y: scroll;
+    padding: 2rem 0;
+
+    & .content {
+      width: 100%;
+      max-width: 1080px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-grow: 1;
+      z-index: 300;
+    }
   }
 }
 

@@ -5,6 +5,7 @@ import { FundraisingClaimPage } from "./pages/FundraisingClaim"
 import { StakingPage } from "./pages/Staking"
 import { StakingPositionsPage } from "./pages/StakingPositions"
 import { USForbiddenPage } from "./pages/USForbidden"
+import { OverviewPage } from "./pages/Overview"
 import { ProtocolPage } from "./pages/Protocol"
 
 import { Footer } from "./components/Footer"
@@ -31,6 +32,10 @@ function App() {
   useEffect(() => {
     let links: NavigationLink[] = [
       {
+        title: "OVERVIEW",
+        route: routes.Overview,
+      },
+      {
         title: "STAKE",
         route: routes.Stake,
       },
@@ -56,15 +61,18 @@ function App() {
     <div className={styles.app}>
       <div className={styles.noise} />
       <Header navigationLinks={navigationLinks} />
-      <div className={styles.content}>
-        <Routes>
-          <Route path={routes.Stake} element={<StakingPage />} />
-          <Route path={routes.Positions} element={<StakingPositionsPage />} />
-          <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
-          <Route path={routes.USForbidden} element={<USForbiddenPage />} />
-          <Route path={routes.Protocol} element={<ProtocolPage />} />
-          <Route path="*" element={<Navigate replace to={routes.Stake} />} />
-        </Routes>
+      <div className={styles.contentContainer}>
+        <div className={styles.content}>
+          <Routes>
+            <Route path={routes.Stake} element={<StakingPage />} />
+            <Route path={routes.Overview} element={<OverviewPage />} />
+            <Route path={routes.Positions} element={<StakingPositionsPage />} />
+            <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
+            <Route path={routes.Protocol} element={<ProtocolPage />} />
+            <Route path={routes.USForbidden} element={<USForbiddenPage />} />
+            <Route path="*" element={<Navigate replace to={routes.Stake} />} />
+          </Routes>
+        </div>
       </div>
       <Footer />
     </div>
