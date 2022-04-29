@@ -60,11 +60,11 @@ export const OverviewPage: React.FC = () => {
         value: Number(utils.formatUnits(tvc.value, 6)),
       })
       tvlChartData.push({
-        name: DateTime.fromMillis(timestamp * 1000).toFormat("M/d"),
+        name: DateTime.fromMillis(timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
         value: Number(utils.formatUnits(tvl.value, 6)),
       })
       capitalEfficiencyChartData.push({
-        name: DateTime.fromMillis(timestamp * 1000).toFormat("M/d"),
+        name: DateTime.fromMillis(timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
         value: Number(utils.formatUnits(tvc.value, 6)) / Number(utils.formatUnits(tvl.value, 6)),
       })
     }
