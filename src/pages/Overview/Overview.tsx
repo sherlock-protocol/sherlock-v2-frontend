@@ -31,7 +31,7 @@ export const OverviewPage: React.FC = () => {
 
     const tvcChartData: ChartDataPoint[] = []
     const tvlChartData: ChartDataPoint[] = []
-    const riskChartData: ChartDataPoint[] = []
+    const capitalEfficiencyChartData: ChartDataPoint[] = []
 
     for (let i = 0, j = 0; i < tvlData.length && j < tvcData.length; ) {
       const tvcDataPointDate = DateTime.fromMillis(tvcData[i].timestamp * 1000)
@@ -63,7 +63,7 @@ export const OverviewPage: React.FC = () => {
         name: DateTime.fromMillis(timestamp * 1000).toFormat("M/d"),
         value: Number(utils.formatUnits(tvl.value, 6)),
       })
-      riskChartData.push({
+      capitalEfficiencyChartData.push({
         name: DateTime.fromMillis(timestamp * 1000).toFormat("M/d"),
         value: Number(utils.formatUnits(tvc.value, 6)) / Number(utils.formatUnits(tvl.value, 6)),
       })
@@ -72,7 +72,7 @@ export const OverviewPage: React.FC = () => {
     return {
       tvcChartData,
       tvlChartData,
-      riskChartData,
+      capitalEfficiencyChartData,
     }
   }, [tvlData, tvcData])
 
@@ -128,21 +128,23 @@ export const OverviewPage: React.FC = () => {
         <Box shadow={false}>
           <Column spacing="m">
             <Row>
-              <Title variant="h3">RISK FACTOR</Title>
+              <Title variant="h3">CAPITAL EFFICIENCY</Title>
             </Row>
             <Row>
               <Title>
-                {chartsData?.riskChartData &&
-                  chartsData.riskChartData.length > 0 &&
-                  `${chartsData.riskChartData[chartsData.riskChartData.length - 1].value.toFixed(2)}`}
+                {chartsData?.capitalEfficiencyChartData &&
+                  chartsData.capitalEfficiencyChartData.length > 0 &&
+                  `${chartsData.capitalEfficiencyChartData[
+                    chartsData.capitalEfficiencyChartData.length - 1
+                  ].value.toFixed(2)}`}
               </Title>
             </Row>
             <Row>
               <Chart
                 width={450}
                 height={200}
-                data={chartsData?.riskChartData}
-                tooltipFormatter={(v: number, name: string) => [v.toFixed(2), "Risk factor"]}
+                data={chartsData?.capitalEfficiencyChartData}
+                tooltipFormatter={(v: number, name: string) => [v.toFixed(2), "Capital efficiency"]}
                 yTickFormatter={(v) => v.toFixed(2)}
               />
             </Row>
