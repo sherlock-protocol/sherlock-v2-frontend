@@ -117,6 +117,18 @@ export const StakingPage: React.FC = () => {
               )}
             </Column>
           </Row>
+          {stakePositionsData && (
+            <Row alignment="space-between">
+              <Column>
+                <Text>USDC APY</Text>
+              </Column>
+              <Column>
+                <Text strong variant="mono">
+                  {formatAmount(stakePositionsData?.usdcAPY)}%
+                </Text>
+              </Column>
+            </Row>
+          )}
           <Row className={styles.rewardsContainer}>
             <Column grow={1} spacing="l">
               <TokenInput

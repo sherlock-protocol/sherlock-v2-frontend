@@ -1,11 +1,7 @@
 @import "../../styles/variables";
 
 .box {
-  width: auto;
-  height: auto;
-
   min-width: 500px;
-  max-width: 80%;
 
   border: 1px solid;
   border-image-slice: 1;
@@ -31,5 +27,9 @@
 
     background: radial-gradient(50% 50% at 50% 50%, #be72ff 0%, #8716e8 40%, rgba(123, 42, 192, 0) 100%);
     filter: blur(30px);
+  }
+
+  &.fullWidth {
+    width: 100%;
   }
 }
