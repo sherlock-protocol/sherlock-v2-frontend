@@ -49,7 +49,7 @@ interface Props {
 
 const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockupEnd, apy, onUpdate }) => {
   const [stakingPeriod, setStakingPeriod] = React.useState<number>()
-  const isUnlocked = true
+  const isUnlocked = lockupEnd <= new Date()
 
   const { unstake, restake } = useSherlock()
   const { waitForTx } = useWaitTx()
