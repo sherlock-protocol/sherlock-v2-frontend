@@ -7,7 +7,7 @@ Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
   environment: process.env.REACT_APP_SENTRY_ENVIRONMENT,
   integrations: [new BrowserTracing()],
-  tracesSampleRate: 1.0,
+  tracesSampleRate: 0.01,
   release: process.env.REACT_APP_VERSION,
 })
 
