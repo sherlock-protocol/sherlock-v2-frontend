@@ -16,6 +16,7 @@ import { routes } from "./utils/routes"
 import styles from "./App.module.scss"
 import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
 import { useAccount } from "wagmi"
+import MobileBlock from "./components/MobileBlock/MobileBlock"
 
 function App() {
   const location = useLocation()
@@ -58,24 +59,27 @@ function App() {
   }, [location.pathname, fundraisePositionData])
 
   return (
-    <div className={styles.app}>
-      <div className={styles.noise} />
-      <Header navigationLinks={navigationLinks} />
-      <div className={styles.contentContainer}>
-        <div className={styles.content}>
-          <Routes>
-            <Route path={routes.Stake} element={<StakingPage />} />
-            <Route path={routes.Overview} element={<OverviewPage />} />
-            <Route path={routes.Positions} element={<StakingPositionsPage />} />
-            <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
-            <Route path={routes.Protocol} element={<ProtocolPage />} />
-            <Route path={routes.USForbidden} element={<USForbiddenPage />} />
-            <Route path="*" element={<Navigate replace to={routes.Stake} />} />
-          </Routes>
+    <>
+      <div className={styles.app}>
+        <div className={styles.noise} />
+        <Header navigationLinks={navigationLinks} />
+        <div className={styles.contentContainer}>
+          <div className={styles.content}>
+            <Routes>
+              <Route path={routes.Stake} element={<StakingPage />} />
+              <Route path={routes.Overview} element={<OverviewPage />} />
+              <Route path={routes.Positions} element={<StakingPositionsPage />} />
+              <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
+              <Route path={routes.Protocol} element={<ProtocolPage />} />
+              <Route path={routes.USForbidden} element={<USForbiddenPage />} />
+              <Route path="*" element={<Navigate replace to={routes.Stake} />} />
+            </Routes>
+          </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+      <MobileBlock />
+    </>
   )
 }
 
