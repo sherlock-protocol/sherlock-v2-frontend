@@ -4,7 +4,7 @@ import { DateTime } from "luxon"
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
-import { Chart } from "./Chart"
+import { Chart } from "../../components/Chart/Chart"
 
 import { commify } from "../../utils/units"
 import { useTVLOverTime } from "../../hooks/api/useTVLOverTime"
