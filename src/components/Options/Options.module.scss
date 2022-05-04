@@ -1,0 +1,38 @@
+@import "../../styles/variables";
+
+.container {
+  border: 3px solid black;
+
+  .option {
+    cursor: pointer;
+    padding: 1rem 0.5rem;
+    background-color: darken($color: $primary-purple, $amount: 15%);
+    color: darken($color: white, $amount: 30%);
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    border-right: 3px solid black;
+
+    &:last-of-type {
+      border-right: none;
+    }
+
+    &.active {
+      background-color: $primary-purple;
+      color: white;
+    }
+
+    &:hover {
+      background-color: darken($color: $primary-purple, $amount: 5%);
+    }
+
+    &:active {
+      background-color: darken($color: $primary-purple, $amount: 10%);
+    }
+  }
+}
