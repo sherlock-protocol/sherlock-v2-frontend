@@ -11,6 +11,7 @@ import { useTVLOverTime } from "../../hooks/api/useTVLOverTime"
 import { useTVCOverTime } from "../../hooks/api/useTVCOverTime"
 
 import styles from "./Overview.module.scss"
+import APYChart from "../../components/APYChart/APYChart"
 
 type ChartDataPoint = {
   name: string
@@ -150,6 +151,12 @@ export const OverviewPage: React.FC = () => {
             </Row>
           </Column>
         </Box>
+      </Row>
+      <Row spacing="m">
+        <Column>
+          <APYChart />
+        </Column>
+        <Column></Column>
       </Row>
     </Column>
   )
