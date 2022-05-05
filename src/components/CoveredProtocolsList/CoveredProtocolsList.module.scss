@@ -1,0 +1,25 @@
+@import "../../styles/variables";
+
+.listColumn {
+  flex: 1;
+  border-bottom: 1px solid black;
+  padding: $spacing-xs $spacing-m;
+
+  &:last-of-type {
+    flex: 0;
+    min-width: 3rem;
+  }
+
+  &.entry {
+    background-color: darken($color: $primary-purple, $amount: 35%);
+    padding: $spacing-m;
+  }
+
+  .protocolName {
+    color: $primary-purple;
+  }
+}
+
+.header {
+  color: darken($color: white, $amount: 15%);
+}
