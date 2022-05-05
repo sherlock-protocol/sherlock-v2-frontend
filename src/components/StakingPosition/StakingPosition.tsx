@@ -39,9 +39,15 @@ interface Props {
    * Annual Percentage Yield
    */
   apy?: number
+
+  /**
+   * Callback to notify when an update on staking positions has occurred
+   * and at what block number.
+   */
+  onUpdate: (blockNumber: number) => void
 }
 
-const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockupEnd, apy }) => {
+const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockupEnd, apy, onUpdate }) => {
   const [stakingPeriod, setStakingPeriod] = React.useState<number>()
   const isUnlocked = lockupEnd <= new Date()
 
@@ -52,8 +58,9 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
    * Unstake position
    */
   const handleUnstake = React.useCallback(async () => {
-    await waitForTx(async () => await unstake(id))
-  }, [unstake, id, waitForTx])
+    const result = await waitForTx(async () => await unstake(id))
+    onUpdate(result.blockNumber)
+  }, [unstake, id, waitForTx, onUpdate])
 
   /**
    * Restake position
@@ -63,8 +70,9 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
       return
     }
 
-    await waitForTx(async () => await restake(id, stakingPeriod))
-  }, [restake, id, stakingPeriod, waitForTx])
+    const result = await waitForTx(async () => await restake(id, stakingPeriod))
+    onUpdate(result.blockNumber)
+  }, [restake, id, stakingPeriod, waitForTx, onUpdate])
 
   return (
     <Box>
