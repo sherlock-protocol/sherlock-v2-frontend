@@ -15,17 +15,24 @@ interface Props {
    * Loading indicator variant
    */
   variant?: LoadingVariant
+
+  /**
+   * Indicator size.
+   *
+   * Currently, only `Scan` type indicator supports custom size.
+   */
+  size?: number
 }
 
 /**
  * Loading indicator
  */
-const Loading: React.FC<Props> = ({ label, variant = "Scan" }) => {
+const Loading: React.FC<Props> = ({ label, variant = "Scan", size = 120 }) => {
   const indicator = React.useMemo(() => {
     switch (variant) {
       case "Scan":
         return (
-          <div className={styles.scanContainer}>
+          <div className={styles.scanContainer} style={{ height: size, width: size }}>
             <div className={styles.scan} />
           </div>
         )
@@ -41,7 +48,7 @@ const Loading: React.FC<Props> = ({ label, variant = "Scan" }) => {
       default:
         return null
     }
-  }, [variant])
+  }, [variant, size])
 
   return (
     <Column alignment="center" spacing="m">

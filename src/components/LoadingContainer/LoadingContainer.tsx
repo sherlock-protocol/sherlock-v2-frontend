@@ -9,9 +9,14 @@ interface Props {
    * a loading indicator should be shown.
    */
   loading?: boolean
+
+  /**
+   * Label shown below loading indicator
+   */
+  label?: string
 }
 
-const LoadingContainer: React.FC<Props> = ({ children, loading }) => {
+const LoadingContainer: React.FC<Props> = ({ children, loading, label }) => {
   const [debouncedLoading] = useDebounce(loading, 200)
 
   return (
@@ -19,7 +24,7 @@ const LoadingContainer: React.FC<Props> = ({ children, loading }) => {
       {children}
       {debouncedLoading && (
         <div className={styles.loadingContainer}>
-          <Loading variant="Scan" />
+          <Loading variant="Scan" label={label} />
         </div>
       )}
     </div>
