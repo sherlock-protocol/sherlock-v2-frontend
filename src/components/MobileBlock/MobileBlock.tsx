@@ -13,7 +13,7 @@ const MobileBlock: React.FC = () => {
         <Logotype height={60} width={60} />
         <Title>We are sorry...</Title>
         <Column spacing="m">
-          <Text>Currently we do not support mobile clients.</Text>
+          <Text>Currently, we do not support mobile clients.</Text>
           <Text>Sherlock can be accessed via any desktop device.</Text>
         </Column>
       </Column>
