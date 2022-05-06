@@ -22,8 +22,15 @@ const CoveredProtocolsList: React.FC = () => {
     getTVCOverTime()
   }, [getCoveredProtocols, getTVCOverTime])
 
+  // Total Value Covered
+  const tvc = useMemo(() => {
+    if (tvcData) {
+      return tvcData?.length > 0 ? tvcData[tvcData.length - 1].value : undefined
+    }
+  }, [tvcData])
+
   const protocolsData = useMemo(() => {
-    if (!coveredProtocolsData || !tvcData) {
+    if (!coveredProtocolsData || !tvc) {
       return []
     }
 
@@ -34,7 +41,7 @@ const CoveredProtocolsList: React.FC = () => {
         const maxClaimableAmount = previous?.gt(current) ? previous : current
         const coverage = item.tvl?.lt(maxClaimableAmount) ? item.tvl : maxClaimableAmount
 
-        const percentageOfTotal = coverage.mul(100).div(tvcData[tvcData.length - 1].value)
+        const percentageOfTotal = coverage.mul(100).div(tvc)
 
         return {
           id: item.bytesIdentifier,
@@ -45,7 +52,7 @@ const CoveredProtocolsList: React.FC = () => {
       }) ?? []
 
     return protocolsWithCoverages
-  }, [coveredProtocolsData, tvcData])
+  }, [coveredProtocolsData, tvc])
 
   return (
     <Box shadow={false} fullWidth>
@@ -62,28 +69,44 @@ const CoveredProtocolsList: React.FC = () => {
               <Column className={styles.listColumn}>
                 <Text strong>Protocol</Text>
               </Column>
-              <Column className={styles.listColumn}>
+              <Column alignment="end" className={styles.listColumn}>
                 <Text strong>Coverage</Text>
               </Column>
+              <Column className={styles.listColumn} grow={1}></Column>
               <Column className={styles.listColumn}>
                 <Text strong>%</Text>
               </Column>
             </Row>
-            {protocolsData?.map((item) => (
-              <Row key={item.id}>
-                <Column className={cx(styles.listColumn, styles.entry)}>
-                  <Text strong className={styles.protocolName}>
-                    {item.name}
-                  </Text>
-                </Column>
-                <Column className={cx(styles.listColumn, styles.entry)}>
-                  <Text>${formatAmount(ethers.utils.formatUnits(item.coverage, 6))}</Text>
-                </Column>
-                <Column className={cx(styles.listColumn, styles.entry)}>
-                  <Text>{item.percentageOfTotal.toString()}%</Text>
-                </Column>
-              </Row>
-            ))}
+            <Column grow={1} spacing="xs" className={styles.listContainer}>
+              {protocolsData?.map((item) => (
+                <Row key={item.id}>
+                  <Column className={cx(styles.listColumn, styles.entry)}>
+                    <Text strong className={styles.protocolName}>
+                      {item.name}
+                    </Text>
+                  </Column>
+                  <Column alignment="end" className={cx(styles.listColumn, styles.entry)}>
+                    <Text>${formatAmount(ethers.utils.formatUnits(item.coverage, 6), 0)}</Text>
+                  </Column>
+                  <Column className={cx(styles.listColumn, styles.entry)} grow={1}></Column>
+                  <Column className={cx(styles.listColumn, styles.entry)}>
+                    <Text>{item.percentageOfTotal.toString()}%</Text>
+                  </Column>
+                </Row>
+              ))}
+              {tvc && (
+                <Row className={styles.header}>
+                  <Column className={styles.listColumn}>
+                    <Text strong>Total Value Covered</Text>
+                  </Column>
+                  <Column alignment="end" className={styles.listColumn}>
+                    <Text>${formatAmount(ethers.utils.formatUnits(tvc, 6), 0)}</Text>
+                  </Column>
+                  <Column className={styles.listColumn} grow={1}></Column>
+                  <Column className={styles.listColumn}></Column>
+                </Row>
+              )}
+            </Column>
           </Column>
         </Row>
       </Column>

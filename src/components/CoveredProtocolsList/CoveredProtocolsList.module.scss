@@ -1,9 +1,20 @@
 @import "../../styles/variables";
 
+.listContainer {
+  max-height: 18rem;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 .listColumn {
   flex: 1;
-  border-bottom: 1px solid black;
   padding: $spacing-xs $spacing-m;
+  font-variant-numeric: tabular-nums;
 
   &:last-of-type {
     flex: 0;
