@@ -31,16 +31,15 @@ const CoveredProtocolsList: React.FC = () => {
     const protocolsWithCoverages =
       Object.entries(coveredProtocolsData)?.map(([key, item]) => {
         const [current, previous] = item.coverages.map((item) => item.coverageAmount)
-        const coverage = previous?.gt(current) ? previous : current
+        const maxClaimableAmount = previous?.gt(current) ? previous : current
+        const coverage = item.tvl?.lt(maxClaimableAmount) ? item.tvl : maxClaimableAmount
 
-        // TODO: Use protocol's current TVL to compute percentageOfTotal
-        // instead of maximul claimable amount.
         const percentageOfTotal = coverage.mul(100).div(tvcData[tvcData.length - 1].value)
 
         return {
           id: item.bytesIdentifier,
           name: item.name,
-          coverage: coverage,
+          coverage,
           percentageOfTotal,
         }
       }) ?? []
