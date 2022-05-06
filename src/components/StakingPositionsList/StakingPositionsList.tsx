@@ -10,14 +10,23 @@ import { BigNumber } from "ethers"
 import { Title } from "../Title"
 import { Column } from "../Layout"
 import { Button } from "../Button/Button"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import useInterval from "../../hooks/useInterval"
+import { useWaitForBlock } from "../../hooks/api/useWaitForBlock"
+import LoadingContainer from "../LoadingContainer/LoadingContainer"
+
+type LocationState = {
+  refreshAfterBlockNumber?: number
+}
 
 export const StakingPositionsList: React.FC = () => {
   const [{ data: accountData }] = useAccount()
   const { getStakingPositions, data, loading } = useStakingPositions()
   const [positions, setPositions] = React.useState<Array<StakingPosition>>([])
   const navigate = useNavigate()
+  const { state } = useLocation()
+  const [isRefreshing, setIsRefreshing] = React.useState(false)
+  const { waitForBlock } = useWaitForBlock()
 
   /**
    * Setup USDC real-time update
@@ -65,19 +74,62 @@ export const StakingPositionsList: React.FC = () => {
     )
   }, 1000)
 
-  useEffect(() => {
+  /**
+   * Fetch staking positions from indexer API
+   */
+  const fetchStakingPositions = React.useCallback(async () => {
     if (accountData?.address) {
-      getStakingPositions(accountData.address)
+      await getStakingPositions(accountData.address)
     }
   }, [accountData?.address, getStakingPositions])
 
-  useEffect(() => {
-    if (positions.length > 0 || !data?.positions) {
-      return
-    }
+  /**
+   * Refresh staking positions list after indexer is up to date
+   * with a specific block.
+   */
+  const refreshStakingPositionsAfterBlock = React.useCallback(
+    async (blockNumber: number) => {
+      if (!blockNumber) {
+        return
+      }
 
+      setIsRefreshing(true)
+
+      // Wait for the indexer to be indexer up to `blockNumber`
+      await waitForBlock(blockNumber)
+
+      // Refresh staking
+      await fetchStakingPositions()
+
+      setIsRefreshing(false)
+    },
+    [fetchStakingPositions, waitForBlock]
+  )
+
+  /**
+   * Refresh staking positions on account updates
+   */
+  useEffect(() => {
+    fetchStakingPositions()
+  }, [accountData?.address, fetchStakingPositions])
+
+  /**
+   * Setup USDC increments after each staking positions refresh
+   */
+  useEffect(() => {
     handleSetupUSDCUpdate()
-  }, [data?.positions, positions, handleSetupUSDCUpdate])
+  }, [data?.positions, handleSetupUSDCUpdate])
+
+  /**
+   * If `refreshAfterBlockNumber` navigation param was sent,
+   * refresh the staking positions list after the block has been indexed.
+   */
+  useEffect(() => {
+    const { refreshAfterBlockNumber } = (state as LocationState) ?? {}
+    if (refreshAfterBlockNumber) {
+      refreshStakingPositionsAfterBlock(refreshAfterBlockNumber)
+    }
+  }, [state, refreshStakingPositionsAfterBlock])
 
   const handleGoToStaking = React.useCallback(() => {
     navigate("/")
@@ -86,23 +138,26 @@ export const StakingPositionsList: React.FC = () => {
   if (!data) return null
 
   return (
-    <div className={styles.container}>
-      {positions.map((position) => (
-        <StakingPositionItem
-          key={position.id.toString()}
-          id={BigNumber.from(position.id)}
-          usdcBalance={position.usdc}
-          sherRewards={position.sher}
-          lockupEnd={position.lockupEnd}
-          apy={position?.usdcAPY ?? data?.usdcAPY}
-        />
-      ))}
-      {!loading && data?.positions?.length === 0 && (
-        <Column spacing="m">
-          <Title>No active positions found.</Title>
-          <Button onClick={handleGoToStaking}>Go to Staking</Button>
-        </Column>
-      )}
-    </div>
+    <LoadingContainer loading={isRefreshing} label="Refreshing...">
+      <div className={styles.container}>
+        {positions.map((position) => (
+          <StakingPositionItem
+            key={position.id.toString()}
+            id={BigNumber.from(position.id)}
+            usdcBalance={position.usdc}
+            sherRewards={position.sher}
+            lockupEnd={position.lockupEnd}
+            apy={position?.usdcAPY ?? data?.usdcAPY}
+            onUpdate={refreshStakingPositionsAfterBlock}
+          />
+        ))}
+        {!loading && data?.positions?.length === 0 && (
+          <Column spacing="m">
+            <Title>No active positions found.</Title>
+            <Button onClick={handleGoToStaking}>Go to Staking</Button>
+          </Column>
+        )}
+      </div>
+    </LoadingContainer>
   )
 }
