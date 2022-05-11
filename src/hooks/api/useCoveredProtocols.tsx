@@ -69,6 +69,11 @@ export type CoveredProtocol = {
      */
     claimableUntil: Date | null
   }>
+
+  /**
+   * Last indexed TVL
+   */
+  tvl?: BigNumber
 }
 
 type GetCoveredProtocolsResponseData =
@@ -81,6 +86,7 @@ type GetCoveredProtocolsResponseData =
         premium: string
         premium_set_at: number
         coverages: Array<{ claimable_until: number | null; coverage_amount: string; coverage_amount_set_at: number }>
+        tvl: string
       }[]
     }
   | {
@@ -111,6 +117,7 @@ const parseResponse = (response: GetCoveredProtocolsResponseData): CoveredProtoc
           coverageAmount: BigNumber.from(item.coverage_amount),
           coverageAmountSetAt: new Date(item.coverage_amount_set_at * 1000),
         })),
+        tvl: p?.tvl ? BigNumber.from(p?.tvl) : undefined,
         ...metas,
       } as CoveredProtocol
     }
