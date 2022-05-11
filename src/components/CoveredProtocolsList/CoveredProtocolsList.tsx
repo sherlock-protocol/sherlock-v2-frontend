@@ -34,9 +34,14 @@ const CoveredProtocolsList: React.FC = () => {
       return []
     }
 
+    // Filter only protocols with active coverage
+    const activeProtocols = Object.entries(coveredProtocolsData)
+      .map((item) => item[1])
+      .filter((item) => !item.coverageEndedAt)
+
     // Compute each protocol's max claimable amount
     const protocolsWithCoverages =
-      Object.entries(coveredProtocolsData)?.map(([key, item]) => {
+      activeProtocols.map((item) => {
         const [current, previous] = item.coverages.map((item) => item.coverageAmount)
         const maxClaimableAmount = previous?.gt(current) ? previous : current
         const coverage = item.tvl?.lt(maxClaimableAmount) ? item.tvl : maxClaimableAmount
