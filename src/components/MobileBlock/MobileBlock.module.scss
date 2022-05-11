@@ -1,0 +1,23 @@
+@import "../../styles/variables";
+
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+
+  justify-content: center;
+  align-items: center;
+
+  background-color: $background-color;
+  padding: 2rem;
+  display: none;
+}
+
+@media only screen and (max-width: 820px) {
+  .container {
+    display: flex;
+  }
+}
