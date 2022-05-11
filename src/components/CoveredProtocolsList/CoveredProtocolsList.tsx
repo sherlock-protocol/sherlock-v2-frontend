@@ -51,6 +51,7 @@ const CoveredProtocolsList: React.FC = () => {
         return {
           id: item.bytesIdentifier,
           name: item.name,
+          website: item.website,
           coverage,
           percentageOfTotal,
         }
@@ -86,9 +87,11 @@ const CoveredProtocolsList: React.FC = () => {
               {protocolsData?.map((item) => (
                 <Row key={item.id}>
                   <Column className={cx(styles.listColumn, styles.entry)}>
-                    <Text strong className={styles.protocolName}>
-                      {item.name}
-                    </Text>
+                    <a href={item.website} target="_blank" rel="noopener noreferrer">
+                      <Text strong className={styles.protocolName}>
+                        {item.name}
+                      </Text>
+                    </a>
                   </Column>
                   <Column alignment="end" className={cx(styles.listColumn, styles.entry)}>
                     <Text>${formatAmount(ethers.utils.formatUnits(item.coverage, 6), 0)}</Text>

@@ -24,6 +24,10 @@
   &.entry {
     background-color: darken($color: $primary-purple, $amount: 35%);
     padding: $spacing-m;
+
+    a {
+      text-decoration: none;
+    }
   }
 
   .protocolName {
