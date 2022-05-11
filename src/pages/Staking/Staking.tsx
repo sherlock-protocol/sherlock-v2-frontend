@@ -18,6 +18,7 @@ import useWaitTx from "../../hooks/useWaitTx"
 import { formatAmount } from "../../utils/format"
 import { TxType } from "../../utils/txModalMessages"
 import styles from "./Staking.module.scss"
+import { useNavigate } from "react-router-dom"
 import Options from "../../components/Options/Options"
 
 /**
@@ -54,6 +55,7 @@ export const StakingPage: React.FC = () => {
   const { format: formatUSDC, balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
   const [{ data: accountData }] = useAccount()
+  const navigate = useNavigate()
 
   /**
    * Compute staking rewards for current amount and staking period
@@ -86,10 +88,13 @@ export const StakingPage: React.FC = () => {
       return
     }
 
-    await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
+    const result = await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
       transactionType: TxType.STAKE,
     })
-  }, [amount, stakingPeriod, stake, waitForTx])
+
+    // Navigate to positions page
+    navigate("/positions", { state: { refreshAfterBlockNumber: result.blockNumber } })
+  }, [amount, stakingPeriod, stake, waitForTx, navigate])
 
   // Compute rewards when amount or period is changed
   React.useEffect(() => {
