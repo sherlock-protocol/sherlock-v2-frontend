@@ -46,7 +46,7 @@ const CoveredProtocolsList: React.FC = () => {
         const maxClaimableAmount = previous?.gt(current) ? previous : current
         const coverage = item.tvl?.lt(maxClaimableAmount) ? item.tvl : maxClaimableAmount
 
-        const percentageOfTotal = (coverage.div(1e6).toNumber() * 100) / tvc.div(1e6).toNumber()
+        const percentageOfTotal = +((coverage.div(1e6).toNumber() * 100) / tvc.div(1e6).toNumber()).toFixed(0)
 
         return {
           id: item.bytesIdentifier,
@@ -56,6 +56,13 @@ const CoveredProtocolsList: React.FC = () => {
           percentageOfTotal,
         }
       }) ?? []
+
+    // Fix rounding errors so percentages add up to 100%
+    const totalPercentages = protocolsWithCoverages.reduce((value, item) => item.percentageOfTotal + value, 0)
+    if (totalPercentages > 100) {
+      const delta = totalPercentages - 100
+      protocolsWithCoverages[protocolsWithCoverages.length - 1].percentageOfTotal -= delta
+    }
 
     return protocolsWithCoverages
   }, [coveredProtocolsData, tvc])
