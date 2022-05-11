@@ -4,13 +4,14 @@ import { DateTime } from "luxon"
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
-import { Chart } from "./Chart"
+import { Chart } from "../../components/Chart/Chart"
 
 import { commify } from "../../utils/units"
 import { useTVLOverTime } from "../../hooks/api/useTVLOverTime"
 import { useTVCOverTime } from "../../hooks/api/useTVCOverTime"
 
 import styles from "./Overview.module.scss"
+import APYChart from "../../components/APYChart/APYChart"
 
 type ChartDataPoint = {
   name: string
@@ -150,6 +151,12 @@ export const OverviewPage: React.FC = () => {
             </Row>
           </Column>
         </Box>
+      </Row>
+      <Row spacing="m">
+        <Column>
+          <APYChart />
+        </Column>
+        <Column></Column>
       </Row>
     </Column>
   )
