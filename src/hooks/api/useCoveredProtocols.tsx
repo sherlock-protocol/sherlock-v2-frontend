@@ -73,7 +73,7 @@ export type CoveredProtocol = {
   /**
    * Last indexed TVL
    */
-  tvl: BigNumber
+  tvl?: BigNumber
 }
 
 type GetCoveredProtocolsResponseData =
@@ -117,7 +117,7 @@ const parseResponse = (response: GetCoveredProtocolsResponseData): CoveredProtoc
           coverageAmount: BigNumber.from(item.coverage_amount),
           coverageAmountSetAt: new Date(item.coverage_amount_set_at * 1000),
         })),
-        tvl: BigNumber.from(p.tvl),
+        tvl: p?.tvl ? BigNumber.from(p?.tvl) : undefined,
         ...metas,
       } as CoveredProtocol
     }
