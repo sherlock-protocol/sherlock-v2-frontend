@@ -57,14 +57,17 @@ const CoveredProtocolsList: React.FC = () => {
         }
       }) ?? []
 
+    // Sort protocols descending
+    const sortedProtocols = protocolsWithCoverages.sort((a, b) => b.percentageOfTotal - a.percentageOfTotal)
+
     // Fix rounding errors so percentages add up to 100%
-    const totalPercentages = protocolsWithCoverages.reduce((value, item) => item.percentageOfTotal + value, 0)
+    const totalPercentages = sortedProtocols.reduce((value, item) => item.percentageOfTotal + value, 0)
     if (totalPercentages > 100) {
       const delta = totalPercentages - 100
-      protocolsWithCoverages[protocolsWithCoverages.length - 1].percentageOfTotal -= delta
+      sortedProtocols[sortedProtocols.length - 1].percentageOfTotal -= delta
     }
 
-    return protocolsWithCoverages
+    return sortedProtocols
   }, [coveredProtocolsData, tvc])
 
   return (
