@@ -4,13 +4,15 @@ import { DateTime } from "luxon"
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
-import { Chart } from "./Chart"
+import { Chart } from "../../components/Chart/Chart"
 
-import { commify } from "../../utils/units"
 import { useTVLOverTime } from "../../hooks/api/useTVLOverTime"
 import { useTVCOverTime } from "../../hooks/api/useTVCOverTime"
 
 import styles from "./Overview.module.scss"
+import APYChart from "../../components/APYChart/APYChart"
+import CoveredProtocolsList from "../../components/CoveredProtocolsList/CoveredProtocolsList"
+import { formatAmount } from "../../utils/format"
 
 type ChartDataPoint = {
   name: string
@@ -88,7 +90,7 @@ export const OverviewPage: React.FC = () => {
               <Title>
                 {tvcData &&
                   tvcData.length > 0 &&
-                  `$ ${commify(utils.formatUnits(tvcData[tvcData.length - 1].value, 6), 2)}`}
+                  `$ ${formatAmount(utils.formatUnits(tvcData[tvcData.length - 1].value, 6), 0)}`}
               </Title>
             </Row>
             <Row alignment="center">
@@ -96,7 +98,7 @@ export const OverviewPage: React.FC = () => {
                 width={1000}
                 height={200}
                 data={chartsData?.tvcChartData}
-                tooltipFormatter={(v: number, name: string) => [`$${commify(v, 2)}`, "TVC"]}
+                tooltipFormatter={(v: number, name: string) => [`$${formatAmount(v, 0)}`, "TVC"]}
               />
             </Row>
           </Column>
@@ -112,7 +114,7 @@ export const OverviewPage: React.FC = () => {
               <Title>
                 {tvlData &&
                   tvlData.length > 0 &&
-                  `$ ${commify(utils.formatUnits(tvlData[tvlData.length - 1].value, 6), 2)}`}
+                  `$ ${formatAmount(utils.formatUnits(tvlData[tvlData.length - 1].value, 6), 0)}`}
               </Title>
             </Row>
             <Row>
@@ -120,7 +122,7 @@ export const OverviewPage: React.FC = () => {
                 width={450}
                 height={200}
                 data={chartsData?.tvlChartData}
-                tooltipFormatter={(v: number, name: string) => [`$${commify(v, 2)}`, "TVL"]}
+                tooltipFormatter={(v: number, name: string) => [`$${formatAmount(v, 0)}`, "TVL"]}
               />
             </Row>
           </Column>
@@ -150,6 +152,17 @@ export const OverviewPage: React.FC = () => {
             </Row>
           </Column>
         </Box>
+      </Row>
+      <Row spacing="m">
+        <Column>
+          <APYChart />
+        </Column>
+        <Column></Column>
+      </Row>
+      <Row spacing="m">
+        <Column grow={1}>
+          <CoveredProtocolsList />
+        </Column>
       </Row>
     </Column>
   )

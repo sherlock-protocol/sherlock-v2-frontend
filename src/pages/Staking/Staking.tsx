@@ -1,11 +1,9 @@
 import { BigNumber, ethers } from "ethers"
-import React, { useMemo, useState } from "react"
+import React from "react"
 import { useDebounce } from "use-debounce"
 import { useAccount } from "wagmi"
-import { utils } from "ethers"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Box } from "../../components/Box"
-import { Button } from "../../components/Button/Button"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import { Column, Row } from "../../components/Layout"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
@@ -20,6 +18,8 @@ import useWaitTx from "../../hooks/useWaitTx"
 import { formatAmount } from "../../utils/format"
 import { TxType } from "../../utils/txModalMessages"
 import styles from "./Staking.module.scss"
+import { useNavigate } from "react-router-dom"
+import Options from "../../components/Options/Options"
 
 /**
  * Available staking periods, in seconds.
@@ -31,12 +31,20 @@ export const PERIODS_IN_SECONDS = {
   ONE_YEAR: 60 * 60 * 24 * 7 * 52,
 }
 
+const STAKING_PERIOD_OPTIONS = [
+  {
+    label: "6 months",
+    value: PERIODS_IN_SECONDS.SIX_MONTHS,
+  },
+  { label: "12 months", value: PERIODS_IN_SECONDS.ONE_YEAR },
+]
+
 export const StakingPage: React.FC = () => {
   const [amount, setAmount] = React.useState<BigNumber>()
   const [debouncedAmountBN] = useDebounce(amount, 500, {
     equalityFn: (l, r) => (r ? !!l?.eq(r) : l === undefined),
   })
-  const [stakingPeriod, setStakingPeriod] = React.useState<number>()
+  const [stakingPeriod, setStakingPeriod] = React.useState<number>(STAKING_PERIOD_OPTIONS[0].value)
   const [sherRewards, setSherRewards] = React.useState<BigNumber>()
   const [isLoadingRewards, setIsLoadingRewards] = React.useState(false)
   const { getStakingPositions, data: stakePositionsData } = useStakingPositions()
@@ -47,6 +55,7 @@ export const StakingPage: React.FC = () => {
   const { format: formatUSDC, balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
   const [{ data: accountData }] = useAccount()
+  const navigate = useNavigate()
 
   /**
    * Compute staking rewards for current amount and staking period
@@ -79,10 +88,13 @@ export const StakingPage: React.FC = () => {
       return
     }
 
-    await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
+    const result = await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
       transactionType: TxType.STAKE,
     })
-  }, [amount, stakingPeriod, stake, waitForTx])
+
+    // Navigate to positions page
+    navigate("/positions", { state: { refreshAfterBlockNumber: result.blockNumber } })
+  }, [amount, stakingPeriod, stake, waitForTx, navigate])
 
   // Compute rewards when amount or period is changed
   React.useEffect(() => {
@@ -134,24 +146,7 @@ export const StakingPage: React.FC = () => {
                 placeholder="Choose amount"
                 balance={usdcBalance}
               />
-              <Row spacing="m">
-                <Column grow={1}>
-                  <Button
-                    variant={stakingPeriod === PERIODS_IN_SECONDS.SIX_MONTHS ? "primary" : "alternate"}
-                    onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.SIX_MONTHS)}
-                  >
-                    6 months
-                  </Button>
-                </Column>
-                <Column grow={1}>
-                  <Button
-                    variant={stakingPeriod === PERIODS_IN_SECONDS.ONE_YEAR ? "primary" : "alternate"}
-                    onClick={() => setStakingPeriod(PERIODS_IN_SECONDS.ONE_YEAR)}
-                  >
-                    12 months
-                  </Button>
-                </Column>
-              </Row>
+              <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
               {sherRewards && (
                 <>
                   <Row>

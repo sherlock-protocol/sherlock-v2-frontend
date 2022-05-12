@@ -16,7 +16,9 @@
   align-items: center;
 
   background-color: transparentize($color: $background-color, $amount: 0.4);
-  backdrop-filter: blur(90px);
+  backdrop-filter: blur(5px);
 
   pointer-events: auto;
+
+  z-index: 100;
 }
