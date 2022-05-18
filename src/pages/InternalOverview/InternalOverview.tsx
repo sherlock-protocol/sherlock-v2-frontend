@@ -11,7 +11,7 @@ import { formatAmount } from "../../utils/format"
 import { useUnlockOverTime } from "../../hooks/api/useUnlockOverTime"
 
 type ChartDataPoint = {
-  name: string
+  name: number
   value: number
 }
 
@@ -25,20 +25,10 @@ export const InternalOverviewPage: React.FC = () => {
   const unlockChartData = useMemo(() => {
     if (!unlockData) return
 
-    console.log("Unlock data", unlockData)
-
     const chartData: ChartDataPoint[] = unlockData?.map((item) => ({
-      name: DateTime.fromMillis(item.timestamp * 1000).toLocaleString({
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }),
+      name: item.timestamp * 1000,
       value: Number(utils.formatUnits(item.value, 6)),
     }))
-
-    console.log("Chart data", chartData)
 
     return chartData
   }, [unlockData])
@@ -56,7 +46,28 @@ export const InternalOverviewPage: React.FC = () => {
                 width={1000}
                 height={200}
                 data={unlockChartData}
-                tooltipFormatter={(v: number, name: string) => [`$${formatAmount(v, 0)}`, "Active Balance"]}
+                tooltipProps={{
+                  formatter: (v: number, name: string) => [`$${formatAmount(v, 0)}`, "Active Balance"],
+                  labelFormatter: (l: number, payload) =>
+                    DateTime.fromMillis(l).toLocaleString({
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    }),
+                }}
+                xAxisProps={{
+                  type: "number",
+                  scale: "time",
+                  domain: ["dataMin", "dataMax"],
+                  tickFormatter: (v: number) =>
+                    DateTime.fromMillis(v).toLocaleString({
+                      year: "2-digit",
+                      month: "2-digit",
+                      day: "2-digit",
+                    }),
+                  interval: "preserveStartEnd",
+                }}
+                type="stepAfter"
               />
             </Row>
           </Column>

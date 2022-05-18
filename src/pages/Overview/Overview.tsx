@@ -98,7 +98,7 @@ export const OverviewPage: React.FC = () => {
                 width={1000}
                 height={200}
                 data={chartsData?.tvcChartData}
-                tooltipFormatter={(v: number, name: string) => [`$${formatAmount(v, 0)}`, "TVC"]}
+                tooltipProps={{ formatter: (v: number, name: string) => [`$${formatAmount(v, 0)}`, "TVC"] }}
               />
             </Row>
           </Column>
@@ -122,7 +122,7 @@ export const OverviewPage: React.FC = () => {
                 width={450}
                 height={200}
                 data={chartsData?.tvlChartData}
-                tooltipFormatter={(v: number, name: string) => [`$${formatAmount(v, 0)}`, "TVL"]}
+                tooltipProps={{ formatter: (v: number, name: string) => [`$${formatAmount(v, 0)}`, "TVL"] }}
               />
             </Row>
           </Column>
@@ -146,7 +146,7 @@ export const OverviewPage: React.FC = () => {
                 width={450}
                 height={200}
                 data={chartsData?.capitalEfficiencyChartData}
-                tooltipFormatter={(v: number, name: string) => [v.toFixed(2), "Capital efficiency"]}
+                tooltipProps={{ formatter: (v: number, name: string) => [v.toFixed(2), "Capital efficiency"] }}
                 yTickFormatter={(v) => v.toFixed(2)}
               />
             </Row>
