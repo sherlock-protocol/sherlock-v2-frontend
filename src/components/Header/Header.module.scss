@@ -23,6 +23,12 @@
       text-transform: uppercase;
       font-weight: 700;
       color: white;
+      display: flex;
+      align-items: baseline;
+
+      & > *:last-child {
+        margin-left: 0.5rem;
+      }
     }
   }
 }

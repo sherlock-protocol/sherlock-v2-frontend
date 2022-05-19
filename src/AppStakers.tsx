@@ -31,6 +31,11 @@ const AppStakers = () => {
       title: "POSITIONS",
       route: routes.Positions,
     },
+    {
+      title: "PROTOCOLS",
+      route: routes.Protocols,
+      external: true,
+    },
   ]
 
   if (fundraisePositionData) {
