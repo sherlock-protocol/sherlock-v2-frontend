@@ -5,6 +5,7 @@ export const routes = {
   FundraiseClaim: "fundraiseclaim",
   Protocol: "protocol",
   Overview: "overview",
+  InternalOverview: "internal",
   USForbidden: "us",
 } as const
 
