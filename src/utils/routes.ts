@@ -10,6 +10,7 @@ export const routes = {
 
 export const protocolsRoutes = {
   Balance: "balance",
+  Claims: "claims",
 } as const
 
 type R = typeof routes & typeof protocolsRoutes
