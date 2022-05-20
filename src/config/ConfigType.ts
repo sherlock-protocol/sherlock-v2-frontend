@@ -49,6 +49,13 @@ export type Config = {
   sherlockProtocolManagerAddress: string
 
   /**
+   * SherlockClaimManager Address
+   *
+   * See: https://github.com/sherlock-protocol/sherlock-v2-core/blob/main/contracts/managers/SherlockClaimManager.sol
+   */
+  sherlockClaimManagerAddress: string
+
+  /**
    * SHER Token Address
    *
    * See: https://docs.openzeppelin.com/contracts/2.x/api/token/erc20
