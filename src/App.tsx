@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react"
-import { Route, Routes, useLocation, Navigate } from "react-router-dom"
+import React from "react"
+import { Route, Routes, Navigate } from "react-router-dom"
 
 import { FundraisingClaimPage } from "./pages/FundraisingClaim"
 import { StakingPage } from "./pages/Staking"
@@ -7,79 +7,46 @@ import { StakingPositionsPage } from "./pages/StakingPositions"
 import { USForbiddenPage } from "./pages/USForbidden"
 import { OverviewPage } from "./pages/Overview"
 import { ProtocolPage } from "./pages/Protocol"
+import AppStakers from "./AppStakers"
+import AppProtocols from "./AppProtocols"
+import AppInternal from "./AppInternal"
 
-import { Footer } from "./components/Footer"
-import { Header, NavigationLink } from "./components/Header"
-
-import { routes } from "./utils/routes"
-
-import styles from "./App.module.scss"
-import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
-import { useAccount } from "wagmi"
+import { routes, protocolsRoutes, internalRoutes } from "./utils/routes"
 import MobileBlock from "./components/MobileBlock/MobileBlock"
 import { InternalOverviewPage } from "./pages/InternalOverview/InternalOverview"
 
 function App() {
-  const location = useLocation()
-  const [{ data: accountData }] = useAccount()
-  const { getFundraisePosition, data: fundraisePositionData } = useFundraisePosition()
-  const [navigationLinks, setNavigationLinks] = useState<NavigationLink[]>([])
-
-  useEffect(() => {
-    if (accountData?.address) {
-      getFundraisePosition(accountData.address)
-    }
-  }, [accountData?.address, getFundraisePosition])
-
-  useEffect(() => {
-    let links: NavigationLink[] = [
-      {
-        title: "OVERVIEW",
-        route: routes.Overview,
-      },
-      {
-        title: "STAKE",
-        route: routes.Stake,
-      },
-      {
-        title: "POSITIONS",
-        route: routes.Positions,
-      },
-    ]
-
-    if (fundraisePositionData) {
-      links = [
-        ...links,
-        {
-          title: "CLAIM",
-          route: routes.FundraiseClaim,
-        },
-      ]
-    }
-    setNavigationLinks(links)
-  }, [location.pathname, fundraisePositionData])
-
   return (
     <>
-      <div className={styles.app}>
-        <div className={styles.noise} />
-        <Header navigationLinks={navigationLinks} />
-        <div className={styles.contentContainer}>
-          <div className={styles.content}>
-            <Routes>
-              <Route path={routes.Stake} element={<StakingPage />} />
-              <Route path={routes.Overview} element={<OverviewPage />} />
-              <Route path={routes.Positions} element={<StakingPositionsPage />} />
-              <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
-              <Route path={routes.Protocol} element={<ProtocolPage />} />
-              <Route path={routes.USForbidden} element={<USForbiddenPage />} />
-              <Route path={routes.InternalOverview} element={<InternalOverviewPage />} />
-              <Route path="*" element={<Navigate replace to={routes.Stake} />} />
-            </Routes>
-          </div>
-        </div>
-        <Footer />
-      </div>
+      <Routes>
+        {/** Stakers section routes */}
+        <Route path="/*" element={<AppStakers />}>
+          <Route path={routes.Stake} element={<StakingPage />} />
+          <Route path={routes.Overview} element={<OverviewPage />} />
+          <Route path={routes.Positions} element={<StakingPositionsPage />} />
+          <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
+          <Route path={routes.USForbidden} element={<USForbiddenPage />} />
+
+          <Route path="*" element={<Navigate replace to={`/${routes.Stake}`} />} />
+        </Route>
+
+        {/** Protocols section routes */}
+        <Route path={`${routes.Protocols}/*`} element={<AppProtocols />}>
+          <Route path={protocolsRoutes.Balance} element={<ProtocolPage />} />
+
+          <Route path="*" element={<Navigate replace to={protocolsRoutes.Balance} />} />
+        </Route>
+
+        {/** Internal section routes */}
+        <Route path={`${routes.Internal}/*`} element={<AppInternal />}>
+          <Route path={internalRoutes.InternalOverview} element={<InternalOverviewPage />} />
+
+          <Route path="*" element={<Navigate replace to={internalRoutes.InternalOverview} />} />
+        </Route>
+
+        <Route path="*" element={<Navigate replace to="/" />} />
+      </Routes>
+
       <MobileBlock />
     </>
   )

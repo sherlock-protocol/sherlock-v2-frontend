@@ -1,5 +1,5 @@
 import React from "react"
-
+import { FaExternalLinkAlt } from "react-icons/fa"
 import ConnectButton from "../ConnectButton/ConnectButton"
 import CustomLink from "../CustomLink/CustomLink"
 import { Route } from "../../utils/routes"
@@ -8,10 +8,12 @@ import { ReactComponent as Logotype } from "../../assets/icons/logotype.svg"
 
 import styles from "./Header.module.scss"
 import { Row } from "../Layout"
+import { Link } from "react-router-dom"
 
 export type NavigationLink = {
   title: string
   route: Route
+  external?: boolean
 }
 
 type HeaderProps = {
@@ -30,14 +32,17 @@ export const Header: React.FC<HeaderProps> = ({ navigationLinks = [], logoOnly =
   return (
     <div className={styles.container}>
       <div className={styles.leftArea}>
-        <Logotype height={60} width={60} />
+        <Link to="/">
+          <Logotype height={60} width={60} />
+        </Link>
       </div>
       {!logoOnly && (
         <div className={styles.centerArea}>
-          <Row alignment="center">
+          <Row alignment={["center", "center"]}>
             {navigationLinks.map((navLink) => (
               <CustomLink key={navLink.route} to={navLink.route}>
                 {navLink.title}
+                {navLink.external && <FaExternalLinkAlt />}
               </CustomLink>
             ))}
           </Row>

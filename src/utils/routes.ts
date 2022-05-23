@@ -3,13 +3,21 @@ export const routes = {
   Positions: "positions",
   Fundraise: "fundraise",
   FundraiseClaim: "fundraiseclaim",
-  Protocol: "protocol",
+  Protocols: "protocols",
+  Internal: "internal",
   Overview: "overview",
-  InternalOverview: "internal",
   USForbidden: "us",
 } as const
 
-type R = typeof routes
+export const protocolsRoutes = {
+  Balance: "balance",
+} as const
+
+export const internalRoutes = {
+  InternalOverview: "overview",
+} as const
+
+type R = typeof routes & typeof protocolsRoutes & typeof internalRoutes
 
 type ValueOf<T> = T[keyof T]
 
