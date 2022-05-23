@@ -1,4 +1,4 @@
-import React from "react"
+import React, { PropsWithChildren } from "react"
 import { useAccount, useConnect, useNetwork } from "wagmi"
 import config from "../../config"
 import { shortenAddress } from "../../utils/format"
@@ -12,7 +12,7 @@ import WalletProviderModal from "../WalletProviderModal/WalletProviderModal"
  * It allows changing to the correct network and connecting
  * a wallet via WalletConnect or MetaMask.
  */
-const ConnectButton: React.FC = ({ children }) => {
+const ConnectButton: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
   const [isModalVisible, setIsModalVisible] = React.useState(false)
 
   const [{ data: connectionData }] = useConnect()

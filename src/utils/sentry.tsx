@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/react"
 import { FallbackRender } from "@sentry/react/dist/errorboundary"
 import { BrowserTracing } from "@sentry/tracing"
+import { PropsWithChildren } from "react"
 import ErrorBoundary from "../components/ErrorBoundary/ErrorBoundary"
 
 Sentry.init({
@@ -24,6 +25,6 @@ export const addTransactionBreadcrumb = (data: Record<string, any>) =>
 
 const ErrorBoundaryComponent: FallbackRender = (props) => <ErrorBoundary {...props} />
 
-export const SentryErrorBoundary: React.FC = ({ children }) => (
+export const SentryErrorBoundary: React.FC<PropsWithChildren<unknown>> = ({ children }) => (
   <Sentry.ErrorBoundary fallback={ErrorBoundaryComponent}>{children}</Sentry.ErrorBoundary>
 )

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { PropsWithChildren } from "react"
 import { useDebounce } from "use-debounce"
 import Loading from "../Loading/Loading"
 import styles from "./LoadingContainer.module.scss"
@@ -16,7 +16,7 @@ interface Props {
   label?: string
 }
 
-const LoadingContainer: React.FC<Props> = ({ children, loading, label }) => {
+const LoadingContainer: React.FC<PropsWithChildren<Props>> = ({ children, loading, label }) => {
   const [debouncedLoading] = useDebounce(loading, 200)
 
   return (

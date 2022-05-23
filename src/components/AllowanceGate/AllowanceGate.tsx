@@ -1,5 +1,5 @@
 import { BigNumber, ethers } from "ethers"
-import React from "react"
+import React, { PropsWithChildren } from "react"
 import { ImCheckmark } from "react-icons/im"
 import useERC20 from "../../hooks/useERC20"
 import useWaitTx from "../../hooks/useWaitTx"
@@ -43,7 +43,14 @@ interface Props {
  * HOC for requesting the approval for spending a token
  * before another action
  */
-const AllowanceGate: React.FC<Props> = ({ children, spender, amount, actionName, action, onSuccess }) => {
+const AllowanceGate: React.FC<PropsWithChildren<Props>> = ({
+  children,
+  spender,
+  amount,
+  actionName,
+  action,
+  onSuccess,
+}) => {
   const [allowance, setAllowance] = React.useState<BigNumber>()
   const [isSuccess, setIsSuccess] = React.useState(false)
 
