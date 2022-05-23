@@ -17,6 +17,7 @@ import styles from "./App.module.scss"
 import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
 import { useAccount } from "wagmi"
 import MobileBlock from "./components/MobileBlock/MobileBlock"
+import { InternalOverviewPage } from "./pages/InternalOverview/InternalOverview"
 
 function App() {
   const location = useLocation()
@@ -72,6 +73,7 @@ function App() {
               <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
               <Route path={routes.Protocol} element={<ProtocolPage />} />
               <Route path={routes.USForbidden} element={<USForbiddenPage />} />
+              <Route path={routes.InternalOverview} element={<InternalOverviewPage />} />
               <Route path="*" element={<Navigate replace to={routes.Stake} />} />
             </Routes>
           </div>
