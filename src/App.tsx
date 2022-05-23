@@ -9,8 +9,9 @@ import { OverviewPage } from "./pages/Overview"
 import { ProtocolPage } from "./pages/Protocol"
 import AppStakers from "./AppStakers"
 import AppProtocols from "./AppProtocols"
+import AppInternal from "./AppInternal"
 
-import { routes, protocolsRoutes } from "./utils/routes"
+import { routes, protocolsRoutes, internalRoutes } from "./utils/routes"
 import MobileBlock from "./components/MobileBlock/MobileBlock"
 import { InternalOverviewPage } from "./pages/InternalOverview/InternalOverview"
 
@@ -36,7 +37,12 @@ function App() {
           <Route path="*" element={<Navigate replace to={protocolsRoutes.Balance} />} />
         </Route>
 
-        <Route path={routes.InternalOverview} element={<InternalOverviewPage />} />
+        {/** Internal section routes */}
+        <Route path={`${routes.Internal}/*`} element={<AppInternal />}>
+          <Route path={internalRoutes.InternalOverview} element={<InternalOverviewPage />} />
+
+          <Route path="*" element={<Navigate replace to={internalRoutes.InternalOverview} />} />
+        </Route>
 
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>
