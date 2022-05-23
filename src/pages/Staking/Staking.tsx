@@ -5,7 +5,6 @@ import { useAccount } from "wagmi"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Box } from "../../components/Box"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
-import { Column, Row } from "../../components/Layout"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
@@ -20,6 +19,7 @@ import { TxType } from "../../utils/txModalMessages"
 import styles from "./Staking.module.scss"
 import { useNavigate } from "react-router-dom"
 import Options from "../../components/Options/Options"
+import { Container, Divider, HStack, VStack } from "@chakra-ui/react"
 
 /**
  * Available staking periods, in seconds.
@@ -111,94 +111,76 @@ export const StakingPage: React.FC = () => {
   return (
     <Box>
       <LoadingContainer loading={isLoadingRewards}>
-        <Column spacing="m">
+        <VStack w="full" spacing={2} alignItems="flex-start">
           <Title>Stake</Title>
-          <Row alignment="space-between">
-            <Column>
-              <Text>Total Value Locked</Text>
-            </Column>
-            <Column>
-              {tvl && (
-                <Text strong variant="mono">
-                  ${formatAmount(formatUSDC(tvl))}
-                </Text>
-              )}
-            </Column>
-          </Row>
+          <HStack w="full" justifyContent="space-between">
+            <Text>Total Value Locked</Text>
+            {tvl && (
+              <Text strong variant="mono">
+                ${formatAmount(formatUSDC(tvl))}
+              </Text>
+            )}
+          </HStack>
           {stakePositionsData && (
-            <Row alignment="space-between">
-              <Column>
-                <Text>USDC APY</Text>
-              </Column>
-              <Column>
-                <Text strong variant="mono">
-                  {formatAmount(stakePositionsData?.usdcAPY)}%
-                </Text>
-              </Column>
-            </Row>
+            <HStack w="full" justifyContent="space-between">
+              <Text>USDC APY</Text>
+              <Text strong variant="mono">
+                {formatAmount(stakePositionsData?.usdcAPY)}%
+              </Text>
+            </HStack>
           )}
-          <Row className={styles.rewardsContainer}>
-            <Column grow={1} spacing="l">
-              <TokenInput
-                value={debouncedAmountBN}
-                onChange={setAmount}
-                token="USDC"
-                placeholder="Choose amount"
-                balance={usdcBalance}
-              />
-              <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
+          <Container bg="brand.bg" p={4}>
+            <VStack w="full" spacing={4}>
+              <VStack w="full" spacing={4}>
+                <TokenInput
+                  value={debouncedAmountBN}
+                  onChange={setAmount}
+                  token="USDC"
+                  placeholder="Choose amount"
+                  balance={usdcBalance}
+                />
+                <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
+              </VStack>
               {sherRewards && (
                 <>
-                  <Row>
-                    <hr />
-                  </Row>
-                  <Row alignment="space-between">
-                    <Column>
-                      <Text>SHER Reward</Text>
-                    </Column>
-                    <Column>
-                      <Text strong variant="mono">
-                        {formatAmount(formatSHER(sherRewards))} SHER
-                      </Text>
-                    </Column>
-                  </Row>
+                  <Divider />
+                  <HStack w="full" justifyContent="space-between">
+                    <Text>SHER Reward</Text>
+                    <Text strong variant="mono">
+                      {formatAmount(formatSHER(sherRewards))} SHER
+                    </Text>
+                  </HStack>
                   {stakePositionsData && (
-                    <Row alignment="space-between">
-                      <Column>
-                        <Text>USDC APY</Text>
-                      </Column>
-                      <Column>
-                        <Text strong variant="mono">
-                          {formatAmount(stakePositionsData?.usdcAPY)}%
-                        </Text>
-                      </Column>
-                    </Row>
+                    <HStack w="full" justifyContent="space-between">
+                      <Text>USDC APY</Text>
+                      <Text strong variant="mono">
+                        {formatAmount(stakePositionsData?.usdcAPY)}%
+                      </Text>
+                    </HStack>
                   )}
                 </>
               )}
 
               {amount && stakingPeriod && sherRewards && (
-                <Row alignment="center">
-                  <ConnectGate>
-                    <AllowanceGate
-                      amount={amount}
-                      spender={address}
-                      actionName="Stake"
-                      action={handleOnStake}
-                      onSuccess={refreshTvl}
-                    ></AllowanceGate>
-                  </ConnectGate>
-                </Row>
+                <ConnectGate>
+                  <AllowanceGate
+                    amount={amount}
+                    spender={address}
+                    actionName="Stake"
+                    action={handleOnStake}
+                    onSuccess={refreshTvl}
+                  ></AllowanceGate>
+                </ConnectGate>
               )}
-            </Column>
-          </Row>
+            </VStack>
+          </Container>
           <Text size="small" className={styles.v1}>
             For the Sherlock V1, please see{" "}
             <a href="https://v1.sherlock.xyz" rel="noreferrer" target="_blank">
               https://v1.sherlock.xyz
             </a>
           </Text>
-        </Column>
+        </VStack>
       </LoadingContainer>
     </Box>
   )

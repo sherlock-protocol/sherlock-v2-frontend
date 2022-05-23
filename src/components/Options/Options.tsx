@@ -1,8 +1,8 @@
 import React from "react"
-import { Column, Row } from "../Layout"
 import styles from "./Options.module.scss"
 import cx from "classnames"
 import { Text } from "../Text"
+import { Flex, HStack } from "@chakra-ui/react"
 
 type Props = {
   /**
@@ -26,19 +26,22 @@ type Props = {
 
 const Options: React.FC<Props> = ({ options, value, onChange }) => {
   return (
-    <Row grow={1} className={styles.container}>
+    <HStack w="full" className={styles.container} spacing={0}>
       {options.map((option) => (
-        <Column
-          alignment={["center", "center"]}
-          grow={1}
+        <Flex
+          py={3}
+          px={1}
+          w="full"
+          justifyContent="center"
+          alignItems="center"
           key={option.value}
           className={cx(styles.option, { [styles.active]: option.value === value })}
           onClick={() => onChange(option.value)}
         >
           <Text strong>{option.label}</Text>
-        </Column>
+        </Flex>
       ))}
-    </Row>
+    </HStack>
   )
 }
 
