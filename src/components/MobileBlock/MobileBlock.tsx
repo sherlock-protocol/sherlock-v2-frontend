@@ -1,5 +1,4 @@
 import React from "react"
-import { Box } from "../../components/Box"
 import { Column } from "../../components/Layout"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"

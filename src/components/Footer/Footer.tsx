@@ -1,4 +1,4 @@
-import React from "react"
+import React, { PropsWithChildren } from "react"
 import footerShadow from "../../assets/images/footer_shadow.svg"
 import { Column, Row } from "../Layout"
 import { Text } from "../Text"
@@ -6,7 +6,7 @@ import { FaTwitter, FaDiscord, FaGithub } from "react-icons/fa"
 
 import styles from "./Footer.module.scss"
 
-export const Footer: React.FC = ({ children }) => (
+export const Footer: React.FC<PropsWithChildren<unknown>> = ({ children }) => (
   <div className={styles.footer}>
     <img src={footerShadow} alt="" />
     <div className={styles.bottom}></div>

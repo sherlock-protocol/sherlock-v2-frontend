@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { PropsWithChildren, useCallback, useState } from "react"
 import { BigNumber, ethers } from "ethers"
 import axios from "./axios"
 import { getFundraisePosition as getFundraisePositionUrl } from "./urls"
@@ -52,7 +52,7 @@ export const useFundraisePosition = () => {
   return React.useContext(FundraisePositionContext)
 }
 
-export const FundraisePositionProvider: React.FC = ({ children }) => {
+export const FundraisePositionProvider: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const [data, setData] = useState<FundraisePosition | null>(null)
