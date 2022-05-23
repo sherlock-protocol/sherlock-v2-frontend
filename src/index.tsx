@@ -5,6 +5,7 @@ import "./index.module.scss"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import "./polyfills"
+import { ChakraProvider } from "@chakra-ui/react"
 
 import { ApolloProvider } from "./utils/apollo/ApolloProvider"
 import { WagmiProvider } from "./utils/WagmiProvider"
@@ -20,23 +21,25 @@ const container = document.getElementById("root")
 const root = createRoot(container!)
 root.render(
   <React.StrictMode>
-    <SentryErrorBoundary>
-      <BrowserRouter>
-        <WagmiProvider>
-          <ApolloProvider>
-            <TxWaitProvider>
-              <FundraisePositionProvider>
-                <StakingPositionsProvider>
-                  <CoveredProtocolsProvider>
-                    <App />
-                  </CoveredProtocolsProvider>
-                </StakingPositionsProvider>
-              </FundraisePositionProvider>
-            </TxWaitProvider>
-          </ApolloProvider>
-        </WagmiProvider>
-      </BrowserRouter>
-    </SentryErrorBoundary>
+    <ChakraProvider>
+      <SentryErrorBoundary>
+        <BrowserRouter>
+          <WagmiProvider>
+            <ApolloProvider>
+              <TxWaitProvider>
+                <FundraisePositionProvider>
+                  <StakingPositionsProvider>
+                    <CoveredProtocolsProvider>
+                      <App />
+                    </CoveredProtocolsProvider>
+                  </StakingPositionsProvider>
+                </FundraisePositionProvider>
+              </TxWaitProvider>
+            </ApolloProvider>
+          </WagmiProvider>
+        </BrowserRouter>
+      </SentryErrorBoundary>
+    </ChakraProvider>
   </React.StrictMode>
 )
 
