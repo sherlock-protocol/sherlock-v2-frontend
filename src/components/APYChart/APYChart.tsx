@@ -42,7 +42,9 @@ const APYChart: React.FC = () => {
             width={450}
             height={200}
             data={chartData}
-            tooltipFormatter={(v: number, name: string) => [`${v}%`, "APY"]}
+            tooltipProps={{
+              formatter: (v: number, name: string) => [`${v}%`, "APY"],
+            }}
             yTickFormatter={(v) => `${v}%`}
           />
         </Row>

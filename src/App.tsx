@@ -12,6 +12,7 @@ import AppProtocols from "./AppProtocols"
 
 import { routes, protocolsRoutes } from "./utils/routes"
 import MobileBlock from "./components/MobileBlock/MobileBlock"
+import { InternalOverviewPage } from "./pages/InternalOverview/InternalOverview"
 
 function App() {
   return (
@@ -34,6 +35,8 @@ function App() {
 
           <Route path="*" element={<Navigate replace to={protocolsRoutes.Balance} />} />
         </Route>
+
+        <Route path={routes.InternalOverview} element={<InternalOverviewPage />} />
 
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>
