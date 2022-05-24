@@ -1,5 +1,6 @@
 import React from "react"
 import { Route, Routes, Navigate } from "react-router-dom"
+import { ReactQueryDevtools } from "react-query/devtools"
 
 import { FundraisingClaimPage } from "./pages/FundraisingClaim"
 import { StakingPage } from "./pages/Staking"
@@ -41,6 +42,7 @@ function App() {
       </Routes>
 
       <MobileBlock />
+      <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
     </>
   )
 }
