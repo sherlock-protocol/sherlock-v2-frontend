@@ -1,6 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import { BrowserRouter } from "react-router-dom"
+import { QueryClient, QueryClientProvider } from "react-query"
 import "./index.module.scss"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
@@ -16,22 +17,26 @@ import { CoveredProtocolsProvider } from "./hooks/api/useCoveredProtocols"
 
 global.Buffer = global.Buffer || require("buffer").Buffer
 
+const queryClient = new QueryClient()
+
 ReactDOM.render(
   <React.StrictMode>
     <SentryErrorBoundary>
       <BrowserRouter>
         <WagmiProvider>
-          <ApolloProvider>
-            <TxWaitProvider>
-              <FundraisePositionProvider>
-                <StakingPositionsProvider>
-                  <CoveredProtocolsProvider>
-                    <App />
-                  </CoveredProtocolsProvider>
-                </StakingPositionsProvider>
-              </FundraisePositionProvider>
-            </TxWaitProvider>
-          </ApolloProvider>
+          <QueryClientProvider client={queryClient}>
+            <ApolloProvider>
+              <TxWaitProvider>
+                <FundraisePositionProvider>
+                  <StakingPositionsProvider>
+                    <CoveredProtocolsProvider>
+                      <App />
+                    </CoveredProtocolsProvider>
+                  </StakingPositionsProvider>
+                </FundraisePositionProvider>
+              </TxWaitProvider>
+            </ApolloProvider>
+          </QueryClientProvider>
         </WagmiProvider>
       </BrowserRouter>
     </SentryErrorBoundary>
