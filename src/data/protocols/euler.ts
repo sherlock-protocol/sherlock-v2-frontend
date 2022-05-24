@@ -1,7 +1,7 @@
 import { CoveredProtocolMeta } from "./index"
 
 const meta: CoveredProtocolMeta = {
-  id: "0x3019e52a670390f24e4b9b58af62a7367658e457bbb07f86b19b213ec74b5be7",
+  bytesIdentifier: "0x3019e52a670390f24e4b9b58af62a7367658e457bbb07f86b19b213ec74b5be7",
   tag: "euler",
   name: "Euler",
   website: "https://www.euler.finance/",

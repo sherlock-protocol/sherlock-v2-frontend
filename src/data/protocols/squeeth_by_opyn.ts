@@ -1,7 +1,7 @@
 import { CoveredProtocolMeta } from "./index"
 
 const meta: CoveredProtocolMeta = {
-  id: "0x99b8883ea932491b57118762f4b507ebcac598bee27b98f443c06d889237d9a4",
+  bytesIdentifier: "0x99b8883ea932491b57118762f4b507ebcac598bee27b98f443c06d889237d9a4",
   tag: "opyn",
   name: "Squeeth by Opyn",
   website: "https://www.opyn.co/",

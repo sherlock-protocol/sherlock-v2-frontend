@@ -1,7 +1,7 @@
 import { CoveredProtocolMeta } from "./index"
 
 const meta: CoveredProtocolMeta = {
-  id: "0x615307f589ff909e3b7cfbf4d4b4371eb99fa64353970d40b76c1c37381e5cf0",
+  bytesIdentifier: "0x615307f589ff909e3b7cfbf4d4b4371eb99fa64353970d40b76c1c37381e5cf0",
   tag: "tempus",
   name: "Tempus Finance",
   website: "https://tempus.finance/",
