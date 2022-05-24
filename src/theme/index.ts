@@ -1,4 +1,5 @@
 import { extendTheme, theme as base, ThemeConfig, Colors } from "@chakra-ui/react"
+import { Table } from "./table"
 
 const colors: Colors = {
   brand: {
@@ -12,8 +13,9 @@ const colors: Colors = {
     700: "#6c00d9",
     800: "#5d00d4",
     900: "#4300cc",
-    bg: "#8716e84d",
+    bg: "#280745",
   },
+  bg: "#19032d",
 }
 
 const fonts = {
@@ -26,4 +28,11 @@ const config: ThemeConfig = {
   useSystemColorMode: false,
 }
 
-export const theme = extendTheme({ colors, fonts, config })
+export const theme = extendTheme({
+  colors,
+  fonts,
+  config,
+  components: {
+    Table,
+  },
+})

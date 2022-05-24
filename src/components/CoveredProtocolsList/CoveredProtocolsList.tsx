@@ -1,14 +1,13 @@
 import React, { useEffect, useMemo } from "react"
 import { Box } from "../Box"
-import { Column, Row } from "../Layout"
 import { Title } from "../Title"
 import { useCoveredProtocols } from "../../hooks/api/useCoveredProtocols"
 import { Text } from "../Text"
 import { formatAmount } from "../../utils/format"
 import { ethers } from "ethers"
 import styles from "./CoveredProtocolsList.module.scss"
-import cx from "classnames"
 import { useTVCOverTime } from "../../hooks/api/useTVCOverTime"
+import { Table, TableContainer, Tbody, Td, Tfoot, Th, Thead, Tr, VStack } from "@chakra-ui/react"
 
 /**
  * List of covered protocols
@@ -72,62 +71,53 @@ const CoveredProtocolsList: React.FC = () => {
 
   return (
     <Box shadow={false} fullWidth>
-      <Column spacing="m">
-        <Row>
-          <Title variant="h3">COVERED PROTOCOLS</Title>
-        </Row>
-        <Row>
-          <Title>{protocolsData?.length}</Title>
-        </Row>
-        <Row alignment="center">
-          <Column grow={1} spacing="xs">
-            <Row className={styles.header}>
-              <Column className={styles.listColumn}>
-                <Text strong>Protocol</Text>
-              </Column>
-              <Column alignment="end" className={styles.listColumn}>
-                <Text strong>Coverage</Text>
-              </Column>
-              <Column className={styles.listColumn} grow={1}></Column>
-              <Column className={styles.listColumn}>
-                <Text strong>%</Text>
-              </Column>
-            </Row>
-            <Column grow={1} spacing="xs" className={styles.listContainer}>
-              {protocolsData?.map((item) => (
-                <Row key={item.id}>
-                  <Column className={cx(styles.listColumn, styles.entry)}>
-                    <a href={item.website} target="_blank" rel="noopener noreferrer">
-                      <Text strong className={styles.protocolName}>
-                        {item.name}
-                      </Text>
-                    </a>
-                  </Column>
-                  <Column alignment="end" className={cx(styles.listColumn, styles.entry)}>
-                    <Text>${formatAmount(ethers.utils.formatUnits(item.coverage, 6), 0)}</Text>
-                  </Column>
-                  <Column className={cx(styles.listColumn, styles.entry)} grow={1}></Column>
-                  <Column className={cx(styles.listColumn, styles.entry)}>
-                    <Text>{item.percentageOfTotal.toFixed(0)}%</Text>
-                  </Column>
-                </Row>
-              ))}
-              {tvc && (
-                <Row className={styles.header}>
-                  <Column className={styles.listColumn}>
-                    <Text strong>Total Value Covered</Text>
-                  </Column>
-                  <Column alignment="end" className={styles.listColumn}>
-                    <Text>${formatAmount(ethers.utils.formatUnits(tvc, 6), 0)}</Text>
-                  </Column>
-                  <Column className={styles.listColumn} grow={1}></Column>
-                  <Column className={styles.listColumn}></Column>
-                </Row>
-              )}
-            </Column>
-          </Column>
-        </Row>
-      </Column>
+      <VStack w="full" spacing={4} alignItems="flex-start">
+        <Title variant="h3">COVERED PROTOCOLS</Title>
+        <Title>{protocolsData?.length}</Title>
+      </VStack>
+      <TableContainer>
+        <Table variant="dashboard">
+          <Thead>
+            <Tr>
+              <Th>Protocol</Th>
+              <Th isNumeric>Coverage</Th>
+              <Th isNumeric>%</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {protocolsData?.map((item) => (
+              <Tr key={item.id}>
+                <Td>
+                  <a href={item.website} target="_blank" rel="noopener noreferrer">
+                    <Text strong className={styles.protocolName}>
+                      {item.name}
+                    </Text>
+                  </a>
+                </Td>
+                <Td isNumeric>
+                  <Text>${formatAmount(ethers.utils.formatUnits(item.coverage, 6), 0)}</Text>
+                </Td>
+                <Td isNumeric>
+                  <Text>{item.percentageOfTotal.toFixed(0)}%</Text>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+          {tvc && (
+            <Tfoot className={styles.footer}>
+              <Tr>
+                <Td>
+                  <Text strong>Total Value Covered</Text>
+                </Td>
+                <Td isNumeric>
+                  <Text>${formatAmount(ethers.utils.formatUnits(tvc, 6), 0)}</Text>
+                </Td>
+                <Td>&nbsp;</Td>
+              </Tr>
+            </Tfoot>
+          )}
+        </Table>
+      </TableContainer>
     </Box>
   )
 }
