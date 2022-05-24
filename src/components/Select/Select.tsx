@@ -5,21 +5,21 @@ import { Text } from "../Text"
 import { FaCaretDown } from "react-icons/fa"
 import Option from "./Option"
 
-type OptionType = {
-  value: string
+type OptionType<T> = {
+  value: T
   label: string
 }
 
-type Props = {
-  options: Array<OptionType>
-  onChange: (value: string) => void
-  value?: string
+type Props<T> = {
+  options: Array<OptionType<T>>
+  onChange: (value: T) => void
+  value?: T
 }
 
 /**
  * Custom Select/Dropdown component
  */
-const Select: React.FC<Props> = ({ options, onChange, value }) => {
+const Select = <T,>({ options, onChange, value }: Props<T>) => {
   // const [selectedOption, setSelectedOption] = React.useState<string>()
   const selectedOptionLabel = React.useMemo(
     () => options?.find((item) => item.value === value)?.label,
@@ -35,7 +35,7 @@ const Select: React.FC<Props> = ({ options, onChange, value }) => {
   const [optionsVisible, setOptionsVisible] = React.useState(false)
 
   const handleUpdateSelectedOption = React.useCallback(
-    (option: string) => {
+    (option: T) => {
       setOptionsVisible(false)
       onChange?.(option)
     },
@@ -76,7 +76,7 @@ const Select: React.FC<Props> = ({ options, onChange, value }) => {
           <div className={styles.optionsContainer}>
             {orderedOptions?.map((item) => (
               <Option
-                key={item.value}
+                key={`${item.value}`}
                 value={item.value}
                 label={item.label}
                 onSelect={handleUpdateSelectedOption}
