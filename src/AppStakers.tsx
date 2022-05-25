@@ -7,6 +7,7 @@ import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
 import { routes } from "./utils/routes"
 
 import styles from "./App.module.scss"
+import { Box, VStack } from "@chakra-ui/react"
 
 const AppStakers = () => {
   const [{ data: accountData }] = useAccount()
@@ -46,16 +47,14 @@ const AppStakers = () => {
   }
 
   return (
-    <div className={styles.app}>
-      <div className={styles.noise} />
+    <VStack w="full" minH="100vh" bg="bg">
       <Header navigationLinks={navigationLinks} />
-      <div className={styles.contentContainer}>
-        <div className={styles.content}>
-          <Outlet />
-        </div>
-      </div>
+      <Box w="full" flexGrow={1}>
+        <div className={styles.noise} />
+        <Outlet />
+      </Box>
       <Footer />
-    </div>
+    </VStack>
   )
 }
 

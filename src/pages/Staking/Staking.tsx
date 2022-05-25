@@ -109,79 +109,83 @@ export const StakingPage: React.FC = () => {
   }, [getStakingPositions, accountData?.address])
 
   return (
-    <Box>
-      <LoadingContainer loading={isLoadingRewards}>
-        <VStack w="full" spacing={2} alignItems="flex-start">
-          <Title>Stake</Title>
-          <HStack w="full" justifyContent="space-between">
-            <Text>Total Value Locked</Text>
-            {tvl && (
-              <Text strong variant="mono">
-                ${formatAmount(formatUSDC(tvl))}
-              </Text>
-            )}
-          </HStack>
-          {stakePositionsData && (
-            <HStack w="full" justifyContent="space-between">
-              <Text>USDC APY</Text>
-              <Text strong variant="mono">
-                {formatAmount(stakePositionsData?.usdcAPY)}%
-              </Text>
-            </HStack>
-          )}
-          <Container bg="brand.bg" p={4}>
-            <VStack w="full" spacing={4}>
-              <VStack w="full" spacing={4}>
-                <TokenInput
-                  value={debouncedAmountBN}
-                  onChange={setAmount}
-                  token="USDC"
-                  placeholder="Choose amount"
-                  balance={usdcBalance}
-                />
-                <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
-              </VStack>
-              {sherRewards && (
-                <>
-                  <Divider />
-                  <HStack w="full" justifyContent="space-between">
-                    <Text>SHER Reward</Text>
-                    <Text strong variant="mono">
-                      {formatAmount(formatSHER(sherRewards))} SHER
-                    </Text>
-                  </HStack>
-                  {stakePositionsData && (
-                    <HStack w="full" justifyContent="space-between">
-                      <Text>USDC APY</Text>
-                      <Text strong variant="mono">
-                        {formatAmount(stakePositionsData?.usdcAPY)}%
-                      </Text>
-                    </HStack>
+    <Container maxW={{ base: "full", md: "full" }} justifyContent="center">
+      <VStack w="full" alignItems="center">
+        <Box>
+          <LoadingContainer loading={isLoadingRewards}>
+            <VStack w="full" spacing={2} alignItems="flex-start">
+              <Title>Stake</Title>
+              <HStack w="full" justifyContent="space-between">
+                <Text>Total Value Locked</Text>
+                {tvl && (
+                  <Text strong variant="mono">
+                    ${formatAmount(formatUSDC(tvl))}
+                  </Text>
+                )}
+              </HStack>
+              {stakePositionsData && (
+                <HStack w="full" justifyContent="space-between">
+                  <Text>USDC APY</Text>
+                  <Text strong variant="mono">
+                    {formatAmount(stakePositionsData?.usdcAPY)}%
+                  </Text>
+                </HStack>
+              )}
+              <Container bg="brand.bg" p={4}>
+                <VStack w="full" spacing={4}>
+                  <VStack w="full" spacing={4}>
+                    <TokenInput
+                      value={debouncedAmountBN}
+                      onChange={setAmount}
+                      token="USDC"
+                      placeholder="Choose amount"
+                      balance={usdcBalance}
+                    />
+                    <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
+                  </VStack>
+                  {sherRewards && (
+                    <>
+                      <Divider />
+                      <HStack w="full" justifyContent="space-between">
+                        <Text>SHER Reward</Text>
+                        <Text strong variant="mono">
+                          {formatAmount(formatSHER(sherRewards))} SHER
+                        </Text>
+                      </HStack>
+                      {stakePositionsData && (
+                        <HStack w="full" justifyContent="space-between">
+                          <Text>USDC APY</Text>
+                          <Text strong variant="mono">
+                            {formatAmount(stakePositionsData?.usdcAPY)}%
+                          </Text>
+                        </HStack>
+                      )}
+                    </>
                   )}
-                </>
-              )}
 
-              {amount && stakingPeriod && sherRewards && (
-                <ConnectGate>
-                  <AllowanceGate
-                    amount={amount}
-                    spender={address}
-                    actionName="Stake"
-                    action={handleOnStake}
-                    onSuccess={refreshTvl}
-                  ></AllowanceGate>
-                </ConnectGate>
-              )}
+                  {amount && stakingPeriod && sherRewards && (
+                    <ConnectGate>
+                      <AllowanceGate
+                        amount={amount}
+                        spender={address}
+                        actionName="Stake"
+                        action={handleOnStake}
+                        onSuccess={refreshTvl}
+                      ></AllowanceGate>
+                    </ConnectGate>
+                  )}
+                </VStack>
+              </Container>
+              <Text size="small" className={styles.v1}>
+                For the Sherlock V1, please see{" "}
+                <a href="https://v1.sherlock.xyz" rel="noreferrer" target="_blank">
+                  https://v1.sherlock.xyz
+                </a>
+              </Text>
             </VStack>
-          </Container>
-          <Text size="small" className={styles.v1}>
-            For the Sherlock V1, please see{" "}
-            <a href="https://v1.sherlock.xyz" rel="noreferrer" target="_blank">
-              https://v1.sherlock.xyz
-            </a>
-          </Text>
-        </VStack>
-      </LoadingContainer>
-    </Box>
+          </LoadingContainer>
+        </Box>
+      </VStack>
+    </Container>
   )
 }

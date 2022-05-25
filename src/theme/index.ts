@@ -16,6 +16,12 @@ const colors: Colors = {
     bg: "#280745",
   },
   bg: "#19032d",
+  gradients: {
+    sherlock: {
+      0: "rgba(135, 22, 232, 0.72)",
+      1: "hsla(0, 0%, 100%, 0)",
+    },
+  },
 }
 
 const fonts = {
@@ -28,6 +34,14 @@ const config: ThemeConfig = {
   useSystemColorMode: false,
 }
 
+const sizes = {
+  ...base.sizes,
+  container: {
+    ...base.sizes.container,
+    xs: "600px",
+  },
+}
+
 export const theme = extendTheme({
   colors,
   fonts,
@@ -35,4 +49,5 @@ export const theme = extendTheme({
   components: {
     Table,
   },
+  sizes,
 })

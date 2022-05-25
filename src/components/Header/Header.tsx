@@ -6,10 +6,9 @@ import { FaExternalLinkAlt } from "react-icons/fa"
 import { ReactComponent as Logotype } from "../../assets/icons/logotype.svg"
 import { ReactComponent as Logo } from "../../assets/icons/logo.svg"
 
-import { NavLink } from "react-router-dom"
-import { Box, Flex, HStack, Icon, IconButton, useDisclosure, VStack } from "@chakra-ui/react"
-import { GiHamburgerMenu } from "react-icons/gi"
-import { GrClose } from "react-icons/gr"
+import { NavLink, useLocation } from "react-router-dom"
+import { Box, Flex, HStack, Icon, useDisclosure, VStack } from "@chakra-ui/react"
+import { IoIosMenu, IoIosClose } from "react-icons/io"
 import { Text } from "../Text"
 import CustomLink from "../CustomLink/CustomLink"
 
@@ -33,50 +32,69 @@ type HeaderProps = {
  */
 export const Header: React.FC<HeaderProps> = ({ navigationLinks = [], logoOnly = false }) => {
   const { isOpen, onClose, onOpen } = useDisclosure()
+  const location = useLocation()
+
+  /**
+   * Close nav menu after navigating
+   */
+  React.useEffect(() => onClose, [location, onClose])
 
   return (
     <Box w="full" px={{ base: 4, md: 16 }} py={{ base: 4, md: 8 }}>
-      <Flex w="full" h={16} alignItems="center" justifyContent="center">
-        <Flex flex={1} alignItems="flex-start" display={{ md: "none" }}>
-          <IconButton
-            hidden={logoOnly}
-            size={"md"}
-            icon={isOpen ? <Icon as={GrClose} /> : <Icon as={GiHamburgerMenu} />}
-            aria-label={"Open Menu"}
+      <HStack w="full" spacing={8} h={16} alignItems="center" justifyContent="center">
+        <Flex
+          alignItems="center"
+          justifyContent="flex-start"
+          flex={1}
+          hidden={logoOnly}
+          display={{ base: "flex", md: "none" }}
+        >
+          <Icon
+            as={isOpen ? IoIosClose : IoIosMenu}
+            color="whiteAlpha.800"
+            _hover={{ color: "white" }}
             onClick={isOpen ? onClose : onOpen}
+            height={8}
+            width={8}
           />
         </Flex>
 
-        <Flex display={{ base: "none", md: "flex" }} flex={1} alignItems="center">
+        <Box flex={1} display={{ base: "none", md: "flex" }}>
           <NavLink to="/">
             <Logotype height={60} width={60} />
           </NavLink>
-        </Flex>
+        </Box>
 
-        <HStack flex={1} spacing={4} display={{ base: "none", md: "flex" }} alignItems="space-between">
-          <HStack hidden={logoOnly} flex={1} as={"nav"} spacing={8} alignItems="center" justifyContent="center">
-            {navigationLinks.map((navLink) => (
-              <CustomLink key={navLink.route} to={navLink.route}>
-                <HStack>
-                  <Text strong>{navLink.title}</Text> {navLink.external && <FaExternalLinkAlt />}
-                </HStack>
-              </CustomLink>
-            ))}
-          </HStack>
+        <HStack
+          display={{ base: "none", md: "flex" }}
+          hidden={logoOnly}
+          flex={1}
+          as={"nav"}
+          spacing={8}
+          alignItems="center"
+          justifyContent="center"
+        >
+          {navigationLinks.map((navLink) => (
+            <CustomLink key={navLink.route} to={navLink.route}>
+              <HStack>
+                <Text strong>{navLink.title}</Text> {navLink.external && <FaExternalLinkAlt />}
+              </HStack>
+            </CustomLink>
+          ))}
         </HStack>
 
-        <Flex flex={1} justifyContent="center" display={{ base: "flex", md: "none" }}>
+        <Box flex={1} display={{ base: "block", md: "none" }}>
           <NavLink to="/">
-            <Logo height={40} />
+            <Logo height={40} width="auto" />
           </NavLink>
-        </Flex>
+        </Box>
 
         <Flex hidden={logoOnly} flex={1} alignItems="center" justifyContent="flex-end">
           <Box display={{ base: "none", sm: "flex" }}>
             <ConnectButton />
           </Box>
         </Flex>
-      </Flex>
+      </HStack>
       {isOpen ? (
         <Box py={4} display={{ md: "none" }}>
           <VStack as={"nav"} spacing={4} alignItems="flex-start">
