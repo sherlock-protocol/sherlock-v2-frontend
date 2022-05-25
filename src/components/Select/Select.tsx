@@ -1,9 +1,9 @@
 import React from "react"
 import styles from "./Select.module.scss"
-import { Column, Row } from "../Layout"
 import { Text } from "../Text"
 import { FaCaretDown } from "react-icons/fa"
 import Option from "./Option"
+import { Box, HStack, VStack } from "@chakra-ui/react"
 
 type OptionType = {
   value: string
@@ -60,20 +60,26 @@ const Select: React.FC<Props> = ({ options, onChange, value }) => {
   }, [options, value, handleUpdateSelectedOption])
 
   return (
-    <Column className={styles.container}>
-      <Row className={styles.button} spacing="m" alignment="space-between" onClick={handleToggleDropdown}>
-        <Column grow={1} className={styles.selectedOptionContainer}>
-          <Text strong>{hasOptions ? selectedOptionLabel : "No entries"}</Text>
-        </Column>
-        {hasOptions && (
-          <Column>
-            <FaCaretDown size={18} color="white" />
-          </Column>
-        )}
-      </Row>
+    <Box position="relative">
+      <HStack
+        bg="brand.500"
+        _hover={{ bg: "brand.600" }}
+        _active={{ bg: "brand.700" }}
+        cursor="pointer"
+        spacing={4}
+        p={3}
+        onClick={handleToggleDropdown}
+        className={styles.ellipsis}
+        minW="200px"
+        justifyContent="space-between"
+        userSelect="none"
+      >
+        <Text strong>{hasOptions ? selectedOptionLabel : "No entries"}</Text>
+        {hasOptions && <FaCaretDown size={18} color="white" />}
+      </HStack>
       {optionsVisible && (
         <>
-          <div className={styles.optionsContainer}>
+          <VStack position="absolute" top={0} left={0} right={0} spacing={0} w="full" zIndex={9}>
             {orderedOptions?.map((item) => (
               <Option
                 key={item.value}
@@ -83,11 +89,21 @@ const Select: React.FC<Props> = ({ options, onChange, value }) => {
                 selected={value === item.value}
               />
             ))}
-          </div>
-          <div className={styles.backdrop} onClick={handleToggleDropdown} />
+          </VStack>
+          <Box
+            position="fixed"
+            top={0}
+            right={0}
+            bottom={0}
+            left={0}
+            bg="bg"
+            opacity={0.7}
+            onClick={handleToggleDropdown}
+            zIndex={2}
+          />
         </>
       )}
-    </Column>
+    </Box>
   )
 }
 

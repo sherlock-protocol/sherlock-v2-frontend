@@ -1,9 +1,8 @@
 import React from "react"
-import { Column, Row } from "../Layout"
 import { Text } from "../Text"
 import styles from "./Select.module.scss"
-import cx from "classnames"
 import { FaCaretUp } from "react-icons/fa"
+import { Box, HStack } from "@chakra-ui/react"
 
 type Props = {
   label: string
@@ -14,18 +13,21 @@ type Props = {
 
 const Option: React.FC<Props> = ({ label, value, selected, onSelect }) => {
   return (
-    <Row
-      grow={1}
-      className={cx(styles.option, { [styles.selected]: selected })}
+    <HStack
+      w="full"
       onClick={() => onSelect(value)}
-      alignment="space-between"
-      spacing="m"
+      justifyContent="space-between"
+      spacing={4}
+      p={3}
+      cursor="pointer"
+      bg={selected ? "brand.500" : "brand.900"}
+      _hover={{ bg: "brand.600" }}
+      className={styles.ellipsis}
+      userSelect="none"
     >
-      <Column grow={1} className={styles.selectedOptionContainer}>
-        <Text strong>{label}</Text>
-      </Column>
-      <Column>{selected ? <FaCaretUp size={18} color="white" /> : <div className={styles.optionCheckbox} />}</Column>
-    </Row>
+      <Text strong>{label}</Text>
+      {selected ? <FaCaretUp size={18} color="white" /> : <Box h={4} w={4} bg="brand.400" />}
+    </HStack>
   )
 }
 
