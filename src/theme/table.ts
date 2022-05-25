@@ -11,6 +11,7 @@ export const Table: ComponentStyleConfig = {
     dashboard: {
       table: {
         borderCollapse: "collapse",
+        tableLayout: "fixed",
       },
       th: {
         ...numericStyles,
