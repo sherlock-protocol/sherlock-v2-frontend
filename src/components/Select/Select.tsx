@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import styles from "./Select.module.scss"
 import { Column, Row } from "../Layout"
 import { Text } from "../Text"
@@ -14,16 +14,17 @@ type Props<T> = {
   options: Array<OptionType<T>>
   onChange: (value: T) => void
   value?: T
+  placeholder?: string
 }
 
 /**
  * Custom Select/Dropdown component
  */
-const Select = <T,>({ options, onChange, value }: Props<T>) => {
+const Select = <T,>({ options, onChange, value, placeholder }: Props<T>) => {
   // const [selectedOption, setSelectedOption] = React.useState<string>()
   const selectedOptionLabel = React.useMemo(
-    () => options?.find((item) => item.value === value)?.label,
-    [value, options]
+    () => options?.find((item) => item.value === value)?.label ?? placeholder,
+    [value, options, placeholder]
   )
   const orderedOptions = React.useMemo(
     () => [...options].sort((a, b) => b.label.localeCompare(a.label)).sort((a, b) => (a.value === value ? -1 : 1)),
@@ -54,10 +55,10 @@ const Select = <T,>({ options, onChange, value }: Props<T>) => {
   )
 
   React.useEffect(() => {
-    if (options && options.length > 0 && !value) {
+    if (options && options.length > 0 && !value && !placeholder) {
       handleUpdateSelectedOption(options[0].value)
     }
-  }, [options, value, handleUpdateSelectedOption])
+  }, [options, value, handleUpdateSelectedOption, placeholder])
 
   return (
     <Column className={styles.container}>
@@ -74,6 +75,9 @@ const Select = <T,>({ options, onChange, value }: Props<T>) => {
       {optionsVisible && (
         <>
           <div className={styles.optionsContainer}>
+            {!value && placeholder && (
+              <Option key="placeholder" value={null} label={placeholder} onSelect={() => {}} selected />
+            )}
             {orderedOptions?.map((item) => (
               <Option
                 key={`${item.value}`}
