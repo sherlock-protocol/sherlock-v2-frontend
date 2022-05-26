@@ -13,19 +13,19 @@ export type Claim = {
   status: ClaimStatus
 }
 
-enum ClaimStatus {
-  NonExistent, // Claim doesn't exist (this is the default state on creation)
-  SpccPending, // Claim is created, SPCC is able to set state to valid
-  SpccApproved, // Final state, claim is valid
-  SpccDenied, // Claim denied by SPCC, claim can be escalated within 4 weeks
-  UmaPriceProposed, // Price is proposed but not escalated
-  ReadyToProposeUmaDispute, // Price is proposed, callback received, ready to submit dispute
-  UmaDisputeProposed, // Escalation is done, waiting for confirmation
-  UmaPending, // Claim is escalated, in case Spcc denied or didn't act within 7 days.
-  UmaApproved, // Final state, claim is valid, claim can be enacted after 1 day, umaHaltOperator has 1 day to change to denied
-  UmaDenied, // Final state, claim is invalid
-  Halted, // UMAHO can halt claim if state is UmaApproved
-  Cleaned, // Claim is removed by protocol agent
+export enum ClaimStatus {
+  //  NonExistent=0, // Claim doesn't exist (this is the default state on creation)
+  SpccPending = 1, // Claim is created, SPCC is able to set state to valid
+  SpccApproved = 2, // Final state, claim is valid
+  SpccDenied = 3, // Claim denied by SPCC, claim can be escalated within 4 weeks
+  UmaPriceProposed = 4, // Price is proposed but not escalated
+  ReadyToProposeUmaDispute = 5, // Price is proposed, callback received, ready to submit dispute
+  UmaDisputeProposed = 6, // Escalation is done, waiting for confirmation
+  UmaPending = 7, // Claim is escalated, in case Spcc denied or didn't act within 7 days.
+  UmaApproved = 8, // Final state, claim is valid, claim can be enacted after 1 day, umaHaltOperator has 1 day to change to denied
+  UmaDenied = 9, // Final state, claim is invalid
+  Halted = 10, // UMAHO can halt claim if state is UmaApproved
+  //  Cleaned=11, // Claim is removed by protocol agent
 }
 
 type GetActiveClaimResponseData =

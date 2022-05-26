@@ -4,27 +4,81 @@ import { DateTime } from "luxon"
 
 import { Box } from "../../components/Box"
 import { Text } from "../../components/Text"
-import { Claim } from "../../hooks/api/claims"
-import { Column } from "../../components/Layout"
+import { Claim, ClaimStatus } from "../../hooks/api/claims"
+import { Column, Row } from "../../components/Layout"
 import { commify } from "../../utils/units"
+import { Title } from "../../components/Title"
+
+import styles from "./Claims.module.scss"
 
 type Props = {
   claim: Claim
 }
 
+const statusMessages = {
+  [ClaimStatus.SpccPending]: "Pending SPCC review",
+  [ClaimStatus.SpccApproved]: "SPCC Approved",
+  [ClaimStatus.SpccDenied]: "SPCC Denied",
+  [ClaimStatus.UmaPriceProposed]: "",
+  [ClaimStatus.ReadyToProposeUmaDispute]: "",
+  [ClaimStatus.UmaDisputeProposed]: "",
+  [ClaimStatus.UmaPending]: "Pendig UMA review",
+  [ClaimStatus.UmaApproved]: "UMA Approved",
+  [ClaimStatus.UmaDenied]: "UMA Denied",
+  [ClaimStatus.Halted]: "Halted by UMA HO",
+}
+
 export const ActiveClaim: React.FC<Props> = ({ claim }) => {
+  const renderAdditionalStatusDetails = useCallback(() => {
+    // TODO: some statuses have additional data. For example, SpccPending has a deadline by when SPCC must decide on the claim.
+    if (claim.status === ClaimStatus.SpccPending) {
+    }
+
+    return null
+  }, [claim])
+
   return (
     <Box shadow={false}>
       <Column spacing="m">
-        <Text>This protocol already has an active claim</Text>
-        <Text>Claim submitted: {DateTime.fromSeconds(claim.createdAt).toLocaleString(DateTime.DATETIME_FULL)}</Text>
+        <Title>Active Claim</Title>
+        <Row alignment="space-between">
+          <Column>
+            <Text>Submitted</Text>
+          </Column>
+          <Column>
+            <Text strong>{DateTime.fromSeconds(claim.createdAt).toLocaleString(DateTime.DATETIME_MED)}</Text>
+          </Column>
+        </Row>
         {claim.exploitStartedAt && (
-          <Text>
-            Exploit started: {DateTime.fromSeconds(claim.exploitStartedAt).toLocaleString(DateTime.DATETIME_FULL)}
-          </Text>
+          <Row alignment="space-between">
+            <Column>
+              <Text>Exploit started</Text>
+            </Column>
+            <Column>
+              <Text strong>{DateTime.fromSeconds(claim.exploitStartedAt).toLocaleString(DateTime.DATETIME_MED)}</Text>
+            </Column>
+          </Row>
         )}
-        <Text>Amount: {commify(ethers.utils.formatUnits(claim.amount, 6))} USDC</Text>
-        <Text>Status {claim.status}</Text>
+        <Row alignment="space-between">
+          <Column>
+            <Text>Amount claimed</Text>
+          </Column>
+          <Column>
+            <Text strong>{commify(ethers.utils.formatUnits(claim.amount, 6))} USDC</Text>
+          </Column>
+        </Row>
+
+        <Column className={styles.claimStatusContainer} spacing="m">
+          <Row alignment="space-between">
+            <Column>
+              <Text>Status</Text>
+            </Column>
+            <Column>
+              <Text strong>{statusMessages[claim.status]}</Text>
+            </Column>
+          </Row>
+          {renderAdditionalStatusDetails()}
+        </Column>
       </Column>
     </Box>
   )
