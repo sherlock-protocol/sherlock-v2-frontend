@@ -7,7 +7,6 @@ type Props = {
   claim: Claim
 }
 type ClaimStatusActionFn = React.FC<Props> & {
-  Nothing: React.FC<Props>
   Escalate: React.FC<Props>
   Payout: React.FC<Props>
 }
@@ -15,17 +14,10 @@ type ClaimStatusActionFn = React.FC<Props> & {
 export const ClaimStatusAction: ClaimStatusActionFn = (props) => {
   return (
     <>
-      <ClaimStatusAction.Nothing {...props} />
       <ClaimStatusAction.Escalate {...props} />
       <ClaimStatusAction.Payout {...props} />
     </>
   )
-}
-
-ClaimStatusAction.Nothing = ({ claim }) => {
-  if (claim.status !== ClaimStatus.SpccPending) return null
-
-  return <Button fullWidth>Nothing to do here</Button>
 }
 
 ClaimStatusAction.Escalate = ({ claim }) => {

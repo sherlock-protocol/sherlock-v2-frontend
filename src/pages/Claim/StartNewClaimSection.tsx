@@ -31,7 +31,7 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
           ethers.utils.parseEther("1000000"),
           "0x0B6a04b8D3d050cbeD9A4621A5D503F27743c942",
           DateTime.now().minus({ days: 10 }).toJSDate(),
-          "0x1213"
+          "0x121330"
         )
     )
   }, [startClaim, protocol, waitForTx])
