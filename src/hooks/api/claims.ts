@@ -7,6 +7,8 @@ import { getActiveClaim } from "./urls"
 export type Claim = {
   id: number
   protocolID: number
+  initiator: string
+  receiver: string
   amount: BigNumber
   createdAt: number
   exploitStartedAt?: number
@@ -34,6 +36,8 @@ type GetActiveClaimResponseData =
       data: {
         id: number
         protocol_id: number
+        initiator: string
+        receiver: string
         amount: string
         exploit_started_at?: number
         timestamp: number
@@ -62,6 +66,8 @@ export const useActiveClaim = (protocolID: number, options?: UseQueryOptions<Cla
       return {
         id: response.data.id,
         protocolID: response.data.protocol_id,
+        initiator: response.data.initiator,
+        receiver: response.data.receiver,
         status: response.data.status as ClaimStatus,
         amount: BigNumber.from(response.data.amount),
         exploitStartedAt: response.data.exploit_started_at,

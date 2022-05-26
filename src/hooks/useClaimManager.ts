@@ -40,11 +40,23 @@ export const useClaimManager = () => {
     [contract]
   )
 
+  /**
+   * Pays out the claim.
+   * Only the claim initiator can call this method, regardless of who is the current protocol's agent.
+   */
+  const payoutClaim = useCallback(
+    async (claimID: number) => {
+      return await contract.payoutClaim(claimID)
+    },
+    [contract]
+  )
+
   return useMemo(
     () => ({
       SHERLOCK_CLAIM_MANAGER_ADDRESS,
       startClaim,
+      payoutClaim,
     }),
-    [startClaim]
+    [startClaim, payoutClaim]
   )
 }

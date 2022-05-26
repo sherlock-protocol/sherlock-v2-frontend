@@ -24,17 +24,19 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
    * Handler for start claim click
    */
   const handleStartClaimClicked = useCallback(async () => {
+    if (!connectedAccount?.address) return
+
     await waitForTx(
       async () =>
         await startClaim(
           protocol.bytesIdentifier,
           ethers.utils.parseEther("1000000"),
-          "0x0B6a04b8D3d050cbeD9A4621A5D503F27743c942",
+          connectedAccount.address,
           DateTime.now().minus({ days: 10 }).toJSDate(),
           "0x121330"
         )
     )
-  }, [startClaim, protocol, waitForTx])
+  }, [startClaim, protocol, waitForTx, connectedAccount?.address])
 
   /**
    * Only protocol's agent is allowed to start a new claim
