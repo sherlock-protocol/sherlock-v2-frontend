@@ -5,6 +5,10 @@
   color: white;
   border: 3px solid black;
 
+  &.fullWidth {
+    width: 100%;
+  }
+
   .content {
     padding: 0 0.5em;
   }

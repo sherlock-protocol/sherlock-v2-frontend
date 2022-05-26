@@ -29,7 +29,13 @@ export const useClaimManager = () => {
   const startClaim = useCallback(
     async (protocol: string, amount: BigNumber, receiver: string, date: Date, ancilliaryData: string) => {
       const timestamp = DateTime.fromJSDate(date).toSeconds().toFixed(0)
-      return await contract.startClaim(protocol, 1, receiver, 1, ancilliaryData)
+      return await contract.startClaim(
+        protocol,
+        ethers.utils.parseUnits("1000000", 6),
+        receiver,
+        1641172334,
+        ancilliaryData
+      )
     },
     [contract]
   )

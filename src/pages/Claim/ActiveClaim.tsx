@@ -8,6 +8,7 @@ import { Claim, ClaimStatus } from "../../hooks/api/claims"
 import { Column, Row } from "../../components/Layout"
 import { commify } from "../../utils/units"
 import { Title } from "../../components/Title"
+import { ClaimStatusAction } from "./ClaimStatusAction"
 
 import styles from "./Claims.module.scss"
 
@@ -78,6 +79,9 @@ export const ActiveClaim: React.FC<Props> = ({ claim }) => {
             </Column>
           </Row>
           {renderAdditionalStatusDetails()}
+          <Row>
+            <ClaimStatusAction claim={claim} />
+          </Row>
         </Column>
       </Column>
     </Box>

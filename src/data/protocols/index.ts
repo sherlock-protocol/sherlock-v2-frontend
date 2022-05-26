@@ -1,10 +1,10 @@
 import euler from "./euler"
 import squeeth_by_opyn from "./squeeth_by_opyn"
 import tempus_finance from "./tempus_finance"
-import fran from "./fran"
-import fran_2 from "./fran_2"
-import fran_3 from "./fran_3"
-import fran_4 from "./fran_4"
+import fran__1 from "./fran__1"
+import fran__2 from "./fran__2"
+import fran__3 from "./fran__3"
+import fran__4 from "./fran__4"
 
 export type CoveredProtocolMeta = {
   id: string
@@ -28,10 +28,10 @@ const coveredProtocolMetas: CoveredProtocolsMetas = {
   [euler.id]: euler,
   [squeeth_by_opyn.id]: squeeth_by_opyn,
   [tempus_finance.id]: tempus_finance,
-  [fran.id]: fran,
-  [fran_2.id]: fran_2,
-  [fran_3.id]: fran_3,
-  [fran_4.id]: fran_4,
+  [fran__1.id]: fran__1,
+  [fran__2.id]: fran__2,
+  [fran__3.id]: fran__3,
+  [fran__4.id]: fran__4,
 }
 
 export default coveredProtocolMetas
