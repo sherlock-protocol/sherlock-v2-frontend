@@ -9,6 +9,7 @@ import { useProtocols, Protocol } from "../../hooks/api/protocols"
 import { useActiveClaim } from "../../hooks/api/claims"
 
 import { StartNewClaimSection } from "./StartNewClaimSection"
+import { ActiveClaim } from "./ActiveClaim"
 
 import styles from "./Claims.module.scss"
 
@@ -54,17 +55,12 @@ export const ClaimsPage: React.FC = () => {
   const renderClaimSection = useCallback(() => {
     if (!selectedProtocol) return null
 
+    // Active claim fetched, but no results => Protocol doesn't have an active claim.
     if (activeClaim === null) return <StartNewClaimSection protocol={selectedProtocol} />
-
+    // Active claim fetched and found one active claim.
+    if (activeClaim) return <ActiveClaim claim={activeClaim} />
+    // Active claim fetch is loading.
     if (isLoadingActiveClaim) return <Box shadow={false}></Box>
-
-    if (activeClaim) {
-      return (
-        <Box shadow={false}>
-          <Text>This protocol already has an active claim</Text>
-        </Box>
-      )
-    }
   }, [activeClaim, isLoadingActiveClaim, selectedProtocol])
 
   return (

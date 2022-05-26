@@ -4,7 +4,7 @@ import axios from "./axios"
 
 import { getActiveClaim } from "./urls"
 
-type Claim = {
+export type Claim = {
   id: number
   protocolID: number
   amount: BigNumber
