@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React from "react"
 import { ethers } from "ethers"
 import { DateTime } from "luxon"
 
@@ -31,14 +31,6 @@ const statusMessages = {
 }
 
 export const ActiveClaim: React.FC<Props> = ({ claim }) => {
-  const renderAdditionalStatusDetails = useCallback(() => {
-    // TODO: some statuses have additional data. For example, SpccPending has a deadline by when SPCC must decide on the claim.
-    if (claim.status === ClaimStatus.SpccPending) {
-    }
-
-    return null
-  }, [claim])
-
   return (
     <Box shadow={false}>
       <Column spacing="m">
