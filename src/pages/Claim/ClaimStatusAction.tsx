@@ -8,6 +8,7 @@ import useWaitTx from "../../hooks/useWaitTx"
 import { useAccount } from "wagmi"
 import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components/Text"
+import { shortenAddress } from "../../utils/format"
 
 type Props = {
   claim: Claim
@@ -58,10 +59,10 @@ const Payout: React.FC<Props> = ({ claim }) => {
       {!canClaimPayout && (
         <>
           <Row>
-            <Text size="small">Only the account which initiated the claim can execute the payout</Text>
+            <Text size="small">Only the claim inintiator can execute the payout.</Text>
           </Row>
           <Row>
-            <Text size="small">{claim.initiator}</Text>
+            <Text size="small">Please connnect using account with address {shortenAddress(claim.initiator)}</Text>
           </Row>
         </>
       )}
