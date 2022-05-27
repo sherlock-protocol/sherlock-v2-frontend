@@ -2,7 +2,7 @@ import React from "react"
 import { Box } from "../Box"
 import styles from "./Modal.module.scss"
 
-interface Props {
+export interface Props {
   /**
    * If Modal can be closed or not
    */
@@ -14,7 +14,7 @@ interface Props {
   onClose?: () => void
 }
 
-const Modal: React.FC<Props> = ({ closeable, children, onClose }) => {
+export const Modal: React.FC<Props> = ({ closeable, children, onClose }) => {
   const [isVisible, setIsVisible] = React.useState(true)
 
   /**
