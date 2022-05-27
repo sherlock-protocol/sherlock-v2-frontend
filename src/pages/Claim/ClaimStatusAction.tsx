@@ -20,7 +20,6 @@ type ClaimStatusActionFn = React.FC<Props> & {
 export const ClaimStatusAction: ClaimStatusActionFn = (props) => {
   return (
     <>
-      <ClaimStatusAction.Escalate {...props} />
       <ClaimStatusAction.Payout {...props} />
     </>
   )
