@@ -18,6 +18,7 @@ import { formatAmount } from "../../utils/format"
 import { useCoveredProtocols, CoveredProtocol } from "../../hooks/api/useCoveredProtocols"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
+import { HStack, VStack } from "@chakra-ui/react"
 
 export const ProtocolPage: React.FC = () => {
   const [selectedProtocolId, setSelectedProtocolId] = React.useState<string>()
@@ -134,21 +135,15 @@ export const ProtocolPage: React.FC = () => {
   return (
     <Box>
       <Column spacing="m">
-        <Row alignment="space-between" className={styles.header}>
-          <Column>
-            <Title>Protocol</Title>
-          </Column>
-          <Column>
-            <Select value={selectedProtocolId} options={protocolSelectOptions} onChange={handleOnProtocolChanged} />
-          </Column>
-        </Row>
+        <HStack w="full" justifyContent="space-between">
+          <Title>Protocol</Title>
+          <Select value={selectedProtocolId} options={protocolSelectOptions} onChange={handleOnProtocolChanged} />
+        </HStack>
         {selectedProtocol && (
-          <>
-            <Row alignment="space-between">
-              <Column>
+          <VStack w="full" spacing={6}>
+            <VStack w="full" spacing={2}>
+              <HStack w="full" justifyContent="space-between">
                 <Text>Coverage</Text>
-              </Column>
-              <Column>
                 <Text strong>
                   {!selectedProtocol?.coverageEndedAt
                     ? "Active"
@@ -156,38 +151,26 @@ export const ProtocolPage: React.FC = () => {
                         .setLocale("en")
                         .toLocaleString(DateTime.DATETIME_MED)}`}
                 </Text>
-              </Column>
-            </Row>
-            {maxClaimableAmount && (
-              <Row alignment="space-between">
-                <Column>
+              </HStack>
+              {maxClaimableAmount && (
+                <HStack w="full" justifyContent="space-between">
                   <Text>Claimable up to</Text>
-                </Column>
-                <Column>
                   <Text strong>{formatAmount(ethers.utils.formatUnits(maxClaimableAmount, 6))} USDC</Text>
-                </Column>
-              </Row>
-            )}
-            {balance && (
-              <Row alignment="space-between">
-                <Column>
+                </HStack>
+              )}
+              {balance && (
+                <HStack w="full" justifyContent="space-between">
                   <Text>Active balance</Text>
-                </Column>
-                <Column>
                   <Text strong>{formatAmount(ethers.utils.formatUnits(balance, 6))} USDC</Text>
-                </Column>
-              </Row>
-            )}
-            {coverageLeft && (
-              <Row alignment="space-between">
-                <Column>
+                </HStack>
+              )}
+              {coverageLeft && (
+                <HStack w="full" justifyContent="space-between">
                   <Text>Coverage left</Text>
-                </Column>
-                <Column>
                   <Text strong>{convertSecondsToDurationString(coverageLeft.toNumber())}</Text>
-                </Column>
-              </Row>
-            )}
+                </HStack>
+              )}
+            </VStack>
             <Column className={styles.rewardsContainer} spacing="m">
               {balance && (
                 <ProtocolBalanceInput
@@ -221,7 +204,7 @@ export const ProtocolPage: React.FC = () => {
                 </Row>
               )}
             </Column>
-          </>
+          </VStack>
         )}
       </Column>
     </Box>

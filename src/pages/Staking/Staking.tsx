@@ -5,7 +5,6 @@ import { useAccount } from "wagmi"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { Box } from "../../components/Box"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
-import { Column, Row } from "../../components/Layout"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
@@ -20,6 +19,7 @@ import { TxType } from "../../utils/txModalMessages"
 import styles from "./Staking.module.scss"
 import { useNavigate } from "react-router-dom"
 import Options from "../../components/Options/Options"
+import { Container, Divider, HStack, VStack } from "@chakra-ui/react"
 
 /**
  * Available staking periods, in seconds.
@@ -109,97 +109,83 @@ export const StakingPage: React.FC = () => {
   }, [getStakingPositions, accountData?.address])
 
   return (
-    <Box>
-      <LoadingContainer loading={isLoadingRewards}>
-        <Column spacing="m">
-          <Title>Stake</Title>
-          <Row alignment="space-between">
-            <Column>
-              <Text>Total Value Locked</Text>
-            </Column>
-            <Column>
-              {tvl && (
-                <Text strong variant="mono">
-                  ${formatAmount(formatUSDC(tvl))}
-                </Text>
+    <Container maxW={{ base: "full", md: "full" }} justifyContent="center">
+      <VStack w="full" alignItems="center">
+        <Box>
+          <LoadingContainer loading={isLoadingRewards}>
+            <VStack w="full" spacing={2} alignItems="flex-start">
+              <Title>Stake</Title>
+              <HStack w="full" justifyContent="space-between">
+                <Text>Total Value Locked</Text>
+                {tvl && (
+                  <Text strong variant="mono">
+                    ${formatAmount(formatUSDC(tvl))}
+                  </Text>
+                )}
+              </HStack>
+              {stakePositionsData && (
+                <HStack w="full" justifyContent="space-between">
+                  <Text>USDC APY</Text>
+                  <Text strong variant="mono">
+                    {formatAmount(stakePositionsData?.usdcAPY)}%
+                  </Text>
+                </HStack>
               )}
-            </Column>
-          </Row>
-          {stakePositionsData && (
-            <Row alignment="space-between">
-              <Column>
-                <Text>USDC APY</Text>
-              </Column>
-              <Column>
-                <Text strong variant="mono">
-                  {formatAmount(stakePositionsData?.usdcAPY)}%
-                </Text>
-              </Column>
-            </Row>
-          )}
-          <Row className={styles.rewardsContainer}>
-            <Column grow={1} spacing="l">
-              <TokenInput
-                value={debouncedAmountBN}
-                onChange={setAmount}
-                token="USDC"
-                placeholder="Choose amount"
-                balance={usdcBalance}
-              />
-              <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
-              {sherRewards && (
-                <>
-                  <Row>
-                    <hr />
-                  </Row>
-                  <Row alignment="space-between">
-                    <Column>
-                      <Text>SHER Reward</Text>
-                    </Column>
-                    <Column>
-                      <Text strong variant="mono">
-                        {formatAmount(formatSHER(sherRewards))} SHER
-                      </Text>
-                    </Column>
-                  </Row>
-                  {stakePositionsData && (
-                    <Row alignment="space-between">
-                      <Column>
-                        <Text>USDC APY</Text>
-                      </Column>
-                      <Column>
+              <Container bg="brand.bg" p={4}>
+                <VStack w="full" spacing={4}>
+                  <VStack w="full" spacing={4}>
+                    <TokenInput
+                      value={debouncedAmountBN}
+                      onChange={setAmount}
+                      token="USDC"
+                      placeholder="Choose amount"
+                      balance={usdcBalance}
+                    />
+                    <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
+                  </VStack>
+                  {sherRewards && (
+                    <>
+                      <Divider />
+                      <HStack w="full" justifyContent="space-between">
+                        <Text>SHER Reward</Text>
                         <Text strong variant="mono">
-                          {formatAmount(stakePositionsData?.usdcAPY)}%
+                          {formatAmount(formatSHER(sherRewards))} SHER
                         </Text>
-                      </Column>
-                    </Row>
+                      </HStack>
+                      {stakePositionsData && (
+                        <HStack w="full" justifyContent="space-between">
+                          <Text>USDC APY</Text>
+                          <Text strong variant="mono">
+                            {formatAmount(stakePositionsData?.usdcAPY)}%
+                          </Text>
+                        </HStack>
+                      )}
+                    </>
                   )}
-                </>
-              )}
 
-              {amount && stakingPeriod && sherRewards && (
-                <Row alignment="center">
-                  <ConnectGate>
-                    <AllowanceGate
-                      amount={amount}
-                      spender={address}
-                      actionName="Stake"
-                      action={handleOnStake}
-                      onSuccess={refreshTvl}
-                    ></AllowanceGate>
-                  </ConnectGate>
-                </Row>
-              )}
-            </Column>
-          </Row>
-          <Text size="small" className={styles.v1}>
-            For the Sherlock V1, please see{" "}
-            <a href="https://v1.sherlock.xyz" rel="noreferrer" target="_blank">
-              https://v1.sherlock.xyz
-            </a>
-          </Text>
-        </Column>
-      </LoadingContainer>
-    </Box>
+                  {amount && stakingPeriod && sherRewards && (
+                    <ConnectGate>
+                      <AllowanceGate
+                        amount={amount}
+                        spender={address}
+                        actionName="Stake"
+                        action={handleOnStake}
+                        onSuccess={refreshTvl}
+                      ></AllowanceGate>
+                    </ConnectGate>
+                  )}
+                </VStack>
+              </Container>
+              <Text size="small" className={styles.v1}>
+                For the Sherlock V1, please see{" "}
+                <a href="https://v1.sherlock.xyz" rel="noreferrer" target="_blank">
+                  https://v1.sherlock.xyz
+                </a>
+              </Text>
+            </VStack>
+          </LoadingContainer>
+        </Box>
+      </VStack>
+    </Container>
   )
 }

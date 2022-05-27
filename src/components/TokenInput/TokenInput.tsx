@@ -5,9 +5,9 @@ import { formatAmount } from "../../utils/format"
 import { Button } from "../Button/Button"
 import { Input } from "../Input"
 import { decimalsByToken, InputProps } from "../Input/Input"
-import { Column, Row } from "../Layout"
 import { Text } from "../Text"
 import styles from "./TokenInput.module.scss"
+import { HStack, VStack } from "@chakra-ui/react"
 
 type Props = Omit<InputProps, "value"> & {
   balance?: BigNumber
@@ -35,28 +35,24 @@ const TokenInput: React.FC<Props> = ({ balance, value, ...props }) => {
   }, [value])
 
   return (
-    <>
-      <Row alignment={["space-between", "center"]} spacing="xl" className={cx({ [styles.disabled]: disabled })}>
-        <Column grow={1}>
-          <Input value={controlledValue} {...props} />
-        </Column>
-        <Column grow={0}>
-          <Text size="extra-large" strong>
-            {props.token}
-          </Text>
-        </Column>
-      </Row>
+    <VStack w="full" spacing={4}>
+      <HStack w="full" alignItems="center" spacing={4} className={cx({ [styles.disabled]: disabled })}>
+        <Input value={controlledValue} {...props} />
+        <Text size="extra-large" strong>
+          {props.token}
+        </Text>
+      </HStack>
       {balance && !disabled && (
-        <Row alignment={["end", "center"]} spacing="m">
+        <HStack w="full" alignItems="center" justifyContent="flex-end">
           <Text className={styles.balance}>
             Balance: {formatAmount(utils.formatUnits(balance, decimalsByToken[props.token]))}
           </Text>
           <Button variant="primary" size="small" onClick={handleSetMax}>
             MAX
           </Button>
-        </Row>
+        </HStack>
       )}
-    </>
+    </VStack>
   )
 }
 

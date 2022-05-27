@@ -1,19 +1,13 @@
 @import "../../styles/variables";
 
 .box {
-  min-width: 500px;
-
   border: 1px solid;
   border-image-slice: 1;
   border-image-source: linear-gradient(136.33deg, rgba(135, 22, 232, 0.28) 7.74%, rgba(254, 110, 153, 0) 98.49%);
 
   background-color: $background-color;
 
-  display: flex;
-  flex-direction: column;
-
   box-sizing: border-box;
-  padding: 2.5rem;
   transform-style: preserve-3d;
 
   & .shadow {
@@ -27,9 +21,5 @@
 
     background: radial-gradient(50% 50% at 50% 50%, #be72ff 0%, #8716e8 40%, rgba(123, 42, 192, 0) 100%);
     filter: blur(30px);
-  }
-
-  &.fullWidth {
-    width: 100%;
   }
 }

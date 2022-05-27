@@ -12,7 +12,6 @@ import AppProtocols from "./AppProtocols"
 import AppInternal from "./AppInternal"
 
 import { routes, protocolsRoutes, internalRoutes } from "./utils/routes"
-import MobileBlock from "./components/MobileBlock/MobileBlock"
 import { InternalOverviewPage } from "./pages/InternalOverview/InternalOverview"
 
 function App() {
@@ -46,8 +45,6 @@ function App() {
 
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>
-
-      <MobileBlock />
     </>
   )
 }

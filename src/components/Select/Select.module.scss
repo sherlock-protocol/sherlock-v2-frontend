@@ -1,74 +1,9 @@
-@import "../../styles/variables";
-
-.container {
-  position: relative;
-
-  .button {
-    border: 3px solid black;
-
-    background-color: $primary-purple;
-    width: 180px;
-
-    padding: $spacing-m;
-    align-items: center;
-    cursor: pointer;
-
-    &:hover {
-      background-color: darken($color: $primary-purple, $amount: 10%);
-    }
-
-    &:active {
-      background-color: darken($color: $primary-purple, $amount: 15%);
-    }
-  }
-
-  .optionsContainer {
-    position: absolute;
-    background-color: $primary-purple;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 101;
-    border: 3px solid black;
-  }
-}
-
-.selectedOptionContainer {
+.ellipsis {
   overflow: hidden;
   white-space: nowrap;
 
   p {
     text-overflow: ellipsis;
     overflow: hidden;
-  }
-}
-
-.backdrop {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  background-color: transparentize($color: $background-color, $amount: 0.2);
-  z-index: 100;
-}
-
-.option {
-  padding: $spacing-m;
-  background-color: darken($color: $primary-purple, $amount: 20%);
-  cursor: pointer;
-
-  &:hover {
-    background-color: darken($color: $primary-purple, $amount: 10%);
-  }
-
-  &.selected {
-    background-color: $primary-purple;
-  }
-
-  .optionCheckbox {
-    height: 18px;
-    width: 18px;
-    background-color: #8716e8;
   }
 }
