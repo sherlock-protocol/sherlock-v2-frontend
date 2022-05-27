@@ -13,6 +13,7 @@ export type Claim = {
   createdAt: number
   exploitStartedAt?: number
   status: ClaimStatus
+  statusUpdatedAt: number
 }
 
 export enum ClaimStatus {
@@ -42,6 +43,7 @@ type GetActiveClaimResponseData =
         exploit_started_at?: number
         timestamp: number
         status: number
+        status_updated_at: number
       }
     }
   | {
@@ -72,6 +74,7 @@ export const useActiveClaim = (protocolID: number, options?: UseQueryOptions<Cla
         amount: BigNumber.from(response.data.amount),
         exploitStartedAt: response.data.exploit_started_at,
         createdAt: response.data.timestamp,
+        statusUpdatedAt: response.data.status_updated_at,
       }
     },
     options

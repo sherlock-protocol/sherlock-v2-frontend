@@ -3,7 +3,6 @@ import React, { useCallback } from "react"
 import { Claim, ClaimStatus } from "../../hooks/api/claims"
 import { Button } from "../../components/Button"
 import { useClaimManager } from "../../hooks/useClaimManager"
-import { ClaimStatusDetails } from "./ClaimStatusDetails"
 import useWaitTx from "../../hooks/useWaitTx"
 import { useAccount } from "wagmi"
 import { Column, Row } from "../../components/Layout"
@@ -28,9 +27,19 @@ export const ClaimStatusAction: ClaimStatusActionFn = (props) => {
 }
 
 const Escalate: React.FC<Props> = ({ claim }) => {
+  const [{ data: connectedAccount }] = useAccount()
   if (claim.status !== ClaimStatus.SpccDenied) return null
 
-  return <Button fullWidth>Escalate to UMA</Button>
+  /**
+   * Only protocol's agent is allowed to escalate a claim
+   */
+  const canEscalate = connectedAccount?.address === claim.initiator
+
+  return (
+    <Button disabled={!canEscalate} fullWidth>
+      Escalate to UMA
+    </Button>
+  )
 }
 
 const Payout: React.FC<Props> = ({ claim }) => {
