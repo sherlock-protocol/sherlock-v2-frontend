@@ -4,9 +4,10 @@ import { Text } from "../../components//Text"
 
 type Props = {
   label?: string
+  detail?: React.ReactElement | string
 }
 
-export const Field: React.FC<Props> = ({ label, children }) => {
+export const Field: React.FC<Props> = ({ label, detail, children }) => {
   return (
     <Column spacing="xs" grow={1}>
       {label && (
@@ -17,6 +18,9 @@ export const Field: React.FC<Props> = ({ label, children }) => {
         </Row>
       )}
       <Row>{children}</Row>
+      <Row>
+        <Text size="small">{detail}</Text>
+      </Row>
     </Column>
   )
 }

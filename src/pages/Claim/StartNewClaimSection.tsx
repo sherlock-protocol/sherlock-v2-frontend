@@ -64,7 +64,7 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
           {!canStartNewClaim && <Text size="small">Only the protocol's agent is allowed to start a new claim.</Text>}
         </Column>
       ) : (
-        <Column spacing="m">
+        <Column spacing="l">
           <Title>Start new claim</Title>
           <Row>
             <Field label="CLAIM AMOUNT">
@@ -88,7 +88,18 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
             </Field>
           </Row>
           <Row>
-            <Field label="COVERAGE AGREEMENT HASH">
+            <Field
+              label="COVERAGE AGREEMENT HASH"
+              detail={
+                <p>
+                  Hash is based on the{" "}
+                  <a target="_blank" href={protocol.agreement} rel="noreferrer">
+                    current coverage agreement
+                  </a>
+                  .
+                </p>
+              }
+            >
               <Input value={protocol.agreement_hash} disabled />
             </Field>
           </Row>
