@@ -13,7 +13,7 @@ import { commify } from "../../utils/units"
 
 type InputToken = "SHER" | "USDC"
 
-type Props = Omit<InputProps, "value" | "onChange"> & {
+export type Props = Omit<InputProps, "value" | "onChange"> & {
   balance?: BigNumber
   value?: BigNumber
   token: InputToken
@@ -27,7 +27,7 @@ export const decimalsByToken: Record<InputToken, number> = {
 
 const decommify = (value: string) => value.replaceAll(",", "")
 
-const TokenInput: React.FC<Props> = ({ balance, value, token, onChange, ...props }) => {
+export const TokenInput: React.FC<Props> = ({ balance, value, token, onChange, ...props }) => {
   const [amount, amountBN, setAmount, setAmountBN] = useAmountState(decimalsByToken[token])
   const { disabled } = props
 

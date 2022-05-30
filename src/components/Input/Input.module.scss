@@ -29,4 +29,8 @@
   line-height: 2.25rem;
   padding: 0 0.5rem;
   color: #fff;
+
+  &[disabled] {
+    opacity: 0.5;
+  }
 }

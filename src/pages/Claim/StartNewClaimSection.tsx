@@ -13,6 +13,8 @@ import useWaitTx from "../../hooks/useWaitTx"
 import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
 import TokenInput from "../../components/TokenInput/TokenInput"
+import { Field } from "./Field"
+import { Input } from "../../components/Input"
 
 type Props = {
   protocol: Protocol
@@ -65,13 +67,35 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
         <Column spacing="m">
           <Title>Start new claim</Title>
           <Row>
-            <TokenInput
-              value={debouncedAmountBN}
-              onChange={setClaimAmount}
-              token="USDC"
-              placeholder="Claim amount"
-              isPlaceholderVisible={true}
-            />
+            <Field label="CLAIM AMOUNT">
+              <TokenInput
+                value={debouncedAmountBN}
+                onChange={setClaimAmount}
+                token="USDC"
+                placeholder="Claim amount"
+                isPlaceholderVisible={true}
+              />
+            </Field>
+          </Row>
+          <Row>
+            <Field label="EPLOIT START BLOCK">
+              <Input />
+            </Field>
+          </Row>
+          <Row>
+            <Field label="RECEIVER ADDRESS">
+              <Input />
+            </Field>
+          </Row>
+          <Row>
+            <Field label="COVERAGE AGREEMENT HASH">
+              <Input value="x0ffff" disabled />
+            </Field>
+          </Row>
+          <Row>
+            <Field label="ADITIONAL INFORMATION LINK">
+              <Input />
+            </Field>
           </Row>
           <Row spacing="s">
             <Button fullWidth>Start Claim</Button>
