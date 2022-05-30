@@ -91,13 +91,13 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
             <Field
               label="COVERAGE AGREEMENT HASH"
               detail={
-                <p>
+                <span>
                   Hash is based on the{" "}
                   <a target="_blank" href={protocol.agreement} rel="noreferrer">
                     current coverage agreement
                   </a>
                   .
-                </p>
+                </span>
               }
             >
               <Input value={protocol.agreement_hash} disabled />
