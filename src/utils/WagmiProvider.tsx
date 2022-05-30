@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from "react"
-import { Provider, defaultChains, developmentChains } from "wagmi"
+import { Provider, defaultChains, developmentChains, ProviderProps } from "wagmi"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 import { providers } from "ethers"
@@ -23,7 +23,7 @@ if (__DEV__) {
 }
 
 // Set up connectors
-const connectors = ({ chainId }: { chainId?: number | undefined }) => {
+const connectorsDefault = ({ chainId }: { chainId?: number | undefined }) => {
   return [
     new InjectedConnector({ chains }),
     new WalletConnectConnector({
@@ -39,7 +39,7 @@ const connectors = ({ chainId }: { chainId?: number | undefined }) => {
   ]
 }
 
-const provider = ({ chainId }: { chainId?: number | undefined }) => {
+const providerDefault = ({ chainId }: { chainId?: number | undefined }) => {
   // Use local node if working on a development chain
   if (__DEV__ && chainId && chainId === localNetworkId) {
     return new providers.JsonRpcProvider("http://127.0.0.1:8545")
@@ -48,8 +48,13 @@ const provider = ({ chainId }: { chainId?: number | undefined }) => {
   return new providers.AlchemyProvider(networkId, alchemyApiKey)
 }
 
-export const WagmiProvider: React.FC<PropsWithChildren<unknown>> = ({ children }) => (
-  <Provider autoConnect provider={provider} connectors={connectors}>
+export const WagmiProvider: React.FC<PropsWithChildren<ProviderProps>> = ({
+  children,
+  provider = providerDefault,
+  connectors = connectorsDefault,
+  ...props
+}) => (
+  <Provider autoConnect provider={provider} connectors={connectors} {...props}>
     {children}
   </Provider>
 )
