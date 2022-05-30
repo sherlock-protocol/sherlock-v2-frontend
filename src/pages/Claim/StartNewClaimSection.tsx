@@ -89,7 +89,7 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
           </Row>
           <Row>
             <Field label="COVERAGE AGREEMENT HASH">
-              <Input value="x0ffff" disabled />
+              <Input value={protocol.agreement_hash} disabled />
             </Field>
           </Row>
           <Row>

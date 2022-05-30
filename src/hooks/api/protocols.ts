@@ -57,6 +57,11 @@ export type Protocol = {
   agreement?: string
 
   /**
+   * Hash of the Statement of Coverage
+   */
+  agreement_hash?: string
+
+  /**
    * Current (and previous, if exists) coverages
    */
   coverages: Array<{
