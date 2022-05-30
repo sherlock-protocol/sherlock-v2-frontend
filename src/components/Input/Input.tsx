@@ -14,6 +14,11 @@ export type InputProps = {
   placeholder?: string
 
   /**
+   * Placeholder visibility
+   */
+  isPlaceholderVisible?: boolean
+
+  /**
    * Input value (if controlled input)
    */
   value?: string
@@ -24,7 +29,13 @@ export type InputProps = {
   disabled?: boolean
 }
 
-export const Input: React.FC<InputProps> = ({ onChange, placeholder, value, disabled = false }) => {
+export const Input: React.FC<InputProps> = ({
+  onChange,
+  placeholder,
+  value,
+  isPlaceholderVisible = value === "0",
+  disabled = false,
+}) => {
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
       onChange && onChange(e.target.value)
@@ -32,7 +43,7 @@ export const Input: React.FC<InputProps> = ({ onChange, placeholder, value, disa
     [onChange]
   )
 
-  const displayPlaceholder = placeholder && value === ""
+  const displayPlaceholder = placeholder && isPlaceholderVisible
 
   return (
     <div className={styles.inputContainer}>

@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from "react"
-import { ethers } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
+import { useDebounce } from "use-debounce"
 
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
@@ -9,8 +10,9 @@ import { Text } from "../../components/Text"
 import { Protocol } from "../../hooks/api/protocols"
 import { useClaimManager } from "../../hooks/useClaimManager"
 import useWaitTx from "../../hooks/useWaitTx"
-import { Column } from "../../components/Layout"
-import { NewClaimModal } from "./NewClaimModal"
+import { Column, Row } from "../../components/Layout"
+import { Title } from "../../components/Title"
+import TokenInput from "../../components/TokenInput/TokenInput"
 
 type Props = {
   protocol: Protocol
@@ -18,15 +20,17 @@ type Props = {
 
 export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const [{ data: connectedAccount }] = useAccount()
-  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
+  const [claimAmount, setClaimAmount] = useState<BigNumber>()
+  const [debouncedAmountBN] = useDebounce(claimAmount, 200)
   const { waitForTx } = useWaitTx()
   const { startClaim } = useClaimManager()
 
   /**
    * Handler for start claim click
    */
-  const toggleModalVisible = useCallback(async () => {
-    setIsModalVisible((v) => !v)
+  const toggleIsCreating = useCallback(async () => {
+    setIsCreating((v) => !v)
 
     // await waitForTx(
     //   async () =>
@@ -38,8 +42,7 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
     //       "0xffffff"
     //     )
     // )
-  }, [setIsModalVisible])
-
+  }, [setIsCreating])
   /**
    * Only protocol's agent is allowed to start a new claim
    */
@@ -47,17 +50,34 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
 
   return (
     <Box shadow={false}>
-      <Column spacing="m">
-        <Text size="normal" strong>
-          {protocol.name} has no active claim.
-        </Text>
-        <Button onClick={toggleModalVisible} disabled={!canStartNewClaim}>
-          Start new claim
-        </Button>
+      {!isCreating ? (
+        <Column spacing="m">
+          <Text size="normal" strong>
+            {protocol.name} has no active claim.
+          </Text>
+          <Button onClick={toggleIsCreating} disabled={!canStartNewClaim}>
+            Start new claim
+          </Button>
 
-        {!canStartNewClaim && <Text size="small">Only the protocol's agent is allowed to start a new claim.</Text>}
-        {isModalVisible && <NewClaimModal closeable onClose={toggleModalVisible} />}
-      </Column>
+          {!canStartNewClaim && <Text size="small">Only the protocol's agent is allowed to start a new claim.</Text>}
+        </Column>
+      ) : (
+        <Column spacing="m">
+          <Title>Start new claim</Title>
+          <Row>
+            <TokenInput
+              value={debouncedAmountBN}
+              onChange={setClaimAmount}
+              token="USDC"
+              placeholder="Claim amount"
+              isPlaceholderVisible={true}
+            />
+          </Row>
+          <Row spacing="s">
+            <Button fullWidth>Start Claim</Button>
+          </Row>
+        </Column>
+      )}
     </Box>
   )
 }
