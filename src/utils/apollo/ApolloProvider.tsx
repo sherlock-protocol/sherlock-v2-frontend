@@ -1,4 +1,4 @@
-import React from "react"
+import React, { PropsWithChildren } from "react"
 import { ApolloClient, InMemoryCache, ApolloProvider as Provider } from "@apollo/client"
 import { SchemaLink } from "@apollo/client/link/schema"
 import { makeExecutableSchema } from "graphql-tools"
@@ -87,4 +87,6 @@ const client = new ApolloClient({
   link: new SchemaLink({ schema }),
 })
 
-export const ApolloProvider: React.FC = ({ children }) => <Provider client={client}>{children}</Provider>
+export const ApolloProvider: React.FC<PropsWithChildren<unknown>> = ({ children }) => (
+  <Provider client={client}>{children}</Provider>
+)

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { PropsWithChildren } from "react"
 import { Provider, defaultChains, developmentChains } from "wagmi"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
@@ -48,7 +48,7 @@ const provider = ({ chainId }: { chainId?: number | undefined }) => {
   return new providers.AlchemyProvider(networkId, alchemyApiKey)
 }
 
-export const WagmiProvider: React.FC = ({ children }) => (
+export const WagmiProvider: React.FC<PropsWithChildren<unknown>> = ({ children }) => (
   <Provider autoConnect provider={provider} connectors={connectors}>
     {children}
   </Provider>

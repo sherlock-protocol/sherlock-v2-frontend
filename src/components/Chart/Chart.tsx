@@ -1,7 +1,7 @@
 import React from "react"
 import { AreaChart, YAxis, XAxis, Tooltip, TooltipProps, Area, XAxisProps, AreaProps } from "recharts"
 
-import { commify, shortenNumber } from "../../utils/units"
+import { shortenNumber } from "../../utils/units"
 
 type Props = {
   width?: number

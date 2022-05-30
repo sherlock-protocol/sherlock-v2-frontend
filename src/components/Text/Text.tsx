@@ -1,4 +1,4 @@
-import React from "react"
+import React, { PropsWithChildren } from "react"
 import cx from "classnames"
 
 import styles from "./Text.module.scss"
@@ -14,7 +14,7 @@ type TextProps = {
   className?: string
 }
 
-export const Text: React.FC<TextProps> = ({
+export const Text: React.FC<PropsWithChildren<TextProps>> = ({
   children,
   strong = false,
   variant = "normal",
