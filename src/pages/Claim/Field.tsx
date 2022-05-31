@@ -20,7 +20,7 @@ export const Field: React.FC<Props> = ({ label, detail, children, ...props }) =>
   return (
     <Column spacing="xs" grow={1}>
       {label && (
-        <Row>
+        <Row spacing="xs">
           <Column>
             <Text size="small" variant={props.error ? "warning" : "normal"} strong>
               {label}

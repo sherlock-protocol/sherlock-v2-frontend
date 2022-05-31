@@ -13,7 +13,7 @@ import { commify } from "../../utils/units"
 
 type InputToken = "SHER" | "USDC"
 
-export type Props = Omit<InputProps, "value" | "onChange"> & {
+export type Props = Omit<InputProps<string>, "value" | "onChange"> & {
   balance?: BigNumber
   value?: BigNumber
   token: InputToken

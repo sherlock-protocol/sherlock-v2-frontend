@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react"
 import { BigNumber, ethers } from "ethers"
-import { useAccount } from "wagmi"
+import { useAccount, useBlockNumber } from "wagmi"
 import { useDebounce } from "use-debounce"
 
 import { Box } from "../../components/Box"
@@ -29,8 +29,11 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const [additionalInformationBase64, setAdditionalInformationBase64] = useState<string>()
   const [additionalInformationHash, setAdditionalInformationHash] = useState<string>()
   const [receiverAddress, setReceiverAddress] = useState<string>()
+  const [exploitBlockNumber, setExploitBlockNumber] = useState<number>()
+  const [blockNumberIsValid, setBlockNumberIsValid] = useState<boolean>()
 
   const { waitForTx } = useWaitTx()
+  const [{ loading: loadingBlockNumber, data: currentBlockNumber }] = useBlockNumber()
   const { startClaim } = useClaimManager()
 
   /**
@@ -71,6 +74,11 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
    * Validate receiver address
    */
   const receiverAddressValidInput = !receiverAddress || ethers.utils.isAddress(receiverAddress)
+  /**
+   * Validate exploit block number
+   */
+  const exploitBlockNumberValidInput =
+    !currentBlockNumber || !exploitBlockNumber || exploitBlockNumber < currentBlockNumber
 
   return (
     <Box shadow={false} fixedWidth>
@@ -100,8 +108,12 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
             </Field>
           </Row>
           <Row>
-            <Field label="EPLOIT START BLOCK">
-              <Input />
+            <Field
+              label="EPLOIT START BLOCK"
+              error={!exploitBlockNumberValidInput}
+              errorMessage="This is not a valid block number."
+            >
+              <Input type="number" value={exploitBlockNumber} onChange={setExploitBlockNumber} />
             </Field>
           </Row>
           <Row>

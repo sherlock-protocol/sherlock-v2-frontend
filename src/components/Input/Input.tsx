@@ -1,15 +1,15 @@
 import classNames from "classnames"
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback } from "react"
 
 import styles from "./Input.module.scss"
 
 type InputVariant = "regular" | "small"
 
-export type InputProps = {
+export type InputProps<T extends string | number> = {
   /**
    * onChange event handler
    */
-  onChange?: (value: string) => void
+  onChange?: (value: T) => void
 
   /**
    * Placeholder
@@ -24,7 +24,7 @@ export type InputProps = {
   /**
    * Input value (if controlled input)
    */
-  value?: string
+  value?: T
 
   /**
    * Input type
@@ -42,18 +42,18 @@ export type InputProps = {
   disabled?: boolean
 }
 
-export const Input: React.FC<InputProps> = ({
+export const Input = <T extends string | number>({
   onChange,
   placeholder,
   value,
   type,
   variant = "regular",
-  isPlaceholderVisible = value === "0",
+  isPlaceholderVisible = value === "0" || value === 0,
   disabled = false,
-}) => {
+}: InputProps<T>) => {
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
-      onChange && onChange(e.target.value)
+      onChange && onChange(e.target.value as T)
     },
     [onChange]
   )
