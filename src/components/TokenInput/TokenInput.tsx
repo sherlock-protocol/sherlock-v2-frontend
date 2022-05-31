@@ -15,9 +15,9 @@ type InputToken = "SHER" | "USDC"
 
 export type Props = Omit<InputProps<string>, "value" | "onChange"> & {
   balance?: BigNumber
-  value?: BigNumber
   token: InputToken
   onChange: (value?: BigNumber) => void
+  initialValue?: BigNumber
 }
 
 export const decimalsByToken: Record<InputToken, number> = {
@@ -27,7 +27,7 @@ export const decimalsByToken: Record<InputToken, number> = {
 
 const decommify = (value: string) => value.replaceAll(",", "")
 
-export const TokenInput: React.FC<Props> = ({ balance, value, token, onChange, ...props }) => {
+export const TokenInput: React.FC<Props> = ({ balance, token, onChange, initialValue, ...props }) => {
   const [amount, amountBN, setAmount, setAmountBN] = useAmountState(decimalsByToken[token])
   const { disabled } = props
 
@@ -36,10 +36,8 @@ export const TokenInput: React.FC<Props> = ({ balance, value, token, onChange, .
   }, [amountBN, onChange])
 
   useEffect(() => {
-    if (value) {
-      setAmountBN(value)
-    }
-  }, [value, setAmountBN])
+    initialValue && setAmountBN(initialValue)
+  }, [initialValue, setAmountBN])
 
   const handleSetMax = React.useCallback(() => {
     if (balance) {

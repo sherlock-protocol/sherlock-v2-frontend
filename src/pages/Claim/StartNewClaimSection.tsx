@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { BigNumber, ethers } from "ethers"
 import { useAccount, useBlockNumber } from "wagmi"
 import { useDebounce } from "use-debounce"
@@ -15,6 +15,7 @@ import TokenInput from "../../components/TokenInput/TokenInput"
 import { Field } from "./Field"
 import { Input } from "../../components/Input"
 import { FileDrop } from "../../components/FileDrop"
+import { formatUSDC } from "../../utils/units"
 
 type Props = {
   protocol: Protocol
@@ -71,7 +72,8 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   /**
    * Validate claim amount
    */
-  const claimAmountIsValid = !debouncedAmountBN || debouncedAmountBN?.lte(protocol.coverages[0].coverageAmount)
+  const maxClaimableAmount = protocol.coverages[0].coverageAmount
+  const claimAmountIsValid = !claimAmount || claimAmount?.lte(maxClaimableAmount)
   /**
    * Validate receiver address
    */
@@ -89,7 +91,7 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
     receiverAddressValidInput &&
     exploitBlockNumber &&
     exploitBlockNumberValidInput &&
-    debouncedAmountBN &&
+    claimAmount &&
     claimAmountIsValid
 
   return (
@@ -109,14 +111,12 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
         <Column spacing="xl">
           <Title>Start new claim</Title>
           <Row>
-            <Field label="CLAIM AMOUNT">
-              <TokenInput
-                value={debouncedAmountBN}
-                onChange={setClaimAmount}
-                token="USDC"
-                placeholder="Claim amount"
-                isPlaceholderVisible={true}
-              />
+            <Field
+              label="CLAIM AMOUNT"
+              error={!claimAmountIsValid}
+              errorMessage={`Max. claimable amount is ${formatUSDC(maxClaimableAmount)} USDC`}
+            >
+              <TokenInput onChange={setClaimAmount} token="USDC" />
             </Field>
           </Row>
           <Row>

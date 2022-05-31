@@ -139,13 +139,7 @@ export const StakingPage: React.FC = () => {
           )}
           <Row className={styles.rewardsContainer}>
             <Column grow={1} spacing="l">
-              <TokenInput
-                value={debouncedAmountBN}
-                onChange={setAmount}
-                token="USDC"
-                placeholder="Choose amount"
-                balance={usdcBalance}
-              />
+              <TokenInput onChange={setAmount} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
               <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
               {sherRewards && (
                 <>
