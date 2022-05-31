@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react"
 import { BigNumber, ethers } from "ethers"
-import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { useDebounce } from "use-debounce"
 
@@ -29,6 +28,7 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const [debouncedAmountBN] = useDebounce(claimAmount, 200)
   const [additionalInformationBase64, setAdditionalInformationBase64] = useState<string>()
   const [additionalInformationHash, setAdditionalInformationHash] = useState<string>()
+  const [receiverAddress, setReceiverAddress] = useState<string>()
 
   const { waitForTx } = useWaitTx()
   const { startClaim } = useClaimManager()
@@ -67,6 +67,11 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
    */
   const canStartNewClaim = connectedAccount?.address === protocol.agent
 
+  /**
+   * Validate receiver address
+   */
+  const receiverAddressValidInput = !receiverAddress || ethers.utils.isAddress(receiverAddress)
+
   return (
     <Box shadow={false} fixedWidth>
       {!isCreating ? (
@@ -100,8 +105,12 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
             </Field>
           </Row>
           <Row>
-            <Field label="RECEIVER ADDRESS">
-              <Input variant="small" />
+            <Field
+              label="RECEIVER ADDRESS"
+              error={!receiverAddressValidInput}
+              errorMessage="This is not a valid address."
+            >
+              <Input variant="small" value={receiverAddress} onChange={setReceiverAddress} />
             </Field>
           </Row>
           <Row>
