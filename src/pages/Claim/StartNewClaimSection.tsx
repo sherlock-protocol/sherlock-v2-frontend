@@ -16,6 +16,7 @@ import { Field } from "./Field"
 import { Input } from "../../components/Input"
 import { FileDrop } from "../../components/FileDrop"
 import { formatUSDC } from "../../utils/units"
+import { captureException } from "../../utils/sentry"
 
 type Props = {
   protocol: Protocol
@@ -30,27 +31,17 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const [additionalInformationHash, setAdditionalInformationHash] = useState<string>()
   const [receiverAddress, setReceiverAddress] = useState<string>("")
   const [exploitBlockNumber, setExploitBlockNumber] = useState<number>(0)
+  const [submittingClaim, setSubmittingClaim] = useState(false)
 
-  // const { waitForTx } = useWaitTx()
+  const { waitForTx } = useWaitTx()
   const [{ data: currentBlockNumber }] = useBlockNumber()
-  // const { startClaim } = useClaimManager()
+  const { startClaim } = useClaimManager()
 
   /**
    * Handler for start claim click
    */
   const toggleIsCreating = useCallback(async () => {
     setIsCreating((v) => !v)
-
-    // await waitForTx(
-    //   async () =>
-    //     await startClaim(
-    //       protocol.bytesIdentifier,
-    //       ethers.utils.parseEther("1000000"),
-    //       connectedAccount.address,
-    //       DateTime.now().minus({ days: 10 }).toJSDate(),
-    //       "0xffffff"
-    //     )
-    // )
   }, [setIsCreating])
 
   /**
@@ -63,6 +54,13 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
     },
     [setAdditionalInformationBase64, setAdditionalInformationHash]
   )
+
+  /**
+   * Handle block number change
+   */
+  const handleBlockNumberChange = useCallback((value: string) => {
+    setExploitBlockNumber(parseInt(value))
+  }, [])
 
   /**
    * Only protocol's agent is allowed to start a new claim
@@ -93,6 +91,49 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
     exploitBlockNumberValidInput &&
     claimAmount &&
     claimAmountIsValid
+
+  /**
+   * Handle submit claim click
+   */
+  const handleSubmitClaim = useCallback(async () => {
+    if (!canStartNewClaim || !claimIsValid) return
+    if (!protocol.agreement || !protocol.agreement_hash) {
+      throw Error("Protocol coverage agreement is missing")
+    }
+
+    setSubmittingClaim(true)
+
+    await waitForTx(
+      async () =>
+        await startClaim(
+          protocol.bytesIdentifier,
+          claimAmount,
+          receiverAddress,
+          exploitBlockNumber,
+          {
+            link: protocol.agreement!,
+            hash: protocol.agreement_hash!,
+          },
+          {
+            link: protocol.agreement!,
+            hash: protocol.agreement_hash!,
+          }
+        )
+    )
+    setSubmittingClaim(false)
+  }, [
+    startClaim,
+    waitForTx,
+    setSubmittingClaim,
+    canStartNewClaim,
+    claimIsValid,
+    protocol.bytesIdentifier,
+    claimAmount,
+    receiverAddress,
+    exploitBlockNumber,
+    protocol.agreement,
+    protocol.agreement_hash,
+  ])
 
   return (
     <Box shadow={false} fixedWidth>
@@ -125,7 +166,7 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
               error={!exploitBlockNumberValidInput}
               errorMessage="This is not a valid block number."
             >
-              <Input type="number" value={exploitBlockNumber} onChange={setExploitBlockNumber} />
+              <Input type="number" value={exploitBlockNumber.toString()} onChange={handleBlockNumberChange} />
             </Field>
           </Row>
           <Row>
@@ -161,8 +202,8 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
           </Row>
 
           <Row spacing="s">
-            <Button fullWidth disabled={!claimIsValid}>
-              Start Claim
+            <Button onClick={handleSubmitClaim} fullWidth disabled={!claimIsValid || submittingClaim}>
+              {submittingClaim ? "Submitting claim ..." : "Submit Claim"}
             </Button>
           </Row>
         </Column>

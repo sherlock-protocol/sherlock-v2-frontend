@@ -5,8 +5,14 @@ import SherlockClaimManagerABI from "../abi/SherlockClaimManager.json"
 import { SherlockClaimManager } from "../contracts"
 import { BigNumber, BytesLike, ethers } from "ethers"
 import { DateTime } from "luxon"
+import { formatUSDC } from "../utils/units"
 
 export const SHERLOCK_CLAIM_MANAGER_ADDRESS = config.sherlockClaimManagerAddress
+
+type HashedRemoteFile = {
+  link: string
+  hash: string
+}
 
 /**
  * React Hook for interacting with SherlockClaimManager smart contract
@@ -25,20 +31,57 @@ export const useClaimManager = () => {
   /**
    * Start a claim (Supposed to be called by protocol's agent only)
    * See https://docs.sherlock.xyz/developer/claims#creating-a-claim
+   *
+   * @param protocol - Protocol bytes identifier
+   * @param amount - Amount to be claimed by the protocol
+   * @param receiver - Address that's potentially receiving the payout
+   * @param exploitTimestamp - Exploit start time (in seconds)
+   * @param coverageAgreement - Protocol's current coverage agreement link, along with its hash
+   * @param additionalResources - Additional evidence from the protocol. PDF file link, along with its hash
    */
   const startClaim = useCallback(
-    async (protocol: string, amount: BigNumber, receiver: string, date: Date, ancilliaryData: string) => {
-      const timestamp = DateTime.fromJSDate(date).toSeconds().toFixed(0)
-      return await contract.startClaim(
+    async (
+      protocol: string,
+      amount: BigNumber,
+      receiver: string,
+      exploitStartBlock: number,
+      coverageAgreement: HashedRemoteFile,
+      additionalResources: HashedRemoteFile
+    ) => {
+      const block = await provider.getBlock(exploitStartBlock)
+      const ancillaryData = encodeAncillaryData(
         protocol,
-        ethers.utils.parseUnits("1000000", 6),
-        receiver,
-        1641172334,
-        ancilliaryData
+        amount,
+        exploitStartBlock,
+        coverageAgreement,
+        additionalResources
       )
+      const ancillaryDataBytes = ethers.utils.toUtf8Bytes(ancillaryData)
+
+      return await contract.startClaim(protocol, amount, receiver, block.timestamp, ancillaryDataBytes)
     },
-    [contract]
+    [contract, provider]
   )
+
+  const encodeAncillaryData = (
+    protocol: string,
+    amount: BigNumber,
+    exploitStartBlock: number,
+    coverageAgreement: HashedRemoteFile,
+    additionalResources: HashedRemoteFile
+  ) => {
+    const dataDict = {
+      Metric: "Sherlock exploit claim arbitration",
+      Protocol: protocol,
+      ChainId: 1,
+      Value: formatUSDC(amount),
+      StartBlock: exploitStartBlock,
+      Resources: `${additionalResources.link}?hash=${additionalResources.hash}`,
+      CoverageAgreement: `${coverageAgreement.link}?hash=${coverageAgreement.hash}`,
+    }
+
+    return Object.entries(dataDict).reduce((str, [key, value]) => str + `${key}:"${value}",`, "")
+  }
 
   /**
    * Pays out the claim.
