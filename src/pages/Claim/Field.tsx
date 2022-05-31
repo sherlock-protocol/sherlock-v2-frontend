@@ -36,9 +36,11 @@ export const Field: React.FC<Props> = ({ label, detail, children, ...props }) =>
         </Row>
       )}
       <Row>{children}</Row>
-      <Row>
-        <Text size="small">{detail}</Text>
-      </Row>
+      {detail && (
+        <Row>
+          <Text size="small">{detail}</Text>
+        </Row>
+      )}
     </Column>
   )
 }

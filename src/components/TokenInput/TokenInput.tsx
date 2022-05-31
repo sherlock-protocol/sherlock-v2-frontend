@@ -52,8 +52,8 @@ export const TokenInput: React.FC<Props> = ({ balance, value, token, onChange, .
   }, [balance, setAmountBN])
 
   const handleInputChange = useCallback(
-    (v: string) => {
-      setAmount(decommify(v))
+    (v: string | null) => {
+      setAmount(v ? decommify(v) : "0")
     },
     [setAmount]
   )

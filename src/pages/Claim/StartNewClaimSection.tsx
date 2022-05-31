@@ -28,12 +28,11 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const [debouncedAmountBN] = useDebounce(claimAmount, 200)
   const [additionalInformationBase64, setAdditionalInformationBase64] = useState<string>()
   const [additionalInformationHash, setAdditionalInformationHash] = useState<string>()
-  const [receiverAddress, setReceiverAddress] = useState<string>()
-  const [exploitBlockNumber, setExploitBlockNumber] = useState<number>()
-  const [blockNumberIsValid, setBlockNumberIsValid] = useState<boolean>()
+  const [receiverAddress, setReceiverAddress] = useState<string>("")
+  const [exploitBlockNumber, setExploitBlockNumber] = useState<number>(0)
 
   const { waitForTx } = useWaitTx()
-  const [{ loading: loadingBlockNumber, data: currentBlockNumber }] = useBlockNumber()
+  const [{ data: currentBlockNumber }] = useBlockNumber()
   const { startClaim } = useClaimManager()
 
   /**
@@ -71,6 +70,10 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const canStartNewClaim = connectedAccount?.address === protocol.agent
 
   /**
+   * Validate claim amount
+   */
+  const claimAmountIsValid = !debouncedAmountBN || debouncedAmountBN?.lte(protocol.coverages[0].coverageAmount)
+  /**
    * Validate receiver address
    */
   const receiverAddressValidInput = !receiverAddress || ethers.utils.isAddress(receiverAddress)
@@ -79,6 +82,18 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
    */
   const exploitBlockNumberValidInput =
     !currentBlockNumber || !exploitBlockNumber || exploitBlockNumber < currentBlockNumber
+  /**
+   * Validate whole form for submission
+   */
+  const claimIsValid =
+    receiverAddress &&
+    receiverAddressValidInput &&
+    exploitBlockNumber &&
+    exploitBlockNumberValidInput &&
+    debouncedAmountBN &&
+    claimAmountIsValid
+
+  console.log(protocol)
 
   return (
     <Box shadow={false} fixedWidth>
@@ -94,7 +109,7 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
           {!canStartNewClaim && <Text size="small">Only the protocol's agent is allowed to start a new claim.</Text>}
         </Column>
       ) : (
-        <Column spacing="l">
+        <Column spacing="xl">
           <Title>Start new claim</Title>
           <Row>
             <Field label="CLAIM AMOUNT">
@@ -119,10 +134,16 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
           <Row>
             <Field
               label="RECEIVER ADDRESS"
+              detail="This is the address that's going to receive the payout"
               error={!receiverAddressValidInput}
               errorMessage="This is not a valid address."
             >
               <Input variant="small" value={receiverAddress} onChange={setReceiverAddress} />
+            </Field>
+          </Row>
+          <Row>
+            <Field label="UPLOAD ADDITIONAL INFORMATION FILE" detail="Submit additional evidence in a .pdf format">
+              <FileDrop onFileChange={hadleAdditionalInformationFileChange} />
             </Field>
           </Row>
           <Row>
@@ -141,13 +162,11 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
               <Input value={protocol.agreement_hash} variant="small" disabled />
             </Field>
           </Row>
-          <Row>
-            <Field label="UPLOAD ADDITIONAL INFORMATION FILE">
-              <FileDrop onFileChange={hadleAdditionalInformationFileChange} />
-            </Field>
-          </Row>
+
           <Row spacing="s">
-            <Button fullWidth>Start Claim</Button>
+            <Button fullWidth disabled={!claimIsValid}>
+              Start Claim
+            </Button>
           </Row>
         </Column>
       )}
