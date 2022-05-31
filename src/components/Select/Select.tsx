@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React from "react"
 import styles from "./Select.module.scss"
 import { Column, Row } from "../Layout"
 import { Text } from "../Text"

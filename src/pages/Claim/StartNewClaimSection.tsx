@@ -15,7 +15,6 @@ import TokenInput from "../../components/TokenInput/TokenInput"
 import { Field } from "./Field"
 import { Input } from "../../components/Input"
 import { FileDrop } from "../../components/FileDrop"
-import { useEffect } from "react"
 
 type Props = {
   protocol: Protocol
@@ -31,9 +30,9 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const [receiverAddress, setReceiverAddress] = useState<string>("")
   const [exploitBlockNumber, setExploitBlockNumber] = useState<number>(0)
 
-  const { waitForTx } = useWaitTx()
+  // const { waitForTx } = useWaitTx()
   const [{ data: currentBlockNumber }] = useBlockNumber()
-  const { startClaim } = useClaimManager()
+  // const { startClaim } = useClaimManager()
 
   /**
    * Handler for start claim click
@@ -92,8 +91,6 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
     exploitBlockNumberValidInput &&
     debouncedAmountBN &&
     claimAmountIsValid
-
-  console.log(protocol)
 
   return (
     <Box shadow={false} fixedWidth>
