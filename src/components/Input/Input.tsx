@@ -1,6 +1,9 @@
+import classNames from "classnames"
 import React, { useCallback, useEffect, useState } from "react"
 
 import styles from "./Input.module.scss"
+
+type InputVariant = "regular" | "small"
 
 export type InputProps = {
   /**
@@ -24,6 +27,16 @@ export type InputProps = {
   value?: string
 
   /**
+   * Input type
+   */
+  type?: React.HTMLInputTypeAttribute
+
+  /**
+   * Variant
+   */
+  variant?: InputVariant
+
+  /**
    * Disable input
    */
   disabled?: boolean
@@ -33,6 +46,8 @@ export const Input: React.FC<InputProps> = ({
   onChange,
   placeholder,
   value,
+  type,
+  variant = "regular",
   isPlaceholderVisible = value === "0",
   disabled = false,
 }) => {
@@ -48,7 +63,14 @@ export const Input: React.FC<InputProps> = ({
   return (
     <div className={styles.inputContainer}>
       {displayPlaceholder && <span className={styles.placeholder}>{placeholder}</span>}
-      <input className={styles.input} value={value} onChange={handleChange} disabled={disabled} />
+      <input
+        className={classNames([styles.input, styles[variant]])}
+        value={value}
+        onChange={handleChange}
+        disabled={disabled}
+        type={type}
+        spellCheck={false}
+      />
     </div>
   )
 }

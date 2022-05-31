@@ -33,4 +33,9 @@
   &[disabled] {
     opacity: 0.5;
   }
+
+  &.small {
+    font-size: 0.95rem;
+    font-weight: 400;
+  }
 }

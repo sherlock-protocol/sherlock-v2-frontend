@@ -1,7 +1,9 @@
 @import "../../styles/variables";
 
+$FIXED_WIDTH: 500px;
+
 .box {
-  min-width: 500px;
+  min-width: $FIXED_WIDTH;
 
   border: 1px solid;
   border-image-slice: 1;
@@ -31,5 +33,9 @@
 
   &.fullWidth {
     width: 100%;
+  }
+
+  &.fixedWidth {
+    width: $FIXED_WIDTH;
   }
 }

@@ -15,6 +15,8 @@ import { Title } from "../../components/Title"
 import TokenInput from "../../components/TokenInput/TokenInput"
 import { Field } from "./Field"
 import { Input } from "../../components/Input"
+import { FileDrop } from "../../components/FileDrop"
+import { useEffect } from "react"
 
 type Props = {
   protocol: Protocol
@@ -25,6 +27,9 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const [isCreating, setIsCreating] = useState(false)
   const [claimAmount, setClaimAmount] = useState<BigNumber>()
   const [debouncedAmountBN] = useDebounce(claimAmount, 200)
+  const [additionalInformationBase64, setAdditionalInformationBase64] = useState<string>()
+  const [additionalInformationHash, setAdditionalInformationHash] = useState<string>()
+
   const { waitForTx } = useWaitTx()
   const { startClaim } = useClaimManager()
 
@@ -45,13 +50,25 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
     //     )
     // )
   }, [setIsCreating])
+
+  /**
+   * Handle additional information file change
+   */
+  const hadleAdditionalInformationFileChange = useCallback(
+    (_, content: string, hash: string) => {
+      setAdditionalInformationBase64(content)
+      setAdditionalInformationHash(hash)
+    },
+    [setAdditionalInformationBase64, setAdditionalInformationHash]
+  )
+
   /**
    * Only protocol's agent is allowed to start a new claim
    */
   const canStartNewClaim = connectedAccount?.address === protocol.agent
 
   return (
-    <Box shadow={false}>
+    <Box shadow={false} fixedWidth>
       {!isCreating ? (
         <Column spacing="m">
           <Text size="normal" strong>
@@ -84,7 +101,7 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
           </Row>
           <Row>
             <Field label="RECEIVER ADDRESS">
-              <Input />
+              <Input variant="small" />
             </Field>
           </Row>
           <Row>
@@ -100,12 +117,12 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
                 </span>
               }
             >
-              <Input value={protocol.agreement_hash} disabled />
+              <Input value={protocol.agreement_hash} variant="small" disabled />
             </Field>
           </Row>
           <Row>
-            <Field label="ADITIONAL INFORMATION LINK">
-              <Input />
+            <Field label="UPLOAD ADDITIONAL INFORMATION FILE">
+              <FileDrop onFileChange={hadleAdditionalInformationFileChange} />
             </Field>
           </Row>
           <Row spacing="s">
