@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { useContract, useProvider, useSigner } from "wagmi"
 import config from "../config"
 import SherlockClaimManagerABI from "../abi/SherlockClaimManager.json"
