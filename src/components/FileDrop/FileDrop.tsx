@@ -5,7 +5,7 @@ import { Text } from "../Text"
 import styles from "./FileDrop.module.scss"
 
 type Props = {
-  onFileChange: (fileName: string, fileContent: string, hash: string) => void
+  onFileChange: (file: File, hash: string) => void
 }
 
 const shortenFileName = (fileName: string) => {
@@ -31,11 +31,10 @@ export const FileDrop: React.FC<Props> = ({ onFileChange }) => {
         const hashBuffer = await crypto.subtle.digest("SHA-256", data) // SHA-256 digest of file contents
         const hashArray = Array.from(new Uint8Array(hashBuffer)) // convert buffer to byte array
         const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("") // convert bytes to hex string
-        const base64Content = Buffer.from(data).toString("base64")
-        const base64String = `data:application/pdf;base64,${base64Content}`
+        // const base64Content = Buffer.from(data).toString("base64")
 
         setFileName(file.name)
-        onFileChange(file.name, base64String, hashHex)
+        onFileChange(file, hashHex)
       }
       reader.onerror = (error) => {
         console.log(error)

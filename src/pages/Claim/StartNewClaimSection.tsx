@@ -1,8 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useState } from "react"
 import { BigNumber, ethers } from "ethers"
 import { useAccount, useBlockNumber } from "wagmi"
-import { useDebounce } from "use-debounce"
-
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
 import { Text } from "../../components/Text"
@@ -16,7 +14,7 @@ import { Field } from "./Field"
 import { Input } from "../../components/Input"
 import { FileDrop } from "../../components/FileDrop"
 import { formatUSDC } from "../../utils/units"
-import { captureException } from "../../utils/sentry"
+import { uploadFile } from "./uploadFile"
 
 type Props = {
   protocol: Protocol
@@ -26,8 +24,7 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const [{ data: connectedAccount }] = useAccount()
   const [isCreating, setIsCreating] = useState(false)
   const [claimAmount, setClaimAmount] = useState<BigNumber>()
-  const [debouncedAmountBN] = useDebounce(claimAmount, 200)
-  const [additionalInformationBase64, setAdditionalInformationBase64] = useState<string>()
+  const [additionalInformationFile, setAdditionalInformationFile] = useState<File>()
   const [additionalInformationHash, setAdditionalInformationHash] = useState<string>()
   const [receiverAddress, setReceiverAddress] = useState<string>("")
   const [exploitBlockNumber, setExploitBlockNumber] = useState<number>(0)
@@ -48,11 +45,11 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
    * Handle additional information file change
    */
   const hadleAdditionalInformationFileChange = useCallback(
-    (_, content: string, hash: string) => {
-      setAdditionalInformationBase64(content)
+    async (file: File, hash: string) => {
+      setAdditionalInformationFile(file)
       setAdditionalInformationHash(hash)
     },
-    [setAdditionalInformationBase64, setAdditionalInformationHash]
+    [setAdditionalInformationFile, setAdditionalInformationHash]
   )
 
   /**
@@ -103,6 +100,13 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
 
     setSubmittingClaim(true)
 
+    let additionalInformationFileURL: string | null = null
+
+    if (additionalInformationFile) {
+      const path = `claims/${protocol.name}_${protocol.bytesIdentifier}_${exploitBlockNumber}.pdf`
+      additionalInformationFileURL = await uploadFile(additionalInformationFile, path)
+    }
+
     await waitForTx(
       async () =>
         await startClaim(
@@ -114,25 +118,30 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
             link: protocol.agreement!,
             hash: protocol.agreement_hash!,
           },
-          {
-            link: protocol.agreement!,
-            hash: protocol.agreement_hash!,
-          }
+          additionalInformationFileURL && additionalInformationHash
+            ? {
+                link: additionalInformationFileURL,
+                hash: additionalInformationHash,
+              }
+            : undefined
         )
     )
+
     setSubmittingClaim(false)
   }, [
-    startClaim,
-    waitForTx,
-    setSubmittingClaim,
     canStartNewClaim,
     claimIsValid,
-    protocol.bytesIdentifier,
-    claimAmount,
-    receiverAddress,
-    exploitBlockNumber,
     protocol.agreement,
     protocol.agreement_hash,
+    protocol.name,
+    protocol.bytesIdentifier,
+    additionalInformationFile,
+    waitForTx,
+    exploitBlockNumber,
+    startClaim,
+    claimAmount,
+    receiverAddress,
+    additionalInformationHash,
   ])
 
   return (

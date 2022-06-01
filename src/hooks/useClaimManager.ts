@@ -3,8 +3,7 @@ import { useContract, useProvider, useSigner } from "wagmi"
 import config from "../config"
 import SherlockClaimManagerABI from "../abi/SherlockClaimManager.json"
 import { SherlockClaimManager } from "../contracts"
-import { BigNumber, BytesLike, ethers } from "ethers"
-import { DateTime } from "luxon"
+import { BigNumber, ethers } from "ethers"
 import { formatUSDC } from "../utils/units"
 
 export const SHERLOCK_CLAIM_MANAGER_ADDRESS = config.sherlockClaimManagerAddress
@@ -12,6 +11,16 @@ export const SHERLOCK_CLAIM_MANAGER_ADDRESS = config.sherlockClaimManagerAddress
 type HashedRemoteFile = {
   link: string
   hash: string
+}
+
+type AncillaryData = {
+  Metric: string
+  Protocol: string
+  ChainId: number
+  Value: string
+  StartBlock: number
+  CoverageAgreement: string
+  Resources?: string
 }
 
 /**
@@ -46,7 +55,7 @@ export const useClaimManager = () => {
       receiver: string,
       exploitStartBlock: number,
       coverageAgreement: HashedRemoteFile,
-      additionalResources: HashedRemoteFile
+      additionalResources?: HashedRemoteFile
     ) => {
       const block = await provider.getBlock(exploitStartBlock)
       const ancillaryData = encodeAncillaryData(
@@ -68,16 +77,19 @@ export const useClaimManager = () => {
     amount: BigNumber,
     exploitStartBlock: number,
     coverageAgreement: HashedRemoteFile,
-    additionalResources: HashedRemoteFile
+    additionalResources?: HashedRemoteFile
   ) => {
-    const dataDict = {
+    const dataDict: AncillaryData = {
       Metric: "Sherlock exploit claim arbitration",
       Protocol: protocol,
       ChainId: 1,
       Value: formatUSDC(amount),
       StartBlock: exploitStartBlock,
-      Resources: `${additionalResources.link}?hash=${additionalResources.hash}`,
       CoverageAgreement: `${coverageAgreement.link}?hash=${coverageAgreement.hash}`,
+    }
+
+    if (additionalResources) {
+      dataDict.Resources = `${additionalResources.link}?hash=${additionalResources.hash}`
     }
 
     return Object.entries(dataDict).reduce((str, [key, value]) => str + `${key}:"${value}",`, "")
