@@ -55,7 +55,7 @@ export const ClaimsPage: React.FC = () => {
     // Active claim fetched, but no results => Protocol doesn't have an active claim.
     if (activeClaim === null) return <StartNewClaimSection protocol={selectedProtocol} />
     // Active claim fetched and found one active claim.
-    if (activeClaim) return <ActiveClaim claim={activeClaim} />
+    if (activeClaim) return <ActiveClaim claim={activeClaim} protocol={selectedProtocol} />
     // Active claim fetch is loading.
     if (isLoadingActiveClaim) return <Box shadow={false}></Box>
   }, [activeClaim, isLoadingActiveClaim, selectedProtocol])

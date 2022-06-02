@@ -1,12 +1,16 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { DateTime } from "luxon"
+import { FaFileSignature, FaFileAlt } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Text } from "../../components/Text"
-import { Claim, ClaimStatus } from "../../hooks/api/claims"
 import { Column, Row } from "../../components/Layout"
-import { formatUSDC } from "../../utils/units"
+import { Button } from "../../components/Button"
 import { Title } from "../../components/Title"
+import { Claim, ClaimStatus } from "../../hooks/api/claims"
+import { Protocol } from "../../hooks/api/protocols"
+import { formatUSDC } from "../../utils/units"
+
 import { ClaimStatusAction } from "./ClaimStatusAction"
 import { ClaimStatusDetails } from "./ClaimStatusDetails"
 
@@ -14,6 +18,7 @@ import styles from "./Claims.module.scss"
 
 type Props = {
   claim: Claim
+  protocol: Protocol
 }
 
 const statusMessages = {
@@ -29,9 +34,21 @@ const statusMessages = {
   [ClaimStatus.Halted]: "Halted by UMA HO",
 }
 
-export const ActiveClaim: React.FC<Props> = ({ claim }) => {
+export const ActiveClaim: React.FC<Props> = ({ claim, protocol }) => {
+  const handleCoverageAgreementClick = useCallback(() => {
+    if (!protocol.agreement) return
+
+    window.open(protocol.agreement, "_blank")
+  }, [protocol.agreement])
+
+  const handleAdditionalEvidenceClick = useCallback(() => {
+    if (!claim.additionalResourcesLink) return
+
+    window.open(claim.additionalResourcesLink, "_blank")
+  }, [claim.additionalResourcesLink])
+
   return (
-    <Box shadow={false}>
+    <Box shadow={false} className={styles.activeClaim}>
       <Column spacing="m">
         <Title>Active Claim</Title>
         <Row alignment="space-between">
@@ -60,6 +77,25 @@ export const ActiveClaim: React.FC<Props> = ({ claim }) => {
             <Text strong>{formatUSDC(claim.amount)} USDC</Text>
           </Column>
         </Row>
+
+        {(protocol.agreement || claim.additionalResourcesLink) && (
+          <Row alignment="space-between">
+            {protocol.agreement && (
+              <Column>
+                <Button variant="secondary" onClick={handleCoverageAgreementClick}>
+                  <FaFileSignature /> <Text size="small">Coverage Agreement</Text>
+                </Button>
+              </Column>
+            )}
+            {claim.additionalResourcesLink && (
+              <Column>
+                <Button variant="secondary" onClick={handleAdditionalEvidenceClick}>
+                  <FaFileAlt /> <Text size="small">Additional Evidence</Text>
+                </Button>
+              </Column>
+            )}
+          </Row>
+        )}
 
         <Column className={styles.claimStatusContainer} spacing="m">
           <Row alignment="space-between">

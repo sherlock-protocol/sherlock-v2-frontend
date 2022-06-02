@@ -2,6 +2,7 @@ import React from "react"
 import cx from "classnames"
 
 import styles from "./Button.module.scss"
+import { Row } from "../Layout"
 
 type ButtonSize = "small" | "normal"
 
@@ -56,7 +57,9 @@ export const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
     >
-      <div className={styles.content}>{children}</div>
+      <Row className={styles.content} spacing="xs" alignment={["center", "center"]}>
+        {children}
+      </Row>
     </button>
   )
 }

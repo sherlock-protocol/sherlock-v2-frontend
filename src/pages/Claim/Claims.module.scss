@@ -1,6 +1,18 @@
 @import "../../styles/variables";
 
-.claimStatusContainer {
-  background-color: transparentize($color: $primary-purple, $amount: 0.7);
-  padding: 1em;
+.activeClaim {
+  & hr {
+    background-color: white;
+    opacity: 0.5;
+    width: 100%;
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+  }
+
+  & .claimStatusContainer {
+    background-color: transparentize($color: $primary-purple, $amount: 0.7);
+    padding: 1em;
+  }
 }

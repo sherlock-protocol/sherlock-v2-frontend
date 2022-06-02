@@ -20,11 +20,12 @@
 
   &.secondary {
     background-color: inherit;
+    background-blend-mode: lighten;
     font-weight: 500;
-    border: none;
+    border: 1px solid transparentize($color: $primary-purple, $amount: 0.7);
 
     &:hover {
-      background-color: inherit;
+      background-color: transparentize($color: $primary-purple, $amount: 0.7);
     }
   }
 

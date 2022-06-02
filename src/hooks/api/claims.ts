@@ -10,6 +10,7 @@ export type Claim = {
   initiator: string
   receiver: string
   amount: BigNumber
+  additionalResourcesLink?: string
   createdAt: number
   exploitStartedAt?: number
   status: ClaimStatus
@@ -40,6 +41,7 @@ type GetActiveClaimResponseData =
         initiator: string
         receiver: string
         amount: string
+        resources_link?: string
         exploit_started_at?: number
         timestamp: number
         status: number
@@ -72,6 +74,7 @@ export const useActiveClaim = (protocolID: number, options?: UseQueryOptions<Cla
         receiver: response.data.receiver,
         status: response.data.status as ClaimStatus,
         amount: BigNumber.from(response.data.amount),
+        additionalResourcesLink: response.data.resources_link,
         exploitStartedAt: response.data.exploit_started_at,
         createdAt: response.data.timestamp,
         statusUpdatedAt: response.data.status_updated_at,
