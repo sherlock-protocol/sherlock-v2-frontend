@@ -1,12 +1,11 @@
 import React from "react"
-import { ethers } from "ethers"
 import { DateTime } from "luxon"
 
 import { Box } from "../../components/Box"
 import { Text } from "../../components/Text"
 import { Claim, ClaimStatus } from "../../hooks/api/claims"
 import { Column, Row } from "../../components/Layout"
-import { commify, formatUSDC } from "../../utils/units"
+import { formatUSDC } from "../../utils/units"
 import { Title } from "../../components/Title"
 import { ClaimStatusAction } from "./ClaimStatusAction"
 import { ClaimStatusDetails } from "./ClaimStatusDetails"

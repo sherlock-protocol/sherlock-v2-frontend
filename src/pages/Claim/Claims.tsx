@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react"
 
 import { Box } from "../../components/Box"
-import { Text } from "../../components/Text"
 import { Column, Row } from "../../components/Layout"
 import Select from "../../components/Select/Select"
 import { Title } from "../../components/Title"
@@ -10,8 +9,6 @@ import { useActiveClaim } from "../../hooks/api/claims"
 
 import { StartNewClaimSection } from "./StartNewClaimSection"
 import { ActiveClaim } from "./ActiveClaim"
-
-import styles from "./Claims.module.scss"
 
 export const ClaimsPage: React.FC = () => {
   const [selectedProtocolBytesIdentifier, setSelectedProtocolBytesIdentifier] = useState<string>()
