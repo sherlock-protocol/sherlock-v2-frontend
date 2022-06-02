@@ -19,6 +19,7 @@ import TokenInput from "../../components/TokenInput/TokenInput"
 import { Field } from "./Field"
 import { BigNumber } from "ethers"
 import { formatUSDC } from "../../utils/units"
+import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 
 type Props = {
   claim: Claim
@@ -41,12 +42,26 @@ const Escalate: React.FC<Props> = ({ claim }) => {
   const [{ data: connectedAccount }] = useAccount()
   const [collapsed, setCollapsed] = useState(true)
   const [umaBond, setUmaBond] = useState<BigNumber | undefined>(UMA_MIN_BOND)
+  const [isWaitingTx, setIsWaitingTx] = useState(false)
+  const { escalateClaim, address: claimManagerContractAddress } = useClaimManager()
+  const { waitForTx } = useWaitTx()
 
   const toggleCollapsed = useCallback(() => {
     setCollapsed((v) => !v)
   }, [setCollapsed])
 
-  const escalateClaim = useCallback(() => {}, [])
+  const handleEscalateClaim = useCallback(async () => {
+    if (!umaBond) return
+
+    setIsWaitingTx(true)
+
+    try {
+      await waitForTx(async () => await escalateClaim(claim.id, umaBond))
+    } catch (e) {
+    } finally {
+      setIsWaitingTx(false)
+    }
+  }, [claim.id, escalateClaim, umaBond, waitForTx])
 
   const now = DateTime.now()
   const lastStatusUpdate = DateTime.fromSeconds(claim.statusUpdatedAt)
@@ -81,9 +96,18 @@ const Escalate: React.FC<Props> = ({ claim }) => {
         </Row>
       )}
       <Row>
-        <Button disabled={!canEscalate} fullWidth onClick={collapsed ? toggleCollapsed : escalateClaim}>
-          Escalate to UMA
-        </Button>
+        {collapsed ? (
+          <Button disabled={!canEscalate} fullWidth onClick={toggleCollapsed}>
+            Escalate to UMA
+          </Button>
+        ) : (
+          <AllowanceGate
+            spender={claimManagerContractAddress}
+            amount={umaBond}
+            action={handleEscalateClaim}
+            actionName="Escalate"
+          />
+        )}
       </Row>
       {!connectedAccountIsClaimInitiator && (
         <>

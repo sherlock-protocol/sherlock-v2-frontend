@@ -123,12 +123,24 @@ export const useClaimManager = () => {
     [contract]
   )
 
+  /**
+   * Escalates claim to UMA's DVM
+   * Only the claim initiator can call this method
+   */
+  const escalateClaim = useCallback(
+    async (claimID: number, amount: BigNumber) => {
+      return await contract.escalate(claimID, amount)
+    },
+    [contract]
+  )
+
   return useMemo(
     () => ({
-      SHERLOCK_CLAIM_MANAGER_ADDRESS,
+      address: SHERLOCK_CLAIM_MANAGER_ADDRESS,
       startClaim,
       payoutClaim,
+      escalateClaim,
     }),
-    [startClaim, payoutClaim]
+    [startClaim, payoutClaim, escalateClaim]
   )
 }
