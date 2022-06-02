@@ -6,7 +6,7 @@ import { Box } from "../../components/Box"
 import { Text } from "../../components/Text"
 import { Claim, ClaimStatus } from "../../hooks/api/claims"
 import { Column, Row } from "../../components/Layout"
-import { commify } from "../../utils/units"
+import { commify, formatUSDC } from "../../utils/units"
 import { Title } from "../../components/Title"
 import { ClaimStatusAction } from "./ClaimStatusAction"
 import { ClaimStatusDetails } from "./ClaimStatusDetails"
@@ -58,7 +58,7 @@ export const ActiveClaim: React.FC<Props> = ({ claim }) => {
             <Text>Amount claimed</Text>
           </Column>
           <Column>
-            <Text strong>{commify(ethers.utils.formatUnits(claim.amount, 6))} USDC</Text>
+            <Text strong>{formatUSDC(claim.amount)} USDC</Text>
           </Column>
         </Row>
 
