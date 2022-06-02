@@ -61,7 +61,7 @@ const Escalate: React.FC<Props> = ({ claim }) => {
     claim.status === ClaimStatus.SpccDenied ? lastStatusUpdate : lastStatusUpdate.plus({ days: SPCC_REVIEW_DAYS })
 
   const connectedAccountIsClaimInitiator = connectedAccount?.address === claim.initiator
-  const withinUmaEscalationPeriod = escalationWindowStartDate.plus({ days: UMA_ESCALATION_DAYS }) < now
+  const withinUmaEscalationPeriod = now < escalationWindowStartDate.plus({ days: UMA_ESCALATION_DAYS })
 
   const umaBondIsValid = !!umaBond?.gte(UMA_MIN_BOND)
 
