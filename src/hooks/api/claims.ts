@@ -1,8 +1,24 @@
 import { useQuery, UseQueryOptions } from "react-query"
-import { BigNumber } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import axios from "./axios"
 
 import { getActiveClaim } from "./urls"
+
+/**
+ * Time SPCC has to review the claim.
+ * After this time, initiator can escalate to UMA.
+ */
+export const SPCC_REVIEW_DAYS = 7
+/**
+ * Time claim initiator has to escalate the claim to UMA in case of SPCC denied it.
+ * After this time, the claim is closed.
+ */
+export const UMA_ESCALATION_DAYS = 4 * 7
+/**
+ * Amount needed to escalate the claim to UMA's DVM
+ * https://github.com/sherlock-protocol/sherlock-v2-core/blob/45ae92b6488825ce2b0800f0bc4fef78d695a1db/contracts/managers/SherlockClaimManager.sol#L32
+ */
+export const UMA_BOND = ethers.utils.parseUnits("9600", 6)
 
 export type Claim = {
   id: number

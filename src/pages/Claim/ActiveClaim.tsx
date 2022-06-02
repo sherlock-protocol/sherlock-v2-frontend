@@ -48,7 +48,7 @@ export const ActiveClaim: React.FC<Props> = ({ claim, protocol }) => {
   }, [claim.additionalResourcesLink])
 
   return (
-    <Box shadow={false} className={styles.activeClaim}>
+    <Box shadow={false} className={styles.activeClaim} fixedWidth>
       <Column spacing="m">
         <Title>Active Claim</Title>
         <Row alignment="space-between">

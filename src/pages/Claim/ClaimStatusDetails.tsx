@@ -1,21 +1,10 @@
 import React from "react"
 import { DateTime } from "luxon"
 
-import { Claim, ClaimStatus } from "../../hooks/api/claims"
+import { Claim, ClaimStatus, SPCC_REVIEW_DAYS, UMA_ESCALATION_DAYS } from "../../hooks/api/claims"
 import { Text } from "../../components/Text"
 import { Column, Row } from "../../components/Layout"
 import { shortenAddress } from "../../utils/format"
-
-/**
- * Time SPCC has to review the claim.
- * After this time, initiator can escalate to UMA.
- */
-const SPCC_REVIEW_DAYS = 7
-/**
- * Time claim initiator has to escalate the claim to UMA in case of SPCC denied it.
- * After this time, the claim is closed.
- */
-const UMA_ESCALATION_DAYS = 4 * 7
 
 type Props = {
   claim: Claim

@@ -107,27 +107,30 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
       additionalInformationFileURL = await uploadFile(additionalInformationFile, path)
     }
 
-    await waitForTx(
-      async () =>
-        await startClaim(
-          protocol.bytesIdentifier,
-          claimAmount,
-          receiverAddress,
-          exploitBlockNumber,
-          {
-            link: protocol.agreement!,
-            hash: protocol.agreement_hash!,
-          },
-          additionalInformationFileURL && additionalInformationHash
-            ? {
-                link: additionalInformationFileURL,
-                hash: additionalInformationHash,
-              }
-            : undefined
-        )
-    )
-
-    setSubmittingClaim(false)
+    try {
+      await waitForTx(
+        async () =>
+          await startClaim(
+            protocol.bytesIdentifier,
+            claimAmount,
+            receiverAddress,
+            exploitBlockNumber,
+            {
+              link: protocol.agreement!,
+              hash: protocol.agreement_hash!,
+            },
+            additionalInformationFileURL && additionalInformationHash
+              ? {
+                  link: additionalInformationFileURL,
+                  hash: additionalInformationHash,
+                }
+              : undefined
+          )
+      )
+    } catch (e) {
+    } finally {
+      setSubmittingClaim(false)
+    }
   }, [
     canStartNewClaim,
     claimIsValid,
