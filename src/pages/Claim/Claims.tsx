@@ -65,7 +65,7 @@ export const ClaimsPage: React.FC = () => {
 
   return (
     <Column spacing="m">
-      <Box>
+      <Box shadow={false}>
         <Column spacing="m">
           <Row alignment="space-between">
             <Column alignment={["center", "center"]}>

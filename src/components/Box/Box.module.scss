@@ -16,7 +16,10 @@ $FIXED_WIDTH: 500px;
 
   box-sizing: border-box;
   padding: 2.5rem;
-  transform-style: preserve-3d;
+
+  &.containsShadow {
+    transform-style: preserve-3d;
+  }
 
   & .shadow {
     width: 110%;
