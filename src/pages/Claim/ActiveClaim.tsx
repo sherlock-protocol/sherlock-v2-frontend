@@ -1,6 +1,6 @@
 import React, { useCallback } from "react"
 import { DateTime } from "luxon"
-import { FaFileSignature, FaFileAlt } from "react-icons/fa"
+import { FaFileSignature, FaFileAlt, FaRegFileAlt } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Text } from "../../components/Text"
@@ -79,21 +79,32 @@ export const ActiveClaim: React.FC<Props> = ({ claim, protocol }) => {
         </Row>
 
         {(protocol.agreement || claim.additionalResourcesLink) && (
-          <Row alignment="space-between">
+          <Row spacing="m" alignment="space-between">
             {protocol.agreement && (
-              <Column>
+              <Column grow={0} shrink={0}>
                 <Button variant="secondary" onClick={handleCoverageAgreementClick}>
                   <FaFileSignature /> <Text size="small">Coverage Agreement</Text>
                 </Button>
               </Column>
             )}
-            {claim.additionalResourcesLink && (
-              <Column>
-                <Button variant="secondary" onClick={handleAdditionalEvidenceClick}>
-                  <FaFileAlt /> <Text size="small">Additional Evidence</Text>
-                </Button>
-              </Column>
-            )}
+
+            <Column grow={0} shrink={0}>
+              <Button
+                variant="secondary"
+                onClick={handleAdditionalEvidenceClick}
+                disabled={!claim.additionalResourcesLink}
+              >
+                {claim.additionalResourcesLink ? (
+                  <>
+                    <FaFileAlt /> <Text size="small">Additional evidence</Text>
+                  </>
+                ) : (
+                  <>
+                    <FaRegFileAlt /> <Text size="small">No additional evidence</Text>
+                  </>
+                )}
+              </Button>
+            </Column>
           </Row>
         )}
 
