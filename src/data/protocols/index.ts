@@ -1,6 +1,7 @@
 import euler from "./euler"
 import squeeth_by_opyn from "./squeeth_by_opyn"
 import tempus_finance from "./tempus_finance"
+import liquifi from "./liquifi"
 
 export type CoveredProtocolMeta = {
   id: string
@@ -24,6 +25,7 @@ const coveredProtocolMetas: CoveredProtocolsMetas = {
   [euler.id]: euler,
   [squeeth_by_opyn.id]: squeeth_by_opyn,
   [tempus_finance.id]: tempus_finance,
+  [liquifi.id]: liquifi,
 }
 
 export default coveredProtocolMetas
