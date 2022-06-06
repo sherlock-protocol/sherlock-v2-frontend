@@ -1,5 +1,5 @@
 import { ethers } from "ethers"
-import React from "react"
+import React, { PropsWithChildren } from "react"
 import PendingTx from "../components/TxStateModals/PendingTx"
 import RequestedTx from "../components/TxStateModals/RequestedTx"
 import RevertedTx from "../components/TxStateModals/RevertedTx"
@@ -23,7 +23,7 @@ const TxWaitContext = React.createContext<TxWaitContextType>({} as TxWaitContext
  * Provider for waiting for a pending transaction and show
  * state change alerts
  */
-export const TxWaitProvider: React.FC = ({ children }) => {
+export const TxWaitProvider: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
   const [txState, setTxState] = React.useState(TxState.NONE)
   const [txHash, setTxHash] = React.useState<string | undefined>()
   const [txType, setTxType] = React.useState<TxType>(TxType.GENERIC)
