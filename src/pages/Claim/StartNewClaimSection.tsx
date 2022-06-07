@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { BigNumber, ethers } from "ethers"
-import { useAccount, useBlockNumber } from "wagmi"
+import { useAccount, useProvider } from "wagmi"
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
 import { Text } from "../../components/Text"
@@ -15,6 +15,7 @@ import { Input } from "../../components/Input"
 import { FileDrop } from "../../components/FileDrop"
 import { formatUSDC } from "../../utils/units"
 import { uploadFile } from "./uploadFile"
+import { useDebounce } from "use-debounce"
 
 type Props = {
   protocol: Protocol
@@ -27,12 +28,72 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const [additionalInformationFile, setAdditionalInformationFile] = useState<File>()
   const [additionalInformationHash, setAdditionalInformationHash] = useState<string>()
   const [receiverAddress, setReceiverAddress] = useState<string>("")
-  const [exploitBlockNumber, setExploitBlockNumber] = useState<number>(0)
+  const [exploitBlockNumber, setExploitBlockNumber] = useState<number>()
+  const [exploitStartInput, setExploitStartInput] = useState<string>("")
+  const [debouncedExploitStartInput] = useDebounce(exploitStartInput, 300)
+  const [isResolvingBlock, setIsResolvingBlock] = useState(false)
+  const [blockResolveError, setBlockResolveError] = useState(false)
   const [submittingClaim, setSubmittingClaim] = useState(false)
 
   const { waitForTx } = useWaitTx()
-  const [{ data: currentBlockNumber }] = useBlockNumber()
+  const provider = useProvider()
   const { startClaim } = useClaimManager()
+
+  /**
+   * Tries to get a block number from user's exploit start input,
+   * wich could be a: block number, a block hash, or a tx hash.
+   */
+  useEffect(() => {
+    if (!debouncedExploitStartInput) {
+      setExploitBlockNumber(undefined)
+      return
+    }
+
+    const resolveBlockNumber = async () => {
+      let blockNumber: number | undefined
+
+      const inputAsBlockNumber = parseInt(debouncedExploitStartInput)
+      if (!isNaN(inputAsBlockNumber)) {
+        try {
+          const block = await provider.getBlock(inputAsBlockNumber)
+          blockNumber = block.number
+        } catch (e) {
+          // provider.getBlock throws if it couldn't find a block
+        }
+      }
+
+      // Checks if blockNumber hasn't resolved and input is a block hash
+      if (!blockNumber) {
+        try {
+          const block = await provider.getBlock(debouncedExploitStartInput)
+          if (block) {
+            blockNumber = block.number
+          }
+        } catch (e) {
+          // provider.getBlock throws if it couldn't find a block
+        }
+      }
+
+      // Checks if blockNumber hasn't resolved and input is a tx hash
+      if (!blockNumber) {
+        try {
+          const tx = await provider.getTransaction(debouncedExploitStartInput)
+          if (tx && tx.blockNumber) {
+            blockNumber = tx.blockNumber
+          }
+        } catch (e) {
+          // provider.getTransaction throws if it couldn't find a tx
+        }
+      }
+
+      setIsResolvingBlock(false)
+      setExploitBlockNumber(blockNumber)
+      setBlockResolveError(!!!blockNumber)
+    }
+
+    setIsResolvingBlock(true)
+    resolveBlockNumber()
+  }, [debouncedExploitStartInput, provider])
 
   /**
    * Handler for start claim click
@@ -53,13 +114,6 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   )
 
   /**
-   * Handle block number change
-   */
-  const handleBlockNumberChange = useCallback((value: string) => {
-    setExploitBlockNumber(parseInt(value))
-  }, [])
-
-  /**
    * Only protocol's agent is allowed to start a new claim
    */
   const canStartNewClaim = connectedAccount?.address === protocol.agent
@@ -77,17 +131,12 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
    * Validate exploit block number
    */
   const exploitBlockNumberValidInput =
-    !currentBlockNumber || !exploitBlockNumber || exploitBlockNumber < currentBlockNumber
+    !exploitStartInput || !debouncedExploitStartInput || !!exploitBlockNumber || isResolvingBlock
   /**
    * Validate whole form for submission
    */
   const claimIsValid =
-    receiverAddress &&
-    receiverAddressValidInput &&
-    exploitBlockNumber &&
-    exploitBlockNumberValidInput &&
-    claimAmount &&
-    claimAmountIsValid
+    receiverAddress && receiverAddressValidInput && exploitBlockNumber && claimAmount && claimAmountIsValid
 
   /**
    * Handle submit claim click
@@ -175,10 +224,13 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
           <Row>
             <Field
               label="EPLOIT START BLOCK"
-              error={!exploitBlockNumberValidInput}
+              error={blockResolveError && !isResolvingBlock}
               errorMessage="This is not a valid block number."
+              detail={
+                isResolvingBlock ? "Validating block ..." : exploitBlockNumber ? `Block: ${exploitBlockNumber}` : ""
+              }
             >
-              <Input type="number" value={exploitBlockNumber.toString()} onChange={handleBlockNumberChange} />
+              <Input value={exploitStartInput} onChange={setExploitStartInput} />
             </Field>
           </Row>
           <Row>
