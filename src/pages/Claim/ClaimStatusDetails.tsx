@@ -61,7 +61,8 @@ ClaimStatusDetails.SpccApproved = ({ claim }) => {
 ClaimStatusDetails.SpccDenied = ({ claim }) => {
   if (claim.status !== ClaimStatus.SpccDenied) return null
 
-  const escalationDeadline = DateTime.fromSeconds(claim.statusUpdatedAt).plus({ days: UMA_ESCALATION_DAYS })
+  const spccDeniedTimestamp = claim.statusUpdates[0].timestamp
+  const escalationDeadline = DateTime.fromSeconds(spccDeniedTimestamp).plus({ days: UMA_ESCALATION_DAYS })
 
   return (
     <Row alignment="space-between">

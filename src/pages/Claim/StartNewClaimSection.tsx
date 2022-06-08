@@ -128,11 +128,6 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
    */
   const receiverAddressValidInput = !receiverAddress || ethers.utils.isAddress(receiverAddress)
   /**
-   * Validate exploit block number
-   */
-  const exploitBlockNumberValidInput =
-    !exploitStartInput || !debouncedExploitStartInput || !!exploitBlockNumber || isResolvingBlock
-  /**
    * Validate whole form for submission
    */
   const claimIsValid =

@@ -20,6 +20,11 @@ export const UMA_ESCALATION_DAYS = 4 * 7
  */
 export const UMA_BOND = ethers.utils.parseUnits("9600", 6)
 
+export type ClaimStatusUpdate = {
+  status: ClaimStatus
+  timestamp: number
+}
+
 export type Claim = {
   id: number
   protocolID: number
@@ -30,7 +35,7 @@ export type Claim = {
   createdAt: number
   exploitStartedAt?: number
   status: ClaimStatus
-  statusUpdatedAt: number
+  statusUpdates: ClaimStatusUpdate[]
 }
 
 export enum ClaimStatus {
@@ -60,8 +65,10 @@ type GetActiveClaimResponseData =
         resources_link?: string
         exploit_started_at?: number
         timestamp: number
-        status: number
-        status_updated_at: number
+        status: {
+          status: number
+          timestamp: number
+        }[]
       }
     }
   | {
@@ -88,12 +95,15 @@ export const useActiveClaim = (protocolID: number, options?: UseQueryOptions<Cla
         protocolID: response.data.protocol_id,
         initiator: response.data.initiator,
         receiver: response.data.receiver,
-        status: response.data.status as ClaimStatus,
+        status: response.data.status[0].status as ClaimStatus,
         amount: BigNumber.from(response.data.amount),
         additionalResourcesLink: response.data.resources_link,
         exploitStartedAt: response.data.exploit_started_at,
         createdAt: response.data.timestamp,
-        statusUpdatedAt: response.data.status_updated_at,
+        statusUpdates: response.data.status.map((s) => ({
+          status: s.status as ClaimStatus,
+          timestamp: s.timestamp,
+        })),
       }
     },
     options

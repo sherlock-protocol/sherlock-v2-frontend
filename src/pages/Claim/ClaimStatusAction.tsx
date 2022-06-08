@@ -20,6 +20,7 @@ import { Field } from "./Field"
 import { BigNumber } from "ethers"
 import { formatUSDC } from "../../utils/units"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
+import { useCurrentBlockTime } from "../../hooks/useCurrentBlockTime"
 
 type Props = {
   claim: Claim
@@ -45,6 +46,7 @@ const Escalate: React.FC<Props> = ({ claim }) => {
   const [isWaitingTx, setIsWaitingTx] = useState(false)
   const { escalateClaim, address: claimManagerContractAddress } = useClaimManager()
   const { waitForTx } = useWaitTx()
+  const currentBlockTimestamp = useCurrentBlockTime()
 
   const toggleCollapsed = useCallback(() => {
     setCollapsed((v) => !v)
@@ -63,9 +65,11 @@ const Escalate: React.FC<Props> = ({ claim }) => {
     }
   }, [claim.id, escalateClaim, umaBond, waitForTx])
 
-  const now = DateTime.now()
-  const lastStatusUpdate = DateTime.fromSeconds(claim.statusUpdatedAt)
+  if (!currentBlockTimestamp) return null
 
+  const lastStatusUpdate = DateTime.fromSeconds(claim.statusUpdates[0].timestamp)
+
+  const now = DateTime.fromSeconds(currentBlockTimestamp)
   const claimIsInEscalationStatus =
     claim.status === ClaimStatus.SpccDenied ||
     (claim.status === ClaimStatus.SpccPending && now > lastStatusUpdate.plus({ days: SPCC_REVIEW_DAYS }))
