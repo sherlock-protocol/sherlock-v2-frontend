@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react"
 import { BigNumber, ethers } from "ethers"
+import { useQueryClient } from "react-query"
 import { useAccount, useProvider } from "wagmi"
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
@@ -16,6 +17,8 @@ import { FileDrop } from "../../components/FileDrop"
 import { formatUSDC } from "../../utils/units"
 import { uploadFile } from "./uploadFile"
 import { useDebounce } from "use-debounce"
+import { useWaitForBlock } from "../../hooks/api/useWaitForBlock"
+import { activeClaimQueryKey } from "../../hooks/api/claims"
 
 type Props = {
   protocol: Protocol
@@ -34,6 +37,8 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const [isResolvingBlock, setIsResolvingBlock] = useState(false)
   const [blockResolveError, setBlockResolveError] = useState(false)
   const [submittingClaim, setSubmittingClaim] = useState(false)
+  const { waitForBlock } = useWaitForBlock()
+  const queryClient = useQueryClient()
 
   const { waitForTx } = useWaitTx()
   const provider = useProvider()
@@ -152,7 +157,7 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
     }
 
     try {
-      await waitForTx(
+      const txReceipt = await waitForTx(
         async () =>
           await startClaim(
             protocol.bytesIdentifier,
@@ -171,6 +176,10 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
               : undefined
           )
       )
+
+      await waitForBlock(txReceipt.blockNumber)
+
+      await queryClient.invalidateQueries(activeClaimQueryKey(protocol.id))
     } catch (e) {
     } finally {
       setSubmittingClaim(false)
