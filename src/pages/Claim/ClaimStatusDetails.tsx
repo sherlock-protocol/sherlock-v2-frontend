@@ -16,6 +16,7 @@ type ClaimStatusDetailsFn = React.FC<Props> & {
   SpccApproved: React.FC<Props>
   SpccDenied: React.FC<Props>
   SpccOverdue: React.FC<Props>
+  UmaOverdue: React.FC<Props>
 }
 
 const statusMessages = {
@@ -35,6 +36,14 @@ function getSPCCDeadline(claim: Claim) {
   return DateTime.fromSeconds(claim.createdAt).plus({ days: SPCC_REVIEW_DAYS })
 }
 
+function getUMADeadline(claim: Claim) {
+  if (claim.status === ClaimStatus.SpccDenied || claim.status === ClaimStatus.SpccPending) {
+    return DateTime.fromSeconds(claim.statusUpdates[0].timestamp).plus({ days: UMA_ESCALATION_DAYS })
+  }
+
+  return undefined
+}
+
 export const ClaimStatusDetails: ClaimStatusDetailsFn = (props) => {
   return (
     <>
@@ -42,6 +51,7 @@ export const ClaimStatusDetails: ClaimStatusDetailsFn = (props) => {
       <ClaimStatusDetails.SpccApproved {...props} />
       <ClaimStatusDetails.SpccDenied {...props} />
       <ClaimStatusDetails.SpccOverdue {...props} />
+      <ClaimStatusDetails.UmaOverdue {...props} />
     </>
   )
 }
@@ -118,9 +128,14 @@ const SpccOverdue: React.FC<Props> = ({ claim }) => {
   if (!currentBlockTimestamp) return null
 
   const spccDeadline = getSPCCDeadline(claim)
+  const umaDeadline = getUMADeadline(claim)
   const now = DateTime.fromSeconds(currentBlockTimestamp)
 
-  if (claim.status !== ClaimStatus.SpccPending || spccDeadline > now) return null
+  if (claim.status !== ClaimStatus.SpccPending || spccDeadline > now || (umaDeadline && now > umaDeadline)) return null
+
+  console.log(now.toLocaleString())
+  console.log(spccDeadline.toLocaleString())
+  console.log(umaDeadline!.toLocaleString())
 
   return (
     <Column spacing="m">
@@ -154,5 +169,39 @@ const SpccOverdue: React.FC<Props> = ({ claim }) => {
   )
 }
 
+const UmaOverdue: React.FC<Props> = ({ claim }) => {
+  const currentBlockTimestamp = useCurrentBlockTime()
+
+  if (!currentBlockTimestamp) return null
+
+  const umaDeadline = getUMADeadline(claim)
+
+  if (!umaDeadline) return null
+
+  return (
+    <Column spacing="m">
+      <Row alignment="space-between">
+        <Column>
+          <Text>Status</Text>
+        </Column>
+        <Column>
+          <Text strong>UMA escalation overdue</Text>
+        </Column>
+      </Row>
+      <Row alignment="space-between">
+        <Column>
+          <Text variant="secondary">UMA escalation deadline</Text>
+        </Column>
+        <Column>
+          <Text strong variant="secondary">
+            {umaDeadline.toLocaleString(DateTime.DATETIME_MED)}
+          </Text>
+        </Column>
+      </Row>
+    </Column>
+  )
+}
+
 ClaimStatusDetails.SpccPending = SpccPending
 ClaimStatusDetails.SpccOverdue = SpccOverdue
+ClaimStatusDetails.UmaOverdue = UmaOverdue
