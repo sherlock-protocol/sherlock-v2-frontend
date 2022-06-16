@@ -170,9 +170,12 @@ const UmaOverdue: React.FC<Props> = ({ claim }) => {
 
   if (!currentBlockTimestamp) return null
 
+  const spccDeadline = getSPCCDeadline(claim)
   const umaDeadline = getUMADeadline(claim)
+  const now = DateTime.fromSeconds(currentBlockTimestamp)
 
-  if (!umaDeadline) return null
+  if (![ClaimStatus.SpccDenied, ClaimStatus.SpccPending].includes(claim.status) || spccDeadline > now || !umaDeadline)
+    return null
 
   return (
     <Column spacing="m">
