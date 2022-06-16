@@ -133,10 +133,6 @@ const SpccOverdue: React.FC<Props> = ({ claim }) => {
 
   if (claim.status !== ClaimStatus.SpccPending || spccDeadline > now || (umaDeadline && now > umaDeadline)) return null
 
-  console.log(now.toLocaleString())
-  console.log(spccDeadline.toLocaleString())
-  console.log(umaDeadline!.toLocaleString())
-
   return (
     <Column spacing="m">
       <Row alignment="space-between">
