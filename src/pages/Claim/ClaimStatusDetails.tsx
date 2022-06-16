@@ -15,6 +15,7 @@ type ClaimStatusDetailsFn = React.FC<Props> & {
   SpccPending: React.FC<Props>
   SpccApproved: React.FC<Props>
   SpccDenied: React.FC<Props>
+  SpccOverdue: React.FC<Props>
 }
 
 const statusMessages = {
@@ -30,26 +31,31 @@ const statusMessages = {
   [ClaimStatus.Halted]: "Halted by UMA HO",
 }
 
+function getSPCCDeadline(claim: Claim) {
+  return DateTime.fromSeconds(claim.createdAt).plus({ days: SPCC_REVIEW_DAYS })
+}
+
 export const ClaimStatusDetails: ClaimStatusDetailsFn = (props) => {
   return (
     <>
       <ClaimStatusDetails.SpccPending {...props} />
       <ClaimStatusDetails.SpccApproved {...props} />
       <ClaimStatusDetails.SpccDenied {...props} />
+      <ClaimStatusDetails.SpccOverdue {...props} />
     </>
   )
 }
 
 const SpccPending: React.FC<Props> = ({ claim }) => {
   const currentBlockTimestamp = useCurrentBlockTime()
-
   if (!currentBlockTimestamp) return null
-  if (claim.status !== ClaimStatus.SpccPending) return null
 
-  const spccDeadline = DateTime.fromSeconds(claim.createdAt).plus({ days: SPCC_REVIEW_DAYS })
+  const spccDeadline = getSPCCDeadline(claim)
   const now = DateTime.fromSeconds(currentBlockTimestamp)
-  const isOverdue = spccDeadline < now
-  const statusMessage = isOverdue ? "SPCC review overdue" : statusMessages[claim.status]
+
+  if (claim.status !== ClaimStatus.SpccPending || spccDeadline < now) return null
+
+  const statusMessage = statusMessages[claim.status]
 
   return (
     <Column spacing="m">
@@ -63,28 +69,12 @@ const SpccPending: React.FC<Props> = ({ claim }) => {
       </Row>
       <Row alignment="space-between">
         <Column>
-          <Text variant={isOverdue ? "secondary" : "primary"}>SPCC review deadline</Text>
+          <Text>SPCC review deadline</Text>
         </Column>
         <Column>
-          <Text strong variant={isOverdue ? "secondary" : "primary"}>
-            {" "}
-            {spccDeadline.toLocaleString(DateTime.DATETIME_MED)}
-          </Text>
+          <Text strong>{spccDeadline.toLocaleString(DateTime.DATETIME_MED)}</Text>
         </Column>
       </Row>
-      {isOverdue && (
-        <Row alignment="space-between">
-          <Column>
-            <Text>UMA escalation deadline</Text>
-          </Column>
-          <Column>
-            <Text strong>
-              {" "}
-              {spccDeadline.plus({ days: UMA_ESCALATION_DAYS }).toLocaleString(DateTime.DATETIME_MED)}
-            </Text>
-          </Column>
-        </Row>
-      )}
     </Column>
   )
 }
@@ -122,4 +112,45 @@ ClaimStatusDetails.SpccDenied = ({ claim }) => {
   )
 }
 
+const SpccOverdue: React.FC<Props> = ({ claim }) => {
+  const currentBlockTimestamp = useCurrentBlockTime()
+
+  if (!currentBlockTimestamp) return null
+
+  const spccDeadline = getSPCCDeadline(claim)
+
+  return (
+    <Column spacing="m">
+      <Row alignment="space-between">
+        <Column>
+          <Text>Status</Text>
+        </Column>
+        <Column>
+          <Text strong>SPCC review overdue</Text>
+        </Column>
+      </Row>
+      <Row alignment="space-between">
+        <Column>
+          <Text variant="secondary">SPCC review deadline</Text>
+        </Column>
+        <Column>
+          <Text strong variant="secondary">
+            {" "}
+            {spccDeadline.toLocaleString(DateTime.DATETIME_MED)}
+          </Text>
+        </Column>
+      </Row>
+      <Row alignment="space-between">
+        <Column>
+          <Text>UMA escalation deadline</Text>
+        </Column>
+        <Column>
+          <Text strong>{spccDeadline.plus({ days: UMA_ESCALATION_DAYS }).toLocaleString(DateTime.DATETIME_MED)}</Text>
+        </Column>
+      </Row>
+    </Column>
+  )
+}
+
 ClaimStatusDetails.SpccPending = SpccPending
+ClaimStatusDetails.SpccOverdue = SpccOverdue
