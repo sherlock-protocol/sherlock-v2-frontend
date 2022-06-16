@@ -21,19 +21,6 @@ type Props = {
   protocol: Protocol
 }
 
-const statusMessages = {
-  [ClaimStatus.SpccPending]: "Pending SPCC review",
-  [ClaimStatus.SpccApproved]: "SPCC Approved",
-  [ClaimStatus.SpccDenied]: "SPCC Denied",
-  [ClaimStatus.UmaPriceProposed]: "",
-  [ClaimStatus.ReadyToProposeUmaDispute]: "",
-  [ClaimStatus.UmaDisputeProposed]: "",
-  [ClaimStatus.UmaPending]: "Pendig UMA review",
-  [ClaimStatus.UmaApproved]: "UMA Approved",
-  [ClaimStatus.UmaDenied]: "UMA Denied",
-  [ClaimStatus.Halted]: "Halted by UMA HO",
-}
-
 export const ActiveClaim: React.FC<Props> = ({ claim, protocol }) => {
   const handleCoverageAgreementClick = useCallback(() => {
     if (!protocol.agreement) return
@@ -109,14 +96,6 @@ export const ActiveClaim: React.FC<Props> = ({ claim, protocol }) => {
         )}
 
         <Column className={styles.claimStatusContainer} spacing="m">
-          <Row alignment="space-between">
-            <Column>
-              <Text>Status</Text>
-            </Column>
-            <Column>
-              <Text strong>{statusMessages[claim.status]}</Text>
-            </Column>
-          </Row>
           <ClaimStatusDetails claim={claim} />
           <ClaimStatusAction claim={claim} />
         </Column>
