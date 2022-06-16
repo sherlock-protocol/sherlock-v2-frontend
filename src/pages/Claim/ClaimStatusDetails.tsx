@@ -118,6 +118,9 @@ const SpccOverdue: React.FC<Props> = ({ claim }) => {
   if (!currentBlockTimestamp) return null
 
   const spccDeadline = getSPCCDeadline(claim)
+  const now = DateTime.fromSeconds(currentBlockTimestamp)
+
+  if (claim.status !== ClaimStatus.SpccPending || spccDeadline > now) return null
 
   return (
     <Column spacing="m">
@@ -135,7 +138,6 @@ const SpccOverdue: React.FC<Props> = ({ claim }) => {
         </Column>
         <Column>
           <Text strong variant="secondary">
-            {" "}
             {spccDeadline.toLocaleString(DateTime.DATETIME_MED)}
           </Text>
         </Column>
