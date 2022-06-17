@@ -65,8 +65,6 @@ const SpccPending: React.FC<Props> = ({ claim }) => {
 
   if (claim.status !== ClaimStatus.SpccPending || spccDeadline < now) return null
 
-  const statusMessage = statusMessages[claim.status]
-
   return (
     <Column spacing="m">
       <Row alignment="space-between">
@@ -74,7 +72,7 @@ const SpccPending: React.FC<Props> = ({ claim }) => {
           <Text>Status</Text>
         </Column>
         <Column>
-          <Text strong>{statusMessage}</Text>
+          <Text strong>{statusMessages[claim.status]}</Text>
         </Column>
       </Row>
       <Row alignment="space-between">
@@ -89,36 +87,56 @@ const SpccPending: React.FC<Props> = ({ claim }) => {
   )
 }
 
-ClaimStatusDetails.SpccApproved = ({ claim }) => {
+const SpccApproved: React.FC<Props> = ({ claim }) => {
   if (claim.status !== ClaimStatus.SpccApproved) return null
 
   return (
-    <Row alignment="space-between">
-      <Column>
-        <Text>Receiver</Text>
-      </Column>
-      <Column>
-        <Text strong>{shortenAddress(claim.receiver)}</Text>
-      </Column>
-    </Row>
+    <Column spacing="m">
+      <Row alignment="space-between">
+        <Column>
+          <Text>Status</Text>
+        </Column>
+        <Column>
+          <Text strong>{statusMessages[claim.status]}</Text>
+        </Column>
+      </Row>
+      <Row alignment="space-between">
+        <Column>
+          <Text>Receiver</Text>
+        </Column>
+        <Column>
+          <Text strong>{shortenAddress(claim.receiver)}</Text>
+        </Column>
+      </Row>
+    </Column>
   )
 }
 
-ClaimStatusDetails.SpccDenied = ({ claim }) => {
+const SpccDenied: React.FC<Props> = ({ claim }) => {
   if (claim.status !== ClaimStatus.SpccDenied) return null
 
   const spccDeniedTimestamp = claim.statusUpdates[0].timestamp
   const escalationDeadline = DateTime.fromSeconds(spccDeniedTimestamp).plus({ days: UMA_ESCALATION_DAYS })
 
   return (
-    <Row alignment="space-between">
-      <Column>
-        <Text>UMA escalation deadline</Text>
-      </Column>
-      <Column>
-        <Text strong>{escalationDeadline.toLocaleString(DateTime.DATETIME_MED)}</Text>
-      </Column>
-    </Row>
+    <Column spacing="m">
+      <Row alignment="space-between">
+        <Column>
+          <Text>Status</Text>
+        </Column>
+        <Column>
+          <Text strong>{statusMessages[claim.status]}</Text>
+        </Column>
+      </Row>
+      <Row alignment="space-between">
+        <Column>
+          <Text>UMA escalation deadline</Text>
+        </Column>
+        <Column>
+          <Text strong>{escalationDeadline.toLocaleString(DateTime.DATETIME_MED)}</Text>
+        </Column>
+      </Row>
+    </Column>
   )
 }
 
@@ -202,5 +220,7 @@ const UmaOverdue: React.FC<Props> = ({ claim }) => {
 }
 
 ClaimStatusDetails.SpccPending = SpccPending
+ClaimStatusDetails.SpccApproved = SpccApproved
+ClaimStatusDetails.SpccDenied = SpccDenied
 ClaimStatusDetails.SpccOverdue = SpccOverdue
 ClaimStatusDetails.UmaOverdue = UmaOverdue
