@@ -15,6 +15,13 @@ export const SPCC_REVIEW_DAYS = 7
  */
 export const UMA_ESCALATION_DAYS = 4 * 7
 /**
+ * The UMA Halt Operator (UMAHO) is the multisig (controlled by UMA) who gives final approval to pay out a claim
+ * This variable represents the amount of time during which UMAHO can block a claim that was approved by the OO
+ * After this time period, the claim (which was approved by the OO) is inferred to be approved by UMAHO as well
+ */
+
+export const UMAHO_TIME_DAYS = 1
+/**
  * Amount needed to escalate the claim to UMA's DVM
  * https://github.com/sherlock-protocol/sherlock-v2-core/blob/45ae92b6488825ce2b0800f0bc4fef78d695a1db/contracts/managers/SherlockClaimManager.sol#L32
  */

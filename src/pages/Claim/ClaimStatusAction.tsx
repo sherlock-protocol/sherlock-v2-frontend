@@ -7,6 +7,7 @@ import {
   SPCC_REVIEW_DAYS,
   UMA_BOND as UMA_MIN_BOND,
   activeClaimQueryKey,
+  UMAHO_TIME_DAYS,
 } from "../../hooks/api/claims"
 import { Button } from "../../components/Button"
 import { useClaimManager } from "../../hooks/useClaimManager"
@@ -144,6 +145,7 @@ const Payout: React.FC<Props> = ({ claim }) => {
   const { waitForBlock } = useWaitForBlock()
   const [isWaitingPayout, setIsWaitingPayout] = useState(false)
   const queryClient = useQueryClient()
+  const currentBlockTimestamp = useCurrentBlockTime()
 
   const handleClaimPayoutClick = useCallback(async () => {
     try {
@@ -161,11 +163,15 @@ const Payout: React.FC<Props> = ({ claim }) => {
   }, [claim.id, payoutClaim, waitForTx])
 
   if (![ClaimStatus.SpccApproved, ClaimStatus.UmaApproved].includes(claim.status)) return null
+  if (!currentBlockTimestamp) return null
 
-  /**
-   * Only the claim initiator can call the payout
-   */
-  const canClaimPayout = connectedAccount?.address === claim.initiator
+  let canClaimPayout = connectedAccount?.address === claim.initiator
+
+  if (claim.status === ClaimStatus.UmaApproved) {
+    const now = DateTime.fromSeconds(currentBlockTimestamp)
+    canClaimPayout =
+      canClaimPayout && now > DateTime.fromSeconds(claim.statusUpdates[0].timestamp).plus({ days: UMAHO_TIME_DAYS })
+  }
 
   return (
     <Column spacing="m">
@@ -174,7 +180,7 @@ const Payout: React.FC<Props> = ({ claim }) => {
           {isWaitingPayout ? "Claiming payout ..." : "Claim payout"}
         </Button>
       </Row>
-      {!canClaimPayout && (
+      {connectedAccount?.address !== claim.initiator && (
         <>
           <Row>
             <Text size="small">Only the claim inintiator can execute the payout.</Text>

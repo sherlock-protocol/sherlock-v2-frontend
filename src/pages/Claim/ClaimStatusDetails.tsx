@@ -1,7 +1,7 @@
 import React from "react"
 import { DateTime } from "luxon"
 
-import { Claim, ClaimStatus, SPCC_REVIEW_DAYS, UMA_ESCALATION_DAYS } from "../../hooks/api/claims"
+import { Claim, ClaimStatus, SPCC_REVIEW_DAYS, UMA_ESCALATION_DAYS, UMAHO_TIME_DAYS } from "../../hooks/api/claims"
 import { Text } from "../../components/Text"
 import { Column, Row } from "../../components/Layout"
 import { shortenAddress } from "../../utils/format"
@@ -18,6 +18,7 @@ type ClaimStatusDetailsFn = React.FC<Props> & {
   SpccOverdue: React.FC<Props>
   UmaOverdue: React.FC<Props>
   UmaPending: React.FC<Props>
+  UmaApproved: React.FC<Props>
 }
 
 const statusMessages = {
@@ -54,6 +55,7 @@ export const ClaimStatusDetails: ClaimStatusDetailsFn = (props) => {
       <ClaimStatusDetails.SpccOverdue {...props} />
       <ClaimStatusDetails.UmaOverdue {...props} />
       <ClaimStatusDetails.UmaPending {...props} />
+      <ClaimStatusDetails.UmaApproved {...props} />
     </>
   )
 }
@@ -238,9 +240,49 @@ const UmaReviewPending: React.FC<Props> = ({ claim }) => {
   )
 }
 
+const UmaApproved: React.FC<Props> = ({ claim }) => {
+  const currentBlockTimestamp = useCurrentBlockTime()
+  if (!currentBlockTimestamp) return null
+
+  if (claim.status !== ClaimStatus.UmaApproved) return null
+
+  const now = DateTime.fromSeconds(currentBlockTimestamp)
+  const payoutDate = DateTime.fromSeconds(claim.statusUpdates[0].timestamp).plus({ days: UMAHO_TIME_DAYS })
+  const payoutEnabled = now > payoutDate
+
+  return (
+    <Column spacing="m">
+      <Row alignment="space-between">
+        <Column>
+          <Text>Status</Text>
+        </Column>
+        <Column>
+          <Text strong>UMA Approved</Text>
+        </Column>
+      </Row>
+      <Row alignment="space-between">
+        <Column>
+          <Text>Payout available on:</Text>
+        </Column>
+        <Column>
+          <Text strong>{payoutDate.toLocaleString(DateTime.DATETIME_MED)}</Text>
+        </Column>
+      </Row>
+      {!payoutEnabled && (
+        <Row>
+          <Text size="small">
+            UMA has approved this claim. The paypout will be available 24 hours after the approval.
+          </Text>
+        </Row>
+      )}
+    </Column>
+  )
+}
+
 ClaimStatusDetails.SpccPending = SpccPending
 ClaimStatusDetails.SpccApproved = SpccApproved
 ClaimStatusDetails.SpccDenied = SpccDenied
 ClaimStatusDetails.SpccOverdue = SpccOverdue
 ClaimStatusDetails.UmaOverdue = UmaOverdue
 ClaimStatusDetails.UmaPending = UmaReviewPending
+ClaimStatusDetails.UmaApproved = UmaApproved
