@@ -17,6 +17,7 @@ type ClaimStatusDetailsFn = React.FC<Props> & {
   SpccDenied: React.FC<Props>
   SpccOverdue: React.FC<Props>
   UmaOverdue: React.FC<Props>
+  UmaPending: React.FC<Props>
 }
 
 const statusMessages = {
@@ -52,6 +53,7 @@ export const ClaimStatusDetails: ClaimStatusDetailsFn = (props) => {
       <ClaimStatusDetails.SpccDenied {...props} />
       <ClaimStatusDetails.SpccOverdue {...props} />
       <ClaimStatusDetails.UmaOverdue {...props} />
+      <ClaimStatusDetails.UmaPending {...props} />
     </>
   )
 }
@@ -219,8 +221,26 @@ const UmaOverdue: React.FC<Props> = ({ claim }) => {
   )
 }
 
+const UmaReviewPending: React.FC<Props> = ({ claim }) => {
+  if (claim.status !== ClaimStatus.UmaPending) return null
+
+  return (
+    <Column spacing="m">
+      <Row alignment="space-between">
+        <Column>
+          <Text>Status</Text>
+        </Column>
+        <Column>
+          <Text strong>UMA review pending</Text>
+        </Column>
+      </Row>
+    </Column>
+  )
+}
+
 ClaimStatusDetails.SpccPending = SpccPending
 ClaimStatusDetails.SpccApproved = SpccApproved
 ClaimStatusDetails.SpccDenied = SpccDenied
 ClaimStatusDetails.SpccOverdue = SpccOverdue
 ClaimStatusDetails.UmaOverdue = UmaOverdue
+ClaimStatusDetails.UmaPending = UmaReviewPending

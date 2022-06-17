@@ -6,6 +6,7 @@ import {
   UMA_ESCALATION_DAYS,
   SPCC_REVIEW_DAYS,
   UMA_BOND as UMA_MIN_BOND,
+  activeClaimQueryKey,
 } from "../../hooks/api/claims"
 import { Button } from "../../components/Button"
 import { useClaimManager } from "../../hooks/useClaimManager"
@@ -21,6 +22,8 @@ import { BigNumber } from "ethers"
 import { formatUSDC } from "../../utils/units"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { useCurrentBlockTime } from "../../hooks/useCurrentBlockTime"
+import { useWaitForBlock } from "../../hooks/api/useWaitForBlock"
+import { useQueryClient } from "react-query"
 
 type Props = {
   claim: Claim
@@ -138,15 +141,29 @@ const Payout: React.FC<Props> = ({ claim }) => {
   const [{ data: connectedAccount }] = useAccount()
   const { payoutClaim } = useClaimManager()
   const { waitForTx } = useWaitTx()
+  const { waitForBlock } = useWaitForBlock()
+  const [isWaitingPayout, setIsWaitingPayout] = useState(false)
+  const queryClient = useQueryClient()
 
   const handleClaimPayoutClick = useCallback(async () => {
-    await waitForTx(async () => await payoutClaim(claim.id))
+    try {
+      setIsWaitingPayout(true)
+
+      const txReceipt = await waitForTx(async () => await payoutClaim(claim.id))
+
+      await waitForBlock(txReceipt.blockNumber)
+
+      queryClient.invalidateQueries(activeClaimQueryKey(claim.protocolID))
+    } catch (e) {
+    } finally {
+      setIsWaitingPayout(false)
+    }
   }, [claim.id, payoutClaim, waitForTx])
 
   if (![ClaimStatus.SpccApproved, ClaimStatus.UmaApproved].includes(claim.status)) return null
 
   /**
-   * Only protocol's agent is allowed to start a new claim
+   * Only the claim initiator can call the payout
    */
   const canClaimPayout = connectedAccount?.address === claim.initiator
 
@@ -154,7 +171,7 @@ const Payout: React.FC<Props> = ({ claim }) => {
     <Column spacing="m">
       <Row>
         <Button onClick={handleClaimPayoutClick} disabled={!canClaimPayout} fullWidth>
-          Claim payout
+          {isWaitingPayout ? "Claiming payout ..." : "Claim payout"}
         </Button>
       </Row>
       {!canClaimPayout && (
