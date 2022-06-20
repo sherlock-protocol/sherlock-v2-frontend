@@ -1,5 +1,5 @@
-import React from "react"
-import { Column, Row } from "../../components//Layout"
+import React, { PropsWithChildren } from "react"
+import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components//Text"
 
 type ErrorStateProps =
@@ -16,7 +16,7 @@ type Props = {
   detail?: React.ReactElement | string
 } & ErrorStateProps
 
-export const Field: React.FC<Props> = ({ label, detail, children, ...props }) => {
+export const Field: React.FC<PropsWithChildren<Props>> = ({ label, detail, children, ...props }) => {
   return (
     <Column spacing="xs" grow={1}>
       {label && (

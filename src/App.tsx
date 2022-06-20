@@ -11,9 +11,11 @@ import { ProtocolPage } from "./pages/Protocol"
 import { ClaimsPage } from "./pages/Claim"
 import AppStakers from "./AppStakers"
 import AppProtocols from "./AppProtocols"
+import AppInternal from "./AppInternal"
 
-import { routes, protocolsRoutes } from "./utils/routes"
+import { routes, protocolsRoutes, internalRoutes } from "./utils/routes"
 import MobileBlock from "./components/MobileBlock/MobileBlock"
+import { InternalOverviewPage } from "./pages/InternalOverview/InternalOverview"
 
 function App() {
   return (
@@ -36,6 +38,13 @@ function App() {
           <Route path={protocolsRoutes.Claims} element={<ClaimsPage />} />
 
           <Route path="*" element={<Navigate replace to={protocolsRoutes.Balance} />} />
+        </Route>
+
+        {/** Internal section routes */}
+        <Route path={`${routes.Internal}/*`} element={<AppInternal />}>
+          <Route path={internalRoutes.InternalOverview} element={<InternalOverviewPage />} />
+
+          <Route path="*" element={<Navigate replace to={internalRoutes.InternalOverview} />} />
         </Route>
 
         <Route path="*" element={<Navigate replace to="/" />} />

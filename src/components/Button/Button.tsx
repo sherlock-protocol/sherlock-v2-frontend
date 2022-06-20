@@ -1,4 +1,4 @@
-import React from "react"
+import React, { PropsWithChildren } from "react"
 import cx from "classnames"
 
 import styles from "./Button.module.scss"
@@ -40,7 +40,7 @@ export type ButtonProps = {
   fullWidth?: boolean
 }
 
-export const Button: React.FC<ButtonProps> = ({
+export const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
   children,
   onClick,
   disabled,

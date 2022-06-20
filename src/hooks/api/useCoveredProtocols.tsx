@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { PropsWithChildren, useCallback, useState } from "react"
 import { BigNumber } from "ethers"
 import axios from "./axios"
 import { getCoveredProtocols as getCoveredProtocolsUrl } from "./urls"
@@ -139,7 +139,7 @@ export const useCoveredProtocols = () => {
   return React.useContext(CoveredProtocolsContext)
 }
 
-export const CoveredProtocolsProvider: React.FC = ({ children }) => {
+export const CoveredProtocolsProvider: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const [data, setData] = useState<CoveredProtocols>({})

@@ -1,14 +1,16 @@
 import React from "react"
-import { AreaChart, YAxis, XAxis, Tooltip, Area } from "recharts"
+import { AreaChart, YAxis, XAxis, Tooltip, TooltipProps, Area, XAxisProps, AreaProps } from "recharts"
 
-import { commify, shortenNumber } from "../../utils/units"
+import { shortenNumber } from "../../utils/units"
 
 type Props = {
   width?: number
   height?: number
   data?: any[]
   yTickFormatter?: (v: number) => string
-  tooltipFormatter?: (v: number, name: string) => [string, string]
+  type?: AreaProps["type"]
+  xAxisProps?: XAxisProps
+  tooltipProps?: TooltipProps<any, any>
 }
 
 export const Chart: React.FC<Props> = ({
@@ -16,7 +18,9 @@ export const Chart: React.FC<Props> = ({
   height,
   data,
   yTickFormatter = (v) => (v > 0 ? `$ ${shortenNumber(v)}` : ""),
-  tooltipFormatter = (v: number, name: string) => [`$${commify(v)}`, name.toUpperCase()],
+  type = "monotone",
+  xAxisProps,
+  tooltipProps,
 }) => {
   return (
     <AreaChart width={width} height={height} data={data}>
@@ -33,16 +37,15 @@ export const Chart: React.FC<Props> = ({
         width={80}
         tickFormatter={yTickFormatter}
       />
-      <XAxis dataKey="name" tick={{ fill: "white", fontSize: "12px" }} tickMargin={5} allowDuplicatedCategory={false} />
-      <Tooltip formatter={tooltipFormatter} itemStyle={{ color: "#19032d" }} labelStyle={{ color: "gray" }} />
-      <Area
-        type="monotone"
-        dataKey="value"
-        stroke="#8414EC"
-        fill="url(#tvl)"
-        fillOpacity={1}
-        isAnimationActive={true}
+      <XAxis
+        dataKey="name"
+        tick={{ fill: "white", fontSize: "12px" }}
+        tickMargin={5}
+        allowDuplicatedCategory={false}
+        {...xAxisProps}
       />
+      <Tooltip itemStyle={{ color: "#19032d" }} labelStyle={{ color: "gray" }} {...tooltipProps} />
+      <Area type={type} dataKey="value" stroke="#8414EC" fill="url(#tvl)" fillOpacity={1} isAnimationActive={true} />
     </AreaChart>
   )
 }

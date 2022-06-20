@@ -1,4 +1,4 @@
-import React from "react"
+import React, { PropsWithChildren } from "react"
 import cx from "classnames"
 
 import styles from "./Box.module.scss"
@@ -10,7 +10,13 @@ type Props = {
   fixedWidth?: boolean
 }
 
-export const Box: React.FC<Props> = ({ children, className, shadow = true, fullWidth = false, fixedWidth = false }) => (
+export const Box: React.FC<PropsWithChildren<Props>> = ({
+  children,
+  className,
+  shadow = true,
+  fullWidth = false,
+  fixedWidth = false,
+}) => (
   <div
     className={cx(
       styles.box,

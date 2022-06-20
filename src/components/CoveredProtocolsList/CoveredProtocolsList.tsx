@@ -62,7 +62,7 @@ const CoveredProtocolsList: React.FC = () => {
 
     // Fix rounding errors so percentages add up to 100%
     const totalPercentages = sortedProtocols.reduce((value, item) => item.percentageOfTotal + value, 0)
-    if (totalPercentages > 100) {
+    if (totalPercentages !== 100) {
       const delta = totalPercentages - 100
       sortedProtocols[sortedProtocols.length - 1].percentageOfTotal -= delta
     }

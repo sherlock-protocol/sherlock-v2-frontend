@@ -31,11 +31,6 @@ const AppStakers = () => {
       title: "POSITIONS",
       route: routes.Positions,
     },
-    {
-      title: "PROTOCOLS",
-      route: routes.Protocols,
-      external: true,
-    },
   ]
 
   if (fundraisePositionData) {
@@ -44,6 +39,12 @@ const AppStakers = () => {
       route: routes.FundraiseClaim,
     })
   }
+
+  navigationLinks.push({
+    title: "PROTOCOLS",
+    route: routes.Protocols,
+    external: true,
+  })
 
   return (
     <div className={styles.app}>

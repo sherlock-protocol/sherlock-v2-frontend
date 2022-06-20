@@ -1,5 +1,5 @@
 import React from "react"
-import ReactDOM from "react-dom"
+import { createRoot } from "react-dom/client"
 import { BrowserRouter } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "react-query"
 import "./index.module.scss"
@@ -18,8 +18,10 @@ import { CoveredProtocolsProvider } from "./hooks/api/useCoveredProtocols"
 global.Buffer = global.Buffer || require("buffer").Buffer
 
 const queryClient = new QueryClient()
+const container = document.getElementById("root")
+const root = createRoot(container!)
 
-ReactDOM.render(
+root.render(
   <React.StrictMode>
     <SentryErrorBoundary>
       <BrowserRouter>
@@ -40,8 +42,7 @@ ReactDOM.render(
         </WagmiProvider>
       </BrowserRouter>
     </SentryErrorBoundary>
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 )
 
 // If you want to start measuring performance in your app, pass a function

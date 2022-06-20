@@ -1,4 +1,4 @@
-import React from "react"
+import React, { PropsWithChildren } from "react"
 
 import styles from "./Title.module.scss"
 
@@ -8,6 +8,6 @@ type TitleProps = {
   variant?: TitleVariant
 }
 
-export const Title: React.FC<TitleProps> = ({ variant = "h1", children }) => {
+export const Title: React.FC<PropsWithChildren<TitleProps>> = ({ variant = "h1", children }) => {
   return React.createElement(variant, { className: styles.title }, children)
 }

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { PropsWithChildren } from "react"
 import { Box } from "../Box"
 import styles from "./Modal.module.scss"
 
@@ -14,7 +14,7 @@ export interface Props {
   onClose?: () => void
 }
 
-export const Modal: React.FC<Props> = ({ closeable, children, onClose }) => {
+export const Modal: React.FC<PropsWithChildren<Props>> = ({ closeable, children, onClose }) => {
   const [isVisible, setIsVisible] = React.useState(true)
 
   /**
