@@ -1,7 +1,14 @@
 import React from "react"
 import { DateTime } from "luxon"
 
-import { Claim, ClaimStatus, SPCC_REVIEW_DAYS, UMA_ESCALATION_DAYS, UMAHO_TIME_DAYS } from "../../hooks/api/claims"
+import {
+  Claim,
+  ClaimStatus,
+  UMA_ESCALATION_DAYS,
+  UMAHO_TIME_DAYS,
+  getUMADeadline,
+  getSPCCDeadline,
+} from "../../hooks/api/claims"
 import { Text } from "../../components/Text"
 import { Column, Row } from "../../components/Layout"
 import { shortenAddress } from "../../utils/format"
@@ -32,18 +39,6 @@ const statusMessages = {
   [ClaimStatus.UmaApproved]: "UMA Approved",
   [ClaimStatus.UmaDenied]: "UMA Denied",
   [ClaimStatus.Halted]: "Halted by UMA HO",
-}
-
-function getSPCCDeadline(claim: Claim) {
-  return DateTime.fromSeconds(claim.createdAt).plus({ days: SPCC_REVIEW_DAYS })
-}
-
-function getUMADeadline(claim: Claim) {
-  if (claim.status === ClaimStatus.SpccDenied || claim.status === ClaimStatus.SpccPending) {
-    return DateTime.fromSeconds(claim.statusUpdates[0].timestamp).plus({ days: UMA_ESCALATION_DAYS })
-  }
-
-  return undefined
 }
 
 export const ClaimStatusDetails: ClaimStatusDetailsFn = (props) => {
@@ -117,10 +112,13 @@ const SpccApproved: React.FC<Props> = ({ claim }) => {
 }
 
 const SpccDenied: React.FC<Props> = ({ claim }) => {
-  if (claim.status !== ClaimStatus.SpccDenied) return null
+  const currentBlockTimestamp = useCurrentBlockTime()
 
-  const spccDeniedTimestamp = claim.statusUpdates[0].timestamp
-  const escalationDeadline = DateTime.fromSeconds(spccDeniedTimestamp).plus({ days: UMA_ESCALATION_DAYS })
+  if (!currentBlockTimestamp) return null
+  const now = DateTime.fromSeconds(currentBlockTimestamp)
+  const escalationDeadline = getUMADeadline(claim)
+
+  if (claim.status !== ClaimStatus.SpccDenied || now > escalationDeadline!) return null
 
   return (
     <Column spacing="m">
@@ -137,7 +135,7 @@ const SpccDenied: React.FC<Props> = ({ claim }) => {
           <Text>UMA escalation deadline</Text>
         </Column>
         <Column>
-          <Text strong>{escalationDeadline.toLocaleString(DateTime.DATETIME_MED)}</Text>
+          <Text strong>{escalationDeadline!.toLocaleString(DateTime.DATETIME_MED)}</Text>
         </Column>
       </Row>
     </Column>
@@ -196,7 +194,7 @@ const UmaOverdue: React.FC<Props> = ({ claim }) => {
   const umaDeadline = getUMADeadline(claim)
   const now = DateTime.fromSeconds(currentBlockTimestamp)
 
-  if (![ClaimStatus.SpccDenied, ClaimStatus.SpccPending].includes(claim.status) || spccDeadline > now || !umaDeadline)
+  if (![ClaimStatus.SpccDenied, ClaimStatus.SpccPending].includes(claim.status) || !umaDeadline || now < umaDeadline)
     return null
 
   return (

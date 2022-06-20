@@ -1,5 +1,6 @@
 import { useQuery, UseQueryOptions } from "react-query"
 import { BigNumber, ethers } from "ethers"
+import { DateTime } from "luxon"
 import axios from "./axios"
 
 import { getActiveClaim } from "./urls"
@@ -58,6 +59,18 @@ export enum ClaimStatus {
   UmaDenied = 9, // Final state, claim is invalid
   Halted = 10, // UMAHO can halt claim if state is UmaApproved
   //  Cleaned=11, // Claim is removed by protocol agent
+}
+
+export function getSPCCDeadline(claim: Claim) {
+  return DateTime.fromSeconds(claim.createdAt).plus({ days: SPCC_REVIEW_DAYS })
+}
+
+export function getUMADeadline(claim: Claim) {
+  if (claim.status === ClaimStatus.SpccDenied || claim.status === ClaimStatus.SpccPending) {
+    return DateTime.fromSeconds(claim.statusUpdates[0].timestamp).plus({ days: UMA_ESCALATION_DAYS })
+  }
+
+  return undefined
 }
 
 type GetActiveClaimResponseData =

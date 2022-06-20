@@ -51,6 +51,8 @@ const Escalate: React.FC<Props> = ({ claim }) => {
   const { escalateClaim, address: claimManagerContractAddress } = useClaimManager()
   const { waitForTx } = useWaitTx()
   const currentBlockTimestamp = useCurrentBlockTime()
+  const queryClient = useQueryClient()
+  const { waitForBlock } = useWaitForBlock()
 
   const toggleCollapsed = useCallback(() => {
     setCollapsed((v) => !v)
@@ -62,7 +64,9 @@ const Escalate: React.FC<Props> = ({ claim }) => {
     setIsWaitingTx(true)
 
     try {
-      await waitForTx(async () => await escalateClaim(claim.id, umaBond))
+      const txReceipt = await waitForTx(async () => await escalateClaim(claim.id, umaBond))
+      await waitForBlock(txReceipt.blockNumber)
+      await queryClient.invalidateQueries(activeClaimQueryKey(claim.protocolID))
     } catch (e) {
     } finally {
       setIsWaitingTx(false)
@@ -155,7 +159,7 @@ const Payout: React.FC<Props> = ({ claim }) => {
 
       await waitForBlock(txReceipt.blockNumber)
 
-      queryClient.invalidateQueries(activeClaimQueryKey(claim.protocolID))
+      await queryClient.invalidateQueries(activeClaimQueryKey(claim.protocolID))
     } catch (e) {
     } finally {
       setIsWaitingPayout(false)
