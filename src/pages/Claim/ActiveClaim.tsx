@@ -7,7 +7,7 @@ import { Text } from "../../components/Text"
 import { Column, Row } from "../../components/Layout"
 import { Button } from "../../components/Button"
 import { Title } from "../../components/Title"
-import { Claim, ClaimStatus } from "../../hooks/api/claims"
+import { Claim } from "../../hooks/api/claims"
 import { Protocol } from "../../hooks/api/protocols"
 import { formatUSDC } from "../../utils/units"
 

@@ -5,7 +5,7 @@ import { Column, Row } from "../../components/Layout"
 import Select from "../../components/Select/Select"
 import { Title } from "../../components/Title"
 import { useProtocols, Protocol } from "../../hooks/api/protocols"
-import { useActiveClaim } from "../../hooks/api/claims"
+import { ClaimStatus, useActiveClaim } from "../../hooks/api/claims"
 
 import { StartNewClaimSection } from "./StartNewClaimSection"
 import { ActiveClaim } from "./ActiveClaim"
@@ -45,19 +45,24 @@ export const ClaimsPage: React.FC = () => {
    * There're multiple scenarios depending on wether an active claim exists or not.
    *
    * isLoadingActiveClaim === true => indexer is being fetched
-   * activeClaim === null => the protocol doesn't have an active claim
+   * activeClaim === null || activeClaim.status == ClaimStatus.PaidOut => the protocol doesn't have an active claim
    * activeClaim === undefined => this is the initial state, indexer hasn't been fetched yet
    *
    */
   const renderClaimSection = useCallback(() => {
     if (!selectedProtocol) return null
 
-    // Active claim fetched, but no results => Protocol doesn't have an active claim.
-    if (activeClaim === null) return <StartNewClaimSection protocol={selectedProtocol} />
-    // Active claim fetched and found one active claim.
-    if (activeClaim) return <ActiveClaim claim={activeClaim} protocol={selectedProtocol} />
     // Active claim fetch is loading.
     if (isLoadingActiveClaim) return <Box shadow={false}></Box>
+
+    return (
+      <>
+        {(activeClaim === null || activeClaim?.status === ClaimStatus.PaidOut) && (
+          <StartNewClaimSection protocol={selectedProtocol} />
+        )}
+        {activeClaim && <ActiveClaim claim={activeClaim} protocol={selectedProtocol} />}
+      </>
+    )
   }, [activeClaim, isLoadingActiveClaim, selectedProtocol])
 
   return (

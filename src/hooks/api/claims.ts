@@ -59,6 +59,7 @@ export enum ClaimStatus {
   UmaDenied = 9, // Final state, claim is invalid
   Halted = 10, // UMAHO can halt claim if state is UmaApproved
   //  Cleaned=11, // Claim is removed by protocol agent
+  PaidOut = 12, // Claim is paid out.
 }
 
 export function getSPCCDeadline(claim: Claim) {

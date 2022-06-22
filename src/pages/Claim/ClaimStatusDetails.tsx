@@ -26,6 +26,7 @@ type ClaimStatusDetailsFn = React.FC<Props> & {
   UmaOverdue: React.FC<Props>
   UmaPending: React.FC<Props>
   UmaApproved: React.FC<Props>
+  PaidOut: React.FC<Props>
 }
 
 const statusMessages = {
@@ -39,6 +40,7 @@ const statusMessages = {
   [ClaimStatus.UmaApproved]: "UMA Approved",
   [ClaimStatus.UmaDenied]: "UMA Denied",
   [ClaimStatus.Halted]: "Halted by UMA HO",
+  [ClaimStatus.PaidOut]: "Paid out",
 }
 
 export const ClaimStatusDetails: ClaimStatusDetailsFn = (props) => {
@@ -51,6 +53,7 @@ export const ClaimStatusDetails: ClaimStatusDetailsFn = (props) => {
       <ClaimStatusDetails.UmaOverdue {...props} />
       <ClaimStatusDetails.UmaPending {...props} />
       <ClaimStatusDetails.UmaApproved {...props} />
+      <ClaimStatusDetails.PaidOut {...props} />
     </>
   )
 }
@@ -277,6 +280,33 @@ const UmaApproved: React.FC<Props> = ({ claim }) => {
   )
 }
 
+const PaidOut: React.FC<Props> = ({ claim }) => {
+  if (claim.status !== ClaimStatus.PaidOut) return null
+
+  const payoutDate = DateTime.fromSeconds(claim.statusUpdates[0].timestamp)
+
+  return (
+    <Column spacing="m">
+      <Row alignment="space-between">
+        <Column>
+          <Text>Status</Text>
+        </Column>
+        <Column>
+          <Text strong>{statusMessages[claim.status]}</Text>
+        </Column>
+      </Row>
+      <Row alignment="space-between">
+        <Column>
+          <Text>Date</Text>
+        </Column>
+        <Column>
+          <Text strong>{payoutDate.toLocaleString(DateTime.DATETIME_MED)}</Text>
+        </Column>
+      </Row>
+    </Column>
+  )
+}
+
 ClaimStatusDetails.SpccPending = SpccPending
 ClaimStatusDetails.SpccApproved = SpccApproved
 ClaimStatusDetails.SpccDenied = SpccDenied
@@ -284,3 +314,4 @@ ClaimStatusDetails.SpccOverdue = SpccOverdue
 ClaimStatusDetails.UmaOverdue = UmaOverdue
 ClaimStatusDetails.UmaPending = UmaReviewPending
 ClaimStatusDetails.UmaApproved = UmaApproved
+ClaimStatusDetails.PaidOut = PaidOut

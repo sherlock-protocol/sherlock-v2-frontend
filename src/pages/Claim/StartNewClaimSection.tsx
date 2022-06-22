@@ -204,9 +204,6 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
     <Box shadow={false} fixedWidth>
       {!isCreating ? (
         <Column spacing="m">
-          <Text size="normal" strong>
-            {protocol.name} has no active claim.
-          </Text>
           <Button onClick={toggleIsCreating} disabled={!canStartNewClaim}>
             Start new claim
           </Button>
