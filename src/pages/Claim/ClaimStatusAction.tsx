@@ -180,7 +180,7 @@ const Payout: React.FC<Props> = ({ claim }) => {
   return (
     <Column spacing="m">
       <Row>
-        <Button onClick={handleClaimPayoutClick} disabled={!canClaimPayout} fullWidth>
+        <Button onClick={handleClaimPayoutClick} disabled={!canClaimPayout || isWaitingPayout} fullWidth>
           {isWaitingPayout ? "Claiming payout ..." : "Claim payout"}
         </Button>
       </Row>
