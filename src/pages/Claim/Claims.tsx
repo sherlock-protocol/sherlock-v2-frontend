@@ -5,7 +5,7 @@ import { Column, Row } from "../../components/Layout"
 import Select from "../../components/Select/Select"
 import { Title } from "../../components/Title"
 import { useProtocols, Protocol } from "../../hooks/api/protocols"
-import { ClaimStatus, useActiveClaim } from "../../hooks/api/claims"
+import { ClaimStatus, isInFinalState, useActiveClaim } from "../../hooks/api/claims"
 
 import { StartNewClaimSection } from "./StartNewClaimSection"
 import { ActiveClaim } from "./ActiveClaim"
@@ -57,7 +57,7 @@ export const ClaimsPage: React.FC = () => {
 
     return (
       <>
-        {(activeClaim === null || activeClaim?.status === ClaimStatus.PaidOut) && (
+        {(activeClaim === null || (activeClaim && isInFinalState(activeClaim))) && (
           <StartNewClaimSection protocol={selectedProtocol} />
         )}
         {activeClaim && <ActiveClaim claim={activeClaim} protocol={selectedProtocol} />}

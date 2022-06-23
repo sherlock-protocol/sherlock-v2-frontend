@@ -58,7 +58,7 @@ export enum ClaimStatus {
   UmaApproved = 8, // Final state, claim is valid, claim can be enacted after 1 day, umaHaltOperator has 1 day to change to denied
   UmaDenied = 9, // Final state, claim is invalid
   Halted = 10, // UMAHO can halt claim if state is UmaApproved
-  //  Cleaned=11, // Claim is removed by protocol agent
+  Cleaned = 11, // Claim is removed by protocol agent
   PaidOut = 12, // Claim is paid out.
 }
 
@@ -72,6 +72,10 @@ export function getUMADeadline(claim: Claim) {
   }
 
   return undefined
+}
+
+export function isInFinalState(claim: Claim) {
+  return [ClaimStatus.PaidOut, ClaimStatus.UmaDenied].includes(claim.status)
 }
 
 type GetActiveClaimResponseData =

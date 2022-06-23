@@ -7,7 +7,7 @@ import { Text } from "../../components/Text"
 import { Column, Row } from "../../components/Layout"
 import { Button } from "../../components/Button"
 import { Title } from "../../components/Title"
-import { Claim } from "../../hooks/api/claims"
+import { Claim, isInFinalState } from "../../hooks/api/claims"
 import { Protocol } from "../../hooks/api/protocols"
 import { formatUSDC } from "../../utils/units"
 
@@ -37,7 +37,7 @@ export const ActiveClaim: React.FC<Props> = ({ claim, protocol }) => {
   return (
     <Box shadow={false} className={styles.activeClaim} fixedWidth>
       <Column spacing="m">
-        <Title>Active Claim</Title>
+        <Title>{isInFinalState(claim) ? "Last Claim" : "Active Claim"}</Title>
         <Row alignment="space-between">
           <Column>
             <Text>Submitted</Text>
