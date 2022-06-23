@@ -8,6 +8,7 @@ type Props = {
   shadow?: boolean
   fullWidth?: boolean
   fixedWidth?: boolean
+  onClick?: (e: React.MouseEvent) => void
 }
 
 export const Box: React.FC<PropsWithChildren<Props>> = ({
@@ -16,6 +17,7 @@ export const Box: React.FC<PropsWithChildren<Props>> = ({
   shadow = true,
   fullWidth = false,
   fixedWidth = false,
+  onClick,
 }) => (
   <div
     className={cx(
@@ -27,6 +29,7 @@ export const Box: React.FC<PropsWithChildren<Props>> = ({
       },
       className
     )}
+    onClick={onClick}
   >
     {shadow && <div className={styles.shadow}></div>}
     {children}
