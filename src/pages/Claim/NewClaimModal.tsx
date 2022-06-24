@@ -122,7 +122,8 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
   /**
    * Validate receiver address
    */
-  const receiverAddressValidInput = !receiverAddress || ethers.utils.isAddress(receiverAddress)
+  const receiverAddressValidInput =
+    !receiverAddress || (ethers.utils.isAddress(receiverAddress) && receiverAddress !== ethers.constants.AddressZero)
   /**
    * Validate whole form for submission
    */
