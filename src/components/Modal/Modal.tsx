@@ -15,8 +15,6 @@ export interface Props {
 }
 
 export const Modal: React.FC<PropsWithChildren<Props>> = ({ closeable, children, onClose }) => {
-  const [isVisible, setIsVisible] = React.useState(true)
-
   /**
    * Hide the modal
    */
@@ -28,15 +26,10 @@ export const Modal: React.FC<PropsWithChildren<Props>> = ({ closeable, children,
 
       e.stopPropagation()
 
-      setIsVisible(false)
       onClose?.()
     },
     [onClose, closeable]
   )
-
-  if (!isVisible) {
-    return null
-  }
 
   return (
     <div className={styles.modal} onClick={handleClose}>

@@ -27,7 +27,7 @@ type Props = ModalProps & {
   protocol: Protocol
 }
 
-export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
+export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) => {
   const [{ data: connectedAccount }] = useAccount()
   const [claimAmount, setClaimAmount] = useState<BigNumber>()
   const [additionalInformationFile, setAdditionalInformationFile] = useState<File>()
@@ -39,6 +39,7 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
   const [isResolvingBlock, setIsResolvingBlock] = useState(false)
   const [blockResolveError, setBlockResolveError] = useState(false)
   const [submittingClaim, setSubmittingClaim] = useState(false)
+  const [displayModalCloseConfirm, setDisplayModalFormConfirm] = useState(false)
   const { waitForBlock } = useWaitForBlock()
   const queryClient = useQueryClient()
 
@@ -130,6 +131,11 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
   const claimIsValid = receiverAddress && receiverAddressValidInput && exploitBlock && claimAmount && claimAmountIsValid
 
   /**
+   * Form is dirty if the user already filled some fields
+   */
+  const formIsDirty: boolean = !!receiverAddress || !!claimAmount || !!exploitBlock || !!additionalInformationFile
+
+  /**
    * Handle submit claim click
    */
   const handleSubmitClaim = useCallback(async () => {
@@ -191,8 +197,41 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
     additionalInformationHash,
   ])
 
+  const handleModalClose = useCallback(() => {
+    if (formIsDirty) {
+      setDisplayModalFormConfirm(true)
+    } else {
+      onClose && onClose()
+    }
+  }, [setDisplayModalFormConfirm, onClose, formIsDirty])
+
+  const handleModalCloseConfirm = useCallback(() => {
+    onClose && onClose()
+  }, [onClose])
+
+  const handleModalCloseCancel = useCallback(() => {
+    setDisplayModalFormConfirm(false)
+  }, [])
+
   return (
-    <Modal closeable {...props}>
+    <Modal closeable onClose={handleModalClose}>
+      {displayModalCloseConfirm && (
+        <Modal>
+          <Column spacing="xl">
+            <Title>Unsaved Claim</Title>
+            <Text>
+              Are you sure you want to close this modal? All unsaved changes will be lost and you will need to start
+              over.
+            </Text>
+            <Row spacing="m" alignment="end">
+              <Button variant="secondary" onClick={handleModalCloseCancel}>
+                No, continue.
+              </Button>
+              <Button onClick={handleModalCloseConfirm}>Yes, close it.</Button>
+            </Row>
+          </Column>
+        </Modal>
+      )}
       <Column spacing="xl">
         <Title>Start new claim</Title>
         <Row>
@@ -213,7 +252,7 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
               isResolvingBlock
                 ? "Validating block ..."
                 : exploitBlock
-                ? `Block: #${exploitBlock.number}. ${DateTime.fromSeconds(exploitBlock.timestamp).toLocaleString(
+                ? `Block: #${exploitBlock.number} - ${DateTime.fromSeconds(exploitBlock.timestamp).toLocaleString(
                     DateTime.DATETIME_MED
                   )}`
                 : ""

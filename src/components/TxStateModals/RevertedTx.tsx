@@ -1,20 +1,20 @@
 import React from "react"
 import ErrorIcon from "../ErrorIcon/ErrorIcon"
 import { Column } from "../Layout"
-import Modal from "../Modal/Modal"
+import Modal, { Props as ModalProps } from "../Modal/Modal"
 import { Text } from "../Text"
 import TxHash from "./TxHash"
 
-interface Props {
+type Props = {
   /**
    * Transaction hash
    */
   hash?: string
-}
+} & ModalProps
 
-const RevertedTx: React.FC<Props> = ({ hash }) => {
+const RevertedTx: React.FC<Props> = ({ hash, ...props }) => {
   return (
-    <Modal closeable>
+    <Modal closeable {...props}>
       <Column spacing="m" alignment="center">
         <ErrorIcon />
         <Text strong size="large">
