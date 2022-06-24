@@ -115,6 +115,9 @@ export const useActiveClaim = (protocolID: number, options?: UseQueryOptions<Cla
       if (response.ok === false) throw Error(response.error)
       if (response.data === null) return null
 
+      // We discard the claim if its status is "Cleaned"
+      if (response.data.status[0].status === ClaimStatus.Cleaned) return null
+
       return {
         id: response.data.id,
         protocolID: response.data.protocol_id,
