@@ -21,6 +21,7 @@ import { uploadFile } from "./uploadFile"
 import { useDebounce } from "use-debounce"
 import { useWaitForBlock } from "../../hooks/api/useWaitForBlock"
 import { activeClaimQueryKey } from "../../hooks/api/claims"
+import { DateTime } from "luxon"
 
 type Props = ModalProps & {
   protocol: Protocol
@@ -32,7 +33,7 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
   const [additionalInformationFile, setAdditionalInformationFile] = useState<File>()
   const [additionalInformationHash, setAdditionalInformationHash] = useState<string>()
   const [receiverAddress, setReceiverAddress] = useState<string>("")
-  const [exploitBlockNumber, setExploitBlockNumber] = useState<number>()
+  const [exploitBlock, setExploitBlock] = useState<ethers.providers.Block>()
   const [exploitStartInput, setExploitStartInput] = useState<string>("")
   const [debouncedExploitStartInput] = useDebounce(exploitStartInput, 300)
   const [isResolvingBlock, setIsResolvingBlock] = useState(false)
@@ -51,41 +52,37 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
    */
   useEffect(() => {
     if (!debouncedExploitStartInput) {
-      setExploitBlockNumber(undefined)
+      setExploitBlock(undefined)
       return
     }
 
     const resolveBlockNumber = async () => {
-      let blockNumber: number | undefined
+      let block: ethers.providers.Block | undefined
 
       const inputAsBlockNumber = parseInt(debouncedExploitStartInput)
       if (!isNaN(inputAsBlockNumber)) {
         try {
-          const block = await provider.getBlock(inputAsBlockNumber)
-          blockNumber = block.number
+          block = await provider.getBlock(inputAsBlockNumber)
         } catch (e) {
           // provider.getBlock throws if it couldn't find a block
         }
       }
 
       // Checks if blockNumber hasn't resolved and input is a block hash
-      if (!blockNumber) {
+      if (!block) {
         try {
-          const block = await provider.getBlock(debouncedExploitStartInput)
-          if (block) {
-            blockNumber = block.number
-          }
+          block = await provider.getBlock(debouncedExploitStartInput)
         } catch (e) {
           // provider.getBlock throws if it couldn't find a block
         }
       }
 
       // Checks if blockNumber hasn't resolved and input is a tx hash
-      if (!blockNumber) {
+      if (!block) {
         try {
           const tx = await provider.getTransaction(debouncedExploitStartInput)
           if (tx && tx.blockNumber) {
-            blockNumber = tx.blockNumber
+            block = await provider.getBlock(tx.blockNumber)
           }
         } catch (e) {
           // provider.getTransaction throws if it couldn't find a tx
@@ -93,8 +90,8 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
       }
 
       setIsResolvingBlock(false)
-      setExploitBlockNumber(blockNumber)
-      setBlockResolveError(!!!blockNumber)
+      setExploitBlock(block)
+      setBlockResolveError(!!!block)
     }
 
     setIsResolvingBlock(true)
@@ -129,8 +126,7 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
   /**
    * Validate whole form for submission
    */
-  const claimIsValid =
-    receiverAddress && receiverAddressValidInput && exploitBlockNumber && claimAmount && claimAmountIsValid
+  const claimIsValid = receiverAddress && receiverAddressValidInput && exploitBlock && claimAmount && claimAmountIsValid
 
   /**
    * Handle submit claim click
@@ -146,7 +142,7 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
     let additionalInformationFileURL: string | null = null
 
     if (additionalInformationFile) {
-      const path = `claims/${protocol.name}_${protocol.bytesIdentifier}_${exploitBlockNumber}.pdf`
+      const path = `claims/${protocol.name}_${protocol.bytesIdentifier}_${exploitBlock.number}.pdf`
       additionalInformationFileURL = await uploadFile(additionalInformationFile, path)
     }
 
@@ -157,7 +153,7 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
             protocol.bytesIdentifier,
             claimAmount,
             receiverAddress,
-            exploitBlockNumber,
+            exploitBlock.number,
             {
               link: protocol.agreement!,
               hash: protocol.agreement_hash!,
@@ -187,7 +183,7 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
     protocol.bytesIdentifier,
     additionalInformationFile,
     waitForTx,
-    exploitBlockNumber,
+    exploitBlock,
     startClaim,
     claimAmount,
     receiverAddress,
@@ -213,7 +209,13 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, ...props }) => {
             error={blockResolveError && !isResolvingBlock}
             errorMessage="This is not a valid block number."
             detail={
-              isResolvingBlock ? "Validating block ..." : exploitBlockNumber ? `Block: ${exploitBlockNumber}` : ""
+              isResolvingBlock
+                ? "Validating block ..."
+                : exploitBlock
+                ? `Block: #${exploitBlock.number}. ${DateTime.fromSeconds(exploitBlock.timestamp).toLocaleString(
+                    DateTime.DATETIME_MED
+                  )}`
+                : ""
             }
           >
             <Input value={exploitStartInput} onChange={setExploitStartInput} />
