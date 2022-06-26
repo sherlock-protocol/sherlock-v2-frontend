@@ -4,6 +4,8 @@ const meta: CoveredProtocolMeta = {
   id: "0x3019e52a670390f24e4b9b58af62a7367658e457bbb07f86b19b213ec74b5be7",
   tag: "euler",
   name: "Euler",
+  defi_llama_slug: "euler",
+  hardcoded_tvl: "",
   website: "https://www.euler.finance/",
   logo: "",
   description:
@@ -13,6 +15,7 @@ const meta: CoveredProtocolMeta = {
   agent: "0xE130bA997B941f159ADc597F0d89a328554D4B3E",
   pay_year: "$170,000.00",
   pay_contracts: "5391",
+  premium: "1.50%",
 }
 
 export default meta

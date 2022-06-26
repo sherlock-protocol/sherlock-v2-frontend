@@ -4,6 +4,8 @@ const meta: CoveredProtocolMeta = {
   id: "0x99b8883ea932491b57118762f4b507ebcac598bee27b98f443c06d889237d9a4",
   tag: "opyn",
   name: "Squeeth by Opyn",
+  defi_llama_slug: "opyn",
+  hardcoded_tvl: "",
   website: "https://www.opyn.co/",
   logo: "",
   description:
@@ -13,6 +15,7 @@ const meta: CoveredProtocolMeta = {
   agent: "0x609FFF64429e2A275a879e5C50e415cec842c629",
   pay_year: "$150,000.00",
   pay_contracts: "4756",
+  premium: "1.70%",
 }
 
 export default meta
