@@ -6,6 +6,7 @@ const meta: CoveredProtocolMeta = {
   name: "LiquiFi",
   defi_llama_slug: "",
   hardcoded_tvl: "500,000.00",
+  networks: "Ethereum",
   website: "https://www.liquifi.finance/",
   logo: "",
   description:

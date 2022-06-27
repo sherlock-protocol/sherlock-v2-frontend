@@ -6,6 +6,7 @@ const meta: CoveredProtocolMeta = {
   name: "Lyra",
   defi_llama_slug: "lyra",
   hardcoded_tvl: "",
+  networks: "Ethereum,Optimism,staking",
   website: "https://www.lyra.finance/",
   logo: "",
   description:

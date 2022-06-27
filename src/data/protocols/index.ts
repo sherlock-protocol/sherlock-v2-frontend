@@ -10,6 +10,7 @@ export type CoveredProtocolMeta = {
   name?: string
   defi_llama_slug?: string
   hardcoded_tvl?: string
+  networks?: string
   website?: string
   logo?: string
   description?: string

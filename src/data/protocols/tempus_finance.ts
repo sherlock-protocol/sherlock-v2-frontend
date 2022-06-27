@@ -6,6 +6,7 @@ const meta: CoveredProtocolMeta = {
   name: "Tempus Finance",
   defi_llama_slug: "tempus-finance",
   hardcoded_tvl: "",
+  networks: "Ethereum",
   website: "https://tempus.finance/",
   logo: "",
   description:

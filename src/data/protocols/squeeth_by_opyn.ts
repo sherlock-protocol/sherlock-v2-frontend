@@ -6,6 +6,7 @@ const meta: CoveredProtocolMeta = {
   name: "Squeeth by Opyn",
   defi_llama_slug: "opyn",
   hardcoded_tvl: "",
+  networks: "Ethereum",
   website: "https://www.opyn.co/",
   logo: "",
   description:

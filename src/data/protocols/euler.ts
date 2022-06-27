@@ -6,6 +6,7 @@ const meta: CoveredProtocolMeta = {
   name: "Euler",
   defi_llama_slug: "euler",
   hardcoded_tvl: "",
+  networks: "Ethereum",
   website: "https://www.euler.finance/",
   logo: "",
   description:
