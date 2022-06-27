@@ -26,7 +26,7 @@ export const UMAHO_TIME_DAYS = 1
  * Amount needed to escalate the claim to UMA's DVM
  * https://github.com/sherlock-protocol/sherlock-v2-core/blob/45ae92b6488825ce2b0800f0bc4fef78d695a1db/contracts/managers/SherlockClaimManager.sol#L32
  */
-export const UMA_BOND = ethers.utils.parseUnits("9600", 6)
+export const UMA_BOND = ethers.utils.parseUnits("22200", 6)
 
 export type ClaimStatusUpdate = {
   status: ClaimStatus

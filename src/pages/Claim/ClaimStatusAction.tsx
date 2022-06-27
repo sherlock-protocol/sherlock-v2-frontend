@@ -5,7 +5,7 @@ import {
   ClaimStatus,
   UMA_ESCALATION_DAYS,
   SPCC_REVIEW_DAYS,
-  UMA_BOND as UMA_MIN_BOND,
+  UMA_BOND,
   activeClaimQueryKey,
   UMAHO_TIME_DAYS,
 } from "../../hooks/api/claims"
@@ -46,7 +46,7 @@ export const ClaimStatusAction: ClaimStatusActionFn = (props) => {
 const Escalate: React.FC<Props> = ({ claim }) => {
   const [{ data: connectedAccount }] = useAccount()
   const [collapsed, setCollapsed] = useState(true)
-  const [umaBond, setUmaBond] = useState<BigNumber | undefined>(UMA_MIN_BOND)
+  const [umaBond, setUmaBond] = useState<BigNumber | undefined>(UMA_BOND)
   const [isWaitingTx, setIsWaitingTx] = useState(false)
   const { escalateClaim, address: claimManagerContractAddress } = useClaimManager()
   const { waitForTx } = useWaitTx()
@@ -90,21 +90,18 @@ const Escalate: React.FC<Props> = ({ claim }) => {
   const connectedAccountIsClaimInitiator = connectedAccount?.address === claim.initiator
   const withinUmaEscalationPeriod = now < escalationWindowStartDate.plus({ days: UMA_ESCALATION_DAYS })
 
-  const umaBondIsValid = !!umaBond?.gte(UMA_MIN_BOND)
-
-  const canEscalate = connectedAccountIsClaimInitiator && withinUmaEscalationPeriod && umaBondIsValid
+  const canEscalate = connectedAccountIsClaimInitiator && withinUmaEscalationPeriod
 
   return (
     <Column spacing="m">
       {!collapsed && (
-        <Row>
-          <Field
-            label="UMA BOND"
-            error={!umaBondIsValid}
-            errorMessage={`The bond must be >= ${formatUSDC(UMA_MIN_BOND)} USDC`}
-          >
-            <TokenInput token="USDC" onChange={setUmaBond} initialValue={UMA_MIN_BOND} />
-          </Field>
+        <Row alignment="space-between">
+          <Column>
+            <Text strong>UMA BOND</Text>
+          </Column>
+          <Column>
+            <Text strong>{`${formatUSDC(UMA_BOND)} USDC`}</Text>
+          </Column>
         </Row>
       )}
       <Row>
