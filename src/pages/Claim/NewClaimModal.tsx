@@ -245,7 +245,7 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
         </Row>
         <Row>
           <Field
-            label="EPLOIT START BLOCK"
+            label="EXPLOIT START BLOCK"
             error={blockResolveError && !isResolvingBlock}
             errorMessage="This is not a valid block number."
             detail={
