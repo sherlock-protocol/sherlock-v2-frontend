@@ -27,6 +27,7 @@ type ClaimStatusDetailsFn = React.FC<Props> & {
   UmaPending: React.FC<Props>
   UmaApproved: React.FC<Props>
   UmaDenied: React.FC<Props>
+  UmaHalted: React.FC<Props>
   PaidOut: React.FC<Props>
 }
 
@@ -55,6 +56,7 @@ export const ClaimStatusDetails: ClaimStatusDetailsFn = (props) => {
       <ClaimStatusDetails.UmaPending {...props} />
       <ClaimStatusDetails.UmaApproved {...props} />
       <ClaimStatusDetails.UmaDenied {...props} />
+      <ClaimStatusDetails.UmaHalted {...props} />
       <ClaimStatusDetails.PaidOut {...props} />
     </>
   )
@@ -309,6 +311,22 @@ const UmaDenied: React.FC<Props> = ({ claim }) => {
   )
 }
 
+const UmaHalted: React.FC<Props> = ({ claim }) => {
+  if (claim.status !== ClaimStatus.Halted) return null
+  return (
+    <Column spacing="m">
+      <Row alignment="space-between">
+        <Column>
+          <Text>Status</Text>
+        </Column>
+        <Column>
+          <Text strong>{statusMessages[claim.status]}</Text>
+        </Column>
+      </Row>
+    </Column>
+  )
+}
+
 const PaidOut: React.FC<Props> = ({ claim }) => {
   if (claim.status !== ClaimStatus.PaidOut) return null
 
@@ -344,4 +362,5 @@ ClaimStatusDetails.UmaOverdue = UmaOverdue
 ClaimStatusDetails.UmaPending = UmaReviewPending
 ClaimStatusDetails.UmaApproved = UmaApproved
 ClaimStatusDetails.UmaDenied = UmaDenied
+ClaimStatusDetails.UmaHalted = UmaHalted
 ClaimStatusDetails.PaidOut = PaidOut
