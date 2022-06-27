@@ -77,10 +77,12 @@ export const ProtocolPage: React.FC = () => {
    */
   const handleAddBalance = React.useCallback(async () => {
     if (!amount || !selectedProtocolId) {
-      return
+      return false
     }
 
     await waitForTx(async () => await depositActiveBalance(selectedProtocolId, amount))
+
+    return true
   }, [amount, selectedProtocolId, depositActiveBalance, waitForTx])
 
   /**

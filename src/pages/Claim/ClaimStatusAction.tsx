@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useCallback, useState } from "react"
 
 import {
   Claim,
@@ -17,9 +17,6 @@ import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components/Text"
 import { shortenAddress } from "../../utils/format"
 import { DateTime } from "luxon"
-import TokenInput from "../../components/TokenInput/TokenInput"
-import { Field } from "./Field"
-import { BigNumber } from "ethers"
 import { formatUSDC } from "../../utils/units"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { useCurrentBlockTime } from "../../hooks/useCurrentBlockTime"
@@ -46,8 +43,6 @@ export const ClaimStatusAction: ClaimStatusActionFn = (props) => {
 const Escalate: React.FC<Props> = ({ claim }) => {
   const [{ data: connectedAccount }] = useAccount()
   const [collapsed, setCollapsed] = useState(true)
-  const [umaBond, setUmaBond] = useState<BigNumber | undefined>(UMA_BOND)
-  const [isWaitingTx, setIsWaitingTx] = useState(false)
   const { escalateClaim, address: claimManagerContractAddress } = useClaimManager()
   const { waitForTx } = useWaitTx()
   const currentBlockTimestamp = useCurrentBlockTime()
@@ -59,19 +54,16 @@ const Escalate: React.FC<Props> = ({ claim }) => {
   }, [setCollapsed])
 
   const handleEscalateClaim = useCallback(async () => {
-    if (!umaBond) return
-
-    setIsWaitingTx(true)
-
     try {
-      const txReceipt = await waitForTx(async () => await escalateClaim(claim.id, umaBond))
+      const txReceipt = await waitForTx(async () => await escalateClaim(claim.id, UMA_BOND))
       await waitForBlock(txReceipt.blockNumber)
       await queryClient.invalidateQueries(activeClaimQueryKey(claim.protocolID))
+
+      return true
     } catch (e) {
-    } finally {
-      setIsWaitingTx(false)
+      return false
     }
-  }, [claim.id, escalateClaim, umaBond, waitForTx])
+  }, [claim.id, escalateClaim, waitForTx])
 
   if (!currentBlockTimestamp) return null
 
@@ -112,7 +104,7 @@ const Escalate: React.FC<Props> = ({ claim }) => {
         ) : (
           <AllowanceGate
             spender={claimManagerContractAddress}
-            amount={umaBond}
+            amount={UMA_BOND}
             action={handleEscalateClaim}
             actionName="Escalate"
           />

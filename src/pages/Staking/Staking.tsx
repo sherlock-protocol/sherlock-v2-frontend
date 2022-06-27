@@ -85,7 +85,7 @@ export const StakingPage: React.FC = () => {
    */
   const handleOnStake = React.useCallback(async () => {
     if (!amount || !stakingPeriod) {
-      return
+      return false
     }
 
     const result = await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
@@ -94,6 +94,8 @@ export const StakingPage: React.FC = () => {
 
     // Navigate to positions page
     navigate("/positions", { state: { refreshAfterBlockNumber: result.blockNumber } })
+
+    return true
   }, [amount, stakingPeriod, stake, waitForTx, navigate])
 
   // Compute rewards when amount or period is changed

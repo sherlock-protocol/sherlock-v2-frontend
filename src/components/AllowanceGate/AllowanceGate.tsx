@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers"
+import { BigNumber, ContractReceipt, ethers } from "ethers"
 import React, { PropsWithChildren } from "react"
 import { ImCheckmark } from "react-icons/im"
 import useERC20 from "../../hooks/useERC20"
@@ -31,7 +31,7 @@ interface Props {
   /**
    * On Click event handler
    */
-  action: () => void
+  action: () => Promise<boolean>
 
   /**
    * On Succes event handler
@@ -87,11 +87,13 @@ const AllowanceGate: React.FC<PropsWithChildren<Props>> = ({
    * Execute action and send success notification
    */
   const handleOnAction = React.useCallback(async () => {
-    await action()
+    const success = await action()
 
-    setIsSuccess(true)
+    if (success) {
+      setIsSuccess(true)
 
-    onSuccess?.()
+      onSuccess?.()
+    }
 
     // Refetch allowance since it changed
     handleFetchAllowance(true)

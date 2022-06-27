@@ -164,15 +164,17 @@ export const FundraisingPage: React.FC = () => {
   }
 
   const handleExecute = async () => {
-    if (!rewards?.sherAmount) return
+    if (!rewards?.sherAmount) return false
 
     try {
       await waitForTx(async () => await sherBuyContract.execute(rewards?.sherAmount), {
         transactionType: TxType.EXECUTE,
       })
       navigate("/fundraiseclaim")
+      return true
     } catch (error) {
       console.error(error)
+      return false
     }
   }
 

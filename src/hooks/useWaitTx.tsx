@@ -29,10 +29,6 @@ export const TxWaitProvider: React.FC<PropsWithChildren<unknown>> = ({ children 
   const [txType, setTxType] = useState<TxType>(TxType.GENERIC)
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
-  useEffect(() => {
-    setModalIsOpen(true)
-  }, [txType, setModalIsOpen])
-
   /**
    * Wrap a contract transaction and follow transaction state changes
    * with visual updates.
@@ -47,6 +43,7 @@ export const TxWaitProvider: React.FC<PropsWithChildren<unknown>> = ({ children 
       setTxHash(undefined)
       setTxState(TxState.REQUESTED)
       setTxType(options?.transactionType ?? TxType.GENERIC)
+      setModalIsOpen(true)
 
       try {
         const transaction = await tx()
