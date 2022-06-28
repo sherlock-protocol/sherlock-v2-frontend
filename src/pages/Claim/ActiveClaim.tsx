@@ -97,7 +97,7 @@ export const ActiveClaim: React.FC<Props> = ({ claim, protocol }) => {
 
         <Column className={styles.claimStatusContainer} spacing="m">
           <ClaimStatusDetails claim={claim} />
-          <ClaimStatusAction claim={claim} />
+          <ClaimStatusAction claim={claim} protocol={protocol} />
         </Column>
       </Column>
     </Box>

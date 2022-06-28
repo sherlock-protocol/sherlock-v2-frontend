@@ -134,12 +134,24 @@ export const useClaimManager = () => {
     [contract]
   )
 
+  /**
+   * Clean up claim.
+   * Only the protocol agent can call this method.
+   */
+  const cleanUpClaim = useCallback(
+    async (protocolBytesIdentifier: string, claimID: number) => {
+      return await contract.cleanUp(protocolBytesIdentifier, claimID)
+    },
+    [contract]
+  )
+
   return useMemo(
     () => ({
       address: SHERLOCK_CLAIM_MANAGER_ADDRESS,
       startClaim,
       payoutClaim,
       escalateClaim,
+      cleanUpClaim,
     }),
     [startClaim, payoutClaim, escalateClaim]
   )

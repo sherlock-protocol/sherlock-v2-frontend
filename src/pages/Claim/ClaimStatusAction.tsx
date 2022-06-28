@@ -22,9 +22,11 @@ import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
 import { useCurrentBlockTime } from "../../hooks/useCurrentBlockTime"
 import { useWaitForBlock } from "../../hooks/api/useWaitForBlock"
 import { useQueryClient } from "react-query"
+import { Protocol } from "../../hooks/api/protocols"
 
 type Props = {
   claim: Claim
+  protocol: Protocol
 }
 type ClaimStatusActionFn = React.FC<Props> & {
   Escalate: React.FC<Props>
@@ -40,10 +42,10 @@ export const ClaimStatusAction: ClaimStatusActionFn = (props) => {
   )
 }
 
-const Escalate: React.FC<Props> = ({ claim }) => {
+const Escalate: React.FC<Props> = ({ claim, protocol }) => {
   const [{ data: connectedAccount }] = useAccount()
   const [collapsed, setCollapsed] = useState(true)
-  const { escalateClaim, address: claimManagerContractAddress } = useClaimManager()
+  const { escalateClaim, address: claimManagerContractAddress, cleanUpClaim } = useClaimManager()
   const { waitForTx } = useWaitTx()
   const currentBlockTimestamp = useCurrentBlockTime()
   const queryClient = useQueryClient()
@@ -65,6 +67,18 @@ const Escalate: React.FC<Props> = ({ claim }) => {
     }
   }, [claim.id, escalateClaim, waitForTx])
 
+  const handleCleanUpClaim = useCallback(async () => {
+    try {
+      const txReceipt = await waitForTx(async () => await cleanUpClaim(protocol.bytesIdentifier, claim.id))
+      await waitForBlock(txReceipt.blockNumber)
+      await queryClient.invalidateQueries(activeClaimQueryKey(protocol.id))
+
+      return true
+    } catch (e) {
+      return false
+    }
+  }, [protocol.id, protocol.bytesIdentifier, claim.id, waitForTx, cleanUpClaim])
+
   if (!currentBlockTimestamp) return null
 
   const lastStatusUpdate = DateTime.fromSeconds(claim.statusUpdates[0].timestamp)
@@ -80,9 +94,11 @@ const Escalate: React.FC<Props> = ({ claim }) => {
     claim.status === ClaimStatus.SpccDenied ? lastStatusUpdate : lastStatusUpdate.plus({ days: SPCC_REVIEW_DAYS })
 
   const connectedAccountIsClaimInitiator = connectedAccount?.address === claim.initiator
+  const connectedAccountIsProtocolAgent = connectedAccount?.address === protocol.agent
   const withinUmaEscalationPeriod = now < escalationWindowStartDate.plus({ days: UMA_ESCALATION_DAYS })
 
   const canEscalate = connectedAccountIsClaimInitiator && withinUmaEscalationPeriod
+  const canCleanUp = connectedAccountIsProtocolAgent
 
   return (
     <Column spacing="m">
@@ -96,20 +112,31 @@ const Escalate: React.FC<Props> = ({ claim }) => {
           </Column>
         </Row>
       )}
-      <Row>
-        {collapsed ? (
-          <Button disabled={!canEscalate} fullWidth onClick={toggleCollapsed}>
-            Escalate to UMA
-          </Button>
-        ) : (
+      {collapsed ? (
+        <>
+          <Row>
+            <Button disabled={!canEscalate} fullWidth onClick={toggleCollapsed}>
+              Escalate to UMA
+            </Button>
+          </Row>
+          {canCleanUp && (
+            <Row>
+              <Button disabled={!canCleanUp} fullWidth variant="secondary" onClick={handleCleanUpClaim}>
+                Clean Up Claim
+              </Button>
+            </Row>
+          )}
+        </>
+      ) : (
+        <Row>
           <AllowanceGate
             spender={claimManagerContractAddress}
             amount={UMA_BOND}
             action={handleEscalateClaim}
             actionName="Escalate"
           />
-        )}
-      </Row>
+        </Row>
+      )}
       {!connectedAccountIsClaimInitiator && (
         <>
           <Row>
