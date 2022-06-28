@@ -75,7 +75,7 @@ export function getUMADeadline(claim: Claim) {
 }
 
 export function isInFinalState(claim: Claim) {
-  return [ClaimStatus.PaidOut, ClaimStatus.UmaDenied].includes(claim.status)
+  return [ClaimStatus.PaidOut, ClaimStatus.UmaDenied, ClaimStatus.Halted, ClaimStatus.Cleaned].includes(claim.status)
 }
 
 type GetActiveClaimResponseData =
