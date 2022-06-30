@@ -30,7 +30,7 @@ const CoveredProtocolsList: React.FC = () => {
   }, [tvcData])
 
   const protocolsData = useMemo(() => {
-    if (!coveredProtocolsData || !tvc) {
+    if (!coveredProtocolsData || !tvc || Object.keys(coveredProtocolsData).length === 0) {
       return []
     }
 
