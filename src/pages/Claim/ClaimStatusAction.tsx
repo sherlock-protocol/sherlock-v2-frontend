@@ -23,6 +23,7 @@ import { useCurrentBlockTime } from "../../hooks/useCurrentBlockTime"
 import { useWaitForBlock } from "../../hooks/api/useWaitForBlock"
 import { useQueryClient } from "react-query"
 import { Protocol } from "../../hooks/api/protocols"
+import useERC20 from "../../hooks/useERC20"
 
 type Props = {
   claim: Claim
@@ -46,6 +47,7 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
   const [{ data: connectedAccount }] = useAccount()
   const [collapsed, setCollapsed] = useState(true)
   const { escalateClaim, address: claimManagerContractAddress, cleanUpClaim } = useClaimManager()
+  const { balance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
   const currentBlockTimestamp = useCurrentBlockTime()
   const queryClient = useQueryClient()
@@ -97,19 +99,23 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
   const connectedAccountIsProtocolAgent = connectedAccount?.address === protocol.agent
   const withinUmaEscalationPeriod = now < escalationWindowStartDate.plus({ days: UMA_ESCALATION_DAYS })
 
-  const canEscalate = connectedAccountIsClaimInitiator && withinUmaEscalationPeriod
+  const enoughBalance = balance && balance > UMA_BOND
+  const canEscalate = connectedAccountIsClaimInitiator && withinUmaEscalationPeriod && enoughBalance
   const canCleanUp = connectedAccountIsProtocolAgent
 
   return (
     <Column spacing="m">
-      {!collapsed && (
-        <Row alignment="space-between">
-          <Column>
-            <Text strong>UMA BOND</Text>
-          </Column>
-          <Column>
-            <Text strong>{`${formatUSDC(UMA_BOND)} USDC`}</Text>
-          </Column>
+      <Row alignment="space-between">
+        <Column>
+          <Text strong>UMA BOND</Text>
+        </Column>
+        <Column>
+          <Text strong>{`${formatUSDC(UMA_BOND)} USDC`}</Text>
+        </Column>
+      </Row>
+      {!enoughBalance && (
+        <Row>
+          <Text variant="warning">There's not enough balance is this account to escalate the claim.</Text>
         </Row>
       )}
       {collapsed ? (
