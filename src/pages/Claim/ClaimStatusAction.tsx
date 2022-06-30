@@ -128,7 +128,7 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
           {canCleanUp && (
             <Row>
               <Button disabled={!canCleanUp} fullWidth variant="secondary" onClick={handleCleanUpClaim}>
-                Clean Up Claim
+                Accept claim resolution
               </Button>
             </Row>
           )}
