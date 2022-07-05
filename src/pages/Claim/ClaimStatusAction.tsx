@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 
 import {
   Claim,
@@ -81,6 +81,14 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
     }
   }, [protocol.id, protocol.bytesIdentifier, claim.id, waitForTx, cleanUpClaim])
 
+  const connectedAccountIsClaimInitiator = useMemo(() => {
+    return connectedAccount?.address === claim.initiator
+  }, [connectedAccount?.address])
+
+  const canEscalate = useMemo(() => {
+    return connectedAccountIsClaimInitiator && withinUmaEscalationPeriod && enoughBalance
+  }, [connectedAccountIsClaimInitiator])
+
   if (!currentBlockTimestamp) return null
 
   const lastStatusUpdate = DateTime.fromSeconds(claim.statusUpdates[0].timestamp)
@@ -95,12 +103,10 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
   const escalationWindowStartDate =
     claim.status === ClaimStatus.SpccDenied ? lastStatusUpdate : lastStatusUpdate.plus({ days: SPCC_REVIEW_DAYS })
 
-  const connectedAccountIsClaimInitiator = connectedAccount?.address === claim.initiator
   const connectedAccountIsProtocolAgent = connectedAccount?.address === protocol.agent
   const withinUmaEscalationPeriod = now < escalationWindowStartDate.plus({ days: UMA_ESCALATION_DAYS })
 
   const enoughBalance = balance && balance > UMA_BOND
-  const canEscalate = connectedAccountIsClaimInitiator && withinUmaEscalationPeriod && enoughBalance
   const canCleanUp = connectedAccountIsProtocolAgent
 
   return (
