@@ -44,7 +44,7 @@ export const useClaimManager = () => {
    * @param protocol - Protocol bytes identifier
    * @param amount - Amount to be claimed by the protocol
    * @param receiver - Address that's potentially receiving the payout
-   * @param exploitTimestamp - Exploit start time (in seconds)
+   * @param exploitStartBlock - Exploit start block number
    * @param coverageAgreement - Protocol's current coverage agreement link, along with its hash
    * @param additionalResources - Additional evidence from the protocol. PDF file link, along with its hash
    */
