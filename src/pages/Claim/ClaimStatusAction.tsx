@@ -195,6 +195,28 @@ const Payout: React.FC<Props> = ({ claim }) => {
   const queryClient = useQueryClient()
   const currentBlockTimestamp = useCurrentBlockTime()
 
+  const [accountIsClaimInitiator, setAccountIsClaimInitiator] = useState(false)
+  const [canClaimPayout, setCanClaimPayout] = useState(false)
+
+  useEffect(() => {
+    setAccountIsClaimInitiator(
+      !!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === claim.initiator
+    )
+  }, [connectedAccount?.address, claim])
+
+  useEffect(() => {
+    if (claim.status === ClaimStatus.UmaApproved) {
+      const now = currentBlockTimestamp && DateTime.fromSeconds(currentBlockTimestamp)
+      setCanClaimPayout(
+        accountIsClaimInitiator &&
+          !!now &&
+          now > DateTime.fromSeconds(claim.statusUpdates[0].timestamp).plus({ days: UMAHO_TIME_DAYS })
+      )
+    } else {
+      setCanClaimPayout(accountIsClaimInitiator)
+    }
+  }, [accountIsClaimInitiator])
+
   const handleClaimPayoutClick = useCallback(async () => {
     try {
       setIsWaitingPayout(true)
@@ -213,14 +235,6 @@ const Payout: React.FC<Props> = ({ claim }) => {
   if (![ClaimStatus.SpccApproved, ClaimStatus.UmaApproved].includes(claim.status)) return null
   if (!currentBlockTimestamp) return null
 
-  let canClaimPayout = connectedAccount?.address === claim.initiator
-
-  if (claim.status === ClaimStatus.UmaApproved) {
-    const now = DateTime.fromSeconds(currentBlockTimestamp)
-    canClaimPayout =
-      canClaimPayout && now > DateTime.fromSeconds(claim.statusUpdates[0].timestamp).plus({ days: UMAHO_TIME_DAYS })
-  }
-
   return (
     <Column spacing="m">
       <Row>
@@ -228,7 +242,7 @@ const Payout: React.FC<Props> = ({ claim }) => {
           {isWaitingPayout ? "Claiming payout ..." : "Claim payout"}
         </Button>
       </Row>
-      {connectedAccount?.address !== claim.initiator && (
+      {!accountIsClaimInitiator && (
         <>
           <Row>
             <Text size="small">Only the claim inintiator can execute the payout.</Text>
