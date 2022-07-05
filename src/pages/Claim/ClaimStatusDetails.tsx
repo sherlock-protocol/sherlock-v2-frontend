@@ -39,7 +39,7 @@ const statusMessages = {
   [ClaimStatus.UmaPriceProposed]: "",
   [ClaimStatus.ReadyToProposeUmaDispute]: "",
   [ClaimStatus.UmaDisputeProposed]: "",
-  [ClaimStatus.UmaPending]: "Pendig UMA review",
+  [ClaimStatus.UmaPending]: "Pending UMA review",
   [ClaimStatus.UmaApproved]: "UMA Approved",
   [ClaimStatus.UmaDenied]: "UMA Denied",
   [ClaimStatus.Halted]: "Halted by UMA HO",
