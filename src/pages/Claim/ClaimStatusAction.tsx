@@ -24,6 +24,7 @@ import { useWaitForBlock } from "../../hooks/api/useWaitForBlock"
 import { useQueryClient } from "react-query"
 import { Protocol } from "../../hooks/api/protocols"
 import useERC20 from "../../hooks/useERC20"
+import { ethers } from "ethers"
 
 type Props = {
   claim: Claim
@@ -60,7 +61,9 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
   const [canCleanUp, setCanCleanUp] = useState(false)
 
   useEffect(() => {
-    setConnectedAccountIsClaimInitiator(connectedAccount?.address.toLowerCase() === claim.initiator.toLowerCase())
+    setConnectedAccountIsClaimInitiator(
+      !!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === claim.initiator
+    )
   }, [connectedAccount?.address])
 
   useEffect(() => {
@@ -81,7 +84,7 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
   }, [connectedAccountIsClaimInitiator, isWithinUmaEscalationPeriod, accountHasEnoughBalance])
 
   useEffect(() => {
-    setCanCleanUp(connectedAccount?.address.toLowerCase() === protocol.agent.toLowerCase())
+    setCanCleanUp(!!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === protocol.agent)
   }, [connectedAccount?.address, protocol])
 
   const toggleCollapsed = useCallback(() => {
