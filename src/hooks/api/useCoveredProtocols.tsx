@@ -107,6 +107,7 @@ const parseResponse = (response: GetCoveredProtocolsResponseData): CoveredProtoc
 
     if (metas) {
       map[p.bytes_identifier] = {
+        ...metas,
         agent: p.agent,
         bytesIdentifier: p.bytes_identifier,
         premium: BigNumber.from(p.premium),
@@ -118,7 +119,6 @@ const parseResponse = (response: GetCoveredProtocolsResponseData): CoveredProtoc
           coverageAmountSetAt: new Date(item.coverage_amount_set_at * 1000),
         })),
         tvl: p?.tvl ? BigNumber.from(p?.tvl) : undefined,
-        ...metas,
       } as CoveredProtocol
     }
 
