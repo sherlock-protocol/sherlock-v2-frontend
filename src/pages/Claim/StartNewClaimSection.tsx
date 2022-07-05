@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
@@ -6,6 +6,7 @@ import { Text } from "../../components/Text"
 import { Protocol } from "../../hooks/api/protocols"
 import { Column } from "../../components/Layout"
 import { NewClaimModal } from "./NewClaimModal"
+import { ethers } from "ethers"
 
 type Props = {
   protocol: Protocol
@@ -14,6 +15,13 @@ type Props = {
 export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const [{ data: connectedAccount }] = useAccount()
   const [isCreating, setIsCreating] = useState(false)
+  const [canStartNewClaim, setCanStartNewClaim] = useState(false)
+
+  useEffect(() => {
+    setCanStartNewClaim(
+      !!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === protocol.agent
+    )
+  }, [connectedAccount?.address])
 
   /**
    * Handler for start claim click
@@ -21,11 +29,6 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const toggleIsCreating = useCallback(async () => {
     setIsCreating((v) => !v)
   }, [setIsCreating])
-
-  /**
-   * Only protocol's agent is allowed to start a new claim
-   */
-  const canStartNewClaim = connectedAccount?.address === protocol.agent
 
   return (
     <Box shadow={false} fixedWidth>

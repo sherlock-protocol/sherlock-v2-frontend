@@ -43,6 +43,8 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
   const { waitForBlock } = useWaitForBlock()
   const queryClient = useQueryClient()
 
+  const [canStartNewClaim, setCanStartNewClaim] = useState(false)
+
   const { waitForTx } = useWaitTx()
   const provider = useProvider()
   const { startClaim } = useClaimManager()
@@ -99,6 +101,12 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
     resolveBlockNumber()
   }, [debouncedExploitStartInput, provider])
 
+  useEffect(() => {
+    setCanStartNewClaim(
+      !!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === protocol.agent
+    )
+  }, [connectedAccount?.address])
+
   /**
    * Handle additional information file change
    */
@@ -109,11 +117,6 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
     },
     [setAdditionalInformationFile, setAdditionalInformationHash]
   )
-
-  /**
-   * Only protocol's agent is allowed to start a new claim
-   */
-  const canStartNewClaim = connectedAccount?.address === protocol.agent
 
   /**
    * Validate claim amount
@@ -294,10 +297,19 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
         </Row>
 
         <Row spacing="s">
-          <Button onClick={handleSubmitClaim} fullWidth disabled={!claimIsValid || submittingClaim}>
+          <Button
+            onClick={handleSubmitClaim}
+            fullWidth
+            disabled={!claimIsValid || submittingClaim || !canStartNewClaim}
+          >
             {submittingClaim ? "Submitting claim ..." : "Submit Claim"}
           </Button>
         </Row>
+        {!canStartNewClaim && (
+          <Row>
+            <Text>Only the protocol's agent can start a new claim</Text>
+          </Row>
+        )}
       </Column>
     </Modal>
   )
