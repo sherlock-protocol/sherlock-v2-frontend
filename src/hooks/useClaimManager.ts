@@ -153,6 +153,6 @@ export const useClaimManager = () => {
       escalateClaim,
       cleanUpClaim,
     }),
-    [startClaim, payoutClaim, escalateClaim]
+    [startClaim, payoutClaim, escalateClaim, cleanUpClaim]
   )
 }
