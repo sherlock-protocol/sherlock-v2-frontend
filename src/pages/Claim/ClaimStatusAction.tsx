@@ -53,6 +53,37 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
   const queryClient = useQueryClient()
   const { waitForBlock } = useWaitForBlock()
 
+  const [isWithinUmaEscalationPeriod, setIsWithinUmaEscalationPeriod] = useState(false)
+  const [connectedAccountIsClaimInitiator, setConnectedAccountIsClaimInitiator] = useState(false)
+  const [accountHasEnoughBalance, setAccountHasEnoughBalance] = useState(false)
+  const [canEscalate, setCanEscalate] = useState(false)
+  const [canCleanUp, setCanCleanUp] = useState(false)
+
+  useEffect(() => {
+    setConnectedAccountIsClaimInitiator(connectedAccount?.address.toLowerCase() === claim.initiator.toLowerCase())
+  }, [connectedAccount?.address])
+
+  useEffect(() => {
+    setAccountHasEnoughBalance(!!balance && balance > UMA_BOND)
+  }, [balance])
+
+  useEffect(() => {
+    const now = currentBlockTimestamp && DateTime.fromSeconds(currentBlockTimestamp)
+    const lastStatusUpdate = DateTime.fromSeconds(claim.statusUpdates[0].timestamp)
+    const escalationWindowStartDate =
+      claim.status === ClaimStatus.SpccDenied ? lastStatusUpdate : lastStatusUpdate.plus({ days: SPCC_REVIEW_DAYS })
+
+    setIsWithinUmaEscalationPeriod(!!now && now < escalationWindowStartDate.plus({ days: UMA_ESCALATION_DAYS }))
+  }, [claim, currentBlockTimestamp])
+
+  useEffect(() => {
+    setCanEscalate(connectedAccountIsClaimInitiator && isWithinUmaEscalationPeriod && accountHasEnoughBalance)
+  }, [connectedAccountIsClaimInitiator, isWithinUmaEscalationPeriod, accountHasEnoughBalance])
+
+  useEffect(() => {
+    setCanCleanUp(connectedAccount?.address.toLowerCase() === protocol.agent.toLowerCase())
+  }, [connectedAccount?.address, protocol])
+
   const toggleCollapsed = useCallback(() => {
     setCollapsed((v) => !v)
   }, [setCollapsed])
@@ -81,33 +112,15 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
     }
   }, [protocol.id, protocol.bytesIdentifier, claim.id, waitForTx, cleanUpClaim])
 
-  const connectedAccountIsClaimInitiator = useMemo(() => {
-    return connectedAccount?.address === claim.initiator
-  }, [connectedAccount?.address])
-
-  const canEscalate = useMemo(() => {
-    return connectedAccountIsClaimInitiator && withinUmaEscalationPeriod && enoughBalance
-  }, [connectedAccountIsClaimInitiator])
-
   if (!currentBlockTimestamp) return null
 
+  const now = currentBlockTimestamp && DateTime.fromSeconds(currentBlockTimestamp)
   const lastStatusUpdate = DateTime.fromSeconds(claim.statusUpdates[0].timestamp)
-
-  const now = DateTime.fromSeconds(currentBlockTimestamp)
   const claimIsInEscalationStatus =
     claim.status === ClaimStatus.SpccDenied ||
-    (claim.status === ClaimStatus.SpccPending && now > lastStatusUpdate.plus({ days: SPCC_REVIEW_DAYS }))
+    (claim.status === ClaimStatus.SpccPending && now && now > lastStatusUpdate.plus({ days: SPCC_REVIEW_DAYS }))
 
   if (!claimIsInEscalationStatus) return null
-
-  const escalationWindowStartDate =
-    claim.status === ClaimStatus.SpccDenied ? lastStatusUpdate : lastStatusUpdate.plus({ days: SPCC_REVIEW_DAYS })
-
-  const connectedAccountIsProtocolAgent = connectedAccount?.address === protocol.agent
-  const withinUmaEscalationPeriod = now < escalationWindowStartDate.plus({ days: UMA_ESCALATION_DAYS })
-
-  const enoughBalance = balance && balance > UMA_BOND
-  const canCleanUp = connectedAccountIsProtocolAgent
 
   return (
     <Column spacing="m">
@@ -119,7 +132,7 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
           <Text strong>{`${formatUSDC(UMA_BOND)} USDC`}</Text>
         </Column>
       </Row>
-      {!enoughBalance && (
+      {!accountHasEnoughBalance && (
         <Row>
           <Text variant="warning">There's not enough balance is this account to escalate the claim.</Text>
         </Row>
@@ -159,7 +172,7 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
           </Row>
         </>
       )}
-      {!withinUmaEscalationPeriod && (
+      {!isWithinUmaEscalationPeriod && (
         <Row>
           <Text variant="warning" size="small">
             UMA escalation deadline passed. This claim cannot be escalated anymore.
