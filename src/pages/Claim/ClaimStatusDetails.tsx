@@ -200,7 +200,6 @@ const UmaOverdue: React.FC<Props> = ({ claim }) => {
 
   if (!currentBlockTimestamp) return null
 
-  const spccDeadline = getSPCCDeadline(claim)
   const umaDeadline = getUMADeadline(claim)
   const now = DateTime.fromSeconds(currentBlockTimestamp)
 
