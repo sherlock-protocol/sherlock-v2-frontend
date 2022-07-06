@@ -9,7 +9,9 @@ type Props = {
 }
 
 const shortenFileName = (fileName: string) => {
-  const extensionStart = fileName.lastIndexOf(".")
+  if (fileName.length <= 16) return fileName
+
+  const extensionStart = fileName.lastIndexOf(".") > 0 ? fileName.lastIndexOf(".") : fileName.length
   const extension = fileName.substring(extensionStart)
 
   return `${fileName.substring(0, 8)}...${fileName.substring(extensionStart - 8, extensionStart)}${extension}`
