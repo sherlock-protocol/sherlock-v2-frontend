@@ -39,7 +39,7 @@ const statusMessages = {
   [ClaimStatus.UmaPriceProposed]: "",
   [ClaimStatus.ReadyToProposeUmaDispute]: "",
   [ClaimStatus.UmaDisputeProposed]: "",
-  [ClaimStatus.UmaPending]: "Pendig UMA review",
+  [ClaimStatus.UmaPending]: "Pending UMA review",
   [ClaimStatus.UmaApproved]: "UMA Approved",
   [ClaimStatus.UmaDenied]: "UMA Denied",
   [ClaimStatus.Halted]: "Halted by UMA HO",
@@ -278,7 +278,7 @@ const UmaApproved: React.FC<Props> = ({ claim }) => {
       {!payoutEnabled && (
         <Row>
           <Text size="small">
-            UMA has approved this claim. The paypout will be available 24 hours after the approval.
+            UMA has approved this claim. The payout will be available 24 hours after the approval.
           </Text>
         </Row>
       )}
