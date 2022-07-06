@@ -82,8 +82,11 @@ const main = async () => {
 
   export type CoveredProtocolMeta = {
     id: string
-    tag: string;
+    tag: string
     name?: string
+    defi_llama_slug?: string,
+    hardcoded_tvl?: string,
+    networks?: string,
     website?: string
     logo?: string
     description?: string
@@ -92,6 +95,7 @@ const main = async () => {
     agent?: string
     pay_year?: string
     pay_contracts?: string
+    premium?: string
   }
 
   type CoveredProtocolsMetas = {
