@@ -4,7 +4,6 @@ import { Modal, Props as ModalProps } from "../../components/Modal/Modal"
 import { BigNumber, ethers } from "ethers"
 import { useQueryClient } from "react-query"
 import { useAccount, useProvider } from "wagmi"
-import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
 import { Text } from "../../components/Text"
 import { Protocol } from "../../hooks/api/protocols"
@@ -105,7 +104,7 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
     setCanStartNewClaim(
       !!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === protocol.agent
     )
-  }, [connectedAccount?.address])
+  }, [connectedAccount?.address, protocol.agent])
 
   /**
    * Handle additional information file change

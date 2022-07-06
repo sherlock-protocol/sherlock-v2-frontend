@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 
 import {
   Claim,
@@ -64,7 +64,7 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
     setConnectedAccountIsClaimInitiator(
       !!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === claim.initiator
     )
-  }, [connectedAccount?.address])
+  }, [connectedAccount?.address, claim.initiator])
 
   useEffect(() => {
     setAccountHasEnoughBalance(!!balance && balance > UMA_BOND)
@@ -215,7 +215,7 @@ const Payout: React.FC<Props> = ({ claim }) => {
     } else {
       setCanClaimPayout(accountIsClaimInitiator)
     }
-  }, [accountIsClaimInitiator, setCanClaimPayout, claim.status, currentBlockTimestamp])
+  }, [accountIsClaimInitiator, setCanClaimPayout, claim.status, claim.statusUpdates, currentBlockTimestamp])
 
   const handleClaimPayoutClick = useCallback(async () => {
     try {

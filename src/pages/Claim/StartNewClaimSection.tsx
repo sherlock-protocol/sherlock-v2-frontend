@@ -21,7 +21,7 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
     setCanStartNewClaim(
       !!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === protocol.agent
     )
-  }, [connectedAccount?.address])
+  }, [connectedAccount?.address, protocol.agent])
 
   /**
    * Handler for start claim click

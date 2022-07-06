@@ -17,11 +17,6 @@ export type InputProps<T extends string | number> = {
   placeholder?: string
 
   /**
-   * Placeholder visibility
-   */
-  isPlaceholderVisible?: boolean
-
-  /**
    * Input value (if controlled input)
    */
   value?: T
@@ -48,7 +43,6 @@ export const Input = <T extends string | number>({
   value,
   type,
   variant = "regular",
-  isPlaceholderVisible = value === "0" || value === 0,
   disabled = false,
 }: InputProps<T>) => {
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
@@ -58,11 +52,9 @@ export const Input = <T extends string | number>({
     [onChange]
   )
 
-  const displayPlaceholder = placeholder && isPlaceholderVisible
-
   return (
     <div className={styles.inputContainer}>
-      {displayPlaceholder && <span className={styles.placeholder}>{placeholder}</span>}
+      {placeholder && <span className={styles.placeholder}>{placeholder}</span>}
       <input
         className={classNames([styles.input, styles[variant]])}
         value={value}

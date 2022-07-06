@@ -1,5 +1,5 @@
 import { ethers } from "ethers"
-import React, { PropsWithChildren, useCallback, useEffect, useState } from "react"
+import React, { PropsWithChildren, useCallback, useState } from "react"
 import PendingTx from "../components/TxStateModals/PendingTx"
 import RequestedTx from "../components/TxStateModals/RequestedTx"
 import RevertedTx from "../components/TxStateModals/RevertedTx"

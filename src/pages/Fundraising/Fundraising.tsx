@@ -4,7 +4,6 @@ import { useDebounce } from "use-debounce"
 import { useNavigate } from "react-router-dom"
 
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
-import { Button } from "../../components/Button/Button"
 import { Box } from "../../components/Box"
 import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"

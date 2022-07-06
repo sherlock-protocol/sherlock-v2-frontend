@@ -1,4 +1,4 @@
-import { BigNumber, ContractReceipt, ethers } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import React, { PropsWithChildren } from "react"
 import { ImCheckmark } from "react-icons/im"
 import useERC20 from "../../hooks/useERC20"

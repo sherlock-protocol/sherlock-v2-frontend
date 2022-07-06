@@ -5,7 +5,7 @@ import { Column, Row } from "../../components/Layout"
 import Select from "../../components/Select/Select"
 import { Title } from "../../components/Title"
 import { useProtocols, Protocol } from "../../hooks/api/protocols"
-import { ClaimStatus, isInFinalState, useActiveClaim } from "../../hooks/api/claims"
+import { isInFinalState, useActiveClaim } from "../../hooks/api/claims"
 
 import { StartNewClaimSection } from "./StartNewClaimSection"
 import { ActiveClaim } from "./ActiveClaim"
