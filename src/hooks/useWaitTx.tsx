@@ -103,7 +103,7 @@ export const TxWaitProvider: React.FC<PropsWithChildren<unknown>> = ({ children 
       case TxState.USER_DENIED:
         return <UserDeniedTx onClose={handleModalClose} />
     }
-  }, [txState, modalIsOpen])
+  }, [txState, modalIsOpen, txType, txHash, handleModalClose])
 
   const ctx = React.useMemo(() => ({ waitForTx }), [waitForTx])
 

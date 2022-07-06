@@ -85,7 +85,7 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
 
   useEffect(() => {
     setCanCleanUp(!!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === protocol.agent)
-  }, [connectedAccount?.address, protocol])
+  }, [connectedAccount?.address, protocol.agent])
 
   const toggleCollapsed = useCallback(() => {
     setCollapsed((v) => !v)
@@ -101,7 +101,7 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
     } catch (e) {
       return false
     }
-  }, [claim.id, escalateClaim, waitForTx])
+  }, [claim.id, claim.protocolID, escalateClaim, waitForTx, waitForBlock, queryClient])
 
   const handleCleanUpClaim = useCallback(async () => {
     try {
@@ -113,7 +113,7 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
     } catch (e) {
       return false
     }
-  }, [protocol.id, protocol.bytesIdentifier, claim.id, waitForTx, cleanUpClaim])
+  }, [protocol.id, protocol.bytesIdentifier, claim.id, waitForTx, cleanUpClaim, waitForBlock, queryClient])
 
   if (!currentBlockTimestamp) return null
 
@@ -215,7 +215,7 @@ const Payout: React.FC<Props> = ({ claim }) => {
     } else {
       setCanClaimPayout(accountIsClaimInitiator)
     }
-  }, [accountIsClaimInitiator])
+  }, [accountIsClaimInitiator, setCanClaimPayout, claim.status, currentBlockTimestamp])
 
   const handleClaimPayoutClick = useCallback(async () => {
     try {
@@ -230,7 +230,7 @@ const Payout: React.FC<Props> = ({ claim }) => {
     } finally {
       setIsWaitingPayout(false)
     }
-  }, [claim.id, payoutClaim, waitForTx])
+  }, [claim.id, claim.protocolID, payoutClaim, waitForTx, setIsWaitingPayout, queryClient, waitForBlock])
 
   if (![ClaimStatus.SpccApproved, ClaimStatus.UmaApproved].includes(claim.status)) return null
   if (!currentBlockTimestamp) return null
