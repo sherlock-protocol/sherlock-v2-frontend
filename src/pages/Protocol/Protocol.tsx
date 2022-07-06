@@ -80,7 +80,11 @@ export const ProtocolPage: React.FC = () => {
       return false
     }
 
-    await waitForTx(async () => await depositActiveBalance(selectedProtocolId, amount))
+    try {
+      await waitForTx(async () => await depositActiveBalance(selectedProtocolId, amount))
+    } catch (e) {
+      return false
+    }
 
     return true
   }, [amount, selectedProtocolId, depositActiveBalance, waitForTx])

@@ -88,12 +88,16 @@ export const StakingPage: React.FC = () => {
       return false
     }
 
-    const result = await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
-      transactionType: TxType.STAKE,
-    })
+    try {
+      const result = await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
+        transactionType: TxType.STAKE,
+      })
 
-    // Navigate to positions page
-    navigate("/positions", { state: { refreshAfterBlockNumber: result.blockNumber } })
+      // Navigate to positions page
+      navigate("/positions", { state: { refreshAfterBlockNumber: result.blockNumber } })
+    } catch (e) {
+      return false
+    }
 
     return true
   }, [amount, stakingPeriod, stake, waitForTx, navigate])
