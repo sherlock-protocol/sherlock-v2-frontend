@@ -1,3 +1,26 @@
+import { BigNumber, ethers } from "ethers"
+
+/**
+ * Format BigNumber
+ * @param value BigNumber
+ * @param decimals Number of decimals
+ * @returns Stringified and commified value
+ */
+export function format(value: BigNumber, decimals: number): string {
+  const stringified = ethers.utils.formatUnits(value, decimals).replace(/\.(.*?\d*)/, "")
+
+  return commify(stringified)
+}
+
+/**
+ * Format USDC Bignumber
+ * @param value BigNumber
+ * @returns Stringified and commified value
+ */
+export function formatUSDC(value: BigNumber): string {
+  return format(value, 6)
+}
+
 /**
  * Commify number.
  *

@@ -5,25 +5,26 @@ import { Text } from "../Text"
 import { FaCaretDown } from "react-icons/fa"
 import Option from "./Option"
 
-type OptionType = {
-  value: string
+type OptionType<T> = {
+  value: T
   label: string
 }
 
-type Props = {
-  options: Array<OptionType>
-  onChange: (value: string) => void
-  value?: string
+type Props<T> = {
+  options: Array<OptionType<T>>
+  onChange: (value: T) => void
+  value?: T
+  placeholder?: string
 }
 
 /**
  * Custom Select/Dropdown component
  */
-const Select: React.FC<Props> = ({ options, onChange, value }) => {
+const Select = <T,>({ options, onChange, value, placeholder }: Props<T>) => {
   // const [selectedOption, setSelectedOption] = React.useState<string>()
   const selectedOptionLabel = React.useMemo(
-    () => options?.find((item) => item.value === value)?.label,
-    [value, options]
+    () => options?.find((item) => item.value === value)?.label ?? placeholder,
+    [value, options, placeholder]
   )
   const orderedOptions = React.useMemo(
     () => [...options].sort((a, b) => b.label.localeCompare(a.label)).sort((a, b) => (a.value === value ? -1 : 1)),
@@ -35,7 +36,7 @@ const Select: React.FC<Props> = ({ options, onChange, value }) => {
   const [optionsVisible, setOptionsVisible] = React.useState(false)
 
   const handleUpdateSelectedOption = React.useCallback(
-    (option: string) => {
+    (option: T) => {
       setOptionsVisible(false)
       onChange?.(option)
     },
@@ -54,10 +55,10 @@ const Select: React.FC<Props> = ({ options, onChange, value }) => {
   )
 
   React.useEffect(() => {
-    if (options && options.length > 0 && !value) {
+    if (options && options.length > 0 && !value && !placeholder) {
       handleUpdateSelectedOption(options[0].value)
     }
-  }, [options, value, handleUpdateSelectedOption])
+  }, [options, value, handleUpdateSelectedOption, placeholder])
 
   return (
     <Column className={styles.container}>
@@ -74,9 +75,12 @@ const Select: React.FC<Props> = ({ options, onChange, value }) => {
       {optionsVisible && (
         <>
           <div className={styles.optionsContainer}>
+            {!value && placeholder && (
+              <Option key="placeholder" value={null} label={placeholder} onSelect={() => {}} selected />
+            )}
             {orderedOptions?.map((item) => (
               <Option
-                key={item.value}
+                key={`${item.value}`}
                 value={item.value}
                 label={item.label}
                 onSelect={handleUpdateSelectedOption}

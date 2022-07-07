@@ -1,3 +1,5 @@
+@import "../../styles/variables";
+
 .text {
   &.warning {
     color: red;
@@ -21,5 +23,13 @@
 
   &.mono {
     font-variant-numeric: tabular-nums;
+  }
+
+  & a {
+    color: $primary-purple;
+  }
+
+  &.secondary {
+    opacity: 0.5;
   }
 }

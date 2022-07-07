@@ -86,15 +86,21 @@ export const StakingPage: React.FC = () => {
    */
   const handleOnStake = React.useCallback(async () => {
     if (!amount || !stakingPeriod) {
-      return
+      return false
     }
 
-    const result = await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
-      transactionType: TxType.STAKE,
-    })
+    try {
+      const result = await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
+        transactionType: TxType.STAKE,
+      })
 
-    // Navigate to positions page
-    navigate("/positions", { state: { refreshAfterBlockNumber: result.blockNumber } })
+      // Navigate to positions page
+      navigate("/positions", { state: { refreshAfterBlockNumber: result.blockNumber } })
+    } catch (e) {
+      return false
+    }
+
+    return true
   }, [amount, stakingPeriod, stake, waitForTx, navigate])
 
   // Compute rewards when amount or period is changed
@@ -170,13 +176,7 @@ export const StakingPage: React.FC = () => {
           )}
           <Row className={styles.rewardsContainer}>
             <Column grow={1} spacing="l">
-              <TokenInput
-                value={debouncedAmountBN}
-                onChange={setAmount}
-                token="USDC"
-                placeholder="Choose amount"
-                balance={usdcBalance}
-              />
+              <TokenInput onChange={setAmount} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
               <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
               {sherRewards && (
                 <>

@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from "react"
 import { Box } from "../Box"
 import styles from "./Modal.module.scss"
 
-interface Props {
+export interface Props {
   /**
    * If Modal can be closed or not
    */
@@ -14,9 +14,7 @@ interface Props {
   onClose?: () => void
 }
 
-const Modal: React.FC<PropsWithChildren<Props>> = ({ closeable, children, onClose }) => {
-  const [isVisible, setIsVisible] = React.useState(true)
-
+export const Modal: React.FC<PropsWithChildren<Props>> = ({ closeable, children, onClose }) => {
   /**
    * Hide the modal
    */
@@ -28,19 +26,14 @@ const Modal: React.FC<PropsWithChildren<Props>> = ({ closeable, children, onClos
 
       e.stopPropagation()
 
-      setIsVisible(false)
       onClose?.()
     },
     [onClose, closeable]
   )
 
-  if (!isVisible) {
-    return null
-  }
-
   return (
     <div className={styles.modal} onClick={handleClose}>
-      <Box>{children}</Box>
+      <Box onClick={(e) => e.stopPropagation()}>{children}</Box>
     </div>
   )
 }

@@ -7,6 +7,7 @@ export const config: Config = {
   indexerBaseUrl: "https://mainnet.indexer.sherlock.xyz/",
   sherlockAddress: "0x0865a889183039689034dA55c1Fd12aF5083eabF",
   sherlockProtocolManagerAddress: "0x3d0b8A0A10835Ab9b0f0BeB54C5400B8aAcaa1D3",
+  sherlockClaimManagerAddress: "0xFeEDD254ae4B7c44A0472Bb836b813Ce4625Eb84",
   sherAddress: "0x46D2A90153cd8F09464CA3a5605B6BBeC9C2fF01",
   sherBuyAddress: "0xf8583f22C2f6f8cd27f62879A0fB4319bce262a6",
   sherClaimAddress: "0x7289C61C75dCdB8Fe4DF0b937c08c9c40902BDd3",

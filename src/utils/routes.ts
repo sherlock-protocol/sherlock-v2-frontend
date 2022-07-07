@@ -11,6 +11,7 @@ export const routes = {
 
 export const protocolsRoutes = {
   Balance: "balance",
+  Claims: "claims",
 } as const
 
 export const internalRoutes = {

@@ -12,6 +12,10 @@ const AppProtocols = () => {
       title: "BALANCE",
       route: protocolsRoutes.Balance,
     },
+    {
+      title: "CLAIMS",
+      route: protocolsRoutes.Claims,
+    },
   ]
 
   return (

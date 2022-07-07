@@ -8,6 +8,7 @@ export const config: Config = {
   indexerBaseUrl: process.env.REACT_APP_INDEXER_BASE_URL as string,
   sherlockAddress: process.env.REACT_APP_SHERLOCK_ADDRESS as string,
   sherlockProtocolManagerAddress: process.env.REACT_APP_SHERLOCK_PROTOCOL_MANAGER_ADDRESS as string,
+  sherlockClaimManagerAddress: process.env.REACT_APP_SHERLOCK_CLAIM_MANAGER_ADDRESS as string,
   sherAddress: process.env.REACT_APP_SHER_ADDRESS as string,
   sherBuyAddress: process.env.REACT_APP_SHER_BUY_ADDRESS as string,
   sherClaimAddress: process.env.REACT_APP_SHER_CLAIM_ADDRESS as string,
