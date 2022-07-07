@@ -9,12 +9,18 @@ type Props = {
 }
 
 const shortenFileName = (fileName: string) => {
-  if (fileName.length <= 16) return fileName
+  const SEPARATOR = "..."
+  const MAX_FILE_NAME_LENGTH = 19 // Frist 8 characters, followed by SEPARATOR, followed by last 8 characters.
+  if (fileName.length <= MAX_FILE_NAME_LENGTH) return fileName
 
+  const chunkLength = (MAX_FILE_NAME_LENGTH - SEPARATOR.length) / 2
   const extensionStart = fileName.lastIndexOf(".") > 0 ? fileName.lastIndexOf(".") : fileName.length
   const extension = fileName.substring(extensionStart)
 
-  return `${fileName.substring(0, 8)}...${fileName.substring(extensionStart - 8, extensionStart)}${extension}`
+  return `${fileName.substring(0, chunkLength)}...${fileName.substring(
+    extensionStart - chunkLength,
+    extensionStart
+  )}${extension}`
 }
 
 export const FileDrop: React.FC<Props> = ({ onFileChange }) => {
