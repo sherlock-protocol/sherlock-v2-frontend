@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useCallback, useState } from "react"
-import { BigNumber } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import axios from "./axios"
 import { getStakePositions as getStakePositionUrl } from "./urls"
 
@@ -79,7 +79,8 @@ export const StakingPositionsProvider: React.FC<PropsWithChildren<unknown>> = ({
   const getStakingPositions = useCallback(async (account?: string) => {
     try {
       setLoading(true)
-      const { data: responseData } = await axios.get<GetStakingPositionsResponseData>(getStakePositionUrl(account))
+      const address = account ? ethers.utils.getAddress(account) : undefined
+      const { data: responseData } = await axios.get<GetStakingPositionsResponseData>(getStakePositionUrl(address))
 
       if (responseData.ok === true) {
         setData(parseResponse(responseData))

@@ -4,6 +4,9 @@ const meta: CoveredProtocolMeta = {
   id: "0x615307f589ff909e3b7cfbf4d4b4371eb99fa64353970d40b76c1c37381e5cf0",
   tag: "tempus",
   name: "Tempus Finance",
+  defi_llama_slug: "tempus-finance",
+  hardcoded_tvl: "",
+  networks: "Ethereum",
   website: "https://tempus.finance/",
   logo: "",
   description:
@@ -11,8 +14,9 @@ const meta: CoveredProtocolMeta = {
   agreement: "https://v1.sherlock.xyz/static/pdf/Tempus_Statement_of_Coverage.pdf",
   agreement_hash: "0x4222be442d853bca3663c7984f475d271344fb9a4aff2145406f1939a439b275",
   agent: "0xab40a7e3cef4afb323ce23b6565012ac7c76bfef",
-  pay_year: "$123,200.00",
-  pay_contracts: "3907",
+  pay_year: "$31,400.00",
+  pay_contracts: "996",
+  premium: "2.00%",
 }
 
 export default meta

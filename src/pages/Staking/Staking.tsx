@@ -47,6 +47,7 @@ export const StakingPage: React.FC = () => {
   const [stakingPeriod, setStakingPeriod] = React.useState<number>(STAKING_PERIOD_OPTIONS[0].value)
   const [sherRewards, setSherRewards] = React.useState<BigNumber>()
   const [isLoadingRewards, setIsLoadingRewards] = React.useState(false)
+  const [sherRewardsBasis, setSherRewardsBasis] = React.useState<BigNumber>()
   const { getStakingPositions, data: stakePositionsData } = useStakingPositions()
 
   const { tvl, address, stake, refreshTvl } = useSherlock()
@@ -114,6 +115,24 @@ export const StakingPage: React.FC = () => {
     getStakingPositions(accountData?.address ?? undefined)
   }, [getStakingPositions, accountData?.address])
 
+  /**
+   * Fetch SHER rewards for 1 USDC
+   */
+  React.useEffect(() => {
+    async function fetchSherRewards() {
+      if (!tvl) {
+        return
+      }
+
+      const sher = await computeRewards(tvl, ethers.utils.parseUnits("1", 6), PERIODS_IN_SECONDS.SIX_MONTHS)
+      if (sher) {
+        setSherRewardsBasis(sher)
+      }
+    }
+
+    fetchSherRewards()
+  }, [tvl, computeRewards])
+
   return (
     <Box>
       <LoadingContainer loading={isLoadingRewards}>
@@ -139,6 +158,18 @@ export const StakingPage: React.FC = () => {
               <Column>
                 <Text strong variant="mono">
                   {formatAmount(stakePositionsData?.usdcAPY)}%
+                </Text>
+              </Column>
+            </Row>
+          )}
+          {sherRewardsBasis && (
+            <Row alignment="space-between">
+              <Column>
+                <Text>Reward per 1 USDC</Text>
+              </Column>
+              <Column>
+                <Text strong variant="mono">
+                  {formatAmount(formatSHER(sherRewardsBasis))} SHER
                 </Text>
               </Column>
             </Row>
