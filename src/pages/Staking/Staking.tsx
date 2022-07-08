@@ -20,6 +20,7 @@ import { TxType } from "../../utils/txModalMessages"
 import styles from "./Staking.module.scss"
 import { useNavigate } from "react-router-dom"
 import Options from "../../components/Options/Options"
+import USBlockContainer from "../../components/USBlockContainer/USBlockContainer"
 
 /**
  * Available staking periods, in seconds.
@@ -135,102 +136,104 @@ export const StakingPage: React.FC = () => {
 
   return (
     <Box>
-      <LoadingContainer loading={isLoadingRewards}>
-        <Column spacing="m">
-          <Title>Stake</Title>
-          <Row alignment="space-between">
-            <Column>
-              <Text>Total Value Locked</Text>
-            </Column>
-            <Column>
-              {tvl && (
-                <Text strong variant="mono">
-                  ${formatAmount(formatUSDC(tvl))}
-                </Text>
-              )}
-            </Column>
-          </Row>
-          {stakePositionsData && (
+      <USBlockContainer>
+        <LoadingContainer loading={isLoadingRewards}>
+          <Column spacing="m">
+            <Title>Stake</Title>
             <Row alignment="space-between">
               <Column>
-                <Text>USDC APY</Text>
+                <Text>Total Value Locked</Text>
               </Column>
               <Column>
-                <Text strong variant="mono">
-                  {formatAmount(stakePositionsData?.usdcAPY)}%
-                </Text>
+                {tvl && (
+                  <Text strong variant="mono">
+                    ${formatAmount(formatUSDC(tvl))}
+                  </Text>
+                )}
               </Column>
             </Row>
-          )}
-          {sherRewardsBasis && (
-            <Row alignment="space-between">
-              <Column>
-                <Text>Reward per 1 USDC</Text>
-              </Column>
-              <Column>
-                <Text strong variant="mono">
-                  {formatAmount(formatSHER(sherRewardsBasis))} SHER
-                </Text>
-              </Column>
-            </Row>
-          )}
-          <Row className={styles.rewardsContainer}>
-            <Column grow={1} spacing="l">
-              <TokenInput onChange={setAmount} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
-              <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
-              {sherRewards && (
-                <>
-                  <Row>
-                    <hr />
-                  </Row>
-                  <Row alignment="space-between">
-                    <Column>
-                      <Text>SHER Reward</Text>
-                    </Column>
-                    <Column>
-                      <Text strong variant="mono">
-                        {formatAmount(formatSHER(sherRewards))} SHER
-                      </Text>
-                    </Column>
-                  </Row>
-                  {stakePositionsData && (
+            {stakePositionsData && (
+              <Row alignment="space-between">
+                <Column>
+                  <Text>USDC APY</Text>
+                </Column>
+                <Column>
+                  <Text strong variant="mono">
+                    {formatAmount(stakePositionsData?.usdcAPY)}%
+                  </Text>
+                </Column>
+              </Row>
+            )}
+            {sherRewardsBasis && (
+              <Row alignment="space-between">
+                <Column>
+                  <Text>Reward per 1 USDC</Text>
+                </Column>
+                <Column>
+                  <Text strong variant="mono">
+                    {formatAmount(formatSHER(sherRewardsBasis))} SHER
+                  </Text>
+                </Column>
+              </Row>
+            )}
+            <Row className={styles.rewardsContainer}>
+              <Column grow={1} spacing="l">
+                <TokenInput onChange={setAmount} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
+                <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
+                {sherRewards && (
+                  <>
+                    <Row>
+                      <hr />
+                    </Row>
                     <Row alignment="space-between">
                       <Column>
-                        <Text>USDC APY</Text>
+                        <Text>SHER Reward</Text>
                       </Column>
                       <Column>
                         <Text strong variant="mono">
-                          {formatAmount(stakePositionsData?.usdcAPY)}%
+                          {formatAmount(formatSHER(sherRewards))} SHER
                         </Text>
                       </Column>
                     </Row>
-                  )}
-                </>
-              )}
+                    {stakePositionsData && (
+                      <Row alignment="space-between">
+                        <Column>
+                          <Text>USDC APY</Text>
+                        </Column>
+                        <Column>
+                          <Text strong variant="mono">
+                            {formatAmount(stakePositionsData?.usdcAPY)}%
+                          </Text>
+                        </Column>
+                      </Row>
+                    )}
+                  </>
+                )}
 
-              {amount && stakingPeriod && sherRewards && (
-                <Row alignment="center">
-                  <ConnectGate>
-                    <AllowanceGate
-                      amount={amount}
-                      spender={address}
-                      actionName="Stake"
-                      action={handleOnStake}
-                      onSuccess={refreshTvl}
-                    ></AllowanceGate>
-                  </ConnectGate>
-                </Row>
-              )}
-            </Column>
-          </Row>
-          <Text size="small" className={styles.v1}>
-            For the Sherlock V1, please see{" "}
-            <a href="https://v1.sherlock.xyz" rel="noreferrer" target="_blank">
-              https://v1.sherlock.xyz
-            </a>
-          </Text>
-        </Column>
-      </LoadingContainer>
+                {amount && stakingPeriod && sherRewards && (
+                  <Row alignment="center">
+                    <ConnectGate>
+                      <AllowanceGate
+                        amount={amount}
+                        spender={address}
+                        actionName="Stake"
+                        action={handleOnStake}
+                        onSuccess={refreshTvl}
+                      ></AllowanceGate>
+                    </ConnectGate>
+                  </Row>
+                )}
+              </Column>
+            </Row>
+            <Text size="small" className={styles.v1}>
+              For the Sherlock V1, please see{" "}
+              <a href="https://v1.sherlock.xyz" rel="noreferrer" target="_blank">
+                https://v1.sherlock.xyz
+              </a>
+            </Text>
+          </Column>
+        </LoadingContainer>
+      </USBlockContainer>
     </Box>
   )
 }
