@@ -1,12 +1,12 @@
 import React from "react"
-import Modal from "../Modal/Modal"
+import Modal, { Props as ModalProps } from "../Modal/Modal"
 import TxHash from "./TxHash"
 import { Column } from "../Layout"
 import SuccessIcon from "../SuccessIcon/SuccessIcon"
 import { Text } from "../Text"
 import TransactionTypeMessages, { TxType } from "../../utils/txModalMessages"
 
-interface Props {
+type Props = {
   /**
    * Transaction type
    */
@@ -16,11 +16,11 @@ interface Props {
    * Transaction hash
    */
   hash?: string
-}
+} & ModalProps
 
-const SuccessTx: React.FC<Props> = ({ type, hash }) => {
+const SuccessTx: React.FC<Props> = ({ type, hash, ...props }) => {
   return (
-    <Modal closeable>
+    <Modal closeable {...props}>
       <Column spacing="m" alignment="center">
         <SuccessIcon />
         <Text strong size="large">

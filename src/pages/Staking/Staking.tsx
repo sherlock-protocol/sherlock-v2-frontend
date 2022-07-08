@@ -47,6 +47,7 @@ export const StakingPage: React.FC = () => {
   const [stakingPeriod, setStakingPeriod] = React.useState<number>(STAKING_PERIOD_OPTIONS[0].value)
   const [sherRewards, setSherRewards] = React.useState<BigNumber>()
   const [isLoadingRewards, setIsLoadingRewards] = React.useState(false)
+  const [sherRewardsBasis, setSherRewardsBasis] = React.useState<BigNumber>()
   const { getStakingPositions, data: stakePositionsData } = useStakingPositions()
 
   const { tvl, address, stake, refreshTvl } = useSherlock()
@@ -85,15 +86,21 @@ export const StakingPage: React.FC = () => {
    */
   const handleOnStake = React.useCallback(async () => {
     if (!amount || !stakingPeriod) {
-      return
+      return false
     }
 
-    const result = await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
-      transactionType: TxType.STAKE,
-    })
+    try {
+      const result = await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
+        transactionType: TxType.STAKE,
+      })
 
-    // Navigate to positions page
-    navigate("/positions", { state: { refreshAfterBlockNumber: result.blockNumber } })
+      // Navigate to positions page
+      navigate("/positions", { state: { refreshAfterBlockNumber: result.blockNumber } })
+    } catch (e) {
+      return false
+    }
+
+    return true
   }, [amount, stakingPeriod, stake, waitForTx, navigate])
 
   // Compute rewards when amount or period is changed
@@ -107,6 +114,24 @@ export const StakingPage: React.FC = () => {
   React.useEffect(() => {
     getStakingPositions(accountData?.address ?? undefined)
   }, [getStakingPositions, accountData?.address])
+
+  /**
+   * Fetch SHER rewards for 1 USDC
+   */
+  React.useEffect(() => {
+    async function fetchSherRewards() {
+      if (!tvl) {
+        return
+      }
+
+      const sher = await computeRewards(tvl, ethers.utils.parseUnits("1", 6), PERIODS_IN_SECONDS.SIX_MONTHS)
+      if (sher) {
+        setSherRewardsBasis(sher)
+      }
+    }
+
+    fetchSherRewards()
+  }, [tvl, computeRewards])
 
   return (
     <Box>
@@ -137,15 +162,21 @@ export const StakingPage: React.FC = () => {
               </Column>
             </Row>
           )}
+          {sherRewardsBasis && (
+            <Row alignment="space-between">
+              <Column>
+                <Text>Reward per 1 USDC</Text>
+              </Column>
+              <Column>
+                <Text strong variant="mono">
+                  {formatAmount(formatSHER(sherRewardsBasis))} SHER
+                </Text>
+              </Column>
+            </Row>
+          )}
           <Row className={styles.rewardsContainer}>
             <Column grow={1} spacing="l">
-              <TokenInput
-                value={debouncedAmountBN}
-                onChange={setAmount}
-                token="USDC"
-                placeholder="Choose amount"
-                balance={usdcBalance}
-              />
+              <TokenInput onChange={setAmount} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
               <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
               {sherRewards && (
                 <>

@@ -5,14 +5,14 @@ import styles from "./Select.module.scss"
 import cx from "classnames"
 import { FaCaretUp } from "react-icons/fa"
 
-type Props = {
+type Props<T> = {
   label: string
-  value: string
+  value: T
   selected?: boolean
-  onSelect: (value: string) => void
+  onSelect: (value: T) => void
 }
 
-const Option: React.FC<Props> = ({ label, value, selected, onSelect }) => {
+const Option = <T,>({ label, value, selected, onSelect }: Props<T>) => {
   return (
     <Row
       grow={1}

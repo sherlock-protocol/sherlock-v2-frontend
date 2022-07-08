@@ -18,7 +18,7 @@ const alchemyApiKey = alchemyApiUrl?.split("/").slice(-1)[0] as string
 const chains = defaultChains
 
 // Add local node support if developing
-if (__DEV__) {
+if (process.env.NODE_ENV === "development") {
   chains.push(...developmentChains)
 }
 
@@ -41,7 +41,7 @@ const connectors = ({ chainId }: { chainId?: number | undefined }) => {
 
 const provider = ({ chainId }: { chainId?: number | undefined }) => {
   // Use local node if working on a development chain
-  if (__DEV__ && chainId && chainId === localNetworkId) {
+  if (process.env.NODE_ENV === "development" && chainId && chainId === localNetworkId) {
     return new providers.JsonRpcProvider("http://127.0.0.1:8545")
   }
 

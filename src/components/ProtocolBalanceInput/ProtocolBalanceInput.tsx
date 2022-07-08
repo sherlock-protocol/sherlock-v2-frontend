@@ -114,7 +114,7 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
           </Button>
         </Column>
       </Row>
-      <TokenInput token="USDC" onChange={setAmount} balance={usdcBalance} value={predefinedAmount} />
+      <TokenInput token="USDC" onChange={setAmount} balance={usdcBalance} initialValue={predefinedAmount} />
       {amountDuration && (
         <>
           <hr />

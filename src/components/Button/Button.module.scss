@@ -5,6 +5,10 @@
   color: white;
   border: 3px solid black;
 
+  &.fullWidth {
+    width: 100%;
+  }
+
   .content {
     padding: 0 0.5em;
   }
@@ -16,11 +20,12 @@
 
   &.secondary {
     background-color: inherit;
+    background-blend-mode: lighten;
     font-weight: 500;
-    border: none;
+    border: 1px solid transparentize($color: $primary-purple, $amount: 0.7);
 
-    &:hover {
-      background-color: inherit;
+    &:hover:not(:disabled) {
+      background-color: transparentize($color: $primary-purple, $amount: 0.7);
     }
   }
 

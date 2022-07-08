@@ -29,4 +29,13 @@
   line-height: 2.25rem;
   padding: 0 0.5rem;
   color: #fff;
+
+  &[disabled] {
+    opacity: 0.5;
+  }
+
+  &.small {
+    font-size: 0.95rem;
+    font-weight: 400;
+  }
 }

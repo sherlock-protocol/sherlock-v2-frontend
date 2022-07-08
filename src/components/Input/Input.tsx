@@ -1,21 +1,15 @@
-import React, { useCallback, useEffect } from "react"
-import { BigNumber, ethers } from "ethers"
+import classNames from "classnames"
+import React, { useCallback } from "react"
 
 import styles from "./Input.module.scss"
-import useAmountState from "../../hooks/useAmountState"
 
-type InputToken = "SHER" | "USDC"
+type InputVariant = "regular" | "small"
 
-export type InputProps = {
+export type InputProps<T extends string | number> = {
   /**
    * onChange event handler
    */
-  onChange?: (value: BigNumber | undefined) => void
-
-  /**
-   * Token
-   */
-  token: InputToken
+  onChange?: (value: T) => void
 
   /**
    * Placeholder
@@ -25,7 +19,17 @@ export type InputProps = {
   /**
    * Input value (if controlled input)
    */
-  value?: BigNumber
+  value?: T
+
+  /**
+   * Input type
+   */
+  type?: React.HTMLInputTypeAttribute
+
+  /**
+   * Variant
+   */
+  variant?: InputVariant
 
   /**
    * Disable input
@@ -33,43 +37,31 @@ export type InputProps = {
   disabled?: boolean
 }
 
-export const decimalsByToken: Record<InputToken, number> = {
-  SHER: 18,
-  USDC: 6,
-}
-
-const decommify = (value: string) => value.replaceAll(",", "")
-
-export const Input: React.FC<InputProps> = ({ onChange, token, placeholder, value, disabled = false }) => {
-  const [amount, amountBN, setAmount, setAmountBN] = useAmountState(decimalsByToken[token])
-
-  useEffect(() => {
-    onChange && onChange(amountBN)
-  }, [amountBN, onChange])
-
-  useEffect(() => {
-    if (value) {
-      setAmountBN(value)
-    }
-  }, [value, setAmountBN])
-
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setAmount(decommify(e.target.value))
+export const Input = <T extends string | number>({
+  onChange,
+  placeholder,
+  value,
+  type,
+  variant = "regular",
+  disabled = false,
+}: InputProps<T>) => {
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
+    (e) => {
+      onChange && onChange(e.target.value as T)
     },
-    [setAmount]
+    [onChange]
   )
-
-  const displayPlaceholder = placeholder && (amount === "" || amount === "0")
 
   return (
     <div className={styles.inputContainer}>
-      {displayPlaceholder && <span className={styles.placeholder}>{placeholder}</span>}
+      {placeholder && <span className={styles.placeholder}>{placeholder}</span>}
       <input
-        className={styles.input}
-        value={ethers.utils.commify(amount)}
-        onChange={handleInputChange}
+        className={classNames([styles.input, styles[variant]])}
+        value={value}
+        onChange={handleChange}
         disabled={disabled}
+        type={type}
+        spellCheck={false}
       />
     </div>
   )
