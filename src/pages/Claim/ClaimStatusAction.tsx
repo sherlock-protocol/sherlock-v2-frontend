@@ -60,6 +60,8 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
   const [canEscalate, setCanEscalate] = useState(false)
   const [canCleanUp, setCanCleanUp] = useState(false)
 
+  const [isWaitingTx, setIsWaitingTx] = useState(false)
+
   useEffect(() => {
     setConnectedAccountIsClaimInitiator(
       !!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === claim.initiator
@@ -93,6 +95,7 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
 
   const handleEscalateClaim = useCallback(async () => {
     try {
+      setIsWaitingTx(true)
       const txReceipt = await waitForTx(async () => await escalateClaim(claim.id, UMA_BOND))
       await waitForBlock(txReceipt.blockNumber)
       await queryClient.invalidateQueries(activeClaimQueryKey(claim.protocolID))
@@ -100,11 +103,14 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
       return true
     } catch (e) {
       return false
+    } finally {
+      setIsWaitingTx(false)
     }
   }, [claim.id, claim.protocolID, escalateClaim, waitForTx, waitForBlock, queryClient])
 
   const handleCleanUpClaim = useCallback(async () => {
     try {
+      setIsWaitingTx(true)
       const txReceipt = await waitForTx(async () => await cleanUpClaim(protocol.bytesIdentifier, claim.id))
       await waitForBlock(txReceipt.blockNumber)
       await queryClient.invalidateQueries(activeClaimQueryKey(protocol.id))
@@ -112,6 +118,8 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
       return true
     } catch (e) {
       return false
+    } finally {
+      setIsWaitingTx(false)
     }
   }, [protocol.id, protocol.bytesIdentifier, claim.id, waitForTx, cleanUpClaim, waitForBlock, queryClient])
 
@@ -149,20 +157,24 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
           </Row>
           {canCleanUp && (
             <Row>
-              <Button disabled={!canCleanUp} fullWidth variant="secondary" onClick={handleCleanUpClaim}>
-                Accept claim resolution
+              <Button disabled={!canCleanUp || isWaitingTx} fullWidth variant="secondary" onClick={handleCleanUpClaim}>
+                {isWaitingTx ? "Accepting claim resolution ..." : "Accept claim resolution"}
               </Button>
             </Row>
           )}
         </>
       ) : (
         <Row>
-          <AllowanceGate
-            spender={claimManagerContractAddress}
-            amount={UMA_BOND}
-            action={handleEscalateClaim}
-            actionName="Escalate"
-          />
+          {isWaitingTx ? (
+            <Text>Escalating claim ...</Text>
+          ) : (
+            <AllowanceGate
+              spender={claimManagerContractAddress}
+              amount={UMA_BOND}
+              action={handleEscalateClaim}
+              actionName="Escalate"
+            />
+          )}
         </Row>
       )}
       {!connectedAccountIsClaimInitiator && (
