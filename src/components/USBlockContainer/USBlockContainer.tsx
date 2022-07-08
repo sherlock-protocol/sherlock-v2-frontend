@@ -15,10 +15,10 @@ const USBlockContainer: React.FC<PropsWithChildren<unknown>> = ({ children }) =>
   return (
     <div className={styles.container}>
       <Column spacing="l">
-        <Title>US Forbidden</Title>
+        <Title>Service Not Available in Your Region</Title>
         <Text>
-          Sherlock may not be offered or sold in the United States, to U.S. persons, for the account or benefit of a
-          U.S. person or in any jurisdiction in which such offer would be prohibited.
+          Staking is not available to people or companies who are residents of, or are located, incorporated, or have a
+          registered agent in the United States.
         </Text>
       </Column>
     </div>
