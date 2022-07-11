@@ -2,6 +2,7 @@ import React, { PropsWithChildren } from "react"
 import cx from "classnames"
 
 import styles from "./Button.module.scss"
+import { Row } from "../Layout"
 
 type ButtonSize = "small" | "normal"
 
@@ -32,6 +33,11 @@ export type ButtonProps = {
    * Class name
    */
   className?: string
+
+  /**
+   * Button grows to full possible width
+   */
+  fullWidth?: boolean
 }
 
 export const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
@@ -40,15 +46,20 @@ export const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
   disabled,
   variant = "primary",
   size = "normal",
+  fullWidth = false,
   className,
 }) => {
   return (
     <button
-      className={cx(styles.button, styles[variant], styles[size], className)}
+      className={cx(styles.button, styles[variant], styles[size], className, {
+        [styles.fullWidth]: fullWidth,
+      })}
       onClick={onClick}
       disabled={disabled}
     >
-      <div className={styles.content}>{children}</div>
+      <Row className={styles.content} spacing="xs" alignment={["center", "center"]}>
+        {children}
+      </Row>
     </button>
   )
 }

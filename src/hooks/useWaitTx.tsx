@@ -1,5 +1,5 @@
 import { ethers } from "ethers"
-import React, { PropsWithChildren } from "react"
+import React, { PropsWithChildren, useCallback, useState } from "react"
 import PendingTx from "../components/TxStateModals/PendingTx"
 import RequestedTx from "../components/TxStateModals/RequestedTx"
 import RevertedTx from "../components/TxStateModals/RevertedTx"
@@ -24,9 +24,10 @@ const TxWaitContext = React.createContext<TxWaitContextType>({} as TxWaitContext
  * state change alerts
  */
 export const TxWaitProvider: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
-  const [txState, setTxState] = React.useState(TxState.NONE)
-  const [txHash, setTxHash] = React.useState<string | undefined>()
-  const [txType, setTxType] = React.useState<TxType>(TxType.GENERIC)
+  const [txState, setTxState] = useState(TxState.NONE)
+  const [txHash, setTxHash] = useState<string | undefined>()
+  const [txType, setTxType] = useState<TxType>(TxType.GENERIC)
+  const [modalIsOpen, setModalIsOpen] = useState(false)
 
   /**
    * Wrap a contract transaction and follow transaction state changes
@@ -42,6 +43,7 @@ export const TxWaitProvider: React.FC<PropsWithChildren<unknown>> = ({ children 
       setTxHash(undefined)
       setTxState(TxState.REQUESTED)
       setTxType(options?.transactionType ?? TxType.GENERIC)
+      setModalIsOpen(true)
 
       try {
         const transaction = await tx()
@@ -82,16 +84,33 @@ export const TxWaitProvider: React.FC<PropsWithChildren<unknown>> = ({ children 
     []
   )
 
+  const handleModalClose = useCallback(() => {
+    setModalIsOpen((v) => !v)
+  }, [setModalIsOpen])
+
+  const renderTxModal = useCallback(() => {
+    if (!modalIsOpen) return null
+
+    switch (txState) {
+      case TxState.REQUESTED:
+        return <RequestedTx onClose={handleModalClose} />
+      case TxState.PENDING:
+        return <PendingTx type={txType} hash={txHash} onClose={handleModalClose} />
+      case TxState.SUCCESS:
+        return <SuccessTx type={txType} hash={txHash} onClose={handleModalClose} />
+      case TxState.REVERTED:
+        return <RevertedTx hash={txHash} onClose={handleModalClose} />
+      case TxState.USER_DENIED:
+        return <UserDeniedTx onClose={handleModalClose} />
+    }
+  }, [txState, modalIsOpen, txType, txHash, handleModalClose])
+
   const ctx = React.useMemo(() => ({ waitForTx }), [waitForTx])
 
   return (
     <TxWaitContext.Provider value={ctx}>
       {children}
-      {txState === TxState.REQUESTED && <RequestedTx />}
-      {txState === TxState.PENDING && <PendingTx type={txType} hash={txHash} />}
-      {txState === TxState.SUCCESS && <SuccessTx type={txType} hash={txHash} />}
-      {txState === TxState.REVERTED && <RevertedTx hash={txHash} />}
-      {txState === TxState.USER_DENIED && <UserDeniedTx />}
+      {renderTxModal()}
     </TxWaitContext.Provider>
   )
 }

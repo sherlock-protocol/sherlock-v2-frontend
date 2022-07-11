@@ -1,22 +1,43 @@
 import { BigNumber, utils } from "ethers"
-import React from "react"
+import React, { useCallback, useEffect } from "react"
 import cx from "classnames"
 import { formatAmount } from "../../utils/format"
 import { Button } from "../Button/Button"
 import { Input } from "../Input"
-import { decimalsByToken, InputProps } from "../Input/Input"
+import { InputProps } from "../Input/Input"
 import { Column, Row } from "../Layout"
 import { Text } from "../Text"
 import styles from "./TokenInput.module.scss"
+import useAmountState from "../../hooks/useAmountState"
+import { commify } from "../../utils/units"
 
-type Props = Omit<InputProps, "value"> & {
+type InputToken = "SHER" | "USDC"
+
+export type Props = Omit<InputProps<string>, "value" | "onChange"> & {
   balance?: BigNumber
-  value?: BigNumber
+  token: InputToken
+  onChange: (value?: BigNumber) => void
+  initialValue?: BigNumber
 }
 
-const TokenInput: React.FC<Props> = ({ balance, value, ...props }) => {
-  const [controlledValue, setControlledValue] = React.useState<BigNumber>()
+export const decimalsByToken: Record<InputToken, number> = {
+  SHER: 18,
+  USDC: 6,
+}
+
+const decommify = (value: string) => value.replaceAll(",", "")
+
+export const TokenInput: React.FC<Props> = ({ balance, token, onChange, initialValue, ...props }) => {
+  const [amount, amountBN, setAmount, setAmountBN] = useAmountState(decimalsByToken[token])
   const { disabled } = props
+
+  useEffect(() => {
+    onChange && onChange(amountBN)
+  }, [amountBN, onChange])
+
+  useEffect(() => {
+    initialValue && setAmountBN(initialValue)
+  }, [initialValue, setAmountBN])
 
   const handleSetMax = React.useCallback(() => {
     if (balance) {
@@ -24,32 +45,33 @@ const TokenInput: React.FC<Props> = ({ balance, value, ...props }) => {
       // on a second call with the same value.
       // We create a new BigNumber instance to workaround it
       // TODO: Find a better method to copy balance to a new instance
-      setControlledValue(balance?.sub(0))
+      setAmountBN(balance.sub(0))
     }
-  }, [balance])
+  }, [balance, setAmountBN])
 
-  React.useEffect(() => {
-    if (value) {
-      setControlledValue(value)
-    }
-  }, [value])
+  const handleInputChange = useCallback(
+    (v: string | null) => {
+      setAmount(v ? decommify(v) : "0")
+    },
+    [setAmount]
+  )
 
   return (
     <>
       <Row alignment={["space-between", "center"]} spacing="xl" className={cx({ [styles.disabled]: disabled })}>
         <Column grow={1}>
-          <Input value={controlledValue} {...props} />
+          <Input value={commify(amount)} onChange={handleInputChange} {...props} />
         </Column>
         <Column grow={0}>
           <Text size="extra-large" strong>
-            {props.token}
+            {token}
           </Text>
         </Column>
       </Row>
       {balance && !disabled && (
         <Row alignment={["end", "center"]} spacing="m">
           <Text className={styles.balance}>
-            Balance: {formatAmount(utils.formatUnits(balance, decimalsByToken[props.token]))}
+            Balance: {formatAmount(utils.formatUnits(balance, decimalsByToken[token]))}
           </Text>
           <Button variant="primary" size="small" onClick={handleSetMax}>
             MAX

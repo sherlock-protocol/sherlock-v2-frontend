@@ -1,6 +1,7 @@
 import React from "react"
 import { createRoot } from "react-dom/client"
 import { BrowserRouter } from "react-router-dom"
+import { QueryClient, QueryClientProvider } from "react-query"
 import "./index.module.scss"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
@@ -17,26 +18,30 @@ import { StrategiesProvider } from "./hooks/api/useStrategies"
 
 global.Buffer = global.Buffer || require("buffer").Buffer
 
+const queryClient = new QueryClient()
 const container = document.getElementById("root")
 const root = createRoot(container!)
+
 root.render(
   <React.StrictMode>
     <SentryErrorBoundary>
       <BrowserRouter>
         <WagmiProvider>
-          <ApolloProvider>
-            <TxWaitProvider>
-              <FundraisePositionProvider>
-                <StakingPositionsProvider>
-                  <CoveredProtocolsProvider>
-                    <StrategiesProvider>
-                      <App />
-                    </StrategiesProvider>
-                  </CoveredProtocolsProvider>
-                </StakingPositionsProvider>
-              </FundraisePositionProvider>
-            </TxWaitProvider>
-          </ApolloProvider>
+          <QueryClientProvider client={queryClient}>
+            <ApolloProvider>
+              <TxWaitProvider>
+                <FundraisePositionProvider>
+                  <StakingPositionsProvider>
+                    <CoveredProtocolsProvider>
+                      <StrategiesProvider>
+                        <App />
+                      </StrategiesProvider>
+                    </CoveredProtocolsProvider>
+                  </StakingPositionsProvider>
+                </FundraisePositionProvider>
+              </TxWaitProvider>
+            </ApolloProvider>
+          </QueryClientProvider>
         </WagmiProvider>
       </BrowserRouter>
     </SentryErrorBoundary>

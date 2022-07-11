@@ -15,10 +15,11 @@ const amountRegex = /^\d*$/ // Accepts only integer numbers
  * @param decimals Number of decimals units to be used when parsing as BigNumber
  */
 const useAmountState = (
-  decimals: number
+  decimals: number,
+  initialValue?: BigNumber
 ): [string, BigNumber | undefined, (value: string) => void, (value: BigNumber) => void] => {
   const [amount, setAmount] = React.useState("")
-  const [amountBN, setAmountBN] = React.useState<BigNumber>()
+  const [amountBN, setAmountBN] = React.useState<BigNumber | undefined>(initialValue)
 
   /**
    * Validate and set a new amount
