@@ -31,7 +31,7 @@ export const FundraisingClaimPage = () => {
   const [claimIsActive, setClaimIsActive] = useState(false)
 
   /**
-   * Execute GraphQL query to fetch fundraise position once the user's account is available
+   * Fetch fundraise position once the user's account is available
    */
   useEffect(() => {
     if (connectedAddress) {
