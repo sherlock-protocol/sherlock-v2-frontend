@@ -83,6 +83,7 @@
     "@graphql-codegen/typescript-operations": "2.2.4",
     "@graphql-codegen/typescript-react-apollo": "3.2.5",
     "@typechain/ethers-v5": "^9.0.0",
+    "@types/js-cookie": "^3.0.2",
     "@types/luxon": "^2.0.9",
     "csv-parser": "^3.0.0",
     "husky": "^7.0.4",
