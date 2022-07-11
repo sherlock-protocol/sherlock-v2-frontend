@@ -25,7 +25,7 @@ export const ProtocolPage: React.FC = () => {
   const [coverageLeft, setCoverageLeft] = React.useState<BigNumber>()
 
   const { data: coveredProtocols, getCoveredProtocols } = useCoveredProtocols()
-  const [{ data: accountData }] = useAccount()
+  const { address: connectedAddress } = useAccount()
 
   const protocolSelectOptions = React.useMemo(
     () =>
@@ -213,7 +213,7 @@ export const ProtocolPage: React.FC = () => {
                         action={handleAddBalance}
                         onSuccess={fetchProtocolDetails}
                       />
-                      {accountData?.address === selectedProtocol?.agent && (
+                      {connectedAddress === selectedProtocol?.agent && (
                         <Row>
                           <Column grow={1}>
                             <Button variant="secondary" onClick={handleRemoveBalance}>

@@ -39,8 +39,8 @@ const useERC20 = (token: AvailableERC20Tokens) => {
   const [allowances, setAllowances] = React.useState<{ [key: string]: BigNumber }>({})
 
   const provider = useProvider()
-  const [{ data: signerData }] = useSigner()
-  const [{ data: accountData }] = useAccount()
+  const { data: signerData } = useSigner()
+  const { address: connectedAddress } = useAccount()
 
   const contract: ERC20 = useContract({
     addressOrName: address,
@@ -52,13 +52,13 @@ const useERC20 = (token: AvailableERC20Tokens) => {
    * Refresh token balance
    */
   const refreshBalance = React.useCallback(async () => {
-    if (!accountData?.address) {
+    if (!connectedAddress) {
       return
     }
 
-    const latestBalance = await contract.balanceOf(accountData?.address)
+    const latestBalance = await contract.balanceOf(connectedAddress)
     setBalance(latestBalance)
-  }, [contract, accountData?.address])
+  }, [contract, connectedAddress])
 
   /**
    * Fetch balance of specific address
@@ -75,7 +75,7 @@ const useERC20 = (token: AvailableERC20Tokens) => {
    */
   const getAllowance = React.useCallback(
     async (address: string, invalidateCache?: boolean) => {
-      if (!accountData?.address || !address) {
+      if (!connectedAddress || !address) {
         return
       }
 
@@ -83,12 +83,12 @@ const useERC20 = (token: AvailableERC20Tokens) => {
         return allowances[address]
       }
 
-      const lastAllowance = await contract.allowance(accountData?.address, address)
+      const lastAllowance = await contract.allowance(connectedAddress, address)
       setAllowances({ ...allowances, [address]: lastAllowance })
 
       return lastAllowance
     },
-    [contract, accountData?.address, allowances]
+    [contract, connectedAddress, allowances]
   )
 
   /**
@@ -119,12 +119,12 @@ const useERC20 = (token: AvailableERC20Tokens) => {
    * Refresh balance on initialization, or on account change
    */
   React.useEffect(() => {
-    if (!accountData?.address) {
+    if (!connectedAddress) {
       return
     }
 
     refreshBalance()
-  }, [accountData?.address, refreshBalance])
+  }, [connectedAddress, refreshBalance])
 
   return React.useMemo(
     () => ({ balance, refreshBalance, getBalanceOf, getAllowance, approve, decimals, format }),

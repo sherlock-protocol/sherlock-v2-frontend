@@ -24,7 +24,6 @@ import { useWaitForBlock } from "../../hooks/api/useWaitForBlock"
 import { useQueryClient } from "react-query"
 import { Protocol } from "../../hooks/api/protocols"
 import useERC20 from "../../hooks/useERC20"
-import { ethers } from "ethers"
 
 type Props = {
   claim: Claim
@@ -45,7 +44,7 @@ export const ClaimStatusAction: ClaimStatusActionFn = (props) => {
 }
 
 const Escalate: React.FC<Props> = ({ claim, protocol }) => {
-  const [{ data: connectedAccount }] = useAccount()
+  const { address: connectedAddress } = useAccount()
   const [collapsed, setCollapsed] = useState(true)
   const { escalateClaim, address: claimManagerContractAddress, cleanUpClaim } = useClaimManager()
   const { balance } = useERC20("USDC")
@@ -63,10 +62,8 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
   const [isWaitingTx, setIsWaitingTx] = useState(false)
 
   useEffect(() => {
-    setConnectedAccountIsClaimInitiator(
-      !!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === claim.initiator
-    )
-  }, [connectedAccount?.address, claim.initiator])
+    setConnectedAccountIsClaimInitiator(connectedAddress === claim.initiator)
+  }, [connectedAddress, claim.initiator])
 
   useEffect(() => {
     setAccountHasEnoughBalance(!!balance && balance > UMA_BOND)
@@ -86,8 +83,8 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
   }, [connectedAccountIsClaimInitiator, isWithinUmaEscalationPeriod, accountHasEnoughBalance])
 
   useEffect(() => {
-    setCanCleanUp(!!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === protocol.agent)
-  }, [connectedAccount?.address, protocol.agent])
+    setCanCleanUp(connectedAddress === protocol.agent)
+  }, [connectedAddress, protocol.agent])
 
   const toggleCollapsed = useCallback(() => {
     setCollapsed((v) => !v)
@@ -199,7 +196,7 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
 }
 
 const Payout: React.FC<Props> = ({ claim }) => {
-  const [{ data: connectedAccount }] = useAccount()
+  const { address: connectedAddress } = useAccount()
   const { payoutClaim } = useClaimManager()
   const { waitForTx } = useWaitTx()
   const { waitForBlock } = useWaitForBlock()
@@ -211,10 +208,8 @@ const Payout: React.FC<Props> = ({ claim }) => {
   const [canClaimPayout, setCanClaimPayout] = useState(false)
 
   useEffect(() => {
-    setAccountIsClaimInitiator(
-      !!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === claim.initiator
-    )
-  }, [connectedAccount?.address, claim])
+    setAccountIsClaimInitiator(connectedAddress === claim.initiator)
+  }, [connectedAddress, claim])
 
   useEffect(() => {
     if (claim.status === ClaimStatus.UmaApproved) {

@@ -23,6 +23,7 @@ const chains = defaultChains
 
 // Add local node support if developing
 if (process.env.NODE_ENV === "development") {
+  chains.push(chain.hardhat)
   chains.push(chain.localhost)
 }
 
@@ -37,8 +38,11 @@ const { provider, webSocketProvider } = configureChains(chains, [
 ])
 
 const connectors = [
-  new InjectedConnector(),
+  new InjectedConnector({
+    chains,
+  }),
   new WalletConnectConnector({
+    chains,
     options: {
       qrcode: true,
       rpc: {
@@ -49,7 +53,7 @@ const connectors = [
   }),
 ]
 
-const client = createClient({ provider, webSocketProvider, connectors })
+const client = createClient({ provider, webSocketProvider, connectors, autoConnect: true })
 
 // Set up connectors
 // const connectors = ({ chainId }: { chainId?: number | undefined }) => {

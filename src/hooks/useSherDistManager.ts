@@ -17,7 +17,7 @@ export const SHERLOCK_DIST_MANAGER_ADDRESS = config.sherDistributionManagerAddre
  */
 const useSherDistManager = () => {
   const provider = useProvider()
-  const [{ data: signerData }] = useSigner()
+  const { data: signerData } = useSigner()
   const contract: SherDistributionManager = useContract({
     addressOrName: SHERLOCK_DIST_MANAGER_ADDRESS,
     signerOrProvider: signerData || provider,
