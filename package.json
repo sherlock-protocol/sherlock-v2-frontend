@@ -23,6 +23,7 @@
     "graphql-scalars": "^1.14.1",
     "graphql-tools": "^8.2.0",
     "graphql.macro": "^1.4.2",
+    "js-cookie": "^3.0.1",
     "luxon": "^2.3.0",
     "node-sass": "^7.0.1",
     "react": "^18.1.0",
