@@ -20,8 +20,6 @@ const ConnectButton: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
   const { switchNetwork } = useSwitchNetwork()
   const { address: connectedAddress, isConnected } = useAccount()
 
-  console.log(isConnected)
-
   /**
    * Set Sentry User
    */
