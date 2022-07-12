@@ -17,7 +17,7 @@ export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const [canStartNewClaim, setCanStartNewClaim] = useState(false)
 
   useEffect(() => {
-    setCanStartNewClaim(!!connectedAddress && connectedAddress === protocol.agent)
+    setCanStartNewClaim(connectedAddress === protocol.agent)
   }, [connectedAddress, protocol.agent])
 
   /**
