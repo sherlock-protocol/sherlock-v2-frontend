@@ -1,11 +1,10 @@
-import React, { useEffect, useMemo } from "react"
+import React, { useMemo } from "react"
 import { useAPYOverTime } from "../../hooks/api/apy"
 import { Box } from "../Box"
 import { Chart } from "../Chart/Chart"
 import { Column, Row } from "../Layout"
 import { Title } from "../Title"
 import { DateTime } from "luxon"
-import { useStakingPositions } from "../../hooks/api/useStakingPositions"
 
 /**
  * APY over time chart.
@@ -16,8 +15,9 @@ const APYChart: React.FC = () => {
   const chartData = useMemo(() => {
     const apyChartData = apyData?.map((item) => ({
       name: DateTime.fromMillis(item.timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
-      totalAPY: item.totalAPY,
+      strategiesAPY: item.totalAPY - item.premiumsAPY,
       premiumsAPY: item.premiumsAPY,
+      totalAPY: item.totalAPY,
     }))
 
     return apyChartData
@@ -37,9 +37,12 @@ const APYChart: React.FC = () => {
             width={450}
             height={200}
             data={chartData}
-            dataKeys={["totalAPY", "premiumsAPY"]}
+            dataKeys={["premiumsAPY", "strategiesAPY"]}
             tooltipProps={{
-              formatter: (v: number, name: string) => [`${v}%`, name === "totalAPY" ? "Total APY" : "Premiums APY"],
+              formatter: (v: number, name: string) => [
+                `${v.toFixed(2)}%`,
+                name === "premiumsAPY" ? "Premiums APY" : "Strategies APY",
+              ],
             }}
             yTickFormatter={(v) => `${v}%`}
           />

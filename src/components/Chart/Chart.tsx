@@ -1,5 +1,6 @@
 import React from "react"
 import { AreaChart, YAxis, XAxis, Tooltip, TooltipProps, Area, XAxisProps, AreaProps } from "recharts"
+import { Tooltip as CustomTooltip } from "./Tooltip"
 
 import { shortenNumber } from "../../utils/units"
 
@@ -33,12 +34,12 @@ export const Chart: React.FC<Props> = ({
     <AreaChart width={width} height={height} data={data} key={Math.random()}>
       <defs>
         <linearGradient id="1" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#8716e8" stopOpacity={0.8} />
+          <stop offset="0%" stopColor="#8716e8" stopOpacity={1} />
           <stop offset="100%" stopColor="#8716e8" stopOpacity={0.1} />
         </linearGradient>
         <linearGradient id="2" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#fe6e99" stopOpacity={0.6} />
-          <stop offset="100%" stopColor="#fe6e99" stopOpacity={0} />
+          <stop offset="0%" stopColor="#fe6e99" stopOpacity={1} />
+          <stop offset="100%" stopColor="#fe6e99" stopOpacity={0.3} />
         </linearGradient>
       </defs>
       <YAxis
@@ -55,9 +56,17 @@ export const Chart: React.FC<Props> = ({
         allowDuplicatedCategory={false}
         {...xAxisProps}
       />
-      <Tooltip itemStyle={{ color: "#19032d" }} labelStyle={{ color: "gray" }} {...tooltipProps} />
+      <Tooltip {...tooltipProps} content={<CustomTooltip />} />
       {dataKeys.map((k, index) => (
-        <Area key={index} type={type} dataKey={k} stroke={STROKES[index]} fill={`url(#${index + 1})`} fillOpacity={1} />
+        <Area
+          key={index}
+          stackId={1}
+          type={type}
+          dataKey={k}
+          stroke={STROKES[index]}
+          fill={`url(#${index + 1})`}
+          fillOpacity={1}
+        />
       ))}
     </AreaChart>
   )
