@@ -12,11 +12,6 @@ import { useStakingPositions } from "../../hooks/api/useStakingPositions"
  */
 const APYChart: React.FC = () => {
   const { data: apyData } = useAPYOverTime()
-  const { getStakingPositions, data: stakingPositionsData } = useStakingPositions()
-
-  useEffect(() => {
-    getStakingPositions()
-  }, [getStakingPositions])
 
   const chartData = useMemo(() => {
     const apyChartData = apyData?.map((item) => ({
@@ -35,7 +30,7 @@ const APYChart: React.FC = () => {
           <Title variant="h3">APY</Title>
         </Row>
         <Row>
-          <Title>{stakingPositionsData?.usdcAPY?.toFixed(2)}%</Title>
+          <Title>{chartData?.at(chartData.length - 1)?.totalAPY}%</Title>
         </Row>
         <Row alignment="center">
           <Chart
@@ -44,7 +39,7 @@ const APYChart: React.FC = () => {
             data={chartData}
             dataKeys={["totalAPY", "premiumsAPY"]}
             tooltipProps={{
-              formatter: (v: number, name: string) => [`${v}%`, name],
+              formatter: (v: number, name: string) => [`${v}%`, name === "totalAPY" ? "Total APY" : "Premiums APY"],
             }}
             yTickFormatter={(v) => `${v}%`}
           />
