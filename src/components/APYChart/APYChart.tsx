@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from "react"
-import { useAPYOverTime } from "../../hooks/api/useAPYOverTime"
+import { useAPYOverTime } from "../../hooks/api/apy"
 import { Box } from "../Box"
 import { Chart } from "../Chart/Chart"
 import { Column, Row } from "../Layout"
@@ -11,18 +11,18 @@ import { useStakingPositions } from "../../hooks/api/useStakingPositions"
  * APY over time chart.
  */
 const APYChart: React.FC = () => {
-  const { getAPYOverTime, data: apyData } = useAPYOverTime()
+  const { data: apyData } = useAPYOverTime()
   const { getStakingPositions, data: stakingPositionsData } = useStakingPositions()
 
   useEffect(() => {
-    getAPYOverTime()
     getStakingPositions()
-  }, [getAPYOverTime, getStakingPositions])
+  }, [getStakingPositions])
 
   const chartData = useMemo(() => {
     const apyChartData = apyData?.map((item) => ({
       name: DateTime.fromMillis(item.timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
-      value: item.value,
+      totalAPY: item.totalAPY,
+      premiumsAPY: item.premiumsAPY,
     }))
 
     return apyChartData
@@ -42,8 +42,9 @@ const APYChart: React.FC = () => {
             width={450}
             height={200}
             data={chartData}
+            dataKeys={["totalAPY", "premiumsAPY"]}
             tooltipProps={{
-              formatter: (v: number, name: string) => [`${v}%`, "APY"],
+              formatter: (v: number, name: string) => [`${v}%`, name],
             }}
             yTickFormatter={(v) => `${v}%`}
           />

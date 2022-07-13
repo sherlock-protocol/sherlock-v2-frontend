@@ -127,6 +127,11 @@ export const OverviewPage: React.FC = () => {
             </Row>
           </Column>
         </Box>
+        <Column>
+          <APYChart />
+        </Column>
+      </Row>
+      <Row spacing="m">
         <Box shadow={false}>
           <Column spacing="m">
             <Row>
@@ -152,12 +157,6 @@ export const OverviewPage: React.FC = () => {
             </Row>
           </Column>
         </Box>
-      </Row>
-      <Row spacing="m">
-        <Column>
-          <APYChart />
-        </Column>
-        <Column></Column>
       </Row>
       <Row spacing="m">
         <Column grow={1}>
