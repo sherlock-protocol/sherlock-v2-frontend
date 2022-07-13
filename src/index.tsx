@@ -14,6 +14,7 @@ import { FundraisePositionProvider } from "./hooks/api/useFundraisePosition"
 import { StakingPositionsProvider } from "./hooks/api/useStakingPositions"
 import { SentryErrorBoundary } from "./utils/sentry"
 import { CoveredProtocolsProvider } from "./hooks/api/useCoveredProtocols"
+import { StrategiesProvider } from "./hooks/api/useStrategies"
 
 global.Buffer = global.Buffer || require("buffer").Buffer
 
@@ -32,7 +33,9 @@ root.render(
                 <FundraisePositionProvider>
                   <StakingPositionsProvider>
                     <CoveredProtocolsProvider>
-                      <App />
+                      <StrategiesProvider>
+                        <App />
+                      </StrategiesProvider>
                     </CoveredProtocolsProvider>
                   </StakingPositionsProvider>
                 </FundraisePositionProvider>
