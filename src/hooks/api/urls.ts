@@ -6,4 +6,5 @@ export const getTVCOverTIme = () => "stats_tvc"
 export const getStakePositions = (account?: string) => (account ? `staking/${account}` : "staking")
 export const getCoveredProtocols = () => "protocols"
 export const getWaitForBlock = (blockNumber: number) => `wait-for-block?block=${blockNumber}`
+export const getStrategies = () => "strategies"
 export const getActiveClaim = (protocolID: number) => `claims/${protocolID}/active`
