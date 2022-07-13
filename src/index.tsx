@@ -2,12 +2,7 @@ import React from "react"
 import { createRoot } from "react-dom/client"
 import { BrowserRouter } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "react-query"
-import "./index.module.scss"
-import App from "./App"
-import reportWebVitals from "./reportWebVitals"
-import "./polyfills"
 
-import { ApolloProvider } from "./utils/apollo/ApolloProvider"
 import { WagmiProvider } from "./utils/WagmiProvider"
 import { TxWaitProvider } from "./hooks/useWaitTx"
 import { FundraisePositionProvider } from "./hooks/api/useFundraisePosition"
@@ -15,6 +10,12 @@ import { StakingPositionsProvider } from "./hooks/api/useStakingPositions"
 import { SentryErrorBoundary } from "./utils/sentry"
 import { CoveredProtocolsProvider } from "./hooks/api/useCoveredProtocols"
 import { StrategiesProvider } from "./hooks/api/useStrategies"
+
+import App from "./App"
+
+import "./index.module.scss"
+import reportWebVitals from "./reportWebVitals"
+import "./polyfills"
 
 global.Buffer = global.Buffer || require("buffer").Buffer
 
@@ -28,19 +29,17 @@ root.render(
       <BrowserRouter>
         <WagmiProvider>
           <QueryClientProvider client={queryClient}>
-            <ApolloProvider>
-              <TxWaitProvider>
-                <FundraisePositionProvider>
-                  <StakingPositionsProvider>
-                    <CoveredProtocolsProvider>
-                      <StrategiesProvider>
-                        <App />
-                      </StrategiesProvider>
-                    </CoveredProtocolsProvider>
-                  </StakingPositionsProvider>
-                </FundraisePositionProvider>
-              </TxWaitProvider>
-            </ApolloProvider>
+            <TxWaitProvider>
+              <FundraisePositionProvider>
+                <StakingPositionsProvider>
+                  <CoveredProtocolsProvider>
+                    <StrategiesProvider>
+                      <App />
+                    </StrategiesProvider>
+                  </CoveredProtocolsProvider>
+                </StakingPositionsProvider>
+              </FundraisePositionProvider>
+            </TxWaitProvider>
           </QueryClientProvider>
         </WagmiProvider>
       </BrowserRouter>

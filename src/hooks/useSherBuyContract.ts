@@ -35,7 +35,7 @@ export type CapitalRequirements = {
 
 export const useSherBuyContract = () => {
   const provider = useProvider()
-  const [{ data: signerData }] = useSigner()
+  const { data: signerData } = useSigner()
   const contract = useContract<SherBuy>({
     addressOrName: SHER_BUY_ADDRESS,
     contractInterface: SherBuyABI.abi,

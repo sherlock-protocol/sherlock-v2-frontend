@@ -27,7 +27,7 @@ type Props = ModalProps & {
 }
 
 export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) => {
-  const [{ data: connectedAccount }] = useAccount()
+  const { address: connectedAddress } = useAccount()
   const [claimAmount, setClaimAmount] = useState<BigNumber>()
   const [additionalInformationFile, setAdditionalInformationFile] = useState<File>()
   const [additionalInformationHash, setAdditionalInformationHash] = useState<string>()
@@ -101,10 +101,8 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
   }, [debouncedExploitStartInput, provider])
 
   useEffect(() => {
-    setCanStartNewClaim(
-      !!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === protocol.agent
-    )
-  }, [connectedAccount?.address, protocol.agent])
+    setCanStartNewClaim(connectedAddress === protocol.agent)
+  }, [connectedAddress, protocol.agent])
 
   /**
    * Handle additional information file change
