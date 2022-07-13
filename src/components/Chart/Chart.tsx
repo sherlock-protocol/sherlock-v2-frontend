@@ -27,15 +27,18 @@ export const Chart: React.FC<Props> = ({
   tooltipProps,
 }) => {
   return (
+    // key={Math.random() is a workaround to get the animations to work.
+    // The animations not firing might be related to consecutive re-renders in a short
+    // period of time. Something we can investigate further.
     <AreaChart width={width} height={height} data={data} key={Math.random()}>
       <defs>
         <linearGradient id="1" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#8716e8" stopOpacity={1} />
+          <stop offset="0%" stopColor="#8716e8" stopOpacity={0.8} />
           <stop offset="100%" stopColor="#8716e8" stopOpacity={0.1} />
         </linearGradient>
         <linearGradient id="2" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#fe6e99" stopOpacity={1} />
-          <stop offset="100%" stopColor="#fe6e99" stopOpacity={0.1} />
+          <stop offset="0%" stopColor="#fe6e99" stopOpacity={0.6} />
+          <stop offset="100%" stopColor="#fe6e99" stopOpacity={0} />
         </linearGradient>
       </defs>
       <YAxis
