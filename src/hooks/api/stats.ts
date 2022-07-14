@@ -1,7 +1,11 @@
 import { BigNumber } from "ethers"
 import { useQuery } from "react-query"
 import axios from "./axios"
-import { getAPYOverTime as getAPYOverTimeUrl, getTVCOverTime as getTVCOverTimeUrl } from "./urls"
+import {
+  getAPYOverTime as getAPYOverTimeUrl,
+  getTVCOverTime as getTVCOverTimeUrl,
+  getTVLOverTime as getTVLOverTimeUrl,
+} from "./urls"
 
 type APYDataPoint = {
   timestamp: number
@@ -60,6 +64,20 @@ export const tvcOverTimeQueryKey = "tvcOverTime"
 export const useTVCOverTime = () =>
   useQuery<DataPoint<BigNumber>[] | null, Error>(tvcOverTimeQueryKey, async () => {
     const { data: response } = await axios.get<GetStatsResponseData>(getTVCOverTimeUrl())
+
+    if (response.ok === false) throw Error(response.error)
+    if (response.data === null) return null
+
+    return response.data.map((r) => ({
+      timestamp: r.timestamp,
+      value: BigNumber.from(r.value),
+    }))
+  })
+
+export const tvlOverTimeQueryKey = "tvlOverTime"
+export const useTVLOverTime = () =>
+  useQuery<DataPoint<BigNumber>[] | null, Error>(tvlOverTimeQueryKey, async () => {
+    const { data: response } = await axios.get<GetStatsResponseData>(getTVLOverTimeUrl())
 
     if (response.ok === false) throw Error(response.error)
     if (response.data === null) return null

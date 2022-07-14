@@ -8,19 +8,18 @@ import { formatAmount } from "../../utils/format"
 import { ethers } from "ethers"
 import styles from "./CoveredProtocolsList.module.scss"
 import cx from "classnames"
-import { useTVCOverTime } from "../../hooks/api/useTVCOverTime"
+import { useTVCOverTime } from "../../hooks/api/stats"
 
 /**
  * List of covered protocols
  */
 const CoveredProtocolsList: React.FC = () => {
   const { getCoveredProtocols, data: coveredProtocolsData } = useCoveredProtocols()
-  const { getTVCOverTime, data: tvcData } = useTVCOverTime()
+  const { data: tvcData } = useTVCOverTime()
 
   useEffect(() => {
     getCoveredProtocols()
-    getTVCOverTime()
-  }, [getCoveredProtocols, getTVCOverTime])
+  }, [getCoveredProtocols])
 
   // Total Value Covered
   const tvc = useMemo(() => {
