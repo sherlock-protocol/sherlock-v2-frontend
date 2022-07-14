@@ -7,7 +7,7 @@ import { Title } from "../../components/Title"
 import { Chart } from "../../components/Chart/Chart"
 
 import { useTVLOverTime } from "../../hooks/api/useTVLOverTime"
-import { useTVCOverTime } from "../../hooks/api/useTVCOverTime"
+import { useTVCOverTime } from "../../hooks/api/stats"
 
 import styles from "./Overview.module.scss"
 import APYChart from "../../components/APYChart/APYChart"
@@ -21,12 +21,11 @@ type ChartDataPoint = {
 
 export const OverviewPage: React.FC = () => {
   const { getTVLOverTime, data: tvlData } = useTVLOverTime()
-  const { getTVCOverTime, data: tvcData } = useTVCOverTime()
+  const { data: tvcData } = useTVCOverTime()
 
   useEffect(() => {
     getTVLOverTime()
-    getTVCOverTime()
-  }, [getTVLOverTime, getTVCOverTime])
+  }, [getTVLOverTime])
 
   const chartsData = useMemo(() => {
     if (!tvlData || !tvcData) return
