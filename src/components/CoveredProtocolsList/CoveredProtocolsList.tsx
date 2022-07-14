@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from "react"
 import { Box } from "../Box"
 import { Column, Row } from "../Layout"
 import { Title } from "../Title"
-import { useCoveredProtocols } from "../../hooks/api/useCoveredProtocols"
+import { useProtocols } from "../../hooks/api/protocols"
 import { Text } from "../Text"
 import { formatAmount } from "../../utils/format"
 import { ethers } from "ethers"
@@ -14,13 +14,12 @@ import { useTVCOverTime } from "../../hooks/api/useTVCOverTime"
  * List of covered protocols
  */
 const CoveredProtocolsList: React.FC = () => {
-  const { getCoveredProtocols, data: coveredProtocolsData } = useCoveredProtocols()
+  const { data: protocols } = useProtocols()
   const { getTVCOverTime, data: tvcData } = useTVCOverTime()
 
   useEffect(() => {
-    getCoveredProtocols()
     getTVCOverTime()
-  }, [getCoveredProtocols, getTVCOverTime])
+  }, [getTVCOverTime])
 
   // Total Value Covered
   const tvc = useMemo(() => {
@@ -30,12 +29,12 @@ const CoveredProtocolsList: React.FC = () => {
   }, [tvcData])
 
   const protocolsData = useMemo(() => {
-    if (!coveredProtocolsData || !tvc || Object.keys(coveredProtocolsData).length === 0) {
+    if (!protocols || !tvc || Object.keys(protocols).length === 0) {
       return []
     }
 
     // Filter only protocols with active coverage
-    const activeProtocols = Object.entries(coveredProtocolsData)
+    const activeProtocols = Object.entries(protocols)
       .map((item) => item[1])
       .filter((item) => !item.coverageEndedAt)
 
@@ -68,7 +67,7 @@ const CoveredProtocolsList: React.FC = () => {
     }
 
     return sortedProtocols
-  }, [coveredProtocolsData, tvc])
+  }, [protocols, tvc])
 
   return (
     <Box shadow={false} fullWidth>
