@@ -8,7 +8,6 @@ import { TxWaitProvider } from "./hooks/useWaitTx"
 import { FundraisePositionProvider } from "./hooks/api/useFundraisePosition"
 import { StakingPositionsProvider } from "./hooks/api/useStakingPositions"
 import { SentryErrorBoundary } from "./utils/sentry"
-import { CoveredProtocolsProvider } from "./hooks/api/useCoveredProtocols"
 import { StrategiesProvider } from "./hooks/api/useStrategies"
 
 import App from "./App"
@@ -32,11 +31,9 @@ root.render(
             <TxWaitProvider>
               <FundraisePositionProvider>
                 <StakingPositionsProvider>
-                  <CoveredProtocolsProvider>
-                    <StrategiesProvider>
-                      <App />
-                    </StrategiesProvider>
-                  </CoveredProtocolsProvider>
+                  <StrategiesProvider>
+                    <App />
+                  </StrategiesProvider>
                 </StakingPositionsProvider>
               </FundraisePositionProvider>
             </TxWaitProvider>
