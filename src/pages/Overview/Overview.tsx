@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react"
+import React, { useMemo } from "react"
 import { utils } from "ethers"
 import { DateTime } from "luxon"
 import { Box } from "../../components/Box"

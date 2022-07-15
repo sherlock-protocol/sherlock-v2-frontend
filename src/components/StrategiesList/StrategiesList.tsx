@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react"
+import React, { useMemo } from "react"
 import { Box } from "../Box"
 import { Column, Row } from "../Layout"
 import { Title } from "../Title"
@@ -7,19 +7,15 @@ import { formatAmount } from "../../utils/format"
 import { BigNumber, ethers } from "ethers"
 import styles from "./StrategiesList.module.scss"
 import cx from "classnames"
-import { useStrategies } from "../../hooks/api/useStrategies"
 import { useTVLOverTime } from "../../hooks/api/stats"
+import { useStrategies } from "../../hooks/api/strategies"
 
 /**
  * List of strategies
  */
 const StrategiesList: React.FC = () => {
-  const { getStrategies, data: strategies } = useStrategies()
+  const { data: strategies } = useStrategies()
   const { data: tvlData } = useTVLOverTime()
-
-  useEffect(() => {
-    getStrategies()
-  }, [getStrategies])
 
   // Total Value Locked
   const tvl = useMemo(() => {
