@@ -17,7 +17,7 @@ export const SHERLOCK_PROTOCOL_MANAGER_ADDRESS = config.sherlockProtocolManagerA
  */
 const useProtocolManager = () => {
   const provider = useProvider()
-  const [{ data: signerData }] = useSigner()
+  const { data: signerData } = useSigner()
   const contract: SherlockProtocolManager = useContract({
     addressOrName: SHERLOCK_PROTOCOL_MANAGER_ADDRESS,
     signerOrProvider: signerData || provider,

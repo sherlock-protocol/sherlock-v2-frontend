@@ -19,7 +19,7 @@ export const SHER_CLAIM_START = SHER_BUY_ENTRY_DEADLINE + 60 * 60 * 24 * 7 * 26 
 
 export const useSherClaimContract = () => {
   const provider = useProvider()
-  const [{ data: signerData }] = useSigner()
+  const { data: signerData } = useSigner()
   const contract = useContract<SherClaim>({
     addressOrName: SHER_CLAIM_ADDRESS,
     contractInterface: SherClaimInterface.abi,

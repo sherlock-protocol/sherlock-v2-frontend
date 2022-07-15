@@ -59,7 +59,7 @@ const parseResponse = (response: GetStakingPositionsResponseData): StakingPositi
 }
 
 type StakingPositionContextType = {
-  getStakingPositions: (account?: string) => void
+  getStakingPositions: (account?: string) => Promise<void>
   loading: boolean
   data: StakingPositions | null
   error: Error | null
