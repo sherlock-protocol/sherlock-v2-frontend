@@ -27,7 +27,7 @@ type Props = ModalProps & {
 }
 
 export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) => {
-  const { address: connectedAddress } = useAccount()
+  const [{ data: connectedAccount }] = useAccount()
   const [claimAmount, setClaimAmount] = useState<BigNumber>()
   const [additionalInformationFile, setAdditionalInformationFile] = useState<File>()
   const [additionalInformationHash, setAdditionalInformationHash] = useState<string>()
@@ -101,8 +101,10 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
   }, [debouncedExploitStartInput, provider])
 
   useEffect(() => {
-    setCanStartNewClaim(connectedAddress === protocol.agent)
-  }, [connectedAddress, protocol.agent])
+    setCanStartNewClaim(
+      !!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === protocol.agent
+    )
+  }, [connectedAccount?.address, protocol.agent])
 
   /**
    * Handle additional information file change
@@ -140,6 +142,9 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
    */
   const handleSubmitClaim = useCallback(async () => {
     if (!canStartNewClaim || !claimIsValid) return
+    if (!protocol.agreement || !protocol.agreement_hash) {
+      throw Error("Protocol coverage agreement is missing")
+    }
 
     setSubmittingClaim(true)
 
@@ -159,8 +164,8 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
             receiverAddress,
             exploitBlock.number,
             {
-              link: protocol.agreement,
-              hash: protocol.agreementHash,
+              link: protocol.agreement!,
+              hash: protocol.agreement_hash!,
             },
             additionalInformationFileURL && additionalInformationHash
               ? {
@@ -183,7 +188,7 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
     claimIsValid,
     protocol.id,
     protocol.agreement,
-    protocol.agreementHash,
+    protocol.agreement_hash,
     protocol.name,
     protocol.bytesIdentifier,
     queryClient,
@@ -289,7 +294,7 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
               </span>
             }
           >
-            <Input value={protocol.agreementHash} variant="small" disabled />
+            <Input value={protocol.agreement_hash} variant="small" disabled />
           </Field>
         </Row>
 

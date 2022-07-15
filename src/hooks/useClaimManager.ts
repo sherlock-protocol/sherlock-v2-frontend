@@ -30,7 +30,7 @@ type AncillaryData = {
  */
 export const useClaimManager = () => {
   const provider = useProvider()
-  const { data: signerData } = useSigner()
+  const [{ data: signerData }] = useSigner()
   const contract: SherlockClaimManager = useContract({
     addressOrName: SHERLOCK_CLAIM_MANAGER_ADDRESS,
     signerOrProvider: signerData || provider,

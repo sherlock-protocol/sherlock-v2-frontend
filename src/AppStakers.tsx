@@ -9,14 +9,14 @@ import { routes } from "./utils/routes"
 import styles from "./App.module.scss"
 
 const AppStakers = () => {
-  const { address: connectedAddress } = useAccount()
+  const [{ data: accountData }] = useAccount()
   const { getFundraisePosition, data: fundraisePositionData } = useFundraisePosition()
 
   useEffect(() => {
-    if (connectedAddress) {
-      getFundraisePosition(connectedAddress)
+    if (accountData?.address) {
+      getFundraisePosition(accountData.address)
     }
-  }, [connectedAddress, getFundraisePosition])
+  }, [accountData?.address, getFundraisePosition])
 
   const navigationLinks: NavigationLink[] = [
     {

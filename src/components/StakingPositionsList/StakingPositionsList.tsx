@@ -20,7 +20,7 @@ type LocationState = {
 }
 
 export const StakingPositionsList: React.FC = () => {
-  const { address: connectedAddress } = useAccount()
+  const [{ data: accountData }] = useAccount()
   const { getStakingPositions, data, loading } = useStakingPositions()
   const [positions, setPositions] = React.useState<Array<StakingPosition>>([])
   const navigate = useNavigate()
@@ -78,10 +78,10 @@ export const StakingPositionsList: React.FC = () => {
    * Fetch staking positions from indexer API
    */
   const fetchStakingPositions = React.useCallback(async () => {
-    if (connectedAddress) {
-      await getStakingPositions(connectedAddress)
+    if (accountData?.address) {
+      await getStakingPositions(accountData.address)
     }
-  }, [connectedAddress, getStakingPositions])
+  }, [accountData?.address, getStakingPositions])
 
   /**
    * Refresh staking positions list after indexer is up to date
@@ -111,7 +111,7 @@ export const StakingPositionsList: React.FC = () => {
    */
   useEffect(() => {
     fetchStakingPositions()
-  }, [connectedAddress, fetchStakingPositions])
+  }, [accountData?.address, fetchStakingPositions])
 
   /**
    * Setup USDC increments after each staking positions refresh

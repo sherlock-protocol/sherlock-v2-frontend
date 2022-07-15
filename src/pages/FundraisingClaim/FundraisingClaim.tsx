@@ -17,7 +17,7 @@ import { formattedTimeDifference } from "../../utils/dates"
 import { formatAmount } from "../../utils/format"
 
 export const FundraisingClaimPage = () => {
-  const { address: connectedAddress } = useAccount()
+  const [{ data: accountData }] = useAccount()
   const sherClaim = useSherClaimContract()
   /**
    * Custom hook for fetching fundraise position from Indexer API
@@ -31,13 +31,13 @@ export const FundraisingClaimPage = () => {
   const [claimIsActive, setClaimIsActive] = useState(false)
 
   /**
-   * Fetch fundraise position once the user's account is available
+   * Execute GraphQL query to fetch fundraise position once the user's account is available
    */
   useEffect(() => {
-    if (connectedAddress) {
-      getFundraisePosition(connectedAddress)
+    if (accountData?.address) {
+      getFundraisePosition(accountData.address)
     }
-  }, [connectedAddress, getFundraisePosition])
+  }, [accountData?.address, getFundraisePosition])
 
   /**
    * Fetch claim is active or not from smart contract
@@ -58,12 +58,13 @@ export const FundraisingClaimPage = () => {
 
   const handleClaim = useCallback(async () => {
     try {
-      await sherClaim.claim()
-      connectedAddress && getFundraisePosition(connectedAddress)
+      const txReceipt = await sherClaim.claim()
+      console.log(txReceipt)
+      accountData?.address && getFundraisePosition(accountData.address)
     } catch (error) {
       console.log(error)
     }
-  }, [connectedAddress, sherClaim, getFundraisePosition])
+  }, [accountData?.address, sherClaim, getFundraisePosition])
 
   const claimStartString = useMemo(() => {
     return (

@@ -3,6 +3,7 @@ import { BigNumber } from "ethers"
 import axios from "./axios"
 
 import { getCoveredProtocols as getCoveredProtocolsUrl } from "./urls"
+import coveredProtocolMetas from "../../data/protocols"
 
 export type Protocol = {
   /**
@@ -31,14 +32,9 @@ export type Protocol = {
   premium: BigNumber
 
   /**
-   * Timestamp when premium was set
-   */
-  premiumSetAt: Date | null
-
-  /**
    * Covered protocol's name
    */
-  name: string
+  name?: string
 
   /**
    * Covered protocol's website
@@ -58,12 +54,12 @@ export type Protocol = {
   /**
    * URL to covered protocol's Statement of Coverage
    */
-  agreement: string
+  agreement?: string
 
   /**
    * Hash of the Statement of Coverage
    */
-  agreementHash: string
+  agreement_hash?: string
 
   /**
    * Current (and previous, if exists) coverages
@@ -97,17 +93,11 @@ type GetProtocolsResponseData =
       data: {
         id: number
         agent: string
-        name: string
-        description: string
-        website?: string
-        logo?: string
         bytes_identifier: string
         coverage_ended_at: number
         premium: string
         premium_set_at: number
         coverages: Array<{ claimable_until: number | null; coverage_amount: string; coverage_amount_set_at: number }>
-        agreement: string
-        agreement_hash: string
         tvl: string
       }[]
     }
@@ -128,26 +118,27 @@ export const useProtocols = () =>
     if (response.ok === false) throw Error(response.error)
 
     return response.data.reduce<Record<string, Protocol>>((map, p) => {
-      map[p.bytes_identifier] = {
-        id: p.id,
-        name: p.name,
-        description: p.description,
-        website: p.website,
-        logo: p.logo,
-        agent: p.agent,
-        bytesIdentifier: p.bytes_identifier,
-        premium: BigNumber.from(p.premium),
-        coverageEndedAt: p.coverage_ended_at ? new Date(p.coverage_ended_at * 1000) : null,
-        premiumSetAt: p.premium_set_at ? new Date(p.premium_set_at * 1000) : null,
-        coverages: p.coverages.map((item) => ({
-          claimableUntil: item.claimable_until ? new Date(item.claimable_until * 1000) : null,
-          coverageAmount: BigNumber.from(item.coverage_amount),
-          coverageAmountSetAt: new Date(item.coverage_amount_set_at * 1000),
-        })),
-        tvl: p?.tvl ? BigNumber.from(p?.tvl) : undefined,
-        agreement: p.agreement,
-        agreementHash: p.agreement_hash,
+      // Try to find protocol's metadata
+      const metas = coveredProtocolMetas[p.bytes_identifier]
+
+      if (metas) {
+        map[p.bytes_identifier] = {
+          ...metas,
+          id: p.id,
+          agent: p.agent,
+          bytesIdentifier: p.bytes_identifier,
+          premium: BigNumber.from(p.premium),
+          coverageEndedAt: p.coverage_ended_at ? new Date(p.coverage_ended_at * 1000) : null,
+          premiumSetAt: p.premium_set_at ? new Date(p.premium_set_at * 1000) : null,
+          coverages: p.coverages.map((item) => ({
+            claimableUntil: item.claimable_until ? new Date(item.claimable_until * 1000) : null,
+            coverageAmount: BigNumber.from(item.coverage_amount),
+            coverageAmountSetAt: new Date(item.coverage_amount_set_at * 1000),
+          })),
+          tvl: p?.tvl ? BigNumber.from(p?.tvl) : undefined,
+        } as Protocol
       }
+
       return map
     }, {})
   })

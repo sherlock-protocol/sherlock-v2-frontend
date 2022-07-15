@@ -6,19 +6,22 @@ import { Text } from "../../components/Text"
 import { Protocol } from "../../hooks/api/protocols"
 import { Column } from "../../components/Layout"
 import { NewClaimModal } from "./NewClaimModal"
+import { ethers } from "ethers"
 
 type Props = {
   protocol: Protocol
 }
 
 export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
-  const { address: connectedAddress } = useAccount()
+  const [{ data: connectedAccount }] = useAccount()
   const [isCreating, setIsCreating] = useState(false)
   const [canStartNewClaim, setCanStartNewClaim] = useState(false)
 
   useEffect(() => {
-    setCanStartNewClaim(connectedAddress === protocol.agent)
-  }, [connectedAddress, protocol.agent])
+    setCanStartNewClaim(
+      !!connectedAccount?.address && ethers.utils.getAddress(connectedAccount.address) === protocol.agent
+    )
+  }, [connectedAccount?.address, protocol.agent])
 
   /**
    * Handler for start claim click

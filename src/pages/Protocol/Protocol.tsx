@@ -15,7 +15,7 @@ import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
 import Select from "../../components/Select/Select"
 import { formatAmount } from "../../utils/format"
-import { useProtocols, Protocol } from "../../hooks/api/protocols"
+import { useCoveredProtocols, CoveredProtocol } from "../../hooks/api/useCoveredProtocols"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 
@@ -24,20 +24,20 @@ export const ProtocolPage: React.FC = () => {
   const [balance, setBalance] = React.useState<BigNumber>()
   const [coverageLeft, setCoverageLeft] = React.useState<BigNumber>()
 
-  const { data: protocols } = useProtocols()
-  const { address: connectedAddress } = useAccount()
+  const { data: coveredProtocols, getCoveredProtocols } = useCoveredProtocols()
+  const [{ data: accountData }] = useAccount()
 
   const protocolSelectOptions = React.useMemo(
     () =>
-      Object.entries(protocols ?? {}).map(([key, item]) => ({
+      Object.entries(coveredProtocols)?.map(([key, item]) => ({
         label: item.name ?? "Unknown",
         value: key,
       })) ?? [],
-    [protocols]
+    [coveredProtocols]
   )
-  const selectedProtocol = React.useMemo<Protocol | null>(
-    () => (selectedProtocolId ? protocols?.[selectedProtocolId] ?? null : null),
-    [selectedProtocolId, protocols]
+  const selectedProtocol = React.useMemo<CoveredProtocol | null>(
+    () => (selectedProtocolId ? coveredProtocols?.[selectedProtocolId] ?? null : null),
+    [selectedProtocolId, coveredProtocols]
   )
 
   /**
@@ -109,6 +109,14 @@ export const ProtocolPage: React.FC = () => {
   const handleOnAmountChanged = React.useCallback((amount: BigNumber | undefined) => {
     setAmount(amount)
   }, [])
+
+  // Fetch covered protocols
+  React.useEffect(() => {
+    const fetchCoveredProtocols = async () => {
+      await getCoveredProtocols()
+    }
+    fetchCoveredProtocols()
+  }, [getCoveredProtocols])
 
   // Fetch protocol coverage information
   React.useEffect(() => {
@@ -205,7 +213,7 @@ export const ProtocolPage: React.FC = () => {
                         action={handleAddBalance}
                         onSuccess={fetchProtocolDetails}
                       />
-                      {connectedAddress === selectedProtocol?.agent && (
+                      {accountData?.address === selectedProtocol?.agent && (
                         <Row>
                           <Column grow={1}>
                             <Button variant="secondary" onClick={handleRemoveBalance}>

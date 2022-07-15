@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from "react"
-import { useAccount } from "wagmi"
+import { useConnect } from "wagmi"
 import ConnectButton from "../ConnectButton/ConnectButton"
 
 /**
@@ -7,9 +7,9 @@ import ConnectButton from "../ConnectButton/ConnectButton"
  * before another action
  */
 const ConnectGate: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
-  const { isConnected } = useAccount()
+  const [{ data }] = useConnect()
 
-  if (isConnected) {
+  if (data?.connected) {
     return <>{children}</>
   }
 

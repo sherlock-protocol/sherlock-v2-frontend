@@ -1,0 +1,21 @@
+type Position {
+  id: BigInt!
+  usdcAmount: BigInt!
+  sherAmount: BigInt!
+  expiration: BigInt! # timestamp in milliseconds
+  owner: String! # owner's address
+}
+
+type FundraisePosition {
+  id: ID!
+  owner: String! # owner's address
+  stake: BigInt! # in USDC
+  contribution: BigInt! # in USDC
+  reward: BigInt! # in SHER
+  claimableAt: BigInt! # timestamp
+}
+
+type Query {
+  positions(owner: String!): [Position]
+  fundraisePosition(owner: String!): FundraisePosition
+}

@@ -19,8 +19,8 @@ const useSherlock = () => {
   const [tvl, setTvl] = React.useState<BigNumber>()
 
   const provider = useProvider()
-  const { data: signerData } = useSigner()
-  const { address: connectedAddress } = useAccount()
+  const [{ data: signerData }] = useSigner()
+  const [{ data: accountData }] = useAccount()
   const contract: Sherlock = useContract({
     addressOrName: SHERLOCK_ADDRESS,
     signerOrProvider: signerData || provider,
@@ -43,13 +43,13 @@ const useSherlock = () => {
    */
   const stake = React.useCallback(
     async (amount: BigNumber, period: number) => {
-      if (!connectedAddress) {
+      if (!accountData?.address) {
         return
       }
 
-      return contract.initialStake(amount, period, connectedAddress)
+      return contract.initialStake(amount, period, accountData?.address)
     },
-    [connectedAddress, contract]
+    [accountData?.address, contract]
   )
 
   /**

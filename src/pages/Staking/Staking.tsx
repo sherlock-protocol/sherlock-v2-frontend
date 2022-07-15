@@ -56,7 +56,7 @@ export const StakingPage: React.FC = () => {
   const { format: formatSHER } = useERC20("SHER")
   const { format: formatUSDC, balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
-  const { address: connectedAddress } = useAccount()
+  const [{ data: accountData }] = useAccount()
   const navigate = useNavigate()
 
   /**
@@ -113,8 +113,8 @@ export const StakingPage: React.FC = () => {
    * Fetch USDC APY
    */
   React.useEffect(() => {
-    getStakingPositions(connectedAddress ?? undefined)
-  }, [getStakingPositions, connectedAddress])
+    getStakingPositions(accountData?.address ?? undefined)
+  }, [getStakingPositions, accountData?.address])
 
   /**
    * Fetch SHER rewards for 1 USDC
