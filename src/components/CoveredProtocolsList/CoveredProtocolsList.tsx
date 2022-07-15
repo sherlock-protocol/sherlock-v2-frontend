@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react"
+import React, { useMemo } from "react"
 import { Box } from "../Box"
 import { Column, Row } from "../Layout"
 import { Title } from "../Title"
@@ -8,18 +8,14 @@ import { formatAmount } from "../../utils/format"
 import { ethers } from "ethers"
 import styles from "./CoveredProtocolsList.module.scss"
 import cx from "classnames"
-import { useTVCOverTime } from "../../hooks/api/useTVCOverTime"
+import { useTVCOverTime } from "../../hooks/api/stats"
 
 /**
  * List of covered protocols
  */
 const CoveredProtocolsList: React.FC = () => {
+  const { data: tvcData } = useTVCOverTime()
   const { data: protocols } = useProtocols()
-  const { getTVCOverTime, data: tvcData } = useTVCOverTime()
-
-  useEffect(() => {
-    getTVCOverTime()
-  }, [getTVCOverTime])
 
   // Total Value Covered
   const tvc = useMemo(() => {
