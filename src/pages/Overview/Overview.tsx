@@ -13,6 +13,7 @@ import styles from "./Overview.module.scss"
 import APYChart from "../../components/APYChart/APYChart"
 import CoveredProtocolsList from "../../components/CoveredProtocolsList/CoveredProtocolsList"
 import { formatAmount } from "../../utils/format"
+import StrategiesList from "../../components/StrategiesList/StrategiesList"
 
 type ChartDataPoint = {
   name: string
@@ -161,6 +162,11 @@ export const OverviewPage: React.FC = () => {
       <Row spacing="m">
         <Column grow={1}>
           <CoveredProtocolsList />
+        </Column>
+      </Row>
+      <Row spacing="m">
+        <Column grow={1}>
+          <StrategiesList />
         </Column>
       </Row>
     </Column>

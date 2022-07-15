@@ -15,7 +15,7 @@ import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
 import Select from "../../components/Select/Select"
 import { formatAmount } from "../../utils/format"
-import { useCoveredProtocols, CoveredProtocol } from "../../hooks/api/useCoveredProtocols"
+import { useProtocols, Protocol } from "../../hooks/api/protocols"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 
@@ -24,20 +24,20 @@ export const ProtocolPage: React.FC = () => {
   const [balance, setBalance] = React.useState<BigNumber>()
   const [coverageLeft, setCoverageLeft] = React.useState<BigNumber>()
 
-  const { data: coveredProtocols, getCoveredProtocols } = useCoveredProtocols()
+  const { data: protocols } = useProtocols()
   const { address: connectedAddress } = useAccount()
 
   const protocolSelectOptions = React.useMemo(
     () =>
-      Object.entries(coveredProtocols)?.map(([key, item]) => ({
+      Object.entries(protocols ?? {}).map(([key, item]) => ({
         label: item.name ?? "Unknown",
         value: key,
       })) ?? [],
-    [coveredProtocols]
+    [protocols]
   )
-  const selectedProtocol = React.useMemo<CoveredProtocol | null>(
-    () => (selectedProtocolId ? coveredProtocols?.[selectedProtocolId] ?? null : null),
-    [selectedProtocolId, coveredProtocols]
+  const selectedProtocol = React.useMemo<Protocol | null>(
+    () => (selectedProtocolId ? protocols?.[selectedProtocolId] ?? null : null),
+    [selectedProtocolId, protocols]
   )
 
   /**
@@ -109,14 +109,6 @@ export const ProtocolPage: React.FC = () => {
   const handleOnAmountChanged = React.useCallback((amount: BigNumber | undefined) => {
     setAmount(amount)
   }, [])
-
-  // Fetch covered protocols
-  React.useEffect(() => {
-    const fetchCoveredProtocols = async () => {
-      await getCoveredProtocols()
-    }
-    fetchCoveredProtocols()
-  }, [getCoveredProtocols])
 
   // Fetch protocol coverage information
   React.useEffect(() => {
