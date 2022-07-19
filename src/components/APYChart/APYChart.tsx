@@ -1,28 +1,23 @@
-import React, { useEffect, useMemo } from "react"
-import { useAPYOverTime } from "../../hooks/api/useAPYOverTime"
+import React, { useMemo } from "react"
+import { useAPYOverTime } from "../../hooks/api/apy"
 import { Box } from "../Box"
 import { Chart } from "../Chart/Chart"
 import { Column, Row } from "../Layout"
 import { Title } from "../Title"
 import { DateTime } from "luxon"
-import { useStakingPositions } from "../../hooks/api/useStakingPositions"
 
 /**
  * APY over time chart.
  */
 const APYChart: React.FC = () => {
-  const { getAPYOverTime, data: apyData } = useAPYOverTime()
-  const { getStakingPositions, data: stakingPositionsData } = useStakingPositions()
-
-  useEffect(() => {
-    getAPYOverTime()
-    getStakingPositions()
-  }, [getAPYOverTime, getStakingPositions])
+  const { data: apyData } = useAPYOverTime()
 
   const chartData = useMemo(() => {
     const apyChartData = apyData?.map((item) => ({
       name: DateTime.fromMillis(item.timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
-      value: item.value,
+      strategiesAPY: item.totalAPY - item.premiumsAPY,
+      premiumsAPY: item.premiumsAPY,
+      totalAPY: item.totalAPY,
     }))
 
     return apyChartData
@@ -35,15 +30,19 @@ const APYChart: React.FC = () => {
           <Title variant="h3">APY</Title>
         </Row>
         <Row>
-          <Title>{stakingPositionsData?.usdcAPY?.toFixed(2)}%</Title>
+          <Title>{chartData?.at(chartData.length - 1)?.totalAPY}%</Title>
         </Row>
         <Row alignment="center">
           <Chart
             width={450}
             height={200}
             data={chartData}
+            dataKeys={["premiumsAPY", "strategiesAPY"]}
             tooltipProps={{
-              formatter: (v: number, name: string) => [`${v}%`, "APY"],
+              formatter: (v: number, name: string) => [
+                `${v.toFixed(2)}%`,
+                name === "premiumsAPY" ? "Premiums APY" : "Strategies APY",
+              ],
             }}
             yTickFormatter={(v) => `${v}%`}
           />
