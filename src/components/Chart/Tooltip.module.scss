@@ -1,0 +1,12 @@
+@import "../../styles/variables";
+
+.tooltip {
+  background-color: $background-color;
+  opacity: 0.9;
+  color: $text-color;
+  border: 1px solid;
+  border-image-slice: 1;
+  border-image-source: linear-gradient(136.33deg, rgba(135, 22, 232, 0.28) 7.74%, rgba(254, 110, 153, 0) 98.49%);
+
+  padding: 1rem;
+}
