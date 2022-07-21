@@ -1,5 +1,15 @@
 import React from "react"
-import { AreaChart, YAxis, XAxis, Tooltip, TooltipProps, Area, XAxisProps, AreaProps } from "recharts"
+import {
+  AreaChart,
+  YAxis,
+  XAxis,
+  Tooltip,
+  TooltipProps,
+  Area,
+  XAxisProps,
+  AreaProps,
+  ResponsiveContainer,
+} from "recharts"
 import { Tooltip as CustomTooltip } from "./Tooltip"
 
 import { shortenNumber } from "../../utils/units"
@@ -7,7 +17,6 @@ import { shortenNumber } from "../../utils/units"
 const STROKES = ["#8716e8", "#fe6e99"]
 
 type Props = {
-  width?: number
   height?: number
   data?: any[]
   dataKeys?: string[]
@@ -18,7 +27,6 @@ type Props = {
 }
 
 export const Chart: React.FC<Props> = ({
-  width,
   height,
   data = [],
   dataKeys = ["value"],
@@ -27,47 +35,52 @@ export const Chart: React.FC<Props> = ({
   xAxisProps,
   tooltipProps,
 }) => {
+  // Render a placeholder if no data is provided
+  // TODO: Render a Skeleton component after adding Chakra
+  if (!data || !data.length) {
+    return <div style={{ height }} />
+  }
+
   return (
-    // key={Math.random() is a workaround to get the animations to work.
-    // The animations not firing might be related to consecutive re-renders in a short
-    // period of time. Something we can investigate further.
-    <AreaChart width={width} height={height} data={data} key={Math.random()}>
-      <defs>
-        <linearGradient id="1" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#8716e8" stopOpacity={1} />
-          <stop offset="100%" stopColor="#8716e8" stopOpacity={0.1} />
-        </linearGradient>
-        <linearGradient id="2" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#fe6e99" stopOpacity={1} />
-          <stop offset="100%" stopColor="#fe6e99" stopOpacity={0.3} />
-        </linearGradient>
-      </defs>
-      <YAxis
-        orientation="right"
-        tick={{ fill: "white", fontSize: "12px" }}
-        tickMargin={5}
-        width={80}
-        tickFormatter={yTickFormatter}
-      />
-      <XAxis
-        dataKey="name"
-        tick={{ fill: "white", fontSize: "12px" }}
-        tickMargin={5}
-        allowDuplicatedCategory={false}
-        {...xAxisProps}
-      />
-      <Tooltip {...tooltipProps} content={<CustomTooltip />} />
-      {dataKeys.map((k, index) => (
-        <Area
-          key={index}
-          stackId={1}
-          type={type}
-          dataKey={k}
-          stroke={STROKES[index]}
-          fill={`url(#${index + 1})`}
-          fillOpacity={1}
+    <ResponsiveContainer width="100%" height={height}>
+      <AreaChart height={height} data={data}>
+        <defs>
+          <linearGradient id="1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#8716e8" stopOpacity={1} />
+            <stop offset="100%" stopColor="#8716e8" stopOpacity={0.1} />
+          </linearGradient>
+          <linearGradient id="2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#fe6e99" stopOpacity={1} />
+            <stop offset="100%" stopColor="#fe6e99" stopOpacity={0.3} />
+          </linearGradient>
+        </defs>
+        <YAxis
+          orientation="right"
+          tick={{ fill: "white", fontSize: "12px" }}
+          tickMargin={5}
+          width={80}
+          tickFormatter={yTickFormatter}
         />
-      ))}
-    </AreaChart>
+        <XAxis
+          dataKey="name"
+          tick={{ fill: "white", fontSize: "12px" }}
+          tickMargin={5}
+          allowDuplicatedCategory={false}
+          {...xAxisProps}
+        />
+        <Tooltip {...tooltipProps} content={<CustomTooltip />} />
+        {dataKeys.map((k, index) => (
+          <Area
+            key={index}
+            stackId={1}
+            type={type}
+            dataKey={k}
+            stroke={STROKES[index]}
+            fill={`url(#${index + 1})`}
+            fillOpacity={1}
+          />
+        ))}
+      </AreaChart>
+    </ResponsiveContainer>
   )
 }
