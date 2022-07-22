@@ -34,7 +34,6 @@ const APYChart: React.FC = () => {
         </Row>
         <Row alignment="center">
           <Chart
-            width={450}
             height={200}
             data={chartData}
             dataKeys={["premiumsAPY", "strategiesAPY"]}

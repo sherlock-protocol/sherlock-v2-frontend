@@ -43,7 +43,6 @@ export const InternalOverviewPage: React.FC = () => {
             </Row>
             <Row alignment="center">
               <Chart
-                width={1000}
                 height={200}
                 data={unlockChartData}
                 tooltipProps={{
