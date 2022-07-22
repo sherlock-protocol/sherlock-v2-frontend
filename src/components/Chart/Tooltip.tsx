@@ -6,13 +6,13 @@ import { Text } from "../Text"
 
 import styles from "./Tooltip.module.scss"
 
-export const Tooltip: React.FC<TooltipProps<number, string>> = ({ label, payload, formatter }) => {
+export const Tooltip: React.FC<TooltipProps<number, string>> = ({ label, payload, formatter, labelFormatter }) => {
   return (
     <div className={styles.tooltip}>
       <Column spacing="s">
         <Row>
           <Text strong size="tiny">
-            {label}
+            {labelFormatter ? labelFormatter(label, payload!) : label}
           </Text>
         </Row>
         {payload?.map((p, index) => {
