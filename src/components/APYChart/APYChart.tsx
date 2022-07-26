@@ -6,6 +6,12 @@ import { Column, Row } from "../Layout"
 import { Title } from "../Title"
 import { DateTime } from "luxon"
 
+const tooltipTitles: Record<string, string> = {
+  premiumsAPY: "Premiums APY",
+  strategiesAPY: "Strategies APY",
+  totalValue: "Total APY",
+}
+
 /**
  * APY over time chart.
  */
@@ -38,10 +44,7 @@ const APYChart: React.FC = () => {
             data={chartData}
             dataKeys={["premiumsAPY", "strategiesAPY"]}
             tooltipProps={{
-              formatter: (v: number, name: string) => [
-                `${v.toFixed(2)}%`,
-                name === "premiumsAPY" ? "Premiums APY" : "Strategies APY",
-              ],
+              formatter: (v: number, name: string) => [`${v.toFixed(2)}%`, tooltipTitles[name]],
             }}
             yTickFormatter={(v) => `${v}%`}
           />
