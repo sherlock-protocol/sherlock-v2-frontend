@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { useAPYOverTime } from "../../hooks/api/apy"
+import { useAPYOverTime } from "../../hooks/api/stats"
 import { Box } from "../Box"
 import { Chart } from "../Chart/Chart"
 import { Column, Row } from "../Layout"
