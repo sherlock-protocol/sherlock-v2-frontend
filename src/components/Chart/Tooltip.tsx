@@ -30,7 +30,9 @@ export const Tooltip: React.FC<Props> = ({ label, payload, formatter, labelForma
             <Text>{name}</Text>
           </Row>
         </Column>
-        <Column>{value}</Column>
+        <Column>
+          <Text variant="mono">{value}</Text>
+        </Column>
       </Row>
     )
   }, [formatter, payload])
