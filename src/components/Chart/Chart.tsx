@@ -24,6 +24,7 @@ type Props = {
   type?: AreaProps["type"]
   xAxisProps?: XAxisProps
   tooltipProps?: TooltipProps<any, any>
+  totalLabel?: string
 }
 
 export const Chart: React.FC<Props> = ({
@@ -34,6 +35,7 @@ export const Chart: React.FC<Props> = ({
   type = "monotone",
   xAxisProps,
   tooltipProps,
+  totalLabel,
 }) => {
   // Render a placeholder if no data is provided
   // TODO: Render a Skeleton component after adding Chakra

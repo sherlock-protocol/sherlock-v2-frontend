@@ -8,7 +8,6 @@ import { TxWaitProvider } from "./hooks/useWaitTx"
 import { FundraisePositionProvider } from "./hooks/api/useFundraisePosition"
 import { StakingPositionsProvider } from "./hooks/api/useStakingPositions"
 import { SentryErrorBoundary } from "./utils/sentry"
-import { StrategiesProvider } from "./hooks/api/useStrategies"
 
 import App from "./App"
 
@@ -18,7 +17,13 @@ import "./polyfills"
 
 global.Buffer = global.Buffer || require("buffer").Buffer
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 15 * 1000,
+    },
+  },
+})
 const container = document.getElementById("root")
 const root = createRoot(container!)
 
@@ -31,9 +36,7 @@ root.render(
             <TxWaitProvider>
               <FundraisePositionProvider>
                 <StakingPositionsProvider>
-                  <StrategiesProvider>
-                    <App />
-                  </StrategiesProvider>
+                  <App />
                 </StakingPositionsProvider>
               </FundraisePositionProvider>
             </TxWaitProvider>
