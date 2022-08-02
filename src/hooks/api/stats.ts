@@ -27,7 +27,7 @@ type GetAPYOverTimeResponseData =
       error: string
     }
 
-const STALE_TIME = 60 * 5 * 1000 // 5 minutes
+const STALE_TIME = 60 * 1000 // 1 minute
 
 export const apyOverTimeQueryKey = "apyOverTime"
 export const useAPYOverTime = () =>
