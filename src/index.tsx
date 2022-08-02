@@ -17,7 +17,13 @@ import "./polyfills"
 
 global.Buffer = global.Buffer || require("buffer").Buffer
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 15 * 1000,
+    },
+  },
+})
 const container = document.getElementById("root")
 const root = createRoot(container!)
 

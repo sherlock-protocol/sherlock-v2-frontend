@@ -27,26 +27,20 @@ type GetAPYOverTimeResponseData =
       error: string
     }
 
-const STALE_TIME = 60 * 1000 // 1 minute
-
 export const apyOverTimeQueryKey = "apyOverTime"
 export const useAPYOverTime = () =>
-  useQuery<APYDataPoint[] | null, Error>(
-    apyOverTimeQueryKey,
-    async () => {
-      const { data: response } = await axios.get<GetAPYOverTimeResponseData>(getAPYOverTimeUrl())
+  useQuery<APYDataPoint[] | null, Error>(apyOverTimeQueryKey, async () => {
+    const { data: response } = await axios.get<GetAPYOverTimeResponseData>(getAPYOverTimeUrl())
 
-      if (response.ok === false) throw Error(response.error)
-      if (response.data === null) return null
+    if (response.ok === false) throw Error(response.error)
+    if (response.data === null) return null
 
-      return response.data.map((r) => ({
-        timestamp: r.timestamp,
-        totalAPY: +(r.value * 100).toFixed(2),
-        premiumsAPY: +(r.premiums_apy * 100).toFixed(2),
-      }))
-    },
-    { staleTime: STALE_TIME }
-  )
+    return response.data.map((r) => ({
+      timestamp: r.timestamp,
+      totalAPY: +(r.value * 100).toFixed(2),
+      premiumsAPY: +(r.premiums_apy * 100).toFixed(2),
+    }))
+  })
 
 type DataPoint<T> = {
   timestamp: number
@@ -68,36 +62,28 @@ type GetStatsResponseData =
 
 export const tvcOverTimeQueryKey = "tvcOverTime"
 export const useTVCOverTime = () =>
-  useQuery<DataPoint<BigNumber>[] | null, Error>(
-    tvcOverTimeQueryKey,
-    async () => {
-      const { data: response } = await axios.get<GetStatsResponseData>(getTVCOverTimeUrl())
+  useQuery<DataPoint<BigNumber>[] | null, Error>(tvcOverTimeQueryKey, async () => {
+    const { data: response } = await axios.get<GetStatsResponseData>(getTVCOverTimeUrl())
 
-      if (response.ok === false) throw Error(response.error)
-      if (response.data === null) return null
+    if (response.ok === false) throw Error(response.error)
+    if (response.data === null) return null
 
-      return response.data.map((r) => ({
-        timestamp: r.timestamp,
-        value: BigNumber.from(r.value),
-      }))
-    },
-    { staleTime: STALE_TIME }
-  )
+    return response.data.map((r) => ({
+      timestamp: r.timestamp,
+      value: BigNumber.from(r.value),
+    }))
+  })
 
 export const tvlOverTimeQueryKey = "tvlOverTime"
 export const useTVLOverTime = () =>
-  useQuery<DataPoint<BigNumber>[] | null, Error>(
-    tvlOverTimeQueryKey,
-    async () => {
-      const { data: response } = await axios.get<GetStatsResponseData>(getTVLOverTimeUrl())
+  useQuery<DataPoint<BigNumber>[] | null, Error>(tvlOverTimeQueryKey, async () => {
+    const { data: response } = await axios.get<GetStatsResponseData>(getTVLOverTimeUrl())
 
-      if (response.ok === false) throw Error(response.error)
-      if (response.data === null) return null
+    if (response.ok === false) throw Error(response.error)
+    if (response.data === null) return null
 
-      return response.data.map((r) => ({
-        timestamp: r.timestamp,
-        value: BigNumber.from(r.value),
-      }))
-    },
-    { staleTime: STALE_TIME }
-  )
+    return response.data.map((r) => ({
+      timestamp: r.timestamp,
+      value: BigNumber.from(r.value),
+    }))
+  })
