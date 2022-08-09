@@ -2,7 +2,7 @@ export const routes = {
   Stake: "stake",
   Positions: "positions",
   Fundraise: "fundraise",
-  FundraiseClaim: "fundraiseclaim",
+  Claim: "claim",
   Protocols: "protocols",
   Internal: "internal",
   Overview: "overview",

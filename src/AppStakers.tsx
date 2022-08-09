@@ -36,7 +36,7 @@ const AppStakers = () => {
   if (fundraisePositionData) {
     navigationLinks.push({
       title: "CLAIM",
-      route: routes.FundraiseClaim,
+      route: routes.Claim,
     })
   }
 

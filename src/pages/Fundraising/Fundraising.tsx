@@ -169,7 +169,7 @@ export const FundraisingPage: React.FC = () => {
       await waitForTx(async () => await sherBuyContract.execute(rewards?.sherAmount), {
         transactionType: TxType.EXECUTE,
       })
-      navigate("/fundraiseclaim")
+      navigate("/claim")
       return true
     } catch (error) {
       console.error(error)
