@@ -11,7 +11,6 @@ import { Column, Row } from "../Layout"
 import { Text } from "../Text"
 import { Title } from "../Title"
 import styles from "./StakingPosition.module.scss"
-import { Link } from "react-router-dom"
 import CustomLink from "../CustomLink/CustomLink"
 
 interface Props {
