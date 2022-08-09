@@ -11,6 +11,8 @@ import { Column, Row } from "../Layout"
 import { Text } from "../Text"
 import { Title } from "../Title"
 import styles from "./StakingPosition.module.scss"
+import { Link } from "react-router-dom"
+import CustomLink from "../CustomLink/CustomLink"
 
 interface Props {
   /**
@@ -118,6 +120,15 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
                 {formatAmount(apy)}%
               </Text>
             </Column>
+          </Row>
+        )}
+        {id.lte(275) && (
+          <Row spacing="m">
+            <Text size="small" className={styles.airdrop}>
+              The 15% APY will be provided as follows: <br /> - Standard return on restake/unstake <br /> - Difference
+              to 15% distributed as an airdrop, <br />
+              &nbsp;&nbsp;&nbsp;claimable at <CustomLink to="/claim">https://app.sherlock.xyz/claim</CustomLink>
+            </Text>
           </Row>
         )}
         {isUnlocked && (
