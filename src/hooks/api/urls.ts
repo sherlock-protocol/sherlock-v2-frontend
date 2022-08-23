@@ -10,3 +10,4 @@ export const getStrategies = () => "strategies"
 export const getActiveClaim = (protocolID: number) => `claims/${protocolID}/active`
 
 export const getContests = () => "contests"
+export const validateSignature = () => "/contests/sign-up/validate-signature"

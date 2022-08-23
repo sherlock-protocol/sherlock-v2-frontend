@@ -1,7 +1,8 @@
+import React, { useCallback } from "react"
 import { useQuery } from "react-query"
 import { useSignTypedData } from "wagmi"
 import { contests as contestsAPI } from "./axios"
-import { getContests as getContestsUrl } from "./urls"
+import { getContests as getContestsUrl, validateSignature } from "./urls"
 
 export type Contest = {
   id: number
@@ -11,6 +12,13 @@ export type Contest = {
   prizePool: number
   startDate: number // Timestamp in seconds.
   endDate: number // Timestamp in seconds.
+}
+
+export type Auditor = {
+  id: number
+  handle: string
+  discordHandle?: string
+  githubHandle?: string
 }
 
 type GetContestsResponseData = {
@@ -60,9 +68,68 @@ export const useSignContestSignupMessage = (contestId: number) => {
   }
 
   const value = {
-    action: "signup",
+    action: "participate",
     contest_id: contestId,
   }
 
   return useSignTypedData({ domain, types, value })
+}
+
+type SignatureVerificationResponseData = {
+  auditor: {
+    id: number
+    handle: string
+    github_handle?: string
+    discord_handle?: string
+  } | null
+}
+
+export const useSignatureVerification = (contestId: number) => {
+  const domain = {
+    name: "Sherlock Contest",
+    version: "1",
+  }
+
+  const types = {
+    Signup: [
+      { name: "action", type: "string" },
+      { name: "contest_id", type: "uint256" },
+    ],
+  }
+
+  const value = {
+    action: "participate",
+    contest_id: contestId,
+  }
+
+  const { signTypedData, data: signature, isLoading: signatureIsLoading } = useSignTypedData({ domain, types, value })
+
+  const { data, isLoading: requestIsLoading } = useQuery<Auditor | null, Error>(
+    "",
+    async () => {
+      const { data } = await contestsAPI.post<SignatureVerificationResponseData>(validateSignature(), {
+        contest_id: contestId,
+        signature,
+      })
+
+      if (!data.auditor) return null
+
+      return {
+        id: data.auditor.id,
+        handle: data.auditor.handle,
+        githubHandle: data.auditor.github_handle,
+        discordHandle: data.auditor.discord_handle,
+      }
+    },
+    { enabled: !!signature }
+  )
+
+  const signAndVerify = useCallback(async () => {
+    signTypedData()
+  }, [signTypedData])
+
+  return React.useMemo(
+    () => ({ signAndVerify, isLoading: signatureIsLoading || requestIsLoading, data }),
+    [signAndVerify, signatureIsLoading, requestIsLoading, data]
+  )
 }
