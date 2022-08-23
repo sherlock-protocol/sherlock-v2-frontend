@@ -12,10 +12,13 @@ import { ClaimsPage } from "./pages/Claim"
 import AppStakers from "./AppStakers"
 import AppProtocols from "./AppProtocols"
 import AppInternal from "./AppInternal"
+import { AppContests } from "./AppContests"
 
-import { routes, protocolsRoutes, internalRoutes } from "./utils/routes"
+import { routes, protocolsRoutes, contestsRoutes, internalRoutes } from "./utils/routes"
 import MobileBlock from "./components/MobileBlock/MobileBlock"
 import { InternalOverviewPage } from "./pages/InternalOverview/InternalOverview"
+import { ContestsPage } from "./pages/Contests"
+import { ContestDetails } from "./pages/ContestDetails"
 
 function App() {
   return (
@@ -38,6 +41,12 @@ function App() {
           <Route path={protocolsRoutes.Claims} element={<ClaimsPage />} />
 
           <Route path="*" element={<Navigate replace to={protocolsRoutes.Balance} />} />
+        </Route>
+
+        {/** Audit Contests section routes */}
+        <Route path={`${routes.AuditContests}/*`} element={<AppContests />}>
+          <Route path={contestsRoutes.Contests} element={<ContestsPage />} />
+          <Route path={contestsRoutes.ContestDetails} element={<ContestDetails />} />
         </Route>
 
         {/** Internal section routes */}

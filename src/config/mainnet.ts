@@ -5,6 +5,7 @@ export const config: Config = {
   sherBuyEntryDeadline: 1647100800,
   alchemyApiUrl: "wss://eth-mainnet.alchemyapi.io/v2/H7GQZq65vKCHEh5cnz_luQmYM8HWWcr-",
   indexerBaseUrl: "https://mainnet.indexer.sherlock.xyz/",
+  contestsApiBaseUrl: "https://mainnet.contests.sherlock.xyz/",
   sherlockAddress: "0x0865a889183039689034dA55c1Fd12aF5083eabF",
   sherlockProtocolManagerAddress: "0x3d0b8A0A10835Ab9b0f0BeB54C5400B8aAcaa1D3",
   sherlockClaimManagerAddress: "0xFeEDD254ae4B7c44A0472Bb836b813Ce4625Eb84",
