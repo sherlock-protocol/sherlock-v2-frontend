@@ -1,8 +1,8 @@
 import React, { useCallback } from "react"
-import { useQuery } from "react-query"
+import { useMutation, useQuery } from "react-query"
 import { useSignTypedData } from "wagmi"
 import { contests as contestsAPI } from "./axios"
-import { getContests as getContestsUrl, validateSignature } from "./urls"
+import { getContests as getContestsUrl, validateSignature, contestSignUp as contestSignUpUrl } from "./urls"
 
 export type Contest = {
   id: number
@@ -104,7 +104,11 @@ export const useSignatureVerification = (contestId: number) => {
 
   const { signTypedData, data: signature, isLoading: signatureIsLoading } = useSignTypedData({ domain, types, value })
 
-  const { data, isLoading: requestIsLoading } = useQuery<Auditor | null, Error>(
+  const {
+    data,
+    isLoading: requestIsLoading,
+    isFetched,
+  } = useQuery<Auditor | null, Error>(
     "",
     async () => {
       const { data } = await contestsAPI.post<SignatureVerificationResponseData>(validateSignature(), {
@@ -121,15 +125,37 @@ export const useSignatureVerification = (contestId: number) => {
         discordHandle: data.auditor.discord_handle,
       }
     },
-    { enabled: !!signature }
+    { enabled: !!signature, staleTime: 0 }
   )
 
   const signAndVerify = useCallback(async () => {
-    signTypedData()
+    try {
+      signTypedData()
+    } catch (error) {}
   }, [signTypedData])
 
   return React.useMemo(
-    () => ({ signAndVerify, isLoading: signatureIsLoading || requestIsLoading, data }),
-    [signAndVerify, signatureIsLoading, requestIsLoading, data]
+    () => ({ signAndVerify, isLoading: signatureIsLoading || requestIsLoading, data, isFetched, signature }),
+    [signAndVerify, signatureIsLoading, requestIsLoading, data, isFetched, signature]
   )
 }
+
+type SignUpParams = {
+  handle: string
+  githubHandle?: string
+  discordHandle?: string
+  signature: string
+  contestId: number
+}
+export const useContestSignUp = (params: SignUpParams) =>
+  useMutation(async () => {
+    const { data } = await contestsAPI.post(contestSignUpUrl(), {
+      handle: params.handle,
+      github_handle: params.githubHandle,
+      discord_handle: params.discordHandle,
+      signature: params.signature,
+      contest_id: params.contestId,
+    })
+
+    return data
+  })
