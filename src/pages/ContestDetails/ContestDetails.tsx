@@ -7,18 +7,23 @@ import { Button } from "../../components/Button"
 import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
 import { commify } from "../../utils/units"
-import { useContest, useContestSignUp, useSignatureVerification } from "../../hooks/api/contests"
+import { useContest, useContestant, useContestSignUp, useSignatureVerification } from "../../hooks/api/contests"
 
 import aaveLogo from "../../assets/icons/aave-logo.png"
 import styles from "./ContestDetails.module.scss"
 import { AuditorFormModal } from "./AuditorFormModal"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { SignUpSuccessModal } from "./SignUpSuccessModal"
+import { useAccount } from "wagmi"
+import { useParams } from "react-router-dom"
 
 export const ContestDetails = () => {
+  const { contestId } = useParams()
+  const { address } = useAccount()
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [auditorFormOpen, setAuditorFormOpen] = useState(false)
-  const { data: contest } = useContest(4)
+  const { data: contest } = useContest(parseInt(contestId ?? ""))
+  const { data: contestant } = useContestant(address ?? "", parseInt(contestId ?? ""), { enabled: !!address })
   const {
     signAndVerify,
     data: auditor,
@@ -41,6 +46,7 @@ export const ContestDetails = () => {
     mutate: doSignUp,
     isLoading: signUpIsLoading,
     isSuccess: signUpSuccess,
+    data: signUpData,
   } = useContestSignUp({
     handle: auditor?.handle ?? "",
     githubHandle: auditor?.githubHandle,
@@ -59,7 +65,7 @@ export const ContestDetails = () => {
     if (signUpSuccess) {
       setSuccessModalOpen(true)
     }
-  }, [signUpSuccess])
+  }, [signUpSuccess, contestant])
 
   useEffect(() => {
     if (shouldDisplayAuditorForm) {
@@ -70,6 +76,10 @@ export const ContestDetails = () => {
   const sign = useCallback(async () => {
     await signAndVerify()
   }, [signAndVerify])
+
+  const visitRepo = useCallback(async () => {
+    contestant && window.open(`https://github.com/${contestant.repo}`, "__blank")
+  }, [contestant])
 
   if (!contest) return <Text>"Loading..."</Text>
 
@@ -117,7 +127,14 @@ export const ContestDetails = () => {
               </Column>
             </Row>
             <Row>
-              <Button onClick={sign}>SIGN UP</Button>
+              {contestant?.repo ? (
+                <Column spacing="m">
+                  <Text>Already signed up</Text>
+                  <Button onClick={visitRepo}>Go to repo</Button>
+                </Column>
+              ) : (
+                <Button onClick={sign}>SIGN UP</Button>
+              )}
             </Row>
           </Column>
         </Row>
@@ -129,7 +146,9 @@ export const ContestDetails = () => {
             signature={signature ?? ""}
           />
         )}
-        {successModalOpen && <SignUpSuccessModal onClose={() => setSuccessModalOpen(false)} contest={contest} />}
+        {successModalOpen && (
+          <SignUpSuccessModal onClose={() => setSuccessModalOpen(false)} contest={contest} repo={signUpData?.repo} />
+        )}
       </LoadingContainer>
     </Box>
   )

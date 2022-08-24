@@ -11,9 +11,10 @@ import { Title } from "../../components/Title"
 
 type Props = ModalProps & {
   contest: Contest
+  repo?: string | null
 }
 
-export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose }) => {
+export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose, repo }) => {
   return (
     <Modal closeable onClose={onClose}>
       <Column alignment={["center", "center"]} spacing="xl">
@@ -36,7 +37,7 @@ export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose }) => {
         <Row>
           <Text>
             We've created{" "}
-            <a href="https://github.com" target="__blank">
+            <a href={`https://github.com/${repo}`} target="__blank">
               this repo
             </a>{" "}
             for you to start submitting issues!

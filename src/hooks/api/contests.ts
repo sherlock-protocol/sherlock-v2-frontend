@@ -1,8 +1,13 @@
 import React, { useCallback } from "react"
-import { useMutation, useQuery } from "react-query"
+import { useMutation, useQuery, UseQueryOptions } from "react-query"
 import { useSignTypedData } from "wagmi"
 import { contests as contestsAPI } from "./axios"
-import { getContests as getContestsUrl, validateSignature, contestSignUp as contestSignUpUrl } from "./urls"
+import {
+  getContests as getContestsUrl,
+  validateSignature,
+  contestSignUp as contestSignUpUrl,
+  getContestant as getContestantUrl,
+} from "./urls"
 
 export type Contest = {
   id: number
@@ -19,6 +24,10 @@ export type Auditor = {
   handle: string
   discordHandle?: string
   githubHandle?: string
+}
+
+export type Contestant = {
+  repo: string
 }
 
 type GetContestsResponseData = {
@@ -147,9 +156,15 @@ type SignUpParams = {
   signature: string
   contestId: number
 }
+type SignUpResponseData = {
+  repo_name: string
+}
+type SignUp = {
+  repo: string
+}
 export const useContestSignUp = (params: SignUpParams) =>
-  useMutation(async () => {
-    const { data } = await contestsAPI.post(contestSignUpUrl(), {
+  useMutation<SignUp | null, Error>(async () => {
+    const { data } = await contestsAPI.post<SignUpResponseData>(contestSignUpUrl(), {
       handle: params.handle,
       github_handle: params.githubHandle,
       discord_handle: params.discordHandle,
@@ -157,5 +172,30 @@ export const useContestSignUp = (params: SignUpParams) =>
       contest_id: params.contestId,
     })
 
-    return data
+    return {
+      repo: data.repo_name,
+    }
   })
+
+type GetContestantResponseData = {
+  contestant: {
+    repo_name: string
+  } | null
+}
+export const contestantQueryKey = (address: string, contestId: number) => `contestant-${address}-${contestId}`
+export const useContestant = (address: string, contestId: number, opts?: UseQueryOptions<Contestant | null, Error>) =>
+  useQuery<Contestant | null, Error>(
+    contestantQueryKey(address, contestId),
+    async () => {
+      const { data } = await contestsAPI.get<GetContestantResponseData>(getContestantUrl(address, contestId))
+
+      if (data.contestant === null) return null
+
+      const { contestant } = data
+
+      return {
+        repo: contestant.repo_name,
+      }
+    },
+    opts
+  )

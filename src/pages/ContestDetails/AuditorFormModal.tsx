@@ -24,7 +24,6 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
   const {
     mutate: doSignUp,
     isLoading,
-    error,
     isSuccess: isSignUpSuccess,
   } = useContestSignUp({
     handle,
