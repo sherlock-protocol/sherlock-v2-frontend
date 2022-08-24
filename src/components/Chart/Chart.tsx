@@ -14,7 +14,7 @@ import { Tooltip as CustomTooltip } from "./Tooltip"
 
 import { shortenNumber } from "../../utils/units"
 
-const STROKES = ["#8716e8", "#fe6e99"]
+const STROKES = ["#8716e8", "#fe6e99", ""]
 
 type Props = {
   height?: number
@@ -54,6 +54,10 @@ export const Chart: React.FC<Props> = ({
           <linearGradient id="2" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#fe6e99" stopOpacity={1} />
             <stop offset="100%" stopColor="#fe6e99" stopOpacity={0.3} />
+          </linearGradient>
+          <linearGradient id="3" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#00FEB3" stopOpacity={1} />
+            <stop offset="100%" stopColor="#00FEB3" stopOpacity={0.3} />
           </linearGradient>
         </defs>
         <YAxis

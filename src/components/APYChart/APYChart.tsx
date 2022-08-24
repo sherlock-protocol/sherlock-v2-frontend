@@ -19,12 +19,20 @@ const APYChart: React.FC = () => {
   const { data: apyData } = useAPYOverTime()
 
   const chartData = useMemo(() => {
-    const apyChartData = apyData?.map((item) => ({
-      name: DateTime.fromMillis(item.timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
-      strategiesAPY: item.totalAPY - item.premiumsAPY,
-      premiumsAPY: item.premiumsAPY,
-      totalAPY: item.totalAPY,
-    }))
+    const incentivesStart = DateTime.fromSeconds(1659389515)
+    const incentivesEnd = DateTime.fromSeconds(1662845515)
+
+    const apyChartData = apyData?.map((item) => {
+      const date = DateTime.fromMillis(item.timestamp * 1000)
+
+      return {
+        name: date.toLocaleString({ month: "2-digit", day: "2-digit" }),
+        strategiesAPY: item.totalAPY - item.premiumsAPY,
+        premiumsAPY: item.premiumsAPY,
+        incentivesAPY: date > incentivesStart && date < incentivesEnd ? 2 : 0,
+        totalAPY: item.totalAPY,
+      }
+    })
 
     return apyChartData
   }, [apyData])
@@ -42,7 +50,7 @@ const APYChart: React.FC = () => {
           <Chart
             height={200}
             data={chartData}
-            dataKeys={["premiumsAPY", "strategiesAPY"]}
+            dataKeys={["premiumsAPY", "strategiesAPY", "incentivesAPY"]}
             tooltipProps={{
               formatter: (v: number, name: string) => [`${v.toFixed(2)}%`, tooltipTitles[name]],
             }}
