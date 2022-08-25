@@ -32,4 +32,16 @@
   &.secondary {
     opacity: 0.5;
   }
+
+  &.center {
+    text-align: center;
+  }
+
+  &.right {
+    text-align: right;
+  }
+
+  &.justify {
+    text-align: justify;
+  }
 }

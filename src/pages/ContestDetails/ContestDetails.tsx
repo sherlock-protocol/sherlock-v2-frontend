@@ -29,7 +29,10 @@ export const ContestDetails = () => {
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [auditorFormOpen, setAuditorFormOpen] = useState(false)
   const { data: contest } = useContest(parseInt(contestId ?? ""))
-  const { data: contestant } = useContestant(address ?? "", parseInt(contestId ?? ""), { enabled: !!address })
+  const { data: contestant } = useContestant(address ?? "", parseInt(contestId ?? ""), {
+    enabled: !!address,
+    retry: false,
+  })
   const {
     signAndVerify,
     data: auditor,

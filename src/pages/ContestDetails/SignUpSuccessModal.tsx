@@ -44,7 +44,9 @@ export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose, repo }) 
               for you to start submitting issues!
             </Text>
           ) : (
-            <Text>Once the contest starts, we'll create a repo for you to start submitting issues.</Text>
+            <Text alignment="center">
+              Once the contest starts, we'll create a repo for you to start submitting issues.
+            </Text>
           )}
         </Row>
         <Row>

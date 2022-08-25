@@ -65,9 +65,9 @@ export const useContests = () =>
 
 export const useContest = (id: number) => {
   const { data: contests } = useContests()
-  contests?.filter((c) => c.id === id)
+  const filteredContests = contests?.filter((c) => c.id === id)
 
-  return { data: contests && contests.length > 0 ? contests[0] : null }
+  return { data: filteredContests && filteredContests.length > 0 ? filteredContests[0] : null }
 }
 
 export const useSignContestSignupMessage = (contestId: number) => {
@@ -199,15 +199,19 @@ export const useContestant = (address: string, contestId: number, opts?: UseQuer
   useQuery<Contestant | null, Error>(
     contestantQueryKey(address, contestId),
     async () => {
-      const { data } = await contestsAPI.get<GetContestantResponseData>(getContestantUrl(address, contestId))
+      try {
+        const { data } = await contestsAPI.get<GetContestantResponseData>(getContestantUrl(address, contestId))
 
-      if (data.contestant === null) return null
+        if (data.contestant === null) return null
 
-      const { contestant } = data
+        const { contestant } = data
 
-      return {
-        repo: contestant.repo_name,
-        countsTowardsRanking: contestant.counts_towards_ranking,
+        return {
+          repo: contestant.repo_name,
+          countsTowardsRanking: contestant.counts_towards_ranking,
+        }
+      } catch (error) {
+        return null
       }
     },
     opts
