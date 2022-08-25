@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 import { Button } from "../../components/Button"
 import { Input } from "../../components/Input"
 import { Column, Row } from "../../components/Layout"
@@ -19,6 +19,8 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
   const [handle, setHandle] = useState(auditor?.handle ?? "")
   const [githubHandle, setGithubHandle] = useState(auditor?.githubHandle ?? "")
   const [discordHandle, setDiscordHandle] = useState(auditor?.discordHandle ?? "")
+  const [twitterHandle, setTwitterHandle] = useState(auditor?.twitterHandle ?? "")
+  const [telegramHandle, setTelegramHandle] = useState(auditor?.telegramHandle ?? "")
 
   const {
     mutate: doSignUp,
@@ -29,9 +31,13 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
     handle,
     githubHandle,
     discordHandle,
+    twitterHandle,
+    telegramHandle,
     contestId: contest.id,
     signature,
   })
+
+  const readyToSubmit = useMemo(() => !!handle && !!githubHandle, [handle, githubHandle])
 
   return (
     <Modal closeable>
@@ -56,7 +62,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
             </Field>
           </Row>
           <Row>
-            <Field label="GITHUB (optional)">
+            <Field label="GITHUB">
               <Input value={githubHandle} onChange={setGithubHandle} disabled={!!auditor?.githubHandle} />
             </Field>
           </Row>
@@ -66,7 +72,17 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
             </Field>
           </Row>
           <Row>
-            <Button fullWidth onClick={() => doSignUp()} disabled={isLoading}>
+            <Field label="TWITTER (optional)">
+              <Input value={twitterHandle} onChange={setTwitterHandle} disabled={!!auditor?.discordHandle} />
+            </Field>
+          </Row>
+          <Row>
+            <Field label="TELEGRAM (optional)">
+              <Input value={telegramHandle} onChange={setTelegramHandle} disabled={!!auditor?.discordHandle} />
+            </Field>
+          </Row>
+          <Row>
+            <Button fullWidth onClick={() => doSignUp()} disabled={isLoading || !readyToSubmit}>
               {isLoading ? "SIGNING UP..." : "SIGN UP"}
             </Button>
           </Row>

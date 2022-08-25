@@ -25,6 +25,8 @@ export type Auditor = {
   handle: string
   discordHandle?: string
   githubHandle?: string
+  twitterHandle?: string
+  telegramHandle?: string
 }
 
 export type Contestant = {
@@ -156,6 +158,8 @@ type SignUpParams = {
   handle: string
   githubHandle?: string
   discordHandle?: string
+  twitterHandle?: string
+  telegramHandle?: string
   signature: string
   contestId: number
 }
@@ -171,6 +175,8 @@ export const useContestSignUp = (params: SignUpParams) =>
       handle: params.handle,
       github_handle: params.githubHandle,
       discord_handle: params.discordHandle,
+      twitter_handle: params.twitterHandle,
+      telegram_handle: params.telegramHandle,
       signature: params.signature,
       contest_id: params.contestId,
     })
