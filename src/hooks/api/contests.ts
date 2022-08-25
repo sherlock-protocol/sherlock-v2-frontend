@@ -70,27 +70,6 @@ export const useContest = (id: number) => {
   return { data: filteredContests && filteredContests.length > 0 ? filteredContests[0] : null }
 }
 
-export const useSignContestSignupMessage = (contestId: number) => {
-  const domain = {
-    name: "Sherlock Contest",
-    version: "1",
-  }
-
-  const types = {
-    Signup: [
-      { name: "action", type: "string" },
-      { name: "contest_id", type: "uint256" },
-    ],
-  }
-
-  const value = {
-    action: "participate",
-    contest_id: contestId,
-  }
-
-  return useSignTypedData({ domain, types, value })
-}
-
 type SignatureVerificationResponseData = {
   auditor: {
     id: number

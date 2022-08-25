@@ -22,11 +22,13 @@ import LoadingContainer from "../../components/LoadingContainer/LoadingContainer
 import { SignUpSuccessModal } from "./SignUpSuccessModal"
 
 import styles from "./ContestDetails.module.scss"
+import { ErrorModal } from "./ErrorModal"
 
 export const ContestDetails = () => {
   const { contestId } = useParams()
   const { address } = useAccount()
   const [successModalOpen, setSuccessModalOpen] = useState(false)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
   const [auditorFormOpen, setAuditorFormOpen] = useState(false)
   const { data: contest } = useContest(parseInt(contestId ?? ""))
   const { data: contestant } = useContestant(address ?? "", parseInt(contestId ?? ""), {
@@ -64,6 +66,8 @@ export const ContestDetails = () => {
     isLoading: signUpIsLoading,
     isSuccess: signUpSuccess,
     data: signUpData,
+    error,
+    isError,
   } = useContestSignUp({
     handle: auditor?.handle ?? "",
     githubHandle: auditor?.githubHandle,
@@ -85,6 +89,12 @@ export const ContestDetails = () => {
   }, [signUpSuccess, contestant])
 
   useEffect(() => {
+    if (isError) {
+      setErrorModalOpen(true)
+    }
+  }, [isError, setErrorModalOpen])
+
+  useEffect(() => {
     if (shouldDisplayAuditorForm) {
       setAuditorFormOpen(true)
     }
@@ -103,6 +113,8 @@ export const ContestDetails = () => {
   }, [signAndOptIn])
 
   if (!contest) return <Text>"Loading..."</Text>
+
+  console.log(error)
 
   return (
     <Box shadow={false} fullWidth className={styles.container}>
@@ -181,6 +193,7 @@ export const ContestDetails = () => {
         {successModalOpen && (
           <SignUpSuccessModal onClose={() => setSuccessModalOpen(false)} contest={contest} repo={signUpData?.repo} />
         )}
+        {errorModalOpen && <ErrorModal reason={error?.message} />}
       </LoadingContainer>
     </Box>
   )
