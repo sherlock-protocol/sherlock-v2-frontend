@@ -5,7 +5,6 @@ import { Column, Row } from "../../components/Layout"
 import { Modal, Props as ModalProps } from "../../components/Modal/Modal"
 import { Text } from "../../components/Text"
 
-import aaveLogo from "../../assets/icons/aave-logo.png"
 import { Contest } from "../../hooks/api/contests"
 import { Title } from "../../components/Title"
 

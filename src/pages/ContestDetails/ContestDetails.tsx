@@ -9,7 +9,6 @@ import { Text } from "../../components/Text"
 import { commify } from "../../utils/units"
 import { useContest, useContestant, useContestSignUp, useSignatureVerification } from "../../hooks/api/contests"
 
-import aaveLogo from "../../assets/icons/aave-logo.png"
 import styles from "./ContestDetails.module.scss"
 import { AuditorFormModal } from "./AuditorFormModal"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
