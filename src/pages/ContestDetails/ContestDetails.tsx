@@ -30,7 +30,11 @@ export const ContestDetails = () => {
     isFetched: auditorIsFetched,
     signature,
     isLoading: signatureIsLoading,
-  } = useSignatureVerification(4)
+  } = useSignatureVerification(parseInt(contestId ?? ""), {
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+  })
 
   const shouldDisplayAuditorForm = useMemo(
     () => auditorIsFetched && (!auditor || !auditor.discordHandle || !auditor.githubHandle),

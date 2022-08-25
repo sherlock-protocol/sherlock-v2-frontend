@@ -93,7 +93,7 @@ type SignatureVerificationResponseData = {
   } | null
 }
 
-export const useSignatureVerification = (contestId: number) => {
+export const useSignatureVerification = (contestId: number, opts?: UseQueryOptions<Auditor | null, Error>) => {
   const domain = {
     name: "Sherlock Contest",
     version: "1",
@@ -118,7 +118,7 @@ export const useSignatureVerification = (contestId: number) => {
     isLoading: requestIsLoading,
     isFetched,
   } = useQuery<Auditor | null, Error>(
-    "",
+    ["signatureVerification", signature],
     async () => {
       const { data } = await contestsAPI.post<SignatureVerificationResponseData>(validateSignature(), {
         contest_id: contestId,
@@ -134,7 +134,7 @@ export const useSignatureVerification = (contestId: number) => {
         discordHandle: data.auditor.discord_handle,
       }
     },
-    { enabled: !!signature, staleTime: 0 }
+    { enabled: !!signature, ...opts }
   )
 
   const signAndVerify = useCallback(async () => {

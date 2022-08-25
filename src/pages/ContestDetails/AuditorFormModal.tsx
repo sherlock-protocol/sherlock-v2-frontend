@@ -25,6 +25,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
     mutate: doSignUp,
     isLoading,
     isSuccess: isSignUpSuccess,
+    data: signUpData,
   } = useContestSignUp({
     handle,
     githubHandle,
@@ -70,7 +71,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
           </Button>
         </Row>
       </Column>
-      {isSignUpSuccess && <SignUpSuccessModal contest={contest} onClose={onClose} />}
+      {isSignUpSuccess && <SignUpSuccessModal contest={contest} onClose={onClose} repo={signUpData?.repo} />}
     </Modal>
   )
 }
