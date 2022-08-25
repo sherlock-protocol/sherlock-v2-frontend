@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { useParams } from "react-router-dom"
+import { FaGithub, FaSignOutAlt, FaSignInAlt } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -9,7 +10,13 @@ import { Button } from "../../components/Button"
 import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
 import { commify } from "../../utils/units"
-import { useContest, useContestant, useContestSignUp, useSignatureVerification } from "../../hooks/api/contests"
+import {
+  useContest,
+  useContestant,
+  useContestSignUp,
+  useOptInOut,
+  useSignatureVerification,
+} from "../../hooks/api/contests"
 import { AuditorFormModal } from "./AuditorFormModal"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { SignUpSuccessModal } from "./SignUpSuccessModal"
@@ -34,6 +41,10 @@ export const ContestDetails = () => {
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
   })
+  const { signAndOptIn, isLoading: optInisLoading } = useOptInOut(
+    parseInt(contestId ?? ""),
+    !!!contestant?.countsTowardsRanking
+  )
 
   const shouldDisplayAuditorForm = useMemo(
     () => auditorIsFetched && (!auditor || !auditor.discordHandle || !auditor.githubHandle),
@@ -84,11 +95,15 @@ export const ContestDetails = () => {
     contestant && window.open(`https://github.com/${contestant.repo}`, "__blank")
   }, [contestant])
 
+  const optInOut = useCallback(async () => {
+    signAndOptIn()
+  }, [signAndOptIn])
+
   if (!contest) return <Text>"Loading..."</Text>
 
   return (
     <Box shadow={false} fullWidth className={styles.container}>
-      <LoadingContainer loading={signatureIsLoading || signUpIsLoading} label={"Signing up..."}>
+      <LoadingContainer loading={signatureIsLoading || signUpIsLoading || optInisLoading} label={"Loading..."}>
         <Row spacing="xl">
           <Column>
             <img src={contest.logoURL} width={100} height={100} alt={contest.title} className={styles.logo} />
@@ -113,6 +128,7 @@ export const ContestDetails = () => {
                 </Text>
               </Column>
             </Row>
+            <hr />
             <Row>
               <Column>
                 <Title variant="h3">STARTED</Title>
@@ -129,11 +145,21 @@ export const ContestDetails = () => {
                 </Text>
               </Column>
             </Row>
+            <hr />
             <Row>
-              {contestant?.repo ? (
+              {contestant ? (
                 <Column spacing="m">
                   <Text>Already signed up</Text>
-                  <Button onClick={visitRepo}>Go to repo</Button>
+                  {contestant.repo && (
+                    <Button variant="secondary" onClick={visitRepo}>
+                      <FaGithub /> &nbsp; View repo
+                    </Button>
+                  )}
+                  <Button variant={contestant.countsTowardsRanking ? "alternate" : "primary"} onClick={optInOut}>
+                    {contestant.countsTowardsRanking ? <FaSignOutAlt /> : <FaSignInAlt />}
+                    &nbsp;
+                    {contestant.countsTowardsRanking ? "Opt Out" : "Opt In"}
+                  </Button>
                 </Column>
               ) : (
                 <Button onClick={sign}>SIGN UP</Button>

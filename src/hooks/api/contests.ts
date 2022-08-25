@@ -1,11 +1,12 @@
-import React, { useCallback } from "react"
-import { useMutation, useQuery, UseQueryOptions } from "react-query"
-import { useSignTypedData } from "wagmi"
+import React, { useCallback, useEffect, useMemo } from "react"
+import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "react-query"
+import { useAccount, useSignTypedData } from "wagmi"
 import { contests as contestsAPI } from "./axios"
 import {
   getContests as getContestsUrl,
   validateSignature,
   contestSignUp as contestSignUpUrl,
+  contestOptIn as contestOptInUrl,
   getContestant as getContestantUrl,
 } from "./urls"
 
@@ -31,6 +32,7 @@ export type Auditor = {
 
 export type Contestant = {
   repo: string
+  countsTowardsRanking: boolean
 }
 
 type GetContestsResponseData = {
@@ -189,9 +191,10 @@ export const useContestSignUp = (params: SignUpParams) =>
 type GetContestantResponseData = {
   contestant: {
     repo_name: string
+    counts_towards_ranking: boolean
   } | null
 }
-export const contestantQueryKey = (address: string, contestId: number) => `contestant-${address}-${contestId}`
+export const contestantQueryKey = (address: string, contestId: number) => ["contestant", address, contestId]
 export const useContestant = (address: string, contestId: number, opts?: UseQueryOptions<Contestant | null, Error>) =>
   useQuery<Contestant | null, Error>(
     contestantQueryKey(address, contestId),
@@ -204,7 +207,58 @@ export const useContestant = (address: string, contestId: number, opts?: UseQuer
 
       return {
         repo: contestant.repo_name,
+        countsTowardsRanking: contestant.counts_towards_ranking,
       }
     },
     opts
   )
+
+export const useOptInOut = (contestId: number, optIn: boolean) => {
+  const domain = {
+    name: "Sherlock Contest",
+    version: "1",
+  }
+
+  const types = {
+    RankingOptIn: [
+      { name: "contest_id", type: "uint256" },
+      { name: "opt_in", type: "bool" },
+    ],
+  }
+
+  const value = {
+    opt_in: optIn,
+    contest_id: contestId,
+  }
+
+  const { signTypedData, data: signature, isLoading: signatureIsLoading } = useSignTypedData({ domain, types, value })
+  const { address } = useAccount()
+  const queryClient = useQueryClient()
+
+  const { isLoading: mutationIsLoading, mutateAsync: doOptIn } = useMutation(async () => {
+    await contestsAPI.post(contestOptInUrl(), {
+      contest_id: contestId,
+      opt_in: optIn,
+      signature,
+    })
+  })
+
+  useEffect(() => {
+    const optInOut = async () => {
+      if (signature) {
+        await doOptIn()
+        await queryClient.invalidateQueries(contestantQueryKey(address ?? "", contestId))
+      }
+    }
+    optInOut()
+  }, [signature, doOptIn, address, contestId, queryClient])
+
+  const signAndOptIn = useCallback(() => {
+    signTypedData()
+  }, [signTypedData])
+
+  return useMemo(
+    () => ({ isLoading: mutationIsLoading || signatureIsLoading, signAndOptIn }),
+    [mutationIsLoading, signatureIsLoading, signAndOptIn]
+  )
+}

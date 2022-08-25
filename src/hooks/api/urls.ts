@@ -12,5 +12,6 @@ export const getActiveClaim = (protocolID: number) => `claims/${protocolID}/acti
 export const getContests = () => "contests"
 export const validateSignature = () => "/contests/sign-up/validate-signature"
 export const contestSignUp = () => "/contests/sign-up"
+export const contestOptIn = () => "/contests/ranking-opt-in"
 export const getContestant = (address: string, contestId: number) =>
   `/contests/contestant?address=${address}&contest_id=${contestId}`

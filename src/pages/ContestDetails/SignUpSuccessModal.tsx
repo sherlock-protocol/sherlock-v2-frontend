@@ -34,14 +34,18 @@ export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose, repo }) 
             </Row>
           </Column>
         </Row>
-        <Row>
-          <Text>
-            We've created{" "}
-            <a href={`https://github.com/${repo}`} target="__blank">
-              this repo
-            </a>{" "}
-            for you to start submitting issues!
-          </Text>
+        <Row alignment={["center", "center"]}>
+          {repo ? (
+            <Text>
+              We've created{" "}
+              <a href={`https://github.com/${repo}`} target="__blank">
+                this repo
+              </a>{" "}
+              for you to start submitting issues!
+            </Text>
+          ) : (
+            <Text>Once the contest starts, we'll create a repo for you to start submitting issues.</Text>
+          )}
         </Row>
         <Row>
           <Button onClick={onClose}>OK</Button>
