@@ -14,6 +14,7 @@ export type Contest = {
   title: string
   shortDescription: string
   description?: string
+  logoURL?: string
   prizePool: number
   startDate: number // Timestamp in seconds.
   endDate: number // Timestamp in seconds.
@@ -35,6 +36,7 @@ type GetContestsResponseData = {
   title: string
   short_description: string
   description: string
+  logo_url: string
   prize_pool: number
   starts_at: number
   ends_at: number
@@ -50,6 +52,7 @@ export const useContests = () =>
       title: d.title,
       shortDescription: d.short_description,
       description: d.description,
+      logoURL: d.logo_url,
       prizePool: d.prize_pool,
       startDate: d.starts_at,
       endDate: d.ends_at,

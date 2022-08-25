@@ -92,7 +92,7 @@ export const ContestDetails = () => {
       <LoadingContainer loading={signatureIsLoading || signUpIsLoading} label={"Signing up..."}>
         <Row spacing="xl">
           <Column>
-            <img src={aaveLogo} width={100} height={100} alt="AAVE" />
+            <img src={contest.logoURL} width={100} height={100} alt={contest.title} />
           </Column>
           <Column grow={1} spacing="xl">
             <Row>

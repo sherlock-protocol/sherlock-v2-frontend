@@ -19,7 +19,7 @@ export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose, repo }) 
     <Modal closeable onClose={onClose}>
       <Column alignment={["center", "center"]} spacing="xl">
         <Row>
-          <img src={aaveLogo} width={80} height={80} alt={contest.title} />
+          <img src={contest.logoURL} width={80} height={80} alt={contest.title} />
         </Row>
         <Row>
           <Title>Congrats!</Title>
