@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
+import { useAccount } from "wagmi"
+import { useParams } from "react-router-dom"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -8,13 +10,11 @@ import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
 import { commify } from "../../utils/units"
 import { useContest, useContestant, useContestSignUp, useSignatureVerification } from "../../hooks/api/contests"
-
-import styles from "./ContestDetails.module.scss"
 import { AuditorFormModal } from "./AuditorFormModal"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { SignUpSuccessModal } from "./SignUpSuccessModal"
-import { useAccount } from "wagmi"
-import { useParams } from "react-router-dom"
+
+import styles from "./ContestDetails.module.scss"
 
 export const ContestDetails = () => {
   const { contestId } = useParams()
@@ -91,7 +91,7 @@ export const ContestDetails = () => {
       <LoadingContainer loading={signatureIsLoading || signUpIsLoading} label={"Signing up..."}>
         <Row spacing="xl">
           <Column>
-            <img src={contest.logoURL} width={100} height={100} alt={contest.title} />
+            <img src={contest.logoURL} width={100} height={100} alt={contest.title} className={styles.logo} />
           </Column>
           <Column grow={1} spacing="xl">
             <Row>

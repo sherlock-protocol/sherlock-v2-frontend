@@ -9,6 +9,8 @@ import { Text } from "../../components/Text"
 import { SignUpSuccessModal } from "./SignUpSuccessModal"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 
+import styles from "./ContestDetails.module.scss"
+
 type Props = ModalProps & {
   auditor?: Auditor | null
   contest: Contest
@@ -30,9 +32,9 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
   } = useContestSignUp({
     handle,
     githubHandle,
-    discordHandle,
-    twitterHandle,
-    telegramHandle,
+    discordHandle: discordHandle.length > 0 ? discordHandle : undefined,
+    twitterHandle: twitterHandle.length > 0 ? twitterHandle : undefined,
+    telegramHandle: telegramHandle.length > 0 ? telegramHandle : undefined,
     contestId: contest.id,
     signature,
   })
@@ -46,7 +48,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
           <Row>
             <Column grow={1} spacing="s">
               <Row alignment="center">
-                <img src={contest.logoURL} alt={contest.title} width={80} height={80} />
+                <img src={contest.logoURL} alt={contest.title} width={80} height={80} className={styles.logo} />
               </Row>
               <Row alignment="center">
                 <Text>You're signing up for</Text>
