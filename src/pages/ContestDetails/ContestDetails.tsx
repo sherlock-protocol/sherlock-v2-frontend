@@ -117,6 +117,8 @@ export const ContestDetails = () => {
     signAndOptIn()
   }, [signAndOptIn])
 
+  const canOptinOut = useMemo(() => contest?.status === "CREATED" || contest?.status === "RUNNING", [contest?.status])
+
   if (!contest) return null
 
   return (
@@ -176,11 +178,13 @@ export const ContestDetails = () => {
                       <FaGithub /> &nbsp; View repository
                     </Button>
                   )}
-                  <Button variant={contestant.countsTowardsRanking ? "alternate" : "primary"} onClick={optInOut}>
-                    {contestant.countsTowardsRanking ? <FaSignOutAlt /> : <FaSignInAlt />}
-                    &nbsp;
-                    {contestant.countsTowardsRanking ? "Opt Out" : "Opt In"}
-                  </Button>
+                  {canOptinOut && (
+                    <Button variant={contestant.countsTowardsRanking ? "alternate" : "primary"} onClick={optInOut}>
+                      {contestant.countsTowardsRanking ? <FaSignOutAlt /> : <FaSignInAlt />}
+                      &nbsp;
+                      {contestant.countsTowardsRanking ? "Opt Out" : "Opt In"}
+                    </Button>
+                  )}
                 </Column>
               ) : (
                 <ConnectGate>

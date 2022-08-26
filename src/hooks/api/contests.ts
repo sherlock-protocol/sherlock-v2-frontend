@@ -10,6 +10,8 @@ import {
   getContestant as getContestantUrl,
 } from "./urls"
 
+export type ContestStatus = "CREATED" | "RUNNING" | "JUDGING" | "FINISHED"
+
 export type Contest = {
   id: number
   title: string
@@ -19,6 +21,7 @@ export type Contest = {
   prizePool: number
   startDate: number // Timestamp in seconds.
   endDate: number // Timestamp in seconds.
+  status: ContestStatus
 }
 
 export type Auditor = {
@@ -44,6 +47,7 @@ type GetContestsResponseData = {
   prize_pool: number
   starts_at: number
   ends_at: number
+  status: ContestStatus
 }[]
 
 export const contestsQueryKey = "contests"
@@ -60,6 +64,7 @@ export const useContests = () =>
       prizePool: d.prize_pool,
       startDate: d.starts_at,
       endDate: d.ends_at,
+      status: d.status,
     }))
   })
 
