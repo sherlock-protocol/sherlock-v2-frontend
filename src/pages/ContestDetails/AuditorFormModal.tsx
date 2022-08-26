@@ -89,7 +89,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
   )
 
   return (
-    <Modal closeable>
+    <Modal closeable onClose={onClose}>
       <LoadingContainer loading={isLoading} label="Signing up...">
         <Column spacing="xl">
           <Row>
