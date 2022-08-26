@@ -19,3 +19,44 @@ hr {
 .sidebar {
   padding: 0 0 0 2rem;
 }
+
+.markdown {
+  width: 100%;
+
+  h1 {
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-weight: 700;
+    font-size: 1.3rem;
+  }
+
+  h3 {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  p,
+  code,
+  pre,
+  a,
+  ul,
+  li {
+    margin-bottom: 1em;
+  }
+
+  pre {
+    background-color: darken($color: $background-color, $amount: 1.5);
+    border: 1px solid opacify($color: $primary-purple, $amount: 0.5);
+    padding: 1em;
+  }
+
+  a {
+    color: $primary-purple;
+  }
+}

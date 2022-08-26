@@ -3,6 +3,7 @@ import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { useParams } from "react-router-dom"
 import { FaGithub, FaSignOutAlt, FaSignInAlt } from "react-icons/fa"
+import showdown from "showdown"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -23,6 +24,8 @@ import { SignUpSuccessModal } from "./SignUpSuccessModal"
 
 import styles from "./ContestDetails.module.scss"
 import { ErrorModal } from "./ErrorModal"
+
+const converter = new showdown.Converter()
 
 export const ContestDetails = () => {
   const { contestId } = useParams()
@@ -129,7 +132,10 @@ export const ContestDetails = () => {
               </Column>
             </Row>
             <Row>
-              <Text variant="normal">{contest.description}</Text>
+              <div
+                className={styles.markdown}
+                dangerouslySetInnerHTML={{ __html: converter.makeHtml(contest.description ?? "") }}
+              />
             </Row>
           </Column>
           <Column spacing="xl" shrink={0} className={styles.sidebar}>
