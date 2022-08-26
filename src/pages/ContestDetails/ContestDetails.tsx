@@ -27,6 +27,7 @@ import { ErrorModal } from "./ErrorModal"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
 
 const converter = new showdown.Converter()
+converter.setOption("tables", true)
 
 export const ContestDetails = () => {
   const { contestId } = useParams()
@@ -132,12 +133,12 @@ export const ContestDetails = () => {
                 <Text alignment="justify">{contest?.shortDescription}</Text>
               </Column>
             </Row>
-            <Row>
+            <Column>
               <div
                 className={styles.markdown}
                 dangerouslySetInnerHTML={{ __html: converter.makeHtml(contest.description ?? "") }}
               />
-            </Row>
+            </Column>
           </Column>
           <Column spacing="xl" shrink={0} className={styles.sidebar}>
             <Row>
