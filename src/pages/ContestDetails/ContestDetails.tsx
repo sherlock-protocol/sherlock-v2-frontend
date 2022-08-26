@@ -24,6 +24,7 @@ import { SignUpSuccessModal } from "./SignUpSuccessModal"
 
 import styles from "./ContestDetails.module.scss"
 import { ErrorModal } from "./ErrorModal"
+import ConnectGate from "../../components/ConnectGate/ConnectGate"
 
 const converter = new showdown.Converter()
 
@@ -181,7 +182,9 @@ export const ContestDetails = () => {
                   </Button>
                 </Column>
               ) : (
-                <Button onClick={sign}>SIGN UP</Button>
+                <ConnectGate>
+                  <Button onClick={sign}>SIGN UP</Button>
+                </ConnectGate>
               )}
             </Row>
           </Column>
