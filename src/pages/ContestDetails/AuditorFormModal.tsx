@@ -1,4 +1,8 @@
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
+import { useDebounce } from "use-debounce"
+import axios, { AxiosError } from "axios"
+import { FaGithub } from "react-icons/fa"
+
 import { Button } from "../../components/Button"
 import { Input } from "../../components/Input"
 import { Column, Row } from "../../components/Layout"
@@ -20,6 +24,10 @@ type Props = ModalProps & {
 export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature, onClose }) => {
   const [handle, setHandle] = useState(auditor?.handle ?? "")
   const [githubHandle, setGithubHandle] = useState(auditor?.githubHandle ?? "")
+  const [debouncedGithubHandle] = useDebounce(githubHandle, 300)
+  const [verifiedGithubHandle, setVerifiedGithubHandle] = useState<string>()
+  const [isVerifyingGithubHandle, setIsVerifyingGithubHandle] = useState(false)
+  const [githubVerificationError, setGithubVerificationError] = useState(false)
   const [discordHandle, setDiscordHandle] = useState(auditor?.discordHandle ?? "")
   const [twitterHandle, setTwitterHandle] = useState(auditor?.twitterHandle ?? "")
   const [telegramHandle, setTelegramHandle] = useState(auditor?.telegramHandle ?? "")
@@ -39,7 +47,46 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
     signature,
   })
 
-  const readyToSubmit = useMemo(() => !!handle && !!githubHandle, [handle, githubHandle])
+  useEffect(() => {
+    const resolveGithubHandle = async () => {
+      if (!debouncedGithubHandle || debouncedGithubHandle.length === 0) {
+        setVerifiedGithubHandle(undefined)
+        return
+      }
+
+      try {
+        setIsVerifyingGithubHandle(true)
+        const { headers } = await axios.get(`https://api.github.com/users/${debouncedGithubHandle}`)
+
+        console.log(headers)
+
+        setVerifiedGithubHandle(debouncedGithubHandle)
+        setGithubVerificationError(false)
+      } catch (error) {
+        const axiosError = error as AxiosError
+
+        if (
+          axiosError.response?.headers["x-ratelimit-remaining"] &&
+          parseInt(axiosError.response.headers["x-ratelimit-remaining"]) === 0
+        ) {
+          setVerifiedGithubHandle(debouncedGithubHandle)
+          setGithubVerificationError(false)
+        } else {
+          setVerifiedGithubHandle(undefined)
+          setGithubVerificationError(true)
+        }
+      } finally {
+        setIsVerifyingGithubHandle(false)
+      }
+    }
+
+    resolveGithubHandle()
+  }, [debouncedGithubHandle])
+
+  const readyToSubmit = useMemo(
+    () => !!handle && !!verifiedGithubHandle && !isVerifyingGithubHandle && verifiedGithubHandle === githubHandle,
+    [handle, verifiedGithubHandle, githubHandle, isVerifyingGithubHandle]
+  )
 
   return (
     <Modal closeable>
@@ -64,7 +111,23 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
             </Field>
           </Row>
           <Row>
-            <Field label="GITHUB">
+            <Field
+              label="GITHUB"
+              error={githubVerificationError && !isVerifyingGithubHandle}
+              errorMessage={"Github handle not found"}
+              detail={
+                <Row>
+                  <FaGithub color={githubVerificationError ? "red" : "white"} /> &nbsp;
+                  {isVerifyingGithubHandle
+                    ? "Verifying Github handle..."
+                    : verifiedGithubHandle === githubHandle && (
+                        <a href={`https://github.com/${verifiedGithubHandle}`} target="__blank">
+                          {verifiedGithubHandle}
+                        </a>
+                      )}
+                </Row>
+              }
+            >
               <Input value={githubHandle} onChange={setGithubHandle} disabled={!!auditor?.githubHandle} />
             </Field>
           </Row>

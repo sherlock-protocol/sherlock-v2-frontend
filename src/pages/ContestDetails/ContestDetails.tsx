@@ -114,8 +114,6 @@ export const ContestDetails = () => {
 
   if (!contest) return <Text>"Loading..."</Text>
 
-  console.log(error)
-
   return (
     <Box shadow={false} fullWidth className={styles.container}>
       <LoadingContainer loading={signatureIsLoading || signUpIsLoading || optInisLoading} label={"Loading..."}>
