@@ -47,6 +47,8 @@ function App() {
         <Route path={`${routes.AuditContests}/*`} element={<AppContests />}>
           <Route path={contestsRoutes.Contests} element={<ContestsPage />} />
           <Route path={contestsRoutes.ContestDetails} element={<ContestDetails />} />
+
+          <Route path="*" element={<Navigate replace to={contestsRoutes.Contests} />} />
         </Route>
 
         {/** Internal section routes */}

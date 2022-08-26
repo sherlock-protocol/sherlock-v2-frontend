@@ -4,7 +4,7 @@ import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
 
 import styles from "./App.module.scss"
-import { protocolsRoutes } from "./utils/routes"
+import { protocolsRoutes, routes } from "./utils/routes"
 
 const AppProtocols = () => {
   const navigationLinks: NavigationLink[] = [
@@ -21,7 +21,7 @@ const AppProtocols = () => {
   return (
     <div className={styles.app}>
       <div className={styles.noise} />
-      <Header navigationLinks={navigationLinks} />
+      <Header navigationLinks={navigationLinks} homeRoute={routes.Protocols} />
       <div className={styles.contentContainer}>
         <div className={styles.content}>
           <Outlet />

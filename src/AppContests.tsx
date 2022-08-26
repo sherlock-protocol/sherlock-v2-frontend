@@ -1,7 +1,7 @@
 import React from "react"
 import { Outlet } from "react-router-dom"
 import { Header, NavigationLink } from "./components/Header"
-import { contestsRoutes } from "./utils/routes"
+import { contestsRoutes, routes } from "./utils/routes"
 import { Footer } from "./components/Footer"
 
 import styles from "./App.module.scss"
@@ -17,7 +17,7 @@ export const AppContests = () => {
   return (
     <div className={styles.app}>
       <div className={styles.noise} />
-      <Header navigationLinks={navigationLinks} />
+      <Header navigationLinks={navigationLinks} homeRoute={routes.AuditContests} />
       <div className={styles.contentContainer}>
         <div className={styles.content}>
           <Outlet />
