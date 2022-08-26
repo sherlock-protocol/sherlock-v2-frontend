@@ -137,8 +137,8 @@ export const useSignatureVerification = (contestId: number, opts?: UseQueryOptio
 
 type SignUpParams = {
   handle: string
-  githubHandle?: string
-  discordHandle?: string
+  githubHandle: string
+  discordHandle: string
   twitterHandle?: string
   telegramHandle?: string
   signature: string
@@ -150,14 +150,7 @@ type SignUpResponseData = {
 type SignUp = {
   repo: string
 }
-/**
- *     mutate: doSignUp,
-    isLoading: signUpIsLoading,
-    isSuccess: signUpSuccess,
-    data: signUpData,
-    error,
-    isError,
- */
+
 export const useContestSignUp = (params: SignUpParams) => {
   const queryClient = useQueryClient()
   const { address } = useAccount()

@@ -14,6 +14,7 @@ import { SignUpSuccessModal } from "./SignUpSuccessModal"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 
 import styles from "./ContestDetails.module.scss"
+import { hasSpaces, onlyAscii } from "../../utils/strings"
 
 type Props = ModalProps & {
   auditor?: Auditor | null
@@ -21,13 +22,20 @@ type Props = ModalProps & {
   signature: string
 }
 
+const HANDLE_LENGTH_LIMIT = 32
+
 export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature, onClose }) => {
   const [handle, setHandle] = useState(auditor?.handle ?? "")
+  const [debouncedHandle] = useDebounce(handle, 300)
+  const [verifiedHandle, setVerifiedHandle] = useState<string>()
+  const [handleVerificationError, setHandleVerificationError] = useState<string>()
+
   const [githubHandle, setGithubHandle] = useState(auditor?.githubHandle ?? "")
   const [debouncedGithubHandle] = useDebounce(githubHandle, 300)
   const [verifiedGithubHandle, setVerifiedGithubHandle] = useState<string>()
   const [isVerifyingGithubHandle, setIsVerifyingGithubHandle] = useState(false)
   const [githubVerificationError, setGithubVerificationError] = useState(false)
+
   const [discordHandle, setDiscordHandle] = useState(auditor?.discordHandle ?? "")
   const [twitterHandle, setTwitterHandle] = useState(auditor?.twitterHandle ?? "")
   const [telegramHandle, setTelegramHandle] = useState(auditor?.telegramHandle ?? "")
@@ -38,15 +46,41 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
     isSuccess: isSignUpSuccess,
     data: signUpData,
   } = useContestSignUp({
-    handle,
-    githubHandle,
-    discordHandle: discordHandle.length > 0 ? discordHandle : undefined,
+    handle: verifiedHandle ?? "",
+    githubHandle: verifiedGithubHandle ?? "",
+    discordHandle: discordHandle,
     twitterHandle: twitterHandle.length > 0 ? twitterHandle : undefined,
     telegramHandle: telegramHandle.length > 0 ? telegramHandle : undefined,
     contestId: contest.id,
     signature,
   })
 
+  /**
+   * Verify Handle
+   */
+  useEffect(() => {
+    if (!debouncedHandle) {
+      setHandleVerificationError(undefined)
+      setVerifiedHandle(undefined)
+    }
+
+    let error = ""
+
+    if (debouncedHandle.length > HANDLE_LENGTH_LIMIT) {
+      error = `Handle must be less than ${HANDLE_LENGTH_LIMIT} characters`
+    } else if (hasSpaces(debouncedHandle)) {
+      error = "Cannot contain white spaces"
+    } else if (!onlyAscii(debouncedHandle)) {
+      error = "Only ascii characters are allowed"
+    }
+
+    if (!error) setVerifiedHandle(debouncedHandle)
+    setHandleVerificationError(error)
+  }, [debouncedHandle])
+
+  /**
+   * Verify Github handle
+   */
   useEffect(() => {
     const resolveGithubHandle = async () => {
       if (!debouncedGithubHandle || debouncedGithubHandle.length === 0) {
@@ -56,9 +90,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
 
       try {
         setIsVerifyingGithubHandle(true)
-        const { headers } = await axios.get(`https://api.github.com/users/${debouncedGithubHandle}`)
-
-        console.log(headers)
+        await axios.get(`https://api.github.com/users/${debouncedGithubHandle}`)
 
         setVerifiedGithubHandle(debouncedGithubHandle)
         setGithubVerificationError(false)
@@ -84,8 +116,14 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
   }, [debouncedGithubHandle])
 
   const readyToSubmit = useMemo(
-    () => !!handle && !!verifiedGithubHandle && !isVerifyingGithubHandle && verifiedGithubHandle === githubHandle,
-    [handle, verifiedGithubHandle, githubHandle, isVerifyingGithubHandle]
+    () =>
+      !!verifiedHandle &&
+      verifiedHandle === handle &&
+      !!verifiedGithubHandle &&
+      !isVerifyingGithubHandle &&
+      verifiedGithubHandle === githubHandle &&
+      !!discordHandle,
+    [handle, verifiedGithubHandle, githubHandle, isVerifyingGithubHandle, discordHandle, verifiedHandle]
   )
 
   return (
@@ -106,13 +144,13 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
             </Column>
           </Row>
           <Row>
-            <Field label="HANDLE">
+            <Field label="HANDLE *" error={!!handleVerificationError} errorMessage={handleVerificationError ?? ""}>
               <Input value={handle} onChange={setHandle} disabled={!!auditor?.handle} />
             </Field>
           </Row>
           <Row>
             <Field
-              label="GITHUB"
+              label="GITHUB *"
               error={githubVerificationError && !isVerifyingGithubHandle}
               errorMessage={"Github handle not found"}
               detail={
@@ -132,7 +170,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
             </Field>
           </Row>
           <Row>
-            <Field label="DISCORD (optional)">
+            <Field label="DISCORD *">
               <Input value={discordHandle} onChange={setDiscordHandle} disabled={!!auditor?.discordHandle} />
             </Field>
           </Row>

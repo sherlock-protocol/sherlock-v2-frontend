@@ -75,8 +75,8 @@ export const ContestDetails = () => {
     isError,
   } = useContestSignUp({
     handle: auditor?.handle ?? "",
-    githubHandle: auditor?.githubHandle,
-    discordHandle: auditor?.discordHandle,
+    githubHandle: auditor?.githubHandle ?? "",
+    discordHandle: auditor?.discordHandle ?? "",
     contestId: contest?.id ?? 0,
     signature: signature ?? "",
   })
@@ -117,7 +117,7 @@ export const ContestDetails = () => {
     signAndOptIn()
   }, [signAndOptIn])
 
-  if (!contest) return <Text>"Loading..."</Text>
+  if (!contest) return null
 
   return (
     <Box shadow={false} fullWidth className={styles.container}>
