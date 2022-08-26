@@ -27,7 +27,7 @@ import { ErrorModal } from "./ErrorModal"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
 
 const converter = new showdown.Converter()
-converter.setOption("tables", true)
+converter.setFlavor("github")
 
 export const ContestDetails = () => {
   const { contestId } = useParams()
