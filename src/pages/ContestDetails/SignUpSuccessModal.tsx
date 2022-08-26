@@ -1,4 +1,5 @@
-import React from "react"
+import React, { useCallback } from "react"
+import { FaDiscord } from "react-icons/fa"
 
 import { Button } from "../../components/Button"
 import { Column, Row } from "../../components/Layout"
@@ -15,6 +16,11 @@ type Props = ModalProps & {
 }
 
 export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose, repo }) => {
+  const handleJoinDiscord = useCallback(() => {
+    window.open("https://discord.gg/MABEWyASkp", "__blank")
+    onClose && onClose()
+  }, [onClose])
+
   return (
     <Modal closeable onClose={onClose}>
       <Column alignment={["center", "center"]} spacing="xl">
@@ -50,7 +56,18 @@ export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose, repo }) 
           )}
         </Row>
         <Row>
-          <Button onClick={onClose}>OK</Button>
+          <Button fullWidth onClick={handleJoinDiscord}>
+            <FaDiscord />
+            <Text>Join our Discord</Text>
+          </Button>
+        </Row>
+        <Row>
+          <Text>or</Text>
+        </Row>
+        <Row>
+          <Button variant="secondary" onClick={onClose} fullWidth>
+            Continue
+          </Button>
         </Row>
       </Column>
     </Modal>
