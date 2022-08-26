@@ -150,8 +150,18 @@ type SignUpResponseData = {
 type SignUp = {
   repo: string
 }
-export const useContestSignUp = (params: SignUpParams) =>
-  useMutation<SignUp | null, Error>(async () => {
+/**
+ *     mutate: doSignUp,
+    isLoading: signUpIsLoading,
+    isSuccess: signUpSuccess,
+    data: signUpData,
+    error,
+    isError,
+ */
+export const useContestSignUp = (params: SignUpParams) => {
+  const queryClient = useQueryClient()
+  const { address } = useAccount()
+  const { mutateAsync, isLoading, isSuccess, data, error, isError } = useMutation<SignUp | null, Error>(async () => {
     const { data } = await contestsAPI.post<SignUpResponseData>(contestSignUpUrl(), {
       handle: params.handle,
       github_handle: params.githubHandle,
@@ -166,6 +176,17 @@ export const useContestSignUp = (params: SignUpParams) =>
       repo: data.repo_name,
     }
   })
+
+  const signUp = useCallback(async () => {
+    await mutateAsync()
+    await queryClient.invalidateQueries(contestantQueryKey(address ?? "", params.contestId))
+  }, [mutateAsync, address, params.contestId, queryClient])
+
+  return useMemo(
+    () => ({ signUp, isLoading, isSuccess, data, error, isError }),
+    [isLoading, isSuccess, data, error, isError, signUp]
+  )
+}
 
 type GetContestantResponseData = {
   contestant: {

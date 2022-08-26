@@ -33,7 +33,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
   const [telegramHandle, setTelegramHandle] = useState(auditor?.telegramHandle ?? "")
 
   const {
-    mutate: doSignUp,
+    signUp: doSignUp,
     isLoading,
     isSuccess: isSignUpSuccess,
     data: signUpData,

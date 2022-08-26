@@ -62,7 +62,7 @@ export const ContestDetails = () => {
   )
 
   const {
-    mutate: doSignUp,
+    signUp: doSignUp,
     isLoading: signUpIsLoading,
     isSuccess: signUpSuccess,
     data: signUpData,
