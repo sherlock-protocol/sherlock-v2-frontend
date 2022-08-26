@@ -173,7 +173,7 @@ export const ContestDetails = () => {
                   <Text>Already signed up</Text>
                   {contestant.repo && (
                     <Button variant="secondary" onClick={visitRepo}>
-                      <FaGithub /> &nbsp; View repo
+                      <FaGithub /> &nbsp; View repository
                     </Button>
                   )}
                   <Button variant={contestant.countsTowardsRanking ? "alternate" : "primary"} onClick={optInOut}>
