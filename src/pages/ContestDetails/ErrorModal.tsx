@@ -1,4 +1,5 @@
 import React from "react"
+import { Button } from "../../components/Button"
 
 import { Column, Row } from "../../components/Layout"
 import { Modal, Props as ModalProps } from "../../components/Modal/Modal"
@@ -18,6 +19,9 @@ export const ErrorModal: React.FC<Props> = ({ onClose, reason }) => {
         </Row>
         <Row>
           <Text>{reason}</Text>
+        </Row>
+        <Row>
+          <Button onClick={onClose}>Ok</Button>
         </Row>
       </Column>
     </Modal>

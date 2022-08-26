@@ -167,6 +167,7 @@ export const useContestSignUp = (params: SignUpParams) => {
     data,
     error,
     isError,
+    reset,
   } = useMutation<SignUp | null, Error>(
     async () => {
       try {
@@ -197,8 +198,8 @@ export const useContestSignUp = (params: SignUpParams) => {
   )
 
   return useMemo(
-    () => ({ signUp, isLoading, isSuccess, data, error, isError }),
-    [isLoading, isSuccess, data, error, isError, signUp]
+    () => ({ signUp, isLoading, isSuccess, data, error, isError, reset }),
+    [isLoading, isSuccess, data, error, isError, signUp, reset]
   )
 }
 

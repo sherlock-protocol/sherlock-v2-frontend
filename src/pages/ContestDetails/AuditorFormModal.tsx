@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useDebounce } from "use-debounce"
 import axios, { AxiosError } from "axios"
 import { FaGithub } from "react-icons/fa"
@@ -48,6 +48,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
     data: signUpData,
     error,
     isError,
+    reset,
   } = useContestSignUp({
     handle: verifiedHandle ?? "",
     githubHandle: verifiedGithubHandle ?? "",
@@ -129,6 +130,10 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
     [handle, verifiedGithubHandle, githubHandle, isVerifyingGithubHandle, discordHandle, verifiedHandle]
   )
 
+  const handleErrorModalClose = useCallback(() => {
+    reset()
+  }, [reset])
+
   return (
     <Modal closeable onClose={onClose}>
       <LoadingContainer loading={isLoading} label="Signing up...">
@@ -195,7 +200,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
         </Column>
       </LoadingContainer>
       {isSignUpSuccess && <SignUpSuccessModal contest={contest} onClose={onClose} repo={signUpData?.repo} />}
-      {isError && <ErrorModal reason={error?.message} />}
+      {isError && <ErrorModal reason={error?.message} onClose={handleErrorModalClose} />}
     </Modal>
   )
 }
