@@ -16,47 +16,135 @@ hr {
   opacity: 0.5;
 }
 
+.middle {
+  overflow: hidden;
+}
+
 .sidebar {
   padding: 0 0 0 2rem;
 }
 
 .markdown {
   width: 100%;
-
-  h1 {
-    font-weight: 700;
-    font-size: 1.5rem;
-  }
-
-  h2 {
-    font-weight: 700;
-    font-size: 1.3rem;
-  }
-
-  h3 {
-    font-weight: 600;
-    font-size: 1rem;
-  }
+  box-sizing: border-box;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  word-wrap: break-word;
 
   h1,
   h2,
   h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  h1,
+  h2 {
+    border-bottom: 1px solid transparentize($color: $primary-purple, $amount: 0.8);
+  }
+
+  h2 {
+    font-weight: 600;
+    padding-bottom: 0.3em;
+    font-size: 1.5em;
+  }
+
+  h3 {
+    font-weight: 600;
+    font-size: 1.25em;
+  }
+
+  h4 {
+    font-weight: 600;
+    font-size: 1em;
+  }
+
+  h5 {
+    font-weight: 600;
+    font-size: 0.875em;
+  }
+
+  h6 {
+    font-weight: 600;
+    font-size: 0.85em;
+  }
+
+  p {
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+
   p,
-  code,
-  pre,
-  a,
+  blockquote,
   ul,
-  li {
+  ol,
+  dl,
+  table,
+  pre,
+  details {
+    margin-top: 0;
     margin-bottom: 1em;
   }
 
   pre {
     background-color: darken($color: $background-color, $amount: 1.5);
-    border: 1px solid opacify($color: $primary-purple, $amount: 0.5);
+    border: 1px solid transparentize($color: $primary-purple, $amount: 0.5);
     padding: 1em;
+    overflow-x: auto;
+  }
+
+  code {
+    font-family: monospace, monospace;
+    font-size: 1em;
   }
 
   a {
-    color: $primary-purple;
+    color: lighten($color: $primary-purple, $amount: 20%);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  table {
+    width: 100%;
+
+    th,
+    td {
+      border: 1px solid transparentize($color: $primary-purple, $amount: 0.7);
+    }
+
+    thead {
+      width: 100%;
+      background-color: transparentize($color: $primary-purple, $amount: 0.9);
+
+      th {
+        padding: 0.5rem 0.25rem;
+        font-weight: 600;
+      }
+    }
+
+    tbody {
+      tr {
+        background-color: transparentize($color: $primary-purple, $amount: 0.8);
+
+        &:nth-child(2n) {
+          background-color: transparentize($color: $primary-purple, $amount: 0.9);
+        }
+
+        td {
+          padding: 0.25rem;
+        }
+      }
+    }
   }
 }

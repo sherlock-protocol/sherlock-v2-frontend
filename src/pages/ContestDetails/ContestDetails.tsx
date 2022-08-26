@@ -122,91 +122,93 @@ export const ContestDetails = () => {
   if (!contest) return null
 
   return (
-    <Box shadow={false} fullWidth className={styles.container}>
-      <LoadingContainer loading={signatureIsLoading || signUpIsLoading || optInisLoading} label={"Loading..."}>
-        <Row spacing="xl">
-          <Column>
-            <img src={contest.logoURL} width={100} height={100} alt={contest.title} className={styles.logo} />
-          </Column>
-          <Column grow={1} spacing="xl">
-            <Row>
-              <Column spacing="s">
-                <Title variant="h1">{contest.title}</Title>
-                <Text alignment="justify">{contest?.shortDescription}</Text>
-              </Column>
-            </Row>
+    <Column spacing="m" className={styles.container}>
+      <Box shadow={false} fullWidth>
+        <LoadingContainer loading={signatureIsLoading || signUpIsLoading || optInisLoading} label={"Loading..."}>
+          <Row spacing="xl">
             <Column>
-              <div
-                className={styles.markdown}
-                dangerouslySetInnerHTML={{ __html: converter.makeHtml(contest.description ?? "") }}
-              />
+              <img src={contest.logoURL} width={100} height={100} alt={contest.title} className={styles.logo} />
             </Column>
-          </Column>
-          <Column spacing="xl" shrink={0} className={styles.sidebar}>
-            <Row>
-              <Column>
-                <Title variant="h3">PRIZE POOL</Title>
-                <Text size="extra-large" strong>
-                  {commify(contest.prizePool)} USDC
-                </Text>
-              </Column>
-            </Row>
-            <hr />
-            <Row>
-              <Column>
-                <Title variant="h3">STARTED</Title>
-                <Text size="extra-large" strong>
-                  {DateTime.fromSeconds(contest.startDate).toLocaleString(DateTime.DATE_MED)}
-                </Text>
-              </Column>
-            </Row>
-            <Row>
-              <Column>
-                <Title variant="h3">ENDS</Title>
-                <Text size="extra-large" strong>
-                  {DateTime.fromSeconds(contest.endDate).toLocaleString(DateTime.DATE_MED)}
-                </Text>
-              </Column>
-            </Row>
-            <hr />
-            <Row>
-              {contestant ? (
-                <Column spacing="m">
-                  <Text>Already signed up</Text>
-                  {contestant.repo && (
-                    <Button variant="secondary" onClick={visitRepo}>
-                      <FaGithub /> &nbsp; View repository
-                    </Button>
-                  )}
-                  {canOptinOut && (
-                    <Button variant={contestant.countsTowardsRanking ? "alternate" : "primary"} onClick={optInOut}>
-                      {contestant.countsTowardsRanking ? <FaSignOutAlt /> : <FaSignInAlt />}
-                      &nbsp;
-                      {contestant.countsTowardsRanking ? "Opt Out" : "Opt In"}
-                    </Button>
-                  )}
+            <Column grow={1} spacing="xl" className={styles.middle}>
+              <Row>
+                <Column spacing="s">
+                  <Title variant="h1">{contest.title}</Title>
+                  <Text alignment="justify">{contest?.shortDescription}</Text>
                 </Column>
-              ) : (
-                <ConnectGate>
-                  <Button onClick={sign}>SIGN UP</Button>
-                </ConnectGate>
-              )}
-            </Row>
-          </Column>
-        </Row>
-        {auditorFormOpen && (
-          <AuditorFormModal
-            onClose={() => setAuditorFormOpen(false)}
-            contest={contest}
-            auditor={auditor}
-            signature={signature ?? ""}
-          />
-        )}
-        {successModalOpen && (
-          <SignUpSuccessModal onClose={() => setSuccessModalOpen(false)} contest={contest} repo={signUpData?.repo} />
-        )}
-        {errorModalOpen && <ErrorModal reason={error?.message} />}
-      </LoadingContainer>
-    </Box>
+              </Row>
+              <Column>
+                <div
+                  className={styles.markdown}
+                  dangerouslySetInnerHTML={{ __html: converter.makeHtml(contest.description ?? "") }}
+                />
+              </Column>
+            </Column>
+            <Column spacing="xl" shrink={0} className={styles.sidebar}>
+              <Row>
+                <Column>
+                  <Title variant="h3">PRIZE POOL</Title>
+                  <Text size="extra-large" strong>
+                    {commify(contest.prizePool)} USDC
+                  </Text>
+                </Column>
+              </Row>
+              <hr />
+              <Row>
+                <Column>
+                  <Title variant="h3">STARTED</Title>
+                  <Text size="extra-large" strong>
+                    {DateTime.fromSeconds(contest.startDate).toLocaleString(DateTime.DATE_MED)}
+                  </Text>
+                </Column>
+              </Row>
+              <Row>
+                <Column>
+                  <Title variant="h3">ENDS</Title>
+                  <Text size="extra-large" strong>
+                    {DateTime.fromSeconds(contest.endDate).toLocaleString(DateTime.DATE_MED)}
+                  </Text>
+                </Column>
+              </Row>
+              <hr />
+              <Row>
+                {contestant ? (
+                  <Column spacing="m">
+                    <Text>Already signed up</Text>
+                    {contestant.repo && (
+                      <Button variant="secondary" onClick={visitRepo}>
+                        <FaGithub /> &nbsp; View repository
+                      </Button>
+                    )}
+                    {canOptinOut && (
+                      <Button variant={contestant.countsTowardsRanking ? "alternate" : "primary"} onClick={optInOut}>
+                        {contestant.countsTowardsRanking ? <FaSignOutAlt /> : <FaSignInAlt />}
+                        &nbsp;
+                        {contestant.countsTowardsRanking ? "Opt Out" : "Opt In"}
+                      </Button>
+                    )}
+                  </Column>
+                ) : (
+                  <ConnectGate>
+                    <Button onClick={sign}>SIGN UP</Button>
+                  </ConnectGate>
+                )}
+              </Row>
+            </Column>
+          </Row>
+          {auditorFormOpen && (
+            <AuditorFormModal
+              onClose={() => setAuditorFormOpen(false)}
+              contest={contest}
+              auditor={auditor}
+              signature={signature ?? ""}
+            />
+          )}
+          {successModalOpen && (
+            <SignUpSuccessModal onClose={() => setSuccessModalOpen(false)} contest={contest} repo={signUpData?.repo} />
+          )}
+          {errorModalOpen && <ErrorModal reason={error?.message} />}
+        </LoadingContainer>
+      </Box>
+    </Column>
   )
 }
