@@ -125,14 +125,14 @@ export const ContestDetails = () => {
             <Row>
               <Column spacing="s">
                 <Title variant="h1">{contest.title}</Title>
-                <Text>{contest?.shortDescription}</Text>
+                <Text alignment="justify">{contest?.shortDescription}</Text>
               </Column>
             </Row>
             <Row>
               <Text variant="normal">{contest.description}</Text>
             </Row>
           </Column>
-          <Column grow={0.2} spacing="xl">
+          <Column spacing="xl" shrink={0} className={styles.sidebar}>
             <Row>
               <Column>
                 <Title variant="h3">PRIZE POOL</Title>
