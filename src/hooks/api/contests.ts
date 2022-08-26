@@ -1,3 +1,4 @@
+import { AxiosError } from "axios"
 import React, { useCallback, useEffect, useMemo } from "react"
 import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "react-query"
 import { useAccount, useSignTypedData } from "wagmi"
@@ -159,26 +160,41 @@ type SignUp = {
 export const useContestSignUp = (params: SignUpParams) => {
   const queryClient = useQueryClient()
   const { address } = useAccount()
-  const { mutateAsync, isLoading, isSuccess, data, error, isError } = useMutation<SignUp | null, Error>(async () => {
-    const { data } = await contestsAPI.post<SignUpResponseData>(contestSignUpUrl(), {
-      handle: params.handle,
-      github_handle: params.githubHandle,
-      discord_handle: params.discordHandle,
-      twitter_handle: params.twitterHandle,
-      telegram_handle: params.telegramHandle,
-      signature: params.signature,
-      contest_id: params.contestId,
-    })
+  const {
+    mutate: signUp,
+    isLoading,
+    isSuccess,
+    data,
+    error,
+    isError,
+  } = useMutation<SignUp | null, Error>(
+    async () => {
+      try {
+        const { data } = await contestsAPI.post<SignUpResponseData>(contestSignUpUrl(), {
+          handle: params.handle,
+          github_handle: params.githubHandle,
+          discord_handle: params.discordHandle,
+          twitter_handle: params.twitterHandle,
+          telegram_handle: params.telegramHandle,
+          signature: params.signature,
+          contest_id: params.contestId,
+        })
 
-    return {
-      repo: data.repo_name,
+        return {
+          repo: data.repo_name,
+        }
+      } catch (error) {
+        const axiosError = error as AxiosError
+
+        throw Error(axiosError.response?.data ? axiosError.response.data["error"] : "")
+      }
+    },
+    {
+      onSettled(data, error, variables, context) {
+        queryClient.invalidateQueries(contestantQueryKey(address ?? "", params.contestId))
+      },
     }
-  })
-
-  const signUp = useCallback(async () => {
-    await mutateAsync()
-    await queryClient.invalidateQueries(contestantQueryKey(address ?? "", params.contestId))
-  }, [mutateAsync, address, params.contestId, queryClient])
+  )
 
   return useMemo(
     () => ({ signUp, isLoading, isSuccess, data, error, isError }),

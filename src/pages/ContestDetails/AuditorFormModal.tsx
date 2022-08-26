@@ -15,6 +15,7 @@ import LoadingContainer from "../../components/LoadingContainer/LoadingContainer
 
 import styles from "./ContestDetails.module.scss"
 import { hasSpaces, onlyAscii } from "../../utils/strings"
+import { ErrorModal } from "./ErrorModal"
 
 type Props = ModalProps & {
   auditor?: Auditor | null
@@ -45,6 +46,8 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
     isLoading,
     isSuccess: isSignUpSuccess,
     data: signUpData,
+    error,
+    isError,
   } = useContestSignUp({
     handle: verifiedHandle ?? "",
     githubHandle: verifiedGithubHandle ?? "",
@@ -192,6 +195,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
         </Column>
       </LoadingContainer>
       {isSignUpSuccess && <SignUpSuccessModal contest={contest} onClose={onClose} repo={signUpData?.repo} />}
+      {isError && <ErrorModal reason={error?.message} />}
     </Modal>
   )
 }
