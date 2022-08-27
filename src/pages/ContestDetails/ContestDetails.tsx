@@ -169,7 +169,7 @@ export const ContestDetails = () => {
               <hr />
               <Row>
                 <Column>
-                  <Title variant="h3">STARTED</Title>
+                  <Title variant="h3">{contest.status === "CREATED" ? "STARTS" : "STARTED"}</Title>
                   <Text size="extra-large" strong>
                     {DateTime.fromSeconds(contest.startDate).toLocaleString(DateTime.DATE_MED)}
                   </Text>
