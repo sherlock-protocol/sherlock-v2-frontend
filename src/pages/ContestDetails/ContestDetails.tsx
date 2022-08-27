@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { useParams } from "react-router-dom"
-import { FaGithub, FaSignOutAlt, FaSignInAlt } from "react-icons/fa"
+import { FaGithub, FaCheckCircle } from "react-icons/fa"
 import showdown from "showdown"
 
 import { Box } from "../../components/Box"
@@ -25,6 +25,7 @@ import { SignUpSuccessModal } from "./SignUpSuccessModal"
 import styles from "./ContestDetails.module.scss"
 import { ErrorModal } from "./ErrorModal"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
+import Options from "../../components/Options/Options"
 
 const converter = new showdown.Converter()
 converter.setOption("tables", true)
@@ -35,11 +36,13 @@ export const ContestDetails = () => {
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [errorModalOpen, setErrorModalOpen] = useState(false)
   const [auditorFormOpen, setAuditorFormOpen] = useState(false)
+
   const { data: contest } = useContest(parseInt(contestId ?? ""))
   const { data: contestant } = useContestant(address ?? "", parseInt(contestId ?? ""), {
     enabled: !!address,
     retry: false,
   })
+  const [optIn, setOptIn] = useState(contestant?.countsTowardsRanking ?? true)
   const {
     signAndVerify,
     data: auditor,
@@ -94,6 +97,12 @@ export const ContestDetails = () => {
   }, [signUpSuccess, contestant])
 
   useEffect(() => {
+    if (contestant?.countsTowardsRanking !== undefined) {
+      setOptIn(contestant.countsTowardsRanking)
+    }
+  }, [contestant?.countsTowardsRanking])
+
+  useEffect(() => {
     if (isError) {
       setErrorModalOpen(true)
     }
@@ -113,9 +122,14 @@ export const ContestDetails = () => {
     contestant && window.open(`https://github.com/${contestant.repo}`, "__blank")
   }, [contestant])
 
-  const optInOut = useCallback(async () => {
-    signAndOptIn()
-  }, [signAndOptIn])
+  const handleOptInChange = useCallback(
+    (_optIn: boolean) => {
+      if (_optIn !== contestant?.countsTowardsRanking) {
+        signAndOptIn()
+      }
+    },
+    [signAndOptIn, contestant?.countsTowardsRanking]
+  )
 
   const canOptinOut = useMemo(() => contest?.status === "CREATED" || contest?.status === "RUNNING", [contest?.status])
 
@@ -127,7 +141,7 @@ export const ContestDetails = () => {
         <LoadingContainer loading={signatureIsLoading || signUpIsLoading || optInisLoading} label={"Loading..."}>
           <Row spacing="xl">
             <Column>
-              <img src={contest.logoURL} width={100} height={100} alt={contest.title} className={styles.logo} />
+              <img src={contest.logoURL} width={80} height={80} alt={contest.title} className={styles.logo} />
             </Column>
             <Column grow={1} spacing="xl" className={styles.middle}>
               <Row>
@@ -172,19 +186,38 @@ export const ContestDetails = () => {
               <hr />
               <Row>
                 {contestant ? (
-                  <Column spacing="m">
-                    <Text>Already signed up</Text>
-                    {contestant.repo && (
-                      <Button variant="secondary" onClick={visitRepo}>
-                        <FaGithub /> &nbsp; View repository
-                      </Button>
+                  <Column spacing="m" grow={1}>
+                    <Text strong>Signed up</Text>
+
+                    <Button variant="secondary" onClick={visitRepo} disabled={!contestant.repo}>
+                      <FaGithub /> &nbsp; View repository
+                    </Button>
+                    {!contestant.repo && (
+                      <Text size="small" variant="secondary">
+                        Repository will be available once the contest starts
+                      </Text>
                     )}
-                    {canOptinOut && (
+
+                    <Text>You're competing for:</Text>
+                    {/* {canOptinOut && (
                       <Button variant={contestant.countsTowardsRanking ? "alternate" : "primary"} onClick={optInOut}>
                         {contestant.countsTowardsRanking ? <FaSignOutAlt /> : <FaSignInAlt />}
                         &nbsp;
-                        {contestant.countsTowardsRanking ? "Opt Out" : "Opt In"}
+                        {contestant.countsTowardsRanking ? "Compete just for money" : "Compete for money and points"}
                       </Button>
+                    )} */}
+                    {canOptinOut && (
+                      <Options
+                        options={[
+                          {
+                            value: true,
+                            label: "USDC + Points",
+                          },
+                          { value: false, label: "Only USDC" },
+                        ]}
+                        value={optIn}
+                        onChange={handleOptInChange}
+                      />
                     )}
                   </Column>
                 ) : (
