@@ -28,7 +28,7 @@ import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import Options from "../../components/Options/Options"
 
 const converter = new showdown.Converter()
-converter.setOption("tables", true)
+converter.setFlavor("github")
 
 export const ContestDetails = () => {
   const { contestId } = useParams()

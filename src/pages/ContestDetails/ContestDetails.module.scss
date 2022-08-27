@@ -100,11 +100,16 @@ hr {
     border: 1px solid transparentize($color: $primary-purple, $amount: 0.5);
     padding: 1em;
     overflow-x: auto;
+
+    code {
+      background-color: transparent;
+    }
   }
 
   code {
     font-family: monospace, monospace;
     font-size: 1em;
+    background-color: rgba(110, 118, 129, 0.4);
   }
 
   a {
@@ -147,5 +152,44 @@ hr {
         }
       }
     }
+  }
+
+  ul,
+  ol {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 2em;
+  }
+
+  ul ul,
+  ul ol,
+  ol ol,
+  ol ul {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+
+  ul ul {
+    list-style-type: circle;
+  }
+
+  ul ul ul {
+    list-style-type: square;
+  }
+
+  ol ol,
+  ul ol {
+    list-style-type: lower-roman;
+  }
+
+  ul ul ol,
+  ul ol ol,
+  ol ul ol,
+  ol ol ol {
+    list-style-type: lower-alpha;
   }
 }
