@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { useParams } from "react-router-dom"
-import { FaGithub, FaCheckCircle } from "react-icons/fa"
+import { FaGithub } from "react-icons/fa"
 import showdown from "showdown"
 
 import { Box } from "../../components/Box"
@@ -29,6 +29,13 @@ import Options from "../../components/Options/Options"
 
 const converter = new showdown.Converter()
 converter.setFlavor("github")
+
+const STATUS_LABELS = {
+  CREATED: "PENDING",
+  RUNNING: "RUNNING",
+  JUDGING: "JUDGING",
+  FINISHED: "FINISHED",
+}
 
 export const ContestDetails = () => {
   const { contestId } = useParams()
@@ -158,6 +165,11 @@ export const ContestDetails = () => {
               </Column>
             </Column>
             <Column spacing="xl" shrink={0} className={styles.sidebar}>
+              <Row>
+                <Text>Status:</Text>&nbsp;
+                <Text strong>{STATUS_LABELS[contest.status]}</Text>
+              </Row>
+              <hr />
               <Row>
                 <Column>
                   <Title variant="h3">PRIZE POOL</Title>

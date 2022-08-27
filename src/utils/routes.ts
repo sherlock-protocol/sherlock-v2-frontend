@@ -4,7 +4,7 @@ export const routes = {
   Fundraise: "fundraise",
   FundraiseClaim: "fundraiseclaim",
   Protocols: "protocols",
-  AuditContests: "audit-contests",
+  AuditContests: "audits",
   Internal: "internal",
   Overview: "overview",
   USForbidden: "us",
