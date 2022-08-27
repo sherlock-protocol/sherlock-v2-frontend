@@ -47,7 +47,7 @@ const AppStakers = () => {
       external: true,
     },
     {
-      title: "AUDIT CONTESTS",
+      title: "AUDITS",
       route: routes.AuditContests,
       external: true,
     }
