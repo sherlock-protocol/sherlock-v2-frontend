@@ -40,11 +40,18 @@ const AppStakers = () => {
     })
   }
 
-  navigationLinks.push({
-    title: "PROTOCOLS",
-    route: routes.Protocols,
-    external: true,
-  })
+  navigationLinks.push(
+    {
+      title: "PROTOCOLS",
+      route: routes.Protocols,
+      external: true,
+    },
+    {
+      title: "AUDITS",
+      route: routes.AuditContests,
+      external: true,
+    }
+  )
 
   return (
     <div className={styles.app}>
