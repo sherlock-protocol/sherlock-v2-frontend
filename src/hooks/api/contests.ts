@@ -179,6 +179,7 @@ export const useContestSignUp = (params: SignUpParams) => {
           telegram_handle: params.telegramHandle?.trim(),
           signature: params.signature,
           contest_id: params.contestId,
+          address,
         })
 
         return {
