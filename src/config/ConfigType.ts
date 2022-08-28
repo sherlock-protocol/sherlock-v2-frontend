@@ -35,6 +35,11 @@ export type Config = {
   indexerBaseUrl: string
 
   /**
+   * Sherlock Contests API url
+   */
+  contestsApiBaseUrl: string
+
+  /**
    * Sherlock Address
    *
    * See: https://github.com/sherlock-protocol/sherlock-v2-core/blob/main/contracts/Sherlock.sol

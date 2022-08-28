@@ -10,8 +10,12 @@
   flex-shrink: 0;
 
   .leftArea,
-  .centerArea,
   .rightArea {
+    flex-basis: 10%;
+    flex-grow: 0;
+  }
+
+  .centerArea {
     flex: 1;
   }
 

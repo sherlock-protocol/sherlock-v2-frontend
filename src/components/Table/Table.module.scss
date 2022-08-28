@@ -1,0 +1,29 @@
+@import "../../styles/variables";
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0 1em;
+}
+
+.thead {
+  color: white;
+  font-weight: bold;
+  text-align: left;
+}
+
+.th {
+  padding: 1em;
+}
+
+.td {
+  padding: 1em;
+}
+
+.tbody .tr {
+  background-color: darken($color: $primary-purple, $amount: 35%);
+
+  &:hover {
+    cursor: pointer;
+    background-color: darken($color: $primary-purple, $amount: 36%);
+  }
+}
