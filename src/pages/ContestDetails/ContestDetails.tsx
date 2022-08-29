@@ -41,7 +41,6 @@ export const ContestDetails = () => {
   const { contestId } = useParams()
   const { address } = useAccount()
   const [successModalOpen, setSuccessModalOpen] = useState(false)
-  const [errorModalOpen, setErrorModalOpen] = useState(false)
   const [auditorFormOpen, setAuditorFormOpen] = useState(false)
 
   const { data: contest } = useContest(parseInt(contestId ?? ""))
@@ -83,6 +82,7 @@ export const ContestDetails = () => {
     data: signUpData,
     error,
     isError,
+    reset,
   } = useContestSignUp({
     handle: auditor?.handle ?? "",
     githubHandle: auditor?.githubHandle ?? "",
@@ -110,12 +110,6 @@ export const ContestDetails = () => {
   }, [contestant?.countsTowardsRanking])
 
   useEffect(() => {
-    if (isError) {
-      setErrorModalOpen(true)
-    }
-  }, [isError, setErrorModalOpen])
-
-  useEffect(() => {
     if (shouldDisplayAuditorForm) {
       setAuditorFormOpen(true)
     }
@@ -137,6 +131,10 @@ export const ContestDetails = () => {
     },
     [signAndOptIn, contestant?.countsTowardsRanking]
   )
+
+  const handleErrorModalClose = useCallback(() => {
+    reset()
+  }, [reset])
 
   const canOptinOut = useMemo(() => contest?.status === "CREATED" || contest?.status === "RUNNING", [contest?.status])
 
@@ -251,7 +249,7 @@ export const ContestDetails = () => {
           {successModalOpen && (
             <SignUpSuccessModal onClose={() => setSuccessModalOpen(false)} contest={contest} repo={signUpData?.repo} />
           )}
-          {errorModalOpen && <ErrorModal reason={error?.fieldErrors ?? error?.message} />}
+          {isError && <ErrorModal reason={error?.fieldErrors ?? error?.message} onClose={handleErrorModalClose} />}
         </LoadingContainer>
       </Box>
     </Column>
