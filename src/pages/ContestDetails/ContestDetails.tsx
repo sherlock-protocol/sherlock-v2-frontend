@@ -249,7 +249,7 @@ export const ContestDetails = () => {
           {successModalOpen && (
             <SignUpSuccessModal onClose={() => setSuccessModalOpen(false)} contest={contest} repo={signUpData?.repo} />
           )}
-          {isError && <ErrorModal reason={error?.message} onClose={handleErrorModalClose} />}
+          {isError && <ErrorModal reason={error?.fieldErrors ?? error?.message} onClose={handleErrorModalClose} />}
         </LoadingContainer>
       </Box>
     </Column>

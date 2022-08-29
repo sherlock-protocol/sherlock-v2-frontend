@@ -1,4 +1,4 @@
-import { AxiosError } from "axios"
+import axios, { AxiosError } from "axios"
 import React, { useCallback, useEffect, useMemo } from "react"
 import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "react-query"
 import { useAccount, useSignTypedData } from "wagmi"
@@ -157,6 +157,18 @@ type SignUp = {
   repo: string
 }
 
+class SignUpError extends Error {
+  fieldErrors?: Record<string, string[]>
+
+  constructor(reason?: string | Record<string, string[]>) {
+    super(typeof reason === "string" ? reason : "")
+
+    if (typeof reason === "object") {
+      this.fieldErrors = reason
+    }
+  }
+}
+
 export const useContestSignUp = (params: SignUpParams) => {
   const queryClient = useQueryClient()
   const { address } = useAccount()
@@ -168,7 +180,7 @@ export const useContestSignUp = (params: SignUpParams) => {
     error,
     isError,
     reset,
-  } = useMutation<SignUp | null, Error>(
+  } = useMutation<SignUp | null, SignUpError>(
     async () => {
       try {
         const { data } = await contestsAPI.post<SignUpResponseData>(contestSignUpUrl(), {
@@ -188,7 +200,7 @@ export const useContestSignUp = (params: SignUpParams) => {
       } catch (error) {
         const axiosError = error as AxiosError
 
-        throw Error(axiosError.response?.data ? axiosError.response.data["error"] : "")
+        throw new SignUpError(axiosError.response?.data)
       }
     },
     {
