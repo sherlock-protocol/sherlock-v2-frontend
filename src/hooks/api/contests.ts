@@ -1,4 +1,4 @@
-import { AxiosError } from "axios"
+import axios, { AxiosError } from "axios"
 import React, { useCallback, useEffect, useMemo } from "react"
 import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "react-query"
 import { useAccount, useSignTypedData } from "wagmi"
@@ -50,6 +50,21 @@ type GetContestsResponseData = {
   ends_at: number
   status: ContestStatus
 }[]
+
+function parseErrorName(errorKey: string): string | undefined {
+  switch (errorKey) {
+    case "handle":
+      return "Handle"
+    case "github_handle":
+      return "Github handle"
+    case "discord_handle":
+      return "Discord handle"
+    case "twitter_handle":
+      return "Twitter handle"
+    case "telegram_handle":
+      return "Telegram handle"
+  }
+}
 
 export const contestsQueryKey = "contests"
 export const useContests = () =>
@@ -188,7 +203,17 @@ export const useContestSignUp = (params: SignUpParams) => {
       } catch (error) {
         const axiosError = error as AxiosError
 
-        throw Error(axiosError.response?.data ? axiosError.response.data["error"] : "")
+        let errorMessage = ""
+        if (!axiosError.response?.data) {
+          errorMessage = "Unkwnown error"
+        } else if (axiosError.response.data["error"]) {
+          errorMessage = axiosError.response.data["error"]
+        } else {
+          const errors = Object.entries(axiosError.response.data).map(([k, v]) => `${parseErrorName(k)}: ${v}`)
+          errorMessage = errors.join("\n")
+        }
+
+        throw Error(errorMessage)
       }
     },
     {
