@@ -51,21 +51,6 @@ type GetContestsResponseData = {
   status: ContestStatus
 }[]
 
-function parseErrorName(errorKey: string): string | undefined {
-  switch (errorKey) {
-    case "handle":
-      return "Handle"
-    case "github_handle":
-      return "Github handle"
-    case "discord_handle":
-      return "Discord handle"
-    case "twitter_handle":
-      return "Twitter handle"
-    case "telegram_handle":
-      return "Telegram handle"
-  }
-}
-
 export const contestsQueryKey = "contests"
 export const useContests = () =>
   useQuery<Contest[] | null, Error>(contestsQueryKey, async () => {
@@ -172,6 +157,18 @@ type SignUp = {
   repo: string
 }
 
+class SignUpError extends Error {
+  fieldErrors?: Record<string, string[]>
+
+  constructor(reason?: string | Record<string, string[]>) {
+    super(typeof reason === "string" ? reason : "")
+
+    if (typeof reason === "object") {
+      this.fieldErrors = reason
+    }
+  }
+}
+
 export const useContestSignUp = (params: SignUpParams) => {
   const queryClient = useQueryClient()
   const { address } = useAccount()
@@ -183,7 +180,7 @@ export const useContestSignUp = (params: SignUpParams) => {
     error,
     isError,
     reset,
-  } = useMutation<SignUp | null, Error>(
+  } = useMutation<SignUp | null, SignUpError>(
     async () => {
       try {
         const { data } = await contestsAPI.post<SignUpResponseData>(contestSignUpUrl(), {
@@ -203,17 +200,7 @@ export const useContestSignUp = (params: SignUpParams) => {
       } catch (error) {
         const axiosError = error as AxiosError
 
-        let errorMessage = ""
-        if (!axiosError.response?.data) {
-          errorMessage = "Unkwnown error"
-        } else if (axiosError.response.data["error"]) {
-          errorMessage = axiosError.response.data["error"]
-        } else {
-          const errors = Object.entries(axiosError.response.data).map(([k, v]) => `${parseErrorName(k)}: ${v}`)
-          errorMessage = errors.join("\n")
-        }
-
-        throw Error(errorMessage)
+        throw new SignUpError(axiosError.response?.data)
       }
     },
     {

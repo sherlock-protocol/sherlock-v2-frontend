@@ -251,7 +251,7 @@ export const ContestDetails = () => {
           {successModalOpen && (
             <SignUpSuccessModal onClose={() => setSuccessModalOpen(false)} contest={contest} repo={signUpData?.repo} />
           )}
-          {errorModalOpen && <ErrorModal reason={error?.message} />}
+          {errorModalOpen && <ErrorModal reason={error?.fieldErrors ?? error?.message} />}
         </LoadingContainer>
       </Box>
     </Column>
