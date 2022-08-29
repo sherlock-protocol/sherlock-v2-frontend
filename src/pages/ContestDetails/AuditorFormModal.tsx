@@ -200,7 +200,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
         </Column>
       </LoadingContainer>
       {isSignUpSuccess && <SignUpSuccessModal contest={contest} onClose={onClose} repo={signUpData?.repo} />}
-      {isError && <ErrorModal reason={error?.message} onClose={handleErrorModalClose} />}
+      {isError && <ErrorModal reason={error?.fieldErrors ?? error?.message} onClose={handleErrorModalClose} />}
     </Modal>
   )
 }
