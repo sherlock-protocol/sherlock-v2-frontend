@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useDebounce } from "use-debounce"
 import axios, { AxiosError } from "axios"
-import { FaGithub } from "react-icons/fa"
+import { FaGithub, FaInfoCircle } from "react-icons/fa"
 
 import { Button } from "../../components/Button"
 import { Input } from "../../components/Input"
@@ -16,6 +16,7 @@ import LoadingContainer from "../../components/LoadingContainer/LoadingContainer
 import styles from "./ContestDetails.module.scss"
 import { hasSpaces, onlyAscii } from "../../utils/strings"
 import { ErrorModal } from "./ErrorModal"
+import { Title } from "../../components/Title"
 
 type Props = ModalProps & {
   auditor?: Auditor | null
@@ -137,7 +138,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
   return (
     <Modal closeable onClose={onClose}>
       <LoadingContainer loading={isLoading} label="Signing up...">
-        <Column spacing="xl">
+        <Column spacing="xl" className={styles.formContainer}>
           <Row>
             <Column grow={1} spacing="s">
               <Row alignment="center">
@@ -149,6 +150,16 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
               <Row alignment="center">
                 <Text strong>{contest.title}</Text>
               </Row>
+            </Column>
+          </Row>
+          <Row className={styles.c4Banner}>
+            <Column spacing="s">
+              <Row>
+                <FaInfoCircle />
+                &nbsp;
+                <Title variant="h3">IMPORTANT</Title>
+              </Row>
+              <Text>To claim a c4 handle, you need to authenticate using the address associated to it.</Text>
             </Column>
           </Row>
           <Row>
