@@ -6,4 +6,9 @@ const instance = axios.create({
   timeout: 30000,
 })
 
+export const contests = axios.create({
+  baseURL: config.contestsApiBaseUrl,
+  timeout: 30000,
+})
+
 export default instance
