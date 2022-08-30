@@ -95,10 +95,17 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
 
       try {
         setIsVerifyingGithubHandle(true)
-        await axios.get(`https://api.github.com/users/${debouncedGithubHandle}`)
+        const { data: githubData } = await axios.get<{ type: string }>(
+          `https://api.github.com/users/${debouncedGithubHandle}`
+        )
 
-        setVerifiedGithubHandle(debouncedGithubHandle)
-        setGithubVerificationError(false)
+        if (githubData.type === "User") {
+          setVerifiedGithubHandle(debouncedGithubHandle)
+          setGithubVerificationError(false)
+        } else {
+          setVerifiedGithubHandle(undefined)
+          setGithubVerificationError(true)
+        }
       } catch (error) {
         const axiosError = error as AxiosError
 
