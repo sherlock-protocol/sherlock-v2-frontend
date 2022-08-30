@@ -3,7 +3,6 @@ import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { useParams } from "react-router-dom"
 import { FaGithub } from "react-icons/fa"
-import showdown from "showdown"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -26,9 +25,7 @@ import styles from "./ContestDetails.module.scss"
 import { ErrorModal } from "./ErrorModal"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import Options from "../../components/Options/Options"
-
-const converter = new showdown.Converter()
-converter.setFlavor("github")
+import { Markdown } from "../../components/Markdown/Markdown"
 
 const STATUS_LABELS = {
   CREATED: "PENDING",
@@ -156,10 +153,7 @@ export const ContestDetails = () => {
                 </Column>
               </Row>
               <Column>
-                <div
-                  className={styles.markdown}
-                  dangerouslySetInnerHTML={{ __html: converter.makeHtml(contest.description ?? "") }}
-                />
+                <Markdown content={contest.description} />
               </Column>
             </Column>
             <Column spacing="xl" shrink={0} className={styles.sidebar}>
