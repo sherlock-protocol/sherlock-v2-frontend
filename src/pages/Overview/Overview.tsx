@@ -83,9 +83,8 @@ export const OverviewPage: React.FC = () => {
             </Row>
             <Row>
               <Title>
-                {tvcData &&
-                  tvcData.length > 0 &&
-                  `$ ${formatAmount(utils.formatUnits(tvcData[tvcData.length - 1].value, 6), 0)}`}
+                {chartsData?.tvcChartData &&
+                  `$ ${formatAmount(chartsData.tvcChartData[chartsData.tvcChartData.length - 1].value, 0)}`}
               </Title>
             </Row>
             <Row alignment="center">
@@ -106,9 +105,8 @@ export const OverviewPage: React.FC = () => {
             </Row>
             <Row>
               <Title>
-                {tvlData &&
-                  tvlData.length > 0 &&
-                  `$ ${formatAmount(utils.formatUnits(tvlData[tvlData.length - 1].value, 6), 0)}`}
+                {chartsData?.tvlChartData &&
+                  `$ ${formatAmount(chartsData.tvlChartData[chartsData.tvlChartData.length - 1].value, 0)}`}
               </Title>
             </Row>
             <Row>
