@@ -19,9 +19,6 @@ const APYChart: React.FC = () => {
   const { data: apyData } = useAPYOverTime()
 
   const chartData = useMemo(() => {
-    const incentivesStart = DateTime.fromSeconds(1659389515)
-    const incentivesEnd = DateTime.fromSeconds(1662845515)
-
     const apyChartData = apyData?.map((item) => {
       const date = DateTime.fromMillis(item.timestamp * 1000)
 
@@ -29,7 +26,7 @@ const APYChart: React.FC = () => {
         name: date.toLocaleString({ month: "2-digit", day: "2-digit" }),
         strategiesAPY: item.totalAPY - item.premiumsAPY,
         premiumsAPY: item.premiumsAPY,
-        incentivesAPY: date > incentivesStart && date < incentivesEnd ? 2 : 0,
+        incentivesAPY: 4,
         totalAPY: item.totalAPY,
       }
     })

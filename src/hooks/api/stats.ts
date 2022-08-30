@@ -11,6 +11,7 @@ type APYDataPoint = {
   timestamp: number
   totalAPY: number
   premiumsAPY: number
+  incentivesAPY: number
 }
 
 type GetAPYOverTimeResponseData =
@@ -20,6 +21,7 @@ type GetAPYOverTimeResponseData =
         timestamp: number
         value: number
         premiums_apy: number
+        incentives_apy: number
       }[]
     }
   | {
@@ -39,6 +41,7 @@ export const useAPYOverTime = () =>
       timestamp: r.timestamp,
       totalAPY: +(r.value * 100).toFixed(2),
       premiumsAPY: +(r.premiums_apy * 100).toFixed(2),
+      incentivesAPY: +(r.incentives_apy * 100).toFixed(2),
     }))
   })
 
