@@ -31,3 +31,12 @@ ul.errorList {
   padding: 0 0 0 2rem;
   flex-basis: 300px;
 }
+
+.c4Banner {
+  background-color: transparentize($color: $primary-purple, $amount: 0.7);
+  padding: 1em;
+}
+
+.formContainer {
+  max-width: 1080px;
+}
