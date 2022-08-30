@@ -10,6 +10,7 @@ const tooltipTitles: Record<string, string> = {
   premiumsAPY: "Premiums APY",
   strategiesAPY: "Strategies APY",
   totalValue: "Total APY",
+  incentivesAPY: "Incentives APY",
 }
 
 /**
@@ -26,7 +27,7 @@ const APYChart: React.FC = () => {
         name: date.toLocaleString({ month: "2-digit", day: "2-digit" }),
         strategiesAPY: item.totalAPY - item.premiumsAPY,
         premiumsAPY: item.premiumsAPY,
-        incentivesAPY: 4,
+        incentivesAPY: item.incentivesAPY,
         totalAPY: item.totalAPY,
       }
     })
