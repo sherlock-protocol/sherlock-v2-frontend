@@ -16,4 +16,5 @@ export const config: Config = {
   usdcAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   countdownStartTimestamp: 1649260800,
   countdownEndTimestamp: 1649347200,
+  incentivesAPYBytesIdentifier: "0x47a46b3628edc31155b950156914c27d25890563476422202887ed4298fc3c98",
 }

@@ -3,6 +3,7 @@ import { BigNumber } from "ethers"
 import axios from "./axios"
 
 import { getCoveredProtocols as getCoveredProtocolsUrl } from "./urls"
+import config from "../../config"
 
 export type Protocol = {
   /**
@@ -128,6 +129,8 @@ export const useProtocols = () =>
     if (response.ok === false) throw Error(response.error)
 
     return response.data.reduce<Record<string, Protocol>>((map, p) => {
+      if (p.bytes_identifier === config.incentivesAPYBytesIdentifier) return map
+
       map[p.bytes_identifier] = {
         id: p.id,
         name: p.name,

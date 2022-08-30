@@ -94,4 +94,9 @@ export type Config = {
    * See: https://docs.openzeppelin.com/contracts/2.x/api/token/erc20
    */
   usdcAddress: string
+
+  /**
+   * Bytes identifier used as a fake protocol to add incentives APY
+   */
+  incentivesAPYBytesIdentifier: string
 }
