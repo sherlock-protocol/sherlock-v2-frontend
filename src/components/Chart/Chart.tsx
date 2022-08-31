@@ -15,6 +15,7 @@ import { Tooltip as CustomTooltip } from "./Tooltip"
 import { shortenNumber } from "../../utils/units"
 
 const STROKES = ["#8716e8", "#fe6e99", ""]
+const TOOLTIP_COLORS = ["#8716e8", "#fe6e99", "#00FEB3"]
 
 type Props = {
   height?: number
@@ -74,7 +75,7 @@ export const Chart: React.FC<Props> = ({
           allowDuplicatedCategory={false}
           {...xAxisProps}
         />
-        <Tooltip {...tooltipProps} content={<CustomTooltip />} />
+        <Tooltip {...tooltipProps} content={<CustomTooltip colors={TOOLTIP_COLORS} />} />
         {dataKeys.map((k, index) => (
           <Area
             key={index}
