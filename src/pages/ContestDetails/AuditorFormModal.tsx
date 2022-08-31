@@ -166,7 +166,7 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
                 &nbsp;
                 <Title variant="h3">IMPORTANT</Title>
               </Row>
-              <Text>To claim a c4 handle, you need to authenticate using the address associated to it.</Text>
+              <Text>To claim a C4 handle, you need to authenticate using the address associated with it.</Text>
             </Column>
           </Row>
           <Row>
