@@ -47,7 +47,10 @@ export const Tooltip: React.FC<Props> = ({ label, payload, formatter, labelForma
         </Row>
         {renderTotalRow()}
         {payload?.map((p, index) => {
+          if (p.value === 0) return null
+
           const [value, name] = formatter ? formatter(p.value, p.name) : [p.value, p.name]
+
           return (
             <Row alignment={"space-between"} spacing="m" key={`tooltip-${index}`}>
               <Column>
