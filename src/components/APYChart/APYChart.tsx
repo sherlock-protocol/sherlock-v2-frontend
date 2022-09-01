@@ -25,7 +25,7 @@ const APYChart: React.FC = () => {
 
       return {
         name: date.toLocaleString({ month: "2-digit", day: "2-digit" }),
-        strategiesAPY: item.totalAPY - item.premiumsAPY,
+        strategiesAPY: item.totalAPY - item.premiumsAPY - item.incentivesAPY,
         premiumsAPY: item.premiumsAPY,
         incentivesAPY: item.incentivesAPY,
         totalAPY: item.totalAPY,
