@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react"
+import React, { useCallback } from "react"
 import { TooltipProps } from "recharts"
 import { GoPrimitiveDot } from "react-icons/go"
 import { Column, Row } from "../Layout"
