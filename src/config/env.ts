@@ -17,4 +17,5 @@ export const config: Config = {
   usdcAddress: process.env.REACT_APP_USDC_ADDRESS as string,
   countdownStartTimestamp: parseInt(process.env.REACT_APP_COUNTDOWN_START_TIMESTAMP as string),
   countdownEndTimestamp: parseInt(process.env.REACT_APP_COUNTDOWN_END_TIMESTAMP as string),
+  incentivesAPYBytesIdentifier: process.env.REACT_APP_INCENTIVES_APY_BYTES_IDENTIFIER as string,
 }
