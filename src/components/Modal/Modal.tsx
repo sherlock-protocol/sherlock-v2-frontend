@@ -33,7 +33,9 @@ export const Modal: React.FC<PropsWithChildren<Props>> = ({ closeable, children,
 
   return (
     <div className={styles.modal} onClick={handleClose}>
-      <Box onClick={(e) => e.stopPropagation()}>{children}</Box>
+      <Box onClick={(e) => e.stopPropagation()} className={styles.contentBox}>
+        {children}
+      </Box>
     </div>
   )
 }
