@@ -16,9 +16,13 @@
   background-color: transparentize($color: $background-color, $amount: 0.1);
 
   overflow-y: scroll;
+
+  padding-top: 0rem;
 }
 
 .contentBox {
-  position: fixed;
-  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 0;
+  max-height: 100%;
 }
