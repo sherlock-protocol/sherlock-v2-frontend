@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useMemo } from "react"
 import { TooltipProps } from "recharts"
 import { GoPrimitiveDot } from "react-icons/go"
 import { Column, Row } from "../Layout"
@@ -47,9 +47,8 @@ export const Tooltip: React.FC<Props> = ({ label, payload, formatter, labelForma
           </Text>
         </Row>
         {renderTotalRow()}
-        {Array.from(payload ?? [])
-          .reverse()
-          .map((p, index) => {
+        {payload
+          ?.map((p, index) => {
             if (p.value === 0) return null
 
             const [value, name] = formatter ? formatter(p.value, p.name) : [p.value, p.name]
@@ -58,7 +57,7 @@ export const Tooltip: React.FC<Props> = ({ label, payload, formatter, labelForma
               <Row alignment={"space-between"} spacing="m" key={`tooltip-${index}`}>
                 <Column>
                   <Row>
-                    <GoPrimitiveDot color={colors[colors.length - 1 - index]} />
+                    <GoPrimitiveDot color={colors[index]} />
                     <Text>{name}</Text>
                   </Row>
                 </Column>
@@ -67,7 +66,8 @@ export const Tooltip: React.FC<Props> = ({ label, payload, formatter, labelForma
                 </Column>
               </Row>
             )
-          })}
+          })
+          .reverse()}
       </Column>
     </div>
   )
