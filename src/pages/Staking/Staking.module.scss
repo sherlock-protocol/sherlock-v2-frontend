@@ -1,5 +1,9 @@
 @import "../../styles/variables";
 
+.stakingContainer {
+  width: 580px;
+}
+
 .rewardsContainer {
   background-color: transparentize($color: $primary-purple, $amount: 0.7);
   padding: 1em;
