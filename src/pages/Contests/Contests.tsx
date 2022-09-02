@@ -60,7 +60,7 @@ export const ContestsPage: React.FC<{}> = () => {
                     <Td>
                       <Column spacing="s">
                         <Title variant="h2">{contest.title}</Title>
-                        <Text>{contest.shortDescription}</Text>
+                        <Text size="small">{contest.shortDescription}</Text>
                       </Column>
                     </Td>
                     <Td>
