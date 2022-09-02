@@ -35,7 +35,7 @@ const AppStakers = () => {
     },
   ]
 
-  if (fundraisePositionData || airdropData) {
+  if (fundraisePositionData || (airdropData && airdropData?.length > 0)) {
     navigationLinks.push({
       title: "CLAIM",
       route: routes.Claim,
