@@ -4,6 +4,7 @@ import { useAccount } from "wagmi"
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
 import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
+import { useAirdropClaims } from "./hooks/api/useAirdropClaims"
 import { routes } from "./utils/routes"
 
 import styles from "./App.module.scss"
