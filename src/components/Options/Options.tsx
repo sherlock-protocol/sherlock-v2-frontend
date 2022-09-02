@@ -22,9 +22,14 @@ type Props = {
    * Callback when an option has been selected
    */
   onChange: (value: any) => void
+
+  /**
+   * Component is disabled
+   */
+  disabled?: boolean
 }
 
-const Options: React.FC<Props> = ({ options, value, onChange }) => {
+const Options: React.FC<Props> = ({ options, value, onChange, disabled = false }) => {
   return (
     <Row grow={1} className={styles.container}>
       {options.map((option) => (
@@ -32,8 +37,8 @@ const Options: React.FC<Props> = ({ options, value, onChange }) => {
           alignment={["center", "center"]}
           grow={1}
           key={option.value}
-          className={cx(styles.option, { [styles.active]: option.value === value })}
-          onClick={() => onChange(option.value)}
+          className={cx(styles.option, { [styles.active]: option.value === value, [styles.disabled]: disabled })}
+          onClick={() => !disabled && onChange(option.value)}
         >
           <Text strong>{option.label}</Text>
         </Column>
