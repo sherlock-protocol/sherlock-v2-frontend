@@ -18,9 +18,11 @@ type Props = {
 export const UpcomingContests: React.FC<Props> = ({ contests, onContestClick }) => {
   const upcomingContests = useMemo(() => contests?.filter((c) => c.status === "CREATED"), [contests])
 
+  if (!upcomingContests || upcomingContests.length === 0) return null
+
   return (
     <Box shadow={false} fullWidth>
-      <Title variant="h3">UPCOMING</Title>
+      <Title variant="h2">UPCOMING</Title>
       <Table>
         <THead>
           <Tr>

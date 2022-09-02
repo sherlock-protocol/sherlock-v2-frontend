@@ -22,7 +22,7 @@ export const ActiveContests: React.FC<Props> = ({ contests, onContestClick }) =>
 
   return (
     <Box shadow={false} fullWidth>
-      <Title variant="h3">ACTIVE</Title>
+      <Title variant="h2">ACTIVE</Title>
       <Table>
         <THead>
           <Tr>
