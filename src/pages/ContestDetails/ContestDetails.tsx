@@ -137,6 +137,9 @@ export const ContestDetails = () => {
 
   if (!contest) return null
 
+  const startDate = DateTime.fromSeconds(contest.startDate)
+  const endDate = DateTime.fromSeconds(contest.endDate)
+
   return (
     <Column spacing="m" className={styles.container}>
       <Box shadow={false} fullWidth>
@@ -174,17 +177,23 @@ export const ContestDetails = () => {
               <Row>
                 <Column>
                   <Title variant="h3">{contest.status === "CREATED" ? "STARTS" : "STARTED"}</Title>
-                  <Text size="extra-large" strong>
-                    {DateTime.fromSeconds(contest.startDate).toLocaleString(DateTime.DATE_MED)}
-                  </Text>
+                  <Row alignment={["center", "center"]} spacing="s">
+                    <Text size="extra-large" strong>
+                      {startDate.toLocaleString(DateTime.DATE_MED)}
+                    </Text>
+                    <Text size="small">{startDate.toLocaleString(DateTime.TIME_24_SIMPLE)}</Text>
+                  </Row>
                 </Column>
               </Row>
               <Row>
                 <Column>
                   <Title variant="h3">ENDS</Title>
-                  <Text size="extra-large" strong>
-                    {DateTime.fromSeconds(contest.endDate).toLocaleString(DateTime.DATE_MED)}
-                  </Text>
+                  <Row alignment={["center", "center"]} spacing="s">
+                    <Text size="extra-large" strong>
+                      {endDate.toLocaleString(DateTime.DATE_MED)}
+                    </Text>
+                    <Text size="small">{endDate.toLocaleString(DateTime.TIME_24_SIMPLE)}</Text>
+                  </Row>
                 </Column>
               </Row>
               <hr />
