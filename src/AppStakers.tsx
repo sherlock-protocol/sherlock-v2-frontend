@@ -11,6 +11,7 @@ import styles from "./App.module.scss"
 const AppStakers = () => {
   const { address: connectedAddress } = useAccount()
   const { getFundraisePosition, data: fundraisePositionData } = useFundraisePosition()
+  const { data: airdropData } = useAirdropClaims(connectedAddress)
 
   useEffect(() => {
     if (connectedAddress) {
@@ -33,7 +34,7 @@ const AppStakers = () => {
     },
   ]
 
-  if (fundraisePositionData) {
+  if (fundraisePositionData || airdropData) {
     navigationLinks.push({
       title: "CLAIM",
       route: routes.Claim,
