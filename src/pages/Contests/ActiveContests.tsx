@@ -18,6 +18,8 @@ type Props = {
 export const ActiveContests: React.FC<Props> = ({ contests, onContestClick }) => {
   const activeContests = useMemo(() => contests?.filter((c) => c.status === "RUNNING"), [contests])
 
+  if (!activeContests || activeContests.length === 0) return null
+
   return (
     <Box shadow={false} fullWidth>
       <Title variant="h3">ACTIVE</Title>
