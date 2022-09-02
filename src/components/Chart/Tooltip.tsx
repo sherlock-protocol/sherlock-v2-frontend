@@ -8,9 +8,10 @@ import styles from "./Tooltip.module.scss"
 
 type Props = TooltipProps<number, string> & {
   totalLabel?: string
+  colors: string[]
 }
 
-export const Tooltip: React.FC<Props> = ({ label, payload, formatter, labelFormatter, totalLabel }) => {
+export const Tooltip: React.FC<Props> = ({ label, payload, formatter, labelFormatter, colors }) => {
   let finalLabel = label
   if (!!label && labelFormatter && payload !== undefined && payload !== null) {
     finalLabel = labelFormatter(label, payload)
@@ -46,22 +47,27 @@ export const Tooltip: React.FC<Props> = ({ label, payload, formatter, labelForma
           </Text>
         </Row>
         {renderTotalRow()}
-        {payload?.map((p, index) => {
-          const [value, name] = formatter ? formatter(p.value, p.name) : [p.value, p.name]
-          return (
-            <Row alignment={"space-between"} spacing="m" key={`tooltip-${index}`}>
-              <Column>
-                <Row>
-                  <GoPrimitiveDot color={p.color} />
-                  <Text>{name}</Text>
-                </Row>
-              </Column>
-              <Column>
-                <Text variant="mono">{value}</Text>
-              </Column>
-            </Row>
-          )
-        })}
+        {payload
+          ?.map((p, index) => {
+            if (p.value === 0) return null
+
+            const [value, name] = formatter ? formatter(p.value, p.name) : [p.value, p.name]
+
+            return (
+              <Row alignment={"space-between"} spacing="m" key={`tooltip-${index}`}>
+                <Column>
+                  <Row>
+                    <GoPrimitiveDot color={colors[index]} />
+                    <Text>{name}</Text>
+                  </Row>
+                </Column>
+                <Column>
+                  <Text variant="mono">{value}</Text>
+                </Column>
+              </Row>
+            )
+          })
+          .reverse()}
       </Column>
     </div>
   )

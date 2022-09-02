@@ -6,6 +6,7 @@ export const config: Config = {
   sherBuyEntryDeadline: parseInt(process.env.REACT_APP_SHER_BUY_ENTRY_DEADLINE as string),
   alchemyApiUrl: process.env.REACT_APP_ALCHEMY_API_URL as string,
   indexerBaseUrl: process.env.REACT_APP_INDEXER_BASE_URL as string,
+  contestsApiBaseUrl: process.env.REACT_APP_CONTESTS_API_BASE_URL as string,
   sherlockAddress: process.env.REACT_APP_SHERLOCK_ADDRESS as string,
   sherlockProtocolManagerAddress: process.env.REACT_APP_SHERLOCK_PROTOCOL_MANAGER_ADDRESS as string,
   sherlockClaimManagerAddress: process.env.REACT_APP_SHERLOCK_CLAIM_MANAGER_ADDRESS as string,
@@ -16,4 +17,5 @@ export const config: Config = {
   usdcAddress: process.env.REACT_APP_USDC_ADDRESS as string,
   countdownStartTimestamp: parseInt(process.env.REACT_APP_COUNTDOWN_START_TIMESTAMP as string),
   countdownEndTimestamp: parseInt(process.env.REACT_APP_COUNTDOWN_END_TIMESTAMP as string),
+  incentivesAPYBytesIdentifier: process.env.REACT_APP_INCENTIVES_APY_BYTES_IDENTIFIER as string,
 }

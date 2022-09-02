@@ -41,7 +41,7 @@ const CoveredProtocolsList: React.FC = () => {
         const maxClaimableAmount = previous?.gt(current) ? previous : current
         const coverage = item.tvl?.lt(maxClaimableAmount) ? item.tvl : maxClaimableAmount
 
-        const percentageOfTotal = +((coverage.div(1e6).toNumber() * 100) / tvc.div(1e6).toNumber()).toFixed(0)
+        const percentageOfTotal = +((coverage.div(1e6).toNumber() * 100) / tvc.div(1e6).toNumber()).toFixed(2)
 
         return {
           id: item.bytesIdentifier,
@@ -103,7 +103,7 @@ const CoveredProtocolsList: React.FC = () => {
                   </Column>
                   <Column className={cx(styles.listColumn, styles.entry)} grow={1}></Column>
                   <Column className={cx(styles.listColumn, styles.entry)}>
-                    <Text>{item.percentageOfTotal.toFixed(0)}%</Text>
+                    <Text>{item.percentageOfTotal.toFixed(2)}%</Text>
                   </Column>
                 </Row>
               ))}

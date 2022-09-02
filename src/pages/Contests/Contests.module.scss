@@ -1,7 +1,11 @@
 @import "../../styles/variables";
 
+.container {
+  width: 100%;
+}
+
 .listContainer {
-  max-height: 33rem;
+  max-height: 18rem;
   overflow-y: scroll;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -12,12 +16,12 @@
 }
 
 .listColumn {
-  flex: 1;
-  padding: $spacing-xs $spacing-m;
+  flex-grow: 1;
+
   font-variant-numeric: tabular-nums;
 
   &:last-of-type {
-    flex: 0;
+    flex: 1;
     min-width: 5rem;
     text-align: right;
   }
@@ -31,7 +35,7 @@
     }
   }
 
-  .protocolName {
+  .name {
     color: $primary-purple;
   }
 }

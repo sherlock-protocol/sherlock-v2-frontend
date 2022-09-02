@@ -1,5 +1,5 @@
 import React from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { FaExternalLinkAlt } from "react-icons/fa"
 
 import ConnectButton from "../ConnectButton/ConnectButton"
@@ -24,20 +24,21 @@ type HeaderProps = {
    * If the Header should show nothing but the logo.
    */
   logoOnly?: boolean
+
+  /**
+   * Home route
+   */
+  homeRoute?: string
 }
 
 /**
  * Header component including the navigation and the wallet connection.
  */
-export const Header: React.FC<HeaderProps> = ({ navigationLinks = [], logoOnly = false }) => {
-  const location = useLocation()
-
-  const homeRoute = location.pathname.startsWith("/protocols") ? "/protocols" : "/"
-
+export const Header: React.FC<HeaderProps> = ({ navigationLinks = [], logoOnly = false, homeRoute = "/" }) => {
   return (
     <div className={styles.container}>
       <div className={styles.leftArea}>
-        <Link to={homeRoute}>
+        <Link to={`/${homeRoute}`}>
           <Logotype height={60} width={60} />
         </Link>
       </div>
