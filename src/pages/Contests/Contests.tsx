@@ -32,33 +32,61 @@ export const ContestsPage: React.FC<{}> = () => {
           <Table>
             <THead>
               <Tr>
-                <Th>
+                <Th className={styles.logoColumn}></Th>
+                <Th className={styles.contestColumn}>
                   <Text>Contest</Text>
                 </Th>
                 <Th>
-                  <Text>Prize pool</Text>
+                  <Text alignment="center">Prize pool</Text>
                 </Th>
                 <Th>
-                  <Text>Started</Text>
+                  <Text alignment="center">Started</Text>
                 </Th>
                 <Th>
-                  <Text>Ends</Text>
+                  <Text alignment="center">Ends</Text>
                 </Th>
               </Tr>
             </THead>
             <TBody>
-              {contests?.map((contest) => (
-                <Tr key={contest.id} onClick={() => handleContestClick(contest.id)}>
-                  <Td>
-                    <Text strong>{contest.title}</Text>
-                  </Td>
-                  <Td>
-                    <Text variant="mono">{commify(contest.prizePool)} USDC</Text>
-                  </Td>
-                  <Td>{DateTime.fromSeconds(contest.startDate).toLocaleString(DateTime.DATE_MED)}</Td>
-                  <Td>{DateTime.fromSeconds(contest.endDate).toLocaleString(DateTime.DATE_MED)}</Td>
-                </Tr>
-              ))}
+              {contests?.map((contest) => {
+                const startDate = DateTime.fromSeconds(contest.startDate)
+                const endDate = DateTime.fromSeconds(contest.endDate)
+
+                return (
+                  <Tr key={contest.id} onClick={() => handleContestClick(contest.id)}>
+                    <Td>
+                      <img src={contest.logoURL} alt={contest.title} width={80} className={styles.logo} />
+                    </Td>
+                    <Td>
+                      <Column spacing="s">
+                        <Title variant="h2">{contest.title}</Title>
+                        <Text>{contest.shortDescription}</Text>
+                      </Column>
+                    </Td>
+                    <Td>
+                      <Text variant="mono" strong size="large" alignment="center">
+                        {commify(contest.prizePool)} USDC
+                      </Text>
+                    </Td>
+                    <Td>
+                      <Column spacing="xs" alignment="center">
+                        <Text strong size="large">
+                          {startDate.toLocaleString(DateTime.DATE_MED)}
+                        </Text>
+                        <Text>{startDate.toLocaleString(DateTime.TIME_24_SIMPLE)}</Text>
+                      </Column>
+                    </Td>
+                    <Td>
+                      <Column spacing="xs" alignment="center">
+                        <Text strong size="large">
+                          {endDate.toLocaleString(DateTime.DATE_MED)}
+                        </Text>
+                        <Text>{endDate.toLocaleString(DateTime.TIME_24_SIMPLE)}</Text>
+                      </Column>
+                    </Td>
+                  </Tr>
+                )
+              })}
             </TBody>
           </Table>
         </Box>
