@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers"
+
 export type Config = {
   /**
    * Running network ID
@@ -99,4 +101,10 @@ export type Config = {
    * Bytes identifier used as a fake protocol to add incentives APY
    */
   incentivesAPYBytesIdentifier: string
+
+  /**
+   * Staking pool hard cap (0 if there's no limit).
+   * Sometimes, we want to limit the amount of USDC we allow investors to put in.
+   */
+  stakingHardcap: BigNumber
 }

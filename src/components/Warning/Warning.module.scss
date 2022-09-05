@@ -1,0 +1,6 @@
+@import "../../styles/variables";
+
+.warningContainer {
+  background-color: transparentize($color: $alternate-pink, $amount: 0.3);
+  padding: 1rem;
+}
