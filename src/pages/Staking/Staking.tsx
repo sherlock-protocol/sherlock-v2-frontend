@@ -125,7 +125,7 @@ export const StakingPage: React.FC = () => {
   }, [getStakingPositions, connectedAddress])
 
   /**
-   * Fetch SHER rewards for 1 USDC
+   * Fetch SHER rewards for 100 USDC
    */
   React.useEffect(() => {
     async function fetchSherRewards() {
@@ -133,7 +133,7 @@ export const StakingPage: React.FC = () => {
         return
       }
 
-      const sher = await computeRewards(tvl, ethers.utils.parseUnits("1", 6), PERIODS_IN_SECONDS.SIX_MONTHS)
+      const sher = await computeRewards(tvl, ethers.utils.parseUnits("100", 6), PERIODS_IN_SECONDS.SIX_MONTHS)
       if (sher) {
         setSherRewardsBasis(sher)
       }
@@ -175,7 +175,7 @@ export const StakingPage: React.FC = () => {
             {sherRewardsBasis && (
               <Row alignment="space-between">
                 <Column>
-                  <Text>Reward per 1 USDC</Text>
+                  <Text>Reward per 100 USDC</Text>
                 </Column>
                 <Column>
                   <Text strong variant="mono">
