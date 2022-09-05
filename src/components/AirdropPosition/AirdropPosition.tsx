@@ -58,8 +58,6 @@ const AirdropPosition: React.FC<Props> = ({
         async () => (await contract.claim(index, address, amount, proof)) as ethers.ContractTransaction
       )
       onSuccess?.(result.blockNumber)
-
-      console.log("Action result", result)
     } catch (e) {
       return false
     }
@@ -75,7 +73,7 @@ const AirdropPosition: React.FC<Props> = ({
         </Row>
         <Row alignment="space-between">
           <Column>
-            <Text strong>You are eligible to</Text>
+            <Text>You are eligible to claim</Text>
           </Column>
           <Column>
             <Text strong variant="mono">
