@@ -22,6 +22,8 @@ import { useQueryClient } from "react-query"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { useNavigate } from "react-router-dom"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
+import useWaitTx from "../../hooks/useWaitTx"
+import { DateTime } from "luxon"
 
 export const FundraisingClaimPage = () => {
   const { address: connectedAddress } = useAccount()
@@ -30,6 +32,7 @@ export const FundraisingClaimPage = () => {
   const queryClient = useQueryClient()
   const sherClaim = useSherClaimContract()
   const navigate = useNavigate()
+  const { waitForTx } = useWaitTx()
 
   const [isRefreshing, setIsRefreshing] = useState(false)
 
@@ -70,35 +73,81 @@ export const FundraisingClaimPage = () => {
     fetchClaimIsActive()
   })
 
-  const handleClaim = useCallback(async () => {
-    try {
-      await sherClaim.claim()
-      connectedAddress && getFundraisePosition(connectedAddress)
-    } catch (error) {
-      console.log(error)
-    }
-  }, [connectedAddress, sherClaim, getFundraisePosition])
-
-  const claimStartString = useMemo(() => {
-    return (
-      fundraisePositionData?.claimableAt &&
-      formattedTimeDifference(fundraisePositionData.claimableAt, ["days", "hours", "minutes"])
-    )
-  }, [fundraisePositionData?.claimableAt])
-
   const handleOnSuccess = useCallback(
     async (blockNumber: number) => {
       setIsRefreshing(true)
+
+      // Wait for block to be indexed
       await waitForBlock(blockNumber)
+
+      // Refresh airdrop claims
       await queryClient.invalidateQueries(airdropClaimsQueryKey)
+      // Refresh fundraise claim
+      connectedAddress && getFundraisePosition(connectedAddress)
+
       setIsRefreshing(false)
     },
-    [queryClient, waitForBlock]
+    [queryClient, waitForBlock, getFundraisePosition, connectedAddress]
   )
+
+  const handleClaim = useCallback(async () => {
+    try {
+      const result = await waitForTx(async () => (await sherClaim.claim()) as ethers.ContractTransaction)
+      handleOnSuccess(result.blockNumber)
+    } catch (error) {
+      console.log(error)
+    }
+  }, [sherClaim, waitForTx, handleOnSuccess])
 
   const handleGoToStaking = React.useCallback(() => {
     navigate("/")
   }, [navigate])
+
+  const renderAction = useMemo(() => {
+    if (fundraisePositionData?.claimedAt) {
+      // Position claimed
+      return (
+        <Column grow={1} spacing="m">
+          <Row alignment="space-between">
+            <Column>
+              <Text strong>Claimed at</Text>
+            </Column>
+            <Column>
+              <Text strong variant="mono">
+                {fundraisePositionData.claimedAt.toLocaleString(DateTime.DATETIME_MED)}
+              </Text>
+            </Column>
+          </Row>
+          <Row alignment="center">
+            <Button disabled>Claim</Button>
+          </Row>
+        </Column>
+      )
+    } else if (fundraisePositionData?.claimableAt) {
+      // Position not claimed yet
+      return (
+        <Column grow={1} spacing="m">
+          <Row alignment="space-between">
+            <Column>
+              <Text strong>
+                Claiming {fundraisePositionData?.claimableAt < DateTime.now() ? "started" : "starts in"}
+              </Text>
+            </Column>
+            <Column>
+              <Text strong variant="mono">
+                {formattedTimeDifference(fundraisePositionData.claimableAt.toJSDate(), ["days", "hours", "minutes"])}
+              </Text>
+            </Column>
+          </Row>
+          <Row alignment="center">
+            <Button onClick={handleClaim} disabled={!claimIsActive}>
+              Claim
+            </Button>
+          </Row>
+        </Column>
+      )
+    }
+  }, [fundraisePositionData?.claimableAt, fundraisePositionData?.claimedAt, claimIsActive, handleClaim])
 
   return (
     <ConnectGate>
@@ -155,25 +204,7 @@ export const FundraisingClaimPage = () => {
                   </Text>
                 </Column>
               </Row>
-              <Row className={styles.claimContainer}>
-                <Column grow={1} spacing="m">
-                  <Row alignment="space-between">
-                    <Column>
-                      <Text strong>Claimable Starts</Text>
-                    </Column>
-                    <Column>
-                      <Text strong variant="mono">
-                        {claimStartString}
-                      </Text>
-                    </Column>
-                  </Row>
-                  <Row alignment="center">
-                    <Button onClick={handleClaim} disabled={!claimIsActive}>
-                      Claim
-                    </Button>
-                  </Row>
-                </Column>
-              </Row>
+              <Row className={styles.claimContainer}>{renderAction}</Row>
             </Column>
           </Box>
         )}
