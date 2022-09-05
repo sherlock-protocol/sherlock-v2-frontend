@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers"
 import { Config } from "./ConfigType"
 
 export const config: Config = {
@@ -17,4 +18,5 @@ export const config: Config = {
   countdownStartTimestamp: 1649260800,
   countdownEndTimestamp: 1649347200,
   incentivesAPYBytesIdentifier: "0x47a46b3628edc31155b950156914c27d25890563476422202887ed4298fc3c98",
+  stakingHardcap: BigNumber.from("25000000000000"),
 }

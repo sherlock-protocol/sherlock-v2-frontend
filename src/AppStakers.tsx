@@ -4,6 +4,7 @@ import { useAccount } from "wagmi"
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
 import { useFundraisePosition } from "./hooks/api/useFundraisePosition"
+import { useAirdropClaims } from "./hooks/api/useAirdropClaims"
 import { routes } from "./utils/routes"
 
 import styles from "./App.module.scss"
@@ -11,6 +12,7 @@ import styles from "./App.module.scss"
 const AppStakers = () => {
   const { address: connectedAddress } = useAccount()
   const { getFundraisePosition, data: fundraisePositionData } = useFundraisePosition()
+  const { data: airdropData } = useAirdropClaims(connectedAddress)
 
   useEffect(() => {
     if (connectedAddress) {
@@ -33,10 +35,10 @@ const AppStakers = () => {
     },
   ]
 
-  if (fundraisePositionData) {
+  if (fundraisePositionData || (airdropData && airdropData?.length > 0)) {
     navigationLinks.push({
       title: "CLAIM",
-      route: routes.FundraiseClaim,
+      route: routes.Claim,
     })
   }
 

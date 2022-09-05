@@ -1,5 +1,5 @@
 import { BigNumber, ethers } from "ethers"
-import React from "react"
+import React, { useMemo } from "react"
 import { useDebounce } from "use-debounce"
 import { useAccount } from "wagmi"
 import AllowanceGate from "../../components/AllowanceGate/AllowanceGate"
@@ -21,6 +21,9 @@ import styles from "./Staking.module.scss"
 import { useNavigate } from "react-router-dom"
 import Options from "../../components/Options/Options"
 import USBlockContainer from "../../components/USBlockContainer/USBlockContainer"
+import { Warning } from "../../components/Warning"
+import config from "../../config"
+import { format } from "../../utils/units"
 
 /**
  * Available staking periods, in seconds.
@@ -39,6 +42,8 @@ const STAKING_PERIOD_OPTIONS = [
   },
   { label: "12 months", value: PERIODS_IN_SECONDS.ONE_YEAR },
 ]
+
+const STAKING_HARDCAP = config.stakingHardcap
 
 export const StakingPage: React.FC = () => {
   const [amount, setAmount] = React.useState<BigNumber>()
@@ -59,11 +64,14 @@ export const StakingPage: React.FC = () => {
   const { address: connectedAddress } = useAccount()
   const navigate = useNavigate()
 
+  const stakingDisabled = useMemo(() => STAKING_HARDCAP.gt(BigNumber.from(0)) && tvl && tvl.gt(STAKING_HARDCAP), [tvl])
+  // const stakingDisabled = false
+
   /**
    * Compute staking rewards for current amount and staking period
    */
   const handleComputeRewards = React.useCallback(async () => {
-    if (!stakingPeriod || !tvl) {
+    if (!stakingPeriod || !tvl || stakingDisabled) {
       return
     }
 
@@ -80,7 +88,7 @@ export const StakingPage: React.FC = () => {
     }
 
     setIsLoadingRewards(false)
-  }, [debouncedAmountBN, stakingPeriod, tvl, computeRewards])
+  }, [debouncedAmountBN, stakingPeriod, tvl, computeRewards, stakingDisabled])
 
   /**
    * Stake USDC for a given period of time
@@ -135,7 +143,7 @@ export const StakingPage: React.FC = () => {
   }, [tvl, computeRewards])
 
   return (
-    <Box>
+    <Box className={styles.stakingContainer}>
       <USBlockContainer>
         <LoadingContainer loading={isLoadingRewards}>
           <Column spacing="m">
@@ -176,10 +184,31 @@ export const StakingPage: React.FC = () => {
                 </Column>
               </Row>
             )}
+            {stakingDisabled && (
+              <Row>
+                <Warning
+                  message={`The pool is currently at max capacity. Staking will be re-enabled when the pool drops below ${format(
+                    STAKING_HARDCAP,
+                    6
+                  )} USDC`}
+                />
+              </Row>
+            )}
             <Row className={styles.rewardsContainer}>
               <Column grow={1} spacing="l">
-                <TokenInput onChange={setAmount} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
-                <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
+                <TokenInput
+                  onChange={setAmount}
+                  token="USDC"
+                  placeholder="Choose amount"
+                  balance={usdcBalance}
+                  disabled={stakingDisabled}
+                />
+                <Options
+                  options={STAKING_PERIOD_OPTIONS}
+                  value={stakingPeriod}
+                  onChange={setStakingPeriod}
+                  disabled={stakingDisabled}
+                />
                 {sherRewards && (
                   <>
                     <Row>
@@ -210,7 +239,7 @@ export const StakingPage: React.FC = () => {
                   </>
                 )}
 
-                {amount && stakingPeriod && sherRewards && (
+                {amount && stakingPeriod && sherRewards && !stakingDisabled && (
                   <Row alignment="center">
                     <ConnectGate>
                       <AllowanceGate
