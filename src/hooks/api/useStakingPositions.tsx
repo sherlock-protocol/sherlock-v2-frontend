@@ -12,6 +12,7 @@ export type StakingPosition = {
   lockupEnd: Date
   scaledUsdc?: BigNumber
   usdcAPY?: number
+  restakeCount: number
 }
 
 type StakingPositions = {
@@ -31,6 +32,7 @@ type GetStakingPositionsResponseData =
         usdc: string
         usdc_increment: string
         usdc_apy: number | undefined
+        restake_count: number
       }[]
       usdc_apy: number
       positions_usdc_last_updated: number
@@ -52,6 +54,7 @@ const parseResponse = (response: GetStakingPositionsResponseData): StakingPositi
       scaledUsdcIncrement: parseFloat((parseFloat(p.usdc_increment ?? 0) * 1e6).toFixed(0)),
       lockupEnd: new Date(p.lockup_end * 1000),
       usdcAPY: p.usdc_apy,
+      restakeCount: p.restake_count,
     })),
     usdcAPY: response.usdc_apy,
     usdcLastUpdated: new Date(response.positions_usdc_last_updated * 1000),
