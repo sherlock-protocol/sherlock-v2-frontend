@@ -149,6 +149,7 @@ export const StakingPositionsList: React.FC = () => {
             lockupEnd={position.lockupEnd}
             apy={position?.usdcAPY ?? data?.usdcAPY}
             onUpdate={refreshStakingPositionsAfterBlock}
+            restakeCount={position.restakeCount}
           />
         ))}
         {!loading && data?.positions?.length === 0 && (

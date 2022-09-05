@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers"
 import { Config } from "./ConfigType"
 
 export const config: Config = {
@@ -18,4 +19,7 @@ export const config: Config = {
   countdownStartTimestamp: parseInt(process.env.REACT_APP_COUNTDOWN_START_TIMESTAMP as string),
   countdownEndTimestamp: parseInt(process.env.REACT_APP_COUNTDOWN_END_TIMESTAMP as string),
   incentivesAPYBytesIdentifier: process.env.REACT_APP_INCENTIVES_APY_BYTES_IDENTIFIER as string,
+  stakingHardcap: BigNumber.from(
+    process.env.REACT_APP_STAKING_HARDCAP ? (process.env.REACT_APP_STAKING_HARDCAP as string) : "0"
+  ),
 }

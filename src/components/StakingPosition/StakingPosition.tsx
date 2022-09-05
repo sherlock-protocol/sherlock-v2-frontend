@@ -11,6 +11,7 @@ import { Column, Row } from "../Layout"
 import { Text } from "../Text"
 import { Title } from "../Title"
 import styles from "./StakingPosition.module.scss"
+import CustomLink from "../CustomLink/CustomLink"
 
 interface Props {
   /**
@@ -45,9 +46,14 @@ interface Props {
    * and at what block number.
    */
   onUpdate: (blockNumber: number) => void
+
+  /**
+   * Number of restakes on this position
+   */
+  restakeCount: number
 }
 
-const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockupEnd, apy, onUpdate }) => {
+const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockupEnd, apy, onUpdate, restakeCount }) => {
   const [stakingPeriod, setStakingPeriod] = React.useState<number>()
   const isUnlocked = lockupEnd <= new Date()
 
@@ -118,6 +124,15 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
                 {formatAmount(apy)}%
               </Text>
             </Column>
+          </Row>
+        )}
+        {id.lte(275) && restakeCount === 0 && (
+          <Row spacing="m">
+            <Text size="small" className={styles.airdrop}>
+              Note: A portion of the 15% USDC APY will be sent <br /> to your address when you restake/unstake. <br />
+              The rest of the 15% APY will be claimable as an airdrop <br />
+              at <CustomLink to="/claim">https://app.sherlock.xyz/claim</CustomLink>.
+            </Text>
           </Row>
         )}
         {isUnlocked && (

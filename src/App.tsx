@@ -29,7 +29,7 @@ function App() {
           <Route path={routes.Stake} element={<StakingPage />} />
           <Route path={routes.Overview} element={<OverviewPage />} />
           <Route path={routes.Positions} element={<StakingPositionsPage />} />
-          <Route path={routes.FundraiseClaim} element={<FundraisingClaimPage />} />
+          <Route path={routes.Claim} element={<FundraisingClaimPage />} />
           <Route path={routes.USForbidden} element={<USForbiddenPage />} />
 
           <Route path="*" element={<Navigate replace to={`/${routes.Stake}`} />} />

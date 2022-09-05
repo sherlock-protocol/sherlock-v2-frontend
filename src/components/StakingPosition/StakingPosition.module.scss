@@ -4,3 +4,18 @@
   background-color: transparentize($color: $primary-purple, $amount: 0.7);
   padding: 1em;
 }
+
+.airdrop {
+  color: rgba(255, 255, 255, 0.8);
+
+  a {
+    color: inherit;
+    transition: 0.2s all ease;
+    text-decoration: none;
+
+    &:hover {
+      color: white;
+      text-decoration: underline;
+    }
+  }
+}
