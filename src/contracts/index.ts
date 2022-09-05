@@ -3,6 +3,7 @@
 /* eslint-disable */
 export type { ERC20 } from "./ERC20"
 export type { ERC721 } from "./ERC721"
+export type { MerkleDistributor } from "./MerkleDistributor"
 export type { SherBuy } from "./SherBuy"
 export type { SherClaim } from "./SherClaim"
 export type { SherDistributionManager } from "./SherDistributionManager"
@@ -13,6 +14,7 @@ export type { SherlockProtocolManager } from "./SherlockProtocolManager"
 
 export { ERC20__factory } from "./factories/ERC20__factory"
 export { ERC721__factory } from "./factories/ERC721__factory"
+export { MerkleDistributor__factory } from "./factories/MerkleDistributor__factory"
 export { SherBuy__factory } from "./factories/SherBuy__factory"
 export { SherClaim__factory } from "./factories/SherClaim__factory"
 export { SherDistributionManager__factory } from "./factories/SherDistributionManager__factory"

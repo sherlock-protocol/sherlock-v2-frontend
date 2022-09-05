@@ -2,13 +2,15 @@ import React, { PropsWithChildren, useCallback, useState } from "react"
 import { BigNumber, ethers } from "ethers"
 import axios from "./axios"
 import { getFundraisePosition as getFundraisePositionUrl } from "./urls"
+import { DateTime } from "luxon"
 
 type FundraisePosition = {
-  claimableAt: Date
+  claimableAt: DateTime
   contribution: BigNumber
   reward: BigNumber
   stake: BigNumber
   owner: string
+  claimedAt: DateTime | null
 }
 
 type GetFundraisePositionResponseData =
@@ -19,6 +21,7 @@ type GetFundraisePositionResponseData =
         id: string
         reward: string
         stake: string
+        claimed_at: number | null
       }
       ok: true
     }
@@ -32,10 +35,11 @@ const parseResponse = (response: GetFundraisePositionResponseData): FundraisePos
 
   return {
     owner: response.data.id,
-    claimableAt: new Date(response.data.claimable_at * 1000),
+    claimableAt: DateTime.fromSeconds(response.data.claimable_at),
     contribution: BigNumber.from(response.data.contribution),
     reward: BigNumber.from(response.data.reward),
     stake: BigNumber.from(response.data.stake),
+    claimedAt: response.data.claimed_at ? DateTime.fromSeconds(response.data.claimed_at) : null,
   }
 }
 

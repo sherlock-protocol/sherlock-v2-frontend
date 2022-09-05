@@ -15,10 +15,27 @@ import styles from "./FundraisingClaim.module.scss"
 
 import { formattedTimeDifference } from "../../utils/dates"
 import { formatAmount } from "../../utils/format"
+import { useAirdropClaims, airdropClaimsQueryKey } from "../../hooks/api/useAirdropClaims"
+import AirdropPosition from "../../components/AirdropPosition/AirdropPosition"
+import { useWaitForBlock } from "../../hooks/api/useWaitForBlock"
+import { useQueryClient } from "react-query"
+import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
+import { useNavigate } from "react-router-dom"
+import ConnectGate from "../../components/ConnectGate/ConnectGate"
+import useWaitTx from "../../hooks/useWaitTx"
+import { DateTime } from "luxon"
 
 export const FundraisingClaimPage = () => {
   const { address: connectedAddress } = useAccount()
+  const { data: airdropData } = useAirdropClaims(connectedAddress)
+  const { waitForBlock } = useWaitForBlock()
+  const queryClient = useQueryClient()
   const sherClaim = useSherClaimContract()
+  const navigate = useNavigate()
+  const { waitForTx } = useWaitTx()
+
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
   /**
    * Custom hook for fetching fundraise position from Indexer API
    */
@@ -56,95 +73,162 @@ export const FundraisingClaimPage = () => {
     fetchClaimIsActive()
   })
 
+  const handleOnSuccess = useCallback(
+    async (blockNumber: number) => {
+      setIsRefreshing(true)
+
+      // Wait for block to be indexed
+      await waitForBlock(blockNumber)
+
+      // Refresh airdrop claims
+      await queryClient.invalidateQueries(airdropClaimsQueryKey)
+      // Refresh fundraise claim
+      connectedAddress && getFundraisePosition(connectedAddress)
+
+      setIsRefreshing(false)
+    },
+    [queryClient, waitForBlock, getFundraisePosition, connectedAddress]
+  )
+
   const handleClaim = useCallback(async () => {
     try {
-      await sherClaim.claim()
-      connectedAddress && getFundraisePosition(connectedAddress)
+      const result = await waitForTx(async () => (await sherClaim.claim()) as ethers.ContractTransaction)
+      handleOnSuccess(result.blockNumber)
     } catch (error) {
       console.log(error)
     }
-  }, [connectedAddress, sherClaim, getFundraisePosition])
+  }, [sherClaim, waitForTx, handleOnSuccess])
 
-  const claimStartString = useMemo(() => {
-    return (
-      fundraisePositionData?.claimableAt &&
-      formattedTimeDifference(fundraisePositionData.claimableAt, ["days", "hours", "minutes"])
-    )
-  }, [fundraisePositionData?.claimableAt])
+  const handleGoToStaking = React.useCallback(() => {
+    navigate("/")
+  }, [navigate])
 
-  if (!fundraisePositionData) return null
-
-  const formattedSherAmount = formatAmount(ethers.utils.formatUnits(fundraisePositionData.reward))
-
-  const participation = fundraisePositionData.stake.add(fundraisePositionData.contribution)
+  const renderAction = useMemo(() => {
+    if (fundraisePositionData?.claimedAt) {
+      // Position claimed
+      return (
+        <Column grow={1} spacing="m">
+          <Row alignment="space-between">
+            <Column>
+              <Text strong>Claimed at</Text>
+            </Column>
+            <Column>
+              <Text strong variant="mono">
+                {fundraisePositionData.claimedAt.toLocaleString(DateTime.DATETIME_MED)}
+              </Text>
+            </Column>
+          </Row>
+          <Row alignment="center">
+            <Button disabled>Claim</Button>
+          </Row>
+        </Column>
+      )
+    } else if (fundraisePositionData?.claimableAt) {
+      // Position not claimed yet
+      return (
+        <Column grow={1} spacing="m">
+          <Row alignment="space-between">
+            <Column>
+              <Text strong>
+                Claiming {fundraisePositionData?.claimableAt < DateTime.now() ? "started" : "starts in"}
+              </Text>
+            </Column>
+            <Column>
+              <Text strong variant="mono">
+                {formattedTimeDifference(fundraisePositionData.claimableAt.toJSDate(), ["days", "hours", "minutes"])}
+              </Text>
+            </Column>
+          </Row>
+          <Row alignment="center">
+            <Button onClick={handleClaim} disabled={!claimIsActive}>
+              Claim
+            </Button>
+          </Row>
+        </Column>
+      )
+    }
+  }, [fundraisePositionData?.claimableAt, fundraisePositionData?.claimedAt, claimIsActive, handleClaim])
 
   return (
-    <Box>
-      <Column spacing="m">
-        <Row>
-          <Title>Position</Title>
-        </Row>
-        <Row alignment="space-between">
-          <Column>
-            <Text strong>Participation</Text>
+    <ConnectGate>
+      <LoadingContainer loading={isRefreshing} label="Refreshing...">
+        {fundraisePositionData && (
+          <Box>
+            <Column spacing="m">
+              <Row>
+                <Title>Position</Title>
+              </Row>
+              <Row alignment="space-between">
+                <Column>
+                  <Text strong>Participation</Text>
+                </Column>
+                <Column>
+                  <Text strong variant="mono">
+                    {formatAmount(
+                      ethers.utils.formatUnits(fundraisePositionData.stake.add(fundraisePositionData.contribution), 6)
+                    )}{" "}
+                    USDC
+                  </Text>
+                </Column>
+              </Row>
+              <Row alignment="space-between">
+                <Column>
+                  <Text>Staked</Text>
+                </Column>
+                <Column>
+                  <Text variant="mono">
+                    {formatAmount(ethers.utils.formatUnits(fundraisePositionData.stake, 6))} USDC
+                  </Text>
+                </Column>
+              </Row>
+              <Row alignment="space-between">
+                <Column>
+                  <Text>Contributed</Text>
+                </Column>
+                <Column>
+                  <Text variant="mono">
+                    {formatAmount(ethers.utils.formatUnits(fundraisePositionData.contribution, 6))} USDC
+                  </Text>
+                </Column>
+              </Row>
+              <Row className={styles.separator}>
+                <hr />
+              </Row>
+              <Row alignment="space-between">
+                <Column>
+                  <Text strong>SHER Reward</Text>
+                </Column>
+                <Column>
+                  <Text strong variant="mono">
+                    {formatAmount(ethers.utils.formatUnits(fundraisePositionData.reward))} SHER
+                  </Text>
+                </Column>
+              </Row>
+              <Row className={styles.claimContainer}>{renderAction}</Row>
+            </Column>
+          </Box>
+        )}
+        {airdropData &&
+          airdropData.map((entry) => (
+            <AirdropPosition
+              key={entry.id.toString()}
+              index={entry.index}
+              proof={entry.proof}
+              tokenSymbol={entry.tokenSymbol}
+              contractAddress={entry.contractAddress}
+              amount={entry.amount}
+              claimedAt={entry.claimedAt}
+              address={entry.address}
+              onSuccess={handleOnSuccess}
+            />
+          ))}
+        {!isRefreshing && airdropData?.length === 0 && !fundraisePositionData && (
+          <Column spacing="m">
+            <Title>Nothing to claim yet.</Title>
+            <Button onClick={handleGoToStaking}>Go to Staking</Button>
           </Column>
-          <Column>
-            <Text strong variant="mono">
-              {formatAmount(ethers.utils.formatUnits(participation, 6))} USDC
-            </Text>
-          </Column>
-        </Row>
-        <Row alignment="space-between">
-          <Column>
-            <Text>Staked</Text>
-          </Column>
-          <Column>
-            <Text variant="mono">{formatAmount(ethers.utils.formatUnits(fundraisePositionData.stake, 6))} USDC</Text>
-          </Column>
-        </Row>
-        <Row alignment="space-between">
-          <Column>
-            <Text>Contributed</Text>
-          </Column>
-          <Column>
-            <Text variant="mono">
-              {formatAmount(ethers.utils.formatUnits(fundraisePositionData.contribution, 6))} USDC
-            </Text>
-          </Column>
-        </Row>
-        <Row className={styles.separator}>
-          <hr />
-        </Row>
-        <Row alignment="space-between">
-          <Column>
-            <Text strong>SHER Reward</Text>
-          </Column>
-          <Column>
-            <Text strong variant="mono">
-              {formattedSherAmount} SHER
-            </Text>
-          </Column>
-        </Row>
-        <Row className={styles.claimContainer}>
-          <Column grow={1} spacing="m">
-            <Row alignment="space-between">
-              <Column>
-                <Text strong>Claimable Starts</Text>
-              </Column>
-              <Column>
-                <Text strong variant="mono">
-                  {claimStartString}
-                </Text>
-              </Column>
-            </Row>
-            <Row alignment="center">
-              <Button onClick={handleClaim} disabled={!claimIsActive}>
-                Claim
-              </Button>
-            </Row>
-          </Column>
-        </Row>
-      </Column>
-    </Box>
+        )}
+      </LoadingContainer>
+    </ConnectGate>
   )
 }

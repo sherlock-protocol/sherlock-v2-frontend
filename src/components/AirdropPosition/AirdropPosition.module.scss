@@ -1,0 +1,27 @@
+@import "../../styles/variables";
+
+.container {
+  margin-top: 1rem;
+}
+
+.separator {
+  & hr {
+    width: 100%;
+    height: 1px;
+    background-color: $primary-purple;
+    border: 0;
+  }
+}
+
+.claimContainer {
+  background-color: transparentize($color: $primary-purple, $amount: 0.7);
+  padding: 1em;
+
+  & .strong {
+    font-weight: 700;
+  }
+
+  & .huge {
+    font-size: 1.5rem;
+  }
+}
