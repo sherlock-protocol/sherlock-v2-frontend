@@ -105,6 +105,9 @@
 
   table {
     width: 100%;
+    display: block;
+    overflow-x: scroll;
+    // white-space: nowrap;
 
     th,
     td {
