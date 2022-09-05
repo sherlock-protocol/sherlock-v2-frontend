@@ -2,44 +2,20 @@
 
 .container {
   width: 100%;
-}
 
-.listContainer {
-  max-height: 18rem;
-  overflow-y: scroll;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.listColumn {
-  flex-grow: 1;
-
-  font-variant-numeric: tabular-nums;
-
-  &:last-of-type {
-    flex: 1;
-    min-width: 5rem;
-    text-align: right;
+  & th {
+    padding-left: 1em;
   }
 
-  &.entry {
-    background-color: darken($color: $primary-purple, $amount: 35%);
-    padding: $spacing-m;
-
-    a {
-      text-decoration: none;
-    }
+  .logo {
+    border-radius: 50%;
   }
 
-  .name {
-    color: $primary-purple;
+  & .logoColumn {
+    width: 90px;
   }
-}
 
-.header {
-  color: darken($color: white, $amount: 15%);
+  & .contestColumn {
+    width: 40%;
+  }
 }

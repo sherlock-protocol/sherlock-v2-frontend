@@ -53,7 +53,7 @@ type GetContestsResponseData = {
 
 export const contestsQueryKey = "contests"
 export const useContests = () =>
-  useQuery<Contest[] | null, Error>(contestsQueryKey, async () => {
+  useQuery<Contest[], Error>(contestsQueryKey, async () => {
     const { data: response } = await contestsAPI.get<GetContestsResponseData>(getContestsUrl())
 
     return response.map((d) => ({
