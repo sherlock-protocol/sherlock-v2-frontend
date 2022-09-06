@@ -28,7 +28,7 @@ import Options from "../../components/Options/Options"
 import { Markdown } from "../../components/Markdown/Markdown"
 
 const STATUS_LABELS = {
-  CREATED: "PENDING",
+  CREATED: "UPCOMING",
   RUNNING: "RUNNING",
   JUDGING: "JUDGING",
   FINISHED: "FINISHED",
