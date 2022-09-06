@@ -5,6 +5,7 @@ import { useAccount, useSignTypedData } from "wagmi"
 import { contests as contestsAPI } from "./axios"
 import {
   getContests as getContestsUrl,
+  getContest as getContestUrl,
   validateSignature,
   contestSignUp as contestSignUpUrl,
   contestOptIn as contestOptInUrl,
@@ -18,6 +19,7 @@ export type Contest = {
   title: string
   shortDescription: string
   description?: string
+  report?: string
   logoURL?: string
   prizePool: number
   startDate: number // Timestamp in seconds.
@@ -43,7 +45,6 @@ type GetContestsResponseData = {
   id: number
   title: string
   short_description: string
-  description: string
   logo_url: string
   prize_pool: number
   starts_at: number
@@ -60,7 +61,6 @@ export const useContests = () =>
       id: d.id,
       title: d.title,
       shortDescription: d.short_description,
-      description: d.description,
       logoURL: d.logo_url,
       prizePool: d.prize_pool,
       startDate: d.starts_at,
@@ -69,12 +69,37 @@ export const useContests = () =>
     }))
   })
 
-export const useContest = (id: number) => {
-  const { data: contests } = useContests()
-  const filteredContests = contests?.filter((c) => c.id === id)
-
-  return { data: filteredContests && filteredContests.length > 0 ? filteredContests[0] : null }
+type GetContestResponseData = {
+  id: number
+  title: string
+  short_description: string
+  logo_url: string
+  prize_pool: number
+  starts_at: number
+  ends_at: number
+  status: ContestStatus
+  description?: string
+  report?: string
 }
+
+export const contestQueryKey = (id: number) => ["contest", id]
+export const useContest = (id: number) =>
+  useQuery<Contest, Error>(contestQueryKey(id), async () => {
+    const { data: response } = await contestsAPI.get<GetContestResponseData>(getContestUrl(id))
+
+    return {
+      id: response.id,
+      title: response.title,
+      shortDescription: response.short_description,
+      logoURL: response.logo_url,
+      prizePool: response.prize_pool,
+      startDate: response.starts_at,
+      endDate: response.ends_at,
+      status: response.status,
+      description: response.description,
+      report: response.report,
+    }
+  })
 
 type SignatureVerificationResponseData = {
   auditor: {

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { useParams } from "react-router-dom"
-import { FaGithub } from "react-icons/fa"
+import { FaGithub, FaBook } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -26,6 +26,8 @@ import { ErrorModal } from "./ErrorModal"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import Options from "../../components/Options/Options"
 import { Markdown } from "../../components/Markdown/Markdown"
+import Modal from "../../components/Modal/Modal"
+import { ReportModal } from "./ReportModal"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -39,6 +41,7 @@ export const ContestDetails = () => {
   const { address } = useAccount()
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [auditorFormOpen, setAuditorFormOpen] = useState(false)
+  const [reportModalOpen, setReportModalOpen] = useState(false)
 
   const { data: contest } = useContest(parseInt(contestId ?? ""))
   const { data: contestant } = useContestant(address ?? "", parseInt(contestId ?? ""), {
@@ -120,6 +123,10 @@ export const ContestDetails = () => {
     contestant && window.open(`https://github.com/${contestant.repo}`, "__blank")
   }, [contestant])
 
+  const handleReportClick = useCallback(async () => {
+    setReportModalOpen(true)
+  }, [setReportModalOpen])
+
   const handleOptInChange = useCallback(
     (_optIn: boolean) => {
       if (_optIn !== contestant?.countsTowardsRanking) {
@@ -134,6 +141,7 @@ export const ContestDetails = () => {
   }, [reset])
 
   const canOptinOut = useMemo(() => contest?.status === "CREATED" || contest?.status === "RUNNING", [contest?.status])
+  const canSignUp = useMemo(() => contest?.status !== "FINISHED" && contest?.status !== "JUDGING", [contest?.status])
 
   if (!contest) return null
 
@@ -164,6 +172,11 @@ export const ContestDetails = () => {
                 <Text>Status:</Text>&nbsp;
                 <Text strong>{STATUS_LABELS[contest.status]}</Text>
               </Row>
+              {contest.report && (
+                <Button variant="secondary" onClick={handleReportClick}>
+                  <FaBook /> &nbsp; Read report
+                </Button>
+              )}
               <hr />
               <Row>
                 <Column>
@@ -187,7 +200,9 @@ export const ContestDetails = () => {
               </Row>
               <Row>
                 <Column>
-                  <Title variant="h3">ENDS</Title>
+                  <Title variant="h3">
+                    {contest.status === "FINISHED" || contest.status === "JUDGING" ? "ENDED" : "ENDS"}
+                  </Title>
                   <Row alignment={["center", "center"]} spacing="s">
                     <Text size="extra-large" strong>
                       {endDate.toLocaleString(DateTime.DATE_MED)}
@@ -212,13 +227,6 @@ export const ContestDetails = () => {
                     )}
 
                     <Text>You're competing for:</Text>
-                    {/* {canOptinOut && (
-                      <Button variant={contestant.countsTowardsRanking ? "alternate" : "primary"} onClick={optInOut}>
-                        {contestant.countsTowardsRanking ? <FaSignOutAlt /> : <FaSignInAlt />}
-                        &nbsp;
-                        {contestant.countsTowardsRanking ? "Compete just for money" : "Compete for money and points"}
-                      </Button>
-                    )} */}
                     {canOptinOut && (
                       <Options
                         options={[
@@ -234,9 +242,11 @@ export const ContestDetails = () => {
                     )}
                   </Column>
                 ) : (
-                  <ConnectGate>
-                    <Button onClick={sign}>SIGN UP</Button>
-                  </ConnectGate>
+                  canSignUp && (
+                    <ConnectGate>
+                      <Button onClick={sign}>SIGN UP</Button>
+                    </ConnectGate>
+                  )
                 )}
               </Row>
             </Column>
@@ -253,6 +263,9 @@ export const ContestDetails = () => {
             <SignUpSuccessModal onClose={() => setSuccessModalOpen(false)} contest={contest} repo={signUpData?.repo} />
           )}
           {isError && <ErrorModal reason={error?.fieldErrors ?? error?.message} onClose={handleErrorModalClose} />}
+          {reportModalOpen && (
+            <ReportModal report={contest.report} contest={contest} onClose={() => setReportModalOpen(false)} />
+          )}
         </LoadingContainer>
       </Box>
     </Column>
