@@ -1,9 +1,10 @@
-import React, { PropsWithChildren, useEffect, useState } from "react"
+import React, { PropsWithChildren, useCallback, useEffect, useState } from "react"
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi"
 import config from "../../config"
 import { shortenAddress } from "../../utils/format"
 import { setUser } from "../../utils/sentry"
-import { Button } from "../Button/Button"
+import { Button } from "../Button"
+import { AccountModal } from "../../components/AccountModal"
 import WalletProviderModal from "../WalletProviderModal/WalletProviderModal"
 
 /**
@@ -13,7 +14,8 @@ import WalletProviderModal from "../WalletProviderModal/WalletProviderModal"
  * a wallet via WalletConnect or MetaMask.
  */
 const ConnectButton: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
-  const [isModalVisible, setIsModalVisible] = React.useState(false)
+  const [isConnectModalVisible, setIsConnectModalVisible] = useState(false)
+  const [isAccountModalVisible, setIsAccountModalVisible] = useState(false)
   const [isCorrectNetwork, setIsCorrectNetwork] = useState(false)
 
   const { chain } = useNetwork()
@@ -23,7 +25,7 @@ const ConnectButton: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
   /**
    * Set Sentry User
    */
-  React.useEffect(() => {
+  useEffect(() => {
     setUser(connectedAddress ? { username: connectedAddress } : null)
   }, [connectedAddress])
 
@@ -37,16 +39,23 @@ const ConnectButton: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
   /**
    * Triggers a network switch to the correct network
    */
-  const handleSwitchToCorrectNetwork = React.useCallback(() => {
+  const handleSwitchToCorrectNetwork = useCallback(() => {
     switchNetwork?.(config.networkId)
   }, [switchNetwork])
 
   /**
    * Toggles the connection modal visibility
    */
-  const handleToggleConnectionModal = React.useCallback(() => {
-    setIsModalVisible(!isModalVisible)
-  }, [isModalVisible])
+  const handleToggleConnectionModal = useCallback(() => {
+    setIsConnectModalVisible((v) => !v)
+  }, [])
+
+  /**
+   * Toggles the account modal visibility
+   */
+  const handleToggleAccountModal = useCallback(() => {
+    setIsAccountModalVisible((v) => !v)
+  }, [])
 
   // Check if any wallet is connected
   if (!isConnected) {
@@ -55,7 +64,7 @@ const ConnectButton: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
         <Button onClick={handleToggleConnectionModal} variant="cta">
           Connect
         </Button>
-        {isModalVisible && <WalletProviderModal onClose={handleToggleConnectionModal} />}
+        {isConnectModalVisible && <WalletProviderModal onClose={handleToggleConnectionModal} />}
       </>
     )
   }
@@ -67,7 +76,14 @@ const ConnectButton: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
       </Button>
     )
   }
-  return <Button variant="cta">{shortenAddress(connectedAddress)}</Button>
+  return (
+    <>
+      {isAccountModalVisible && <AccountModal closeable onClose={handleToggleAccountModal} />}
+      <Button variant="cta" onClick={handleToggleAccountModal}>
+        {shortenAddress(connectedAddress)}
+      </Button>
+    </>
+  )
 }
 
 export default ConnectButton
