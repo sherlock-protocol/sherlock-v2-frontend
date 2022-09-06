@@ -1,4 +1,5 @@
 import React, { PropsWithChildren } from "react"
+import cx from "classnames"
 
 import styles from "./Table.module.scss"
 
@@ -31,9 +32,10 @@ export const TBody: React.FC<PropsWithChildren<React.TableHTMLAttributes<HTMLTab
 
 export const Tr: React.FC<PropsWithChildren<React.TableHTMLAttributes<HTMLTableRowElement>>> = ({
   children,
+  className,
   ...props
 }) => (
-  <tr className={styles.tr} {...props}>
+  <tr className={cx(styles.tr, className)} {...props}>
     {children}
   </tr>
 )
