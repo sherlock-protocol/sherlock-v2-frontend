@@ -26,7 +26,6 @@ import { ErrorModal } from "./ErrorModal"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import Options from "../../components/Options/Options"
 import { Markdown } from "../../components/Markdown/Markdown"
-import Modal from "../../components/Modal/Modal"
 import { ReportModal } from "./ReportModal"
 
 const STATUS_LABELS = {
