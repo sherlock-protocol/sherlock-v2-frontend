@@ -20,6 +20,10 @@ export const AppContests = () => {
       title: "CONTESTS",
       route: contestsRoutes.Contests,
     },
+    {
+      title: "SCOREBOARD",
+      route: contestsRoutes.Scoreboard,
+    },
   ]
 
   return (
