@@ -9,6 +9,7 @@ import {
   contestSignUp as contestSignUpUrl,
   contestOptIn as contestOptInUrl,
   getContestant as getContestantUrl,
+  getScoreboard as getScoreboardUrl,
 } from "./urls"
 
 export type ContestStatus = "CREATED" | "RUNNING" | "JUDGING" | "FINISHED"
@@ -38,6 +39,11 @@ export type Contestant = {
   repo: string
   countsTowardsRanking: boolean
 }
+
+export type Scoreboard = {
+  handle: string
+  score: number
+}[]
 
 type GetContestsResponseData = {
   id: number
@@ -294,3 +300,19 @@ export const useOptInOut = (contestId: number, optIn: boolean) => {
     [mutationIsLoading, signatureIsLoading, signAndOptIn]
   )
 }
+
+type GetScoreboardResponseData = {
+  handle: string
+  score: number
+}[]
+
+export const scoreboardQueryKey = () => "scoreboard"
+export const useScoreboard = () =>
+  useQuery<Scoreboard, Error>(scoreboardQueryKey(), async () => {
+    const { data } = await contestsAPI.get<GetScoreboardResponseData>(getScoreboardUrl())
+
+    return data.map((d) => ({
+      handle: d.handle,
+      score: d.score,
+    }))
+  })
