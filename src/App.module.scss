@@ -26,16 +26,6 @@
       flex-grow: 1;
       z-index: 300;
     }
-
-    &::-webkit-scrollbar {
-      background-color: $background-color;
-      width: 0.5rem;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: darken($color: $background-color, $amount: 10);
-      border-radius: 1rem;
-    }
   }
 }
 

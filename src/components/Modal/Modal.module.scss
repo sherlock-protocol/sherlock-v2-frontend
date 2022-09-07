@@ -28,14 +28,4 @@
   max-height: 100%;
   max-width: 1240px;
   overflow-y: scroll;
-
-  &::-webkit-scrollbar {
-    background-color: $background-color;
-    width: 0.5rem;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: darken($color: $background-color, $amount: 10);
-    border-radius: 1rem;
-  }
 }
