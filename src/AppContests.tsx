@@ -5,8 +5,11 @@ import { contestsRoutes, routes } from "./utils/routes"
 import { Footer } from "./components/Footer"
 
 import styles from "./App.module.scss"
+import { useScoreboard } from "./hooks/api/contests"
+import { contests } from "./hooks/api/axios"
 
 export const AppContests = () => {
+  const { data: scoreboard } = useScoreboard()
   const contentRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
 
@@ -20,11 +23,14 @@ export const AppContests = () => {
       title: "CONTESTS",
       route: contestsRoutes.Contests,
     },
-    {
+  ]
+
+  if (scoreboard) {
+    navigationLinks.push({
       title: "SCOREBOARD",
       route: contestsRoutes.Scoreboard,
-    },
-  ]
+    })
+  }
 
   return (
     <div className={styles.app}>
