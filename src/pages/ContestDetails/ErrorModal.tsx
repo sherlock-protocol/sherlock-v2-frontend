@@ -28,7 +28,6 @@ function parseErrorName(errorKey: string): string | undefined {
 }
 
 export const ErrorModal: React.FC<Props> = ({ onClose, reason }) => {
-  console.log(reason)
   return (
     <Modal closeable onClose={onClose}>
       <Column spacing="xl">

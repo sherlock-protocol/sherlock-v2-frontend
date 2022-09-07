@@ -37,6 +37,10 @@
     opacity: 0.5;
   }
 
+  &.alternate {
+    color: $alternate-pink;
+  }
+
   &.center {
     text-align: center;
   }
