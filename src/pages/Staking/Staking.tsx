@@ -24,6 +24,7 @@ import USBlockContainer from "../../components/USBlockContainer/USBlockContainer
 import { Warning } from "../../components/Warning"
 import config from "../../config"
 import { format } from "../../utils/units"
+import { useStaking } from "../../hooks/useStaking"
 
 /**
  * Available staking periods, in seconds.
@@ -56,13 +57,15 @@ export const StakingPage: React.FC = () => {
   const [sherRewardsBasis, setSherRewardsBasis] = React.useState<BigNumber>()
   const { getStakingPositions, data: stakePositionsData } = useStakingPositions()
 
-  const { tvl, address, stake, refreshTvl } = useSherlock()
+  const { tvl, address, refreshTvl } = useSherlock()
   const { computeRewards } = useSherDistManager()
   const { format: formatSHER } = useERC20("SHER")
   const { format: formatUSDC, balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
   const { address: connectedAddress } = useAccount()
   const navigate = useNavigate()
+
+  const { stake } = useStaking(amount, stakingPeriod)
 
   const stakingDisabled = useMemo(() => STAKING_HARDCAP.gt(BigNumber.from(0)) && tvl && tvl.gt(STAKING_HARDCAP), [tvl])
   // const stakingDisabled = false
@@ -99,7 +102,7 @@ export const StakingPage: React.FC = () => {
     }
 
     try {
-      const result = await waitForTx(async () => (await stake(amount, stakingPeriod)) as ethers.ContractTransaction, {
+      const result = await waitForTx(async () => (stake && (await stake())) as ethers.ContractTransaction, {
         transactionType: TxType.STAKE,
       })
 

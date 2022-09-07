@@ -7,6 +7,7 @@ import { ReactComponent as WalletConnect } from "../../assets/icons/walletconnec
 import { Title } from "../Title"
 import { Text } from "../Text"
 import { Column, Row } from "../Layout"
+import config from "../../config"
 
 interface Props {
   onClose: () => void
@@ -17,7 +18,7 @@ interface Props {
  * wallet providers, in order to connect to the web application.
  */
 const WalletProviderModal: React.FC<Props> = ({ onClose }) => {
-  const { connectAsync, connectors } = useConnect()
+  const { connectAsync, connectors } = useConnect({ chainId: config.networkId })
 
   /**
    * Connects via given connector

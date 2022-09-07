@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const { provider, webSocketProvider } = configureChains(chains, [
-  alchemyProvider({ alchemyId: alchemyApiKey }),
+  alchemyProvider({ apiKey: alchemyApiKey }),
   publicProvider(),
   jsonRpcProvider({
     rpc: () => ({

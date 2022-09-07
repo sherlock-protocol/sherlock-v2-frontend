@@ -18,8 +18,8 @@ const ConnectButton: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
   const [isAccountModalVisible, setIsAccountModalVisible] = useState(false)
   const [isCorrectNetwork, setIsCorrectNetwork] = useState(false)
 
-  const { chain } = useNetwork()
-  const { switchNetwork } = useSwitchNetwork()
+  const { chain, chains } = useNetwork()
+  const { switchNetwork } = useSwitchNetwork({ chainId: config.networkId })
   const { address: connectedAddress, isConnected } = useAccount()
 
   /**
@@ -34,13 +34,13 @@ const ConnectButton: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
    */
   useEffect(() => {
     setIsCorrectNetwork(chain?.id === config.networkId)
-  }, [chain?.id])
+  }, [chain?.id, chain, chains])
 
   /**
    * Triggers a network switch to the correct network
    */
-  const handleSwitchToCorrectNetwork = useCallback(() => {
-    switchNetwork?.(config.networkId)
+  const handleSwitchToCorrectNetwork = useCallback(async () => {
+    switchNetwork?.()
   }, [switchNetwork])
 
   /**
