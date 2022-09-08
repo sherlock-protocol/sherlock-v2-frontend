@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo } from "react"
 import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "react-query"
 import { useAccount, useSignTypedData } from "wagmi"
 import { contests as contestsAPI } from "./axios"
+import { Auditor } from "./auditors"
 import {
   getContests as getContestsUrl,
   getContest as getContestUrl,
@@ -26,15 +27,6 @@ export type Contest = {
   startDate: number // Timestamp in seconds.
   endDate: number // Timestamp in seconds.
   status: ContestStatus
-}
-
-export type Auditor = {
-  id: number
-  handle: string
-  discordHandle?: string
-  githubHandle?: string
-  twitterHandle?: string
-  telegramHandle?: string
 }
 
 export type Contestant = {
