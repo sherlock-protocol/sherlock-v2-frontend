@@ -6,7 +6,6 @@ import { Footer } from "./components/Footer"
 
 import styles from "./App.module.scss"
 import { useScoreboard } from "./hooks/api/contests"
-import { contests } from "./hooks/api/axios"
 
 export const AppContests = () => {
   const { data: scoreboard } = useScoreboard()
@@ -25,7 +24,7 @@ export const AppContests = () => {
     },
   ]
 
-  if (scoreboard) {
+  if (scoreboard && scoreboard.length > 0) {
     navigationLinks.push({
       title: "SCOREBOARD",
       route: contestsRoutes.Scoreboard,
