@@ -18,6 +18,7 @@ export const protocolsRoutes = {
 export const contestsRoutes = {
   Contests: "contests",
   ContestDetails: "contests/:contestId",
+  Scoreboard: "scoreboard",
 } as const
 
 export const internalRoutes = {
