@@ -1,5 +1,5 @@
-import React from "react"
-import { useAccount, useConnect } from "wagmi"
+import React, { useCallback } from "react"
+import { useConnect } from "wagmi"
 import Modal from "../Modal/Modal"
 import styles from "./WalletProviderModal.module.scss"
 import { ReactComponent as Metamask } from "../../assets/icons/metamask.svg"
@@ -17,14 +17,13 @@ interface Props {
  * wallet providers, in order to connect to the web application.
  */
 const WalletProviderModal: React.FC<Props> = ({ onClose }) => {
-  const { isConnected } = useAccount()
-  const { connect, connectors } = useConnect()
+  const { connectAsync, connectors } = useConnect()
 
   /**
    * Connects via given connector
    */
-  const handleConnectWithConnector = React.useCallback(
-    (e: React.SyntheticEvent, connectorId: string) => {
+  const handleConnectWithConnector = useCallback(
+    async (e: React.SyntheticEvent, connectorId: string) => {
       e.stopPropagation()
 
       const connector = connectors.find((item) => item.id === connectorId)
@@ -33,16 +32,11 @@ const WalletProviderModal: React.FC<Props> = ({ onClose }) => {
         return
       }
 
-      connect({ connector })
-    },
-    [connectors, connect]
-  )
-
-  React.useEffect(() => {
-    if (isConnected) {
+      await connectAsync({ connector })
       onClose()
-    }
-  }, [isConnected, onClose])
+    },
+    [connectors, connectAsync, onClose]
+  )
 
   return (
     <Modal closeable onClose={onClose}>

@@ -6,6 +6,7 @@ import { useContests } from "../../hooks/api/contests"
 import { ActiveContests } from "./ActiveContests"
 
 import styles from "./Contests.module.scss"
+import { FinishedContests } from "./FinishedContests"
 import { UpcomingContests } from "./UpcomingContests"
 
 export const ContestsPage: React.FC<{}> = () => {
@@ -23,6 +24,7 @@ export const ContestsPage: React.FC<{}> = () => {
     <Column spacing="m" className={styles.container}>
       <ActiveContests contests={contests} onContestClick={handleContestClick} />
       <UpcomingContests contests={contests} onContestClick={handleContestClick} />
+      <FinishedContests contests={contests} onContestClick={handleContestClick} />
     </Column>
   )
 }
