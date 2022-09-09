@@ -19,3 +19,4 @@ export const getContestant = (address: string, contestId: number) =>
   `/contests/contestant?address=${address}&contest_id=${contestId}`
 export const getScoreboard = () => "scoreboard"
 export const getIsAuditor = (address: string) => `is_auditor/${address}`
+export const authenticateAuditor = (address: string) => `auditors/${address}`
