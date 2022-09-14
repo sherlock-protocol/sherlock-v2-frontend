@@ -122,20 +122,26 @@ export const useIsAuditor = (address?: string) =>
 
 export const profileQuery = () => "profile"
 export const useProfile = () =>
-  useQuery<AuditorProfile, Error>(profileQuery(), async () => {
-    const { data } = await contestsAPI.get<GetAuditorProfile>(getProfileUrl())
+  useQuery<AuditorProfile, Error>(
+    profileQuery(),
+    async () => {
+      const { data } = await contestsAPI.get<GetAuditorProfile>(getProfileUrl())
 
-    return {
-      id: data.profile.id,
-      handle: data.profile.handle,
-      discordHandle: data.profile.discord_handle,
-      githubHandle: data.profile.github_handle,
-      twitterHandle: data.profile.twitter_handle,
-      telegramHandle: data.profile.telegram_handle,
-      addresses: data.profile.addresses.map((a) => ({
-        id: a.id,
-        address: a.address,
-      })),
-      payoutAddress: data.profile.payout_address_mainnet,
+      return {
+        id: data.profile.id,
+        handle: data.profile.handle,
+        discordHandle: data.profile.discord_handle,
+        githubHandle: data.profile.github_handle,
+        twitterHandle: data.profile.twitter_handle,
+        telegramHandle: data.profile.telegram_handle,
+        addresses: data.profile.addresses.map((a) => ({
+          id: a.id,
+          address: a.address,
+        })),
+        payoutAddress: data.profile.payout_address_mainnet,
+      }
+    },
+    {
+      retry: false,
     }
-  })
+  )

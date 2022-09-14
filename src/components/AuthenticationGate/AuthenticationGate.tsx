@@ -1,5 +1,6 @@
-import React, { PropsWithChildren } from "react"
+import React, { PropsWithChildren, useCallback, useEffect } from "react"
 import { Navigate } from "react-router-dom"
+import { useAccount } from "wagmi"
 import { useProfile } from "../../hooks/api/auditors"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { Route } from "../../utils/routes"
@@ -15,14 +16,26 @@ type Props = {
 }
 
 export const AuthenticationGate: React.FC<PropsWithChildren<Props>> = ({ children, redirectRoute = "/" }) => {
+  const { address: connectedAddress } = useAccount()
   const { authenticate, isLoading: authenticationIsLoading } = useAuthentication()
   const { data: authenticatedProfile, isFetched, isLoading: profileIsLoading } = useProfile()
 
+  const addressIsAllowed = useCallback(
+    (address: string) => authenticatedProfile?.addresses.some((a) => a.address === address),
+    [authenticatedProfile]
+  )
+
+  useEffect(() => {
+    if (connectedAddress && !addressIsAllowed(connectedAddress)) {
+    }
+  }, [connectedAddress, addressIsAllowed])
+
+  const isLoading = authenticationIsLoading || profileIsLoading
   if (authenticatedProfile) return <>{children}</>
-  if (isFetched && !authenticatedProfile) return <Navigate to={redirectRoute} replace />
+  if (isFetched && !authenticatedProfile && !isLoading) return <Navigate to={redirectRoute} replace />
 
   return (
-    <LoadingContainer loading={authenticationIsLoading || profileIsLoading}>
+    <LoadingContainer loading={isLoading}>
       <Box>
         <Column spacing="l">
           <Title>Sign in required</Title>
