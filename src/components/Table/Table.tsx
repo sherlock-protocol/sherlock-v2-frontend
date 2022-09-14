@@ -3,11 +3,14 @@ import cx from "classnames"
 
 import styles from "./Table.module.scss"
 
-export const Table: React.FC<PropsWithChildren<React.TableHTMLAttributes<HTMLTableElement>>> = ({
-  children,
-  ...props
-}) => (
-  <table className={styles.table} {...props}>
+export const Table: React.FC<
+  PropsWithChildren<
+    React.TableHTMLAttributes<HTMLTableElement> & {
+      selectable?: boolean
+    }
+  >
+> = ({ children, selectable = true, ...props }) => (
+  <table className={cx(styles.table, { [styles.selectable]: selectable })} {...props}>
     {children}
   </table>
 )

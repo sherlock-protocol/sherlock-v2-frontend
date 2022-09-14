@@ -1,13 +1,11 @@
 import { AxiosError } from "axios"
-import React, { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "react-query"
 import { useAccount, useSignTypedData } from "wagmi"
 import { contests as contestsAPI } from "./axios"
-import { Auditor } from "./auditors"
 import {
   getContests as getContestsUrl,
   getContest as getContestUrl,
-  validateSignature,
   contestSignUp as contestSignUpUrl,
   contestOptIn as contestOptInUrl,
   getContestant as getContestantUrl,
@@ -98,72 +96,6 @@ export const useContest = (id: number) =>
       report: response.report,
     }
   })
-
-type SignatureVerificationResponseData = {
-  auditor: {
-    id: number
-    handle: string
-    github_handle?: string
-    discord_handle?: string
-  } | null
-}
-
-export const useSignatureVerification = (contestId: number, opts?: UseQueryOptions<Auditor | null, Error>) => {
-  const domain = {
-    name: "Sherlock Contest",
-    version: "1",
-  }
-
-  const types = {
-    Signup: [
-      { name: "action", type: "string" },
-      { name: "contest_id", type: "uint256" },
-    ],
-  }
-
-  const value = {
-    action: "participate",
-    contest_id: contestId,
-  }
-
-  const { signTypedData, data: signature, isLoading: signatureIsLoading } = useSignTypedData({ domain, types, value })
-
-  const {
-    data,
-    isLoading: requestIsLoading,
-    isFetched,
-  } = useQuery<Auditor | null, Error>(
-    ["signatureVerification", signature],
-    async () => {
-      const { data } = await contestsAPI.post<SignatureVerificationResponseData>(validateSignature(), {
-        contest_id: contestId,
-        signature,
-      })
-
-      if (!data.auditor) return null
-
-      return {
-        id: data.auditor.id,
-        handle: data.auditor.handle,
-        githubHandle: data.auditor.github_handle,
-        discordHandle: data.auditor.discord_handle,
-        addresses: [],
-      }
-    },
-    { enabled: !!signature, ...opts }
-  )
-
-  const signAndVerify = useCallback(async () => {
-    try {
-      signTypedData()
-    } catch (error) {}
-  }, [signTypedData])
-
-  return React.useMemo(
-    () => ({ signAndVerify, isLoading: signatureIsLoading || requestIsLoading, data, isFetched, signature }),
-    [signAndVerify, signatureIsLoading, requestIsLoading, data, isFetched, signature]
-  )
-}
 
 type SignUpParams = {
   handle: string

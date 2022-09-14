@@ -3,28 +3,32 @@
 .table {
   border-collapse: separate;
   border-spacing: 0 1em;
-}
 
-.thead {
-  color: white;
-  font-weight: bold;
-  text-align: left;
-}
+  & .thead {
+    color: white;
+    font-weight: bold;
+    text-align: left;
+  }
 
-.th {
-  padding: 1em;
-}
+  & .th {
+    padding: 1em;
+  }
 
-.td {
-  padding: 1em;
-  vertical-align: middle;
-}
+  & .td {
+    padding: 1em;
+    vertical-align: middle;
+  }
 
-.tbody .tr {
-  background-color: darken($color: $primary-purple, $amount: 35%);
+  & .tbody .tr {
+    background-color: darken($color: $primary-purple, $amount: 35%);
+  }
 
-  &:hover {
-    cursor: pointer;
-    background-color: darken($color: $primary-purple, $amount: 36%);
+  &.selectable {
+    & .tbody .tr {
+      &:hover {
+        cursor: pointer;
+        background-color: darken($color: $primary-purple, $amount: 36%);
+      }
+    }
   }
 }

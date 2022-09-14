@@ -10,13 +10,8 @@ import { Button } from "../../components/Button"
 import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
 import { commify } from "../../utils/units"
-import {
-  useContest,
-  useContestant,
-  useContestSignUp,
-  useOptInOut,
-  useSignatureVerification,
-} from "../../hooks/api/contests"
+import { useContest, useContestant, useContestSignUp, useOptInOut } from "../../hooks/api/contests"
+import { useSignatureVerification } from "../../hooks/api/auditors"
 import { AuditorFormModal } from "./AuditorFormModal"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { SignUpSuccessModal } from "./SignUpSuccessModal"

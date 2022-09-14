@@ -43,12 +43,11 @@ export const AuditorProfile = () => {
       <Column spacing="l">
         <Box shadow={false}>
           <Title variant="h2">Payout address</Title>
-          <Text size="small">Ethereum Mainnet</Text>
-          <Table>
+          <Table selectable={false}>
             <TBody>
               <Tr>
                 <Td>
-                  <Input variant="secondary" />
+                  <Input variant="secondary" value={profile.payoutAddress} />
                 </Td>
                 <Td>
                   <Button size="small" variant="secondary">
@@ -61,7 +60,7 @@ export const AuditorProfile = () => {
         </Box>
         <Box shadow={false}>
           <Title variant="h2">Addresses</Title>
-          <Table>
+          <Table selectable={false}>
             <TBody>
               {profile.addresses.map((address) => (
                 <Tr>
