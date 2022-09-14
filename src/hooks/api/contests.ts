@@ -147,6 +147,7 @@ export const useSignatureVerification = (contestId: number, opts?: UseQueryOptio
         handle: data.auditor.handle,
         githubHandle: data.auditor.github_handle,
         discordHandle: data.auditor.discord_handle,
+        addresses: [],
       }
     },
     { enabled: !!signature, ...opts }

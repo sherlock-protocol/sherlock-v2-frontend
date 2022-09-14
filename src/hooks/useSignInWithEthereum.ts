@@ -2,77 +2,64 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { useAccount, useNetwork, useSignMessage } from "wagmi"
 import { SiweMessage } from "siwe"
 import { contests as contestsAPI } from "./api/axios"
-import { authenticateAuditor as authenticateAuditorUrl } from "./api/urls"
-import { Auditor } from "./api/auditors"
+import { getNonce as getNonceUrl } from "./api/urls"
 
-type AuthenticateAuditorResponseData = {
-  auditor: {
-    id: number
-    handle: string
-    github_handle?: string
-    discord_handle?: string
-    telegram_handle?: string
-    twitter_handle?: string
-  } | null
+type GetNonceResponseData = {
+  nonce: string
 }
 
 export const useSignInWithEthereum = () => {
   const { address } = useAccount()
   const { chain } = useNetwork()
+  const [signature, setSignature] = useState<string>()
   const [isLoading, setIsLoading] = useState(false)
-  const [auditor, setAuditor] = useState<Auditor>()
+  const [error, setError] = useState<Error>()
 
-  const message = useMemo(
-    () =>
-      address &&
-      new SiweMessage({
+  const { signMessageAsync } = useSignMessage()
+
+  useEffect(() => {
+    setSignature(undefined)
+  }, [address])
+
+  const signIn = useCallback(async () => {
+    if (!address || !chain) return
+
+    setIsLoading(true)
+    setError(undefined)
+    try {
+      const { data: nonceResponse } = await contestsAPI.get<GetNonceResponseData>(getNonceUrl())
+
+      if (!nonceResponse.nonce) throw new Error("couldn't get nonce")
+
+      const nonce = nonceResponse.nonce
+
+      const message = new SiweMessage({
         domain: "Sherlock",
         address,
         statement: "Sign in with Ethereum to Sherlock Audits",
         chainId: chain?.id,
         uri: "https://app.sherlock.xyz",
         version: "1",
-      }).prepareMessage(),
-    [chain, address]
-  )
+        nonce,
+      }).prepareMessage()
 
-  const { signMessageAsync } = useSignMessage({ message })
+      const signature = await signMessageAsync({ message })
 
-  useEffect(() => {
-    setAuditor(undefined)
-  }, [address])
+      await contestsAPI.post("/verify", {
+        message,
+        signature,
+      })
 
-  const signIn = useCallback(async () => {
-    if (!address) return
-
-    setIsLoading(true)
-    try {
-      const signature = await signMessageAsync()
-
-      const { data: response } = await contestsAPI.post<AuthenticateAuditorResponseData>(
-        authenticateAuditorUrl(address),
-        {
-          signature,
-        }
-      )
-
-      if (response.auditor) {
-        setAuditor({
-          id: response.auditor.id,
-          handle: response.auditor.handle,
-          githubHandle: response.auditor.github_handle,
-          discordHandle: response.auditor.discord_handle,
-          telegramHandle: response.auditor.telegram_handle,
-          twitterHandle: response.auditor.twitter_handle,
-        })
-      } else {
-        setAuditor(undefined)
-      }
+      setSignature(signature)
     } catch (error) {
+      setError(error as Error)
     } finally {
       setIsLoading(false)
     }
-  }, [signMessageAsync, setIsLoading, setAuditor, address])
+  }, [signMessageAsync, setIsLoading, address, chain])
 
-  return useMemo(() => ({ signIn, isLoading, auditor }), [signIn, isLoading, auditor])
+  return useMemo(
+    () => ({ signIn, isLoading, error, isError: !!error, signature }),
+    [signIn, isLoading, error, signature]
+  )
 }

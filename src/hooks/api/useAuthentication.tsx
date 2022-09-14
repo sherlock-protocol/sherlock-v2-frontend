@@ -1,12 +1,11 @@
 import { createContext, PropsWithChildren, useContext, useMemo } from "react"
 import { useSignInWithEthereum } from "../useSignInWithEthereum"
-import { Auditor } from "./auditors"
 
 type AuthenticationContextType = {
   isLoading: boolean
   isError: boolean
   isAuthenticated: boolean
-  auditor?: Auditor
+  signature?: string
   authenticate: () => Promise<void>
 }
 
@@ -15,17 +14,16 @@ const AuthenticationContext = createContext<AuthenticationContextType>({} as Aut
 export const useAuthentication = () => useContext(AuthenticationContext)
 
 export const AuthenticationContextProvider: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
-  const { signIn, isLoading, auditor } = useSignInWithEthereum()
+  const { signIn, isLoading, signature } = useSignInWithEthereum()
 
   const ctx = useMemo(
     () => ({
       isLoading,
       isError: false,
-      isAuthenticated: !!auditor,
-      auditor,
+      isAuthenticated: !!signature,
       authenticate: signIn,
     }),
-    [signIn, isLoading, auditor]
+    [signIn, isLoading, signature]
   )
   return <AuthenticationContext.Provider value={ctx}>{children}</AuthenticationContext.Provider>
 }

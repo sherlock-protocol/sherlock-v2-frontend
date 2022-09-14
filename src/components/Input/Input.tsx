@@ -3,7 +3,7 @@ import React, { useCallback } from "react"
 
 import styles from "./Input.module.scss"
 
-type InputVariant = "regular" | "small"
+type InputVariant = "regular" | "secondary" | "small"
 
 export type InputProps<T extends string | number> = {
   /**
@@ -53,7 +53,7 @@ export const Input = <T extends string | number>({
   )
 
   return (
-    <div className={styles.inputContainer}>
+    <div className={classNames([styles.inputContainer, styles[variant]])}>
       {placeholder && <span className={styles.placeholder}>{placeholder}</span>}
       <input
         className={classNames([styles.input, styles[variant]])}

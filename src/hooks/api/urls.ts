@@ -20,3 +20,5 @@ export const getContestant = (address: string, contestId: number) =>
 export const getScoreboard = () => "scoreboard"
 export const getIsAuditor = (address: string) => `is_auditor/${address}`
 export const authenticateAuditor = (address: string) => `auditors/${address}`
+export const getNonce = () => `nonce`
+export const getAuditorProfile = () => "profile"
