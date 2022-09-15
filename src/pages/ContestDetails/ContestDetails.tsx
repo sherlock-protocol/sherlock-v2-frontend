@@ -171,7 +171,7 @@ export const ContestDetails = () => {
                 <Text>Status:</Text>&nbsp;
                 <Text strong>{STATUS_LABELS[contest.status]}</Text>
               </Row>
-              {contest.report && (
+              {contest.status === "FINISHED" && contest.report && (
                 <Button variant="secondary" onClick={handleReportClick}>
                   <FaBook /> &nbsp; Read report
                 </Button>
