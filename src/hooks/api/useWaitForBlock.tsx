@@ -10,7 +10,7 @@ export const useWaitForBlock = () => {
     try {
       let tryCount = 0
       while (tryCount < 60) {
-        const { data: responseData } = await axios.get(getLastIndexedBlock(), { timeout: 60000 })
+        const { data: responseData } = await axios.get(getLastIndexedBlock())
 
         if (responseData > blockNumber) {
           return true
