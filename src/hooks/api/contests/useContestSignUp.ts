@@ -37,6 +37,16 @@ type SignUpVariables = {
   telegramHandle?: string
 }
 
+function sanitizeString(value?: string) {
+  if (!value) return value
+
+  const trimValue = value.trim()
+
+  if (trimValue.length > 0) return trimValue
+
+  return
+}
+
 export const useContestSignUp = () => {
   const queryClient = useQueryClient()
   const { address } = useAccount()
@@ -47,9 +57,9 @@ export const useContestSignUp = () => {
         const { data } = await contestsAPI.post<SignUpResponseData>(contestSignUpUrl(), {
           handle: args.handle,
           github_handle: args.githubHandle,
-          discord_handle: args.discordHandle.trim(),
-          twitter_handle: args.twitterHandle?.trim(),
-          telegram_handle: args.telegramHandle?.trim(),
+          discord_handle: sanitizeString(args.discordHandle),
+          twitter_handle: sanitizeString(args.twitterHandle),
+          telegram_handle: sanitizeString(args.telegramHandle),
           contest_id: args.contestId,
           signature: args.signature,
           address,
@@ -64,7 +74,7 @@ export const useContestSignUp = () => {
       }
     },
     {
-      onSettled(data, error, variables, context) {
+      onSettled(_data, _error, variables, _context) {
         queryClient.invalidateQueries(contestantQueryKey(address ?? "", variables.contestId))
       },
     }
