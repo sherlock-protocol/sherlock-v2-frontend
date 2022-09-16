@@ -5,7 +5,7 @@ export const getTVLOverTime = () => "stats_tvl"
 export const getTVCOverTime = () => "stats_tvc"
 export const getStakePositions = (account?: string) => (account ? `staking/${account}` : "staking")
 export const getCoveredProtocols = () => "protocols"
-export const getWaitForBlock = (blockNumber: number) => `wait-for-block?block=${blockNumber}`
+export const getLastIndexedBlock = () => `last-block-indexed`
 export const getStrategies = () => "strategies"
 export const getActiveClaim = (protocolID: number) => `claims/${protocolID}/active`
 export const getAirdropClaims = (account: string) => `airdrop/${account}`
