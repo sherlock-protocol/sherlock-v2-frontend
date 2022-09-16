@@ -38,7 +38,7 @@ type SignUpVariables = {
 }
 
 function sanitizeString(value?: string) {
-  if (!value) return value
+  if (value === undefined) return value
 
   const trimValue = value.trim()
 
