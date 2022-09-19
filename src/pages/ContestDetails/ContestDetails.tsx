@@ -225,20 +225,19 @@ export const ContestDetails = () => {
                       </Text>
                     )}
 
-                    <Text>You're competing for:</Text>
-                    {canOptinOut && (
-                      <Options
-                        options={[
-                          {
-                            value: true,
-                            label: "USDC + Points",
-                          },
-                          { value: false, label: "Only USDC" },
-                        ]}
-                        value={optIn}
-                        onChange={handleOptInChange}
-                      />
-                    )}
+                    <Text>{canOptinOut ? "You're competing for:" : "You've competed for:"}</Text>
+                    <Options
+                      options={[
+                        {
+                          value: true,
+                          label: "USDC + Points",
+                        },
+                        { value: false, label: "Only USDC" },
+                      ]}
+                      value={optIn}
+                      onChange={handleOptInChange}
+                      disabled={!canOptinOut}
+                    />
                   </Column>
                 ) : (
                   canSignUp && (
