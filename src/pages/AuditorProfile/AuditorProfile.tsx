@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { FaTrash, FaPlusSquare, FaEdit } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
@@ -9,11 +9,22 @@ import { Table, TBody, Td, Tr } from "../../components/Table/Table"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
 import { useProfile } from "../../hooks/api/auditors"
-import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { Field } from "../Claim/Field"
+
+import styles from "./AuditorProfile.module.scss"
+import { PayoutAddressSection } from "./PayoutAddressSection"
 
 export const AuditorProfile = () => {
   const { data: profile } = useProfile()
+
+  const [payoutAddress, setPayoutAddress] = useState<string>(profile?.payoutAddress ?? "")
+
+  /**
+   * Update input fields whenever the profile changes.
+   */
+  useEffect(() => {
+    setPayoutAddress(profile?.payoutAddress ?? "")
+  }, [profile])
 
   if (!profile) return null
 
@@ -41,23 +52,7 @@ export const AuditorProfile = () => {
         </Column>
       </Box>
       <Column spacing="l">
-        <Box shadow={false}>
-          <Title variant="h2">Payout address</Title>
-          <Table selectable={false}>
-            <TBody>
-              <Tr>
-                <Td>
-                  <Input variant="secondary" value={profile.payoutAddress} />
-                </Td>
-                <Td>
-                  <Button size="small" variant="secondary">
-                    <FaEdit />
-                  </Button>
-                </Td>
-              </Tr>
-            </TBody>
-          </Table>
-        </Box>
+        <PayoutAddressSection />
         <Box shadow={false}>
           <Title variant="h2">Addresses</Title>
           <Table selectable={false}>

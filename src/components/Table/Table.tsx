@@ -54,9 +54,10 @@ export const Th: React.FC<PropsWithChildren<React.TableHTMLAttributes<HTMLTableC
 
 export const Td: React.FC<PropsWithChildren<React.TableHTMLAttributes<HTMLTableCellElement>>> = ({
   children,
+  className,
   ...props
 }) => (
-  <td className={styles.td} {...props}>
+  <td className={cx(styles.td, className)} {...props}>
     {children}
   </td>
 )
