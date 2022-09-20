@@ -1,4 +1,3 @@
-import { AxiosError } from "axios"
 import { useCallback, useEffect, useMemo } from "react"
 import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "react-query"
 import { useAccount, useSignTypedData } from "wagmi"
@@ -6,7 +5,6 @@ import { contests as contestsAPI } from "./axios"
 import {
   getContests as getContestsUrl,
   getContest as getContestUrl,
-  contestSignUp as contestSignUpUrl,
   contestOptIn as contestOptInUrl,
   getContestant as getContestantUrl,
   getScoreboard as getScoreboardUrl,
@@ -96,81 +94,6 @@ export const useContest = (id: number) =>
       report: response.report,
     }
   })
-
-type SignUpParams = {
-  handle: string
-  githubHandle: string
-  discordHandle: string
-  twitterHandle?: string
-  telegramHandle?: string
-  signature: string
-  contestId: number
-}
-type SignUpResponseData = {
-  repo_name: string
-}
-type SignUp = {
-  repo: string
-}
-
-class SignUpError extends Error {
-  fieldErrors?: Record<string, string[]>
-
-  constructor(reason?: string | Record<string, string[]>) {
-    super(typeof reason === "string" ? reason : "")
-
-    if (typeof reason === "object") {
-      this.fieldErrors = reason
-    }
-  }
-}
-
-export const useContestSignUp = (params: SignUpParams) => {
-  const queryClient = useQueryClient()
-  const { address } = useAccount()
-  const {
-    mutate: signUp,
-    isLoading,
-    isSuccess,
-    data,
-    error,
-    isError,
-    reset,
-  } = useMutation<SignUp | null, SignUpError>(
-    async () => {
-      try {
-        const { data } = await contestsAPI.post<SignUpResponseData>(contestSignUpUrl(), {
-          handle: params.handle,
-          github_handle: params.githubHandle,
-          discord_handle: params.discordHandle.trim(),
-          twitter_handle: params.twitterHandle?.trim(),
-          telegram_handle: params.telegramHandle?.trim(),
-          signature: params.signature,
-          contest_id: params.contestId,
-          address,
-        })
-
-        return {
-          repo: data.repo_name,
-        }
-      } catch (error) {
-        const axiosError = error as AxiosError
-
-        throw new SignUpError(axiosError.response?.data)
-      }
-    },
-    {
-      onSettled(data, error, variables, context) {
-        queryClient.invalidateQueries(contestantQueryKey(address ?? "", params.contestId))
-      },
-    }
-  )
-
-  return useMemo(
-    () => ({ signUp, isLoading, isSuccess, data, error, isError, reset }),
-    [isLoading, isSuccess, data, error, isError, signUp, reset]
-  )
-}
 
 type GetContestantResponseData = {
   contestant: {
