@@ -1,13 +1,10 @@
-import { AxiosError } from "axios"
-import React, { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "react-query"
 import { useAccount, useSignTypedData } from "wagmi"
 import { contests as contestsAPI } from "./axios"
 import {
   getContests as getContestsUrl,
   getContest as getContestUrl,
-  validateSignature,
-  contestSignUp as contestSignUpUrl,
   contestOptIn as contestOptInUrl,
   getContestant as getContestantUrl,
   getScoreboard as getScoreboardUrl,
