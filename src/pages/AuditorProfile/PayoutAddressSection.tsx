@@ -1,20 +1,22 @@
 import { ethers } from "ethers"
 import React, { useCallback, useEffect, useState } from "react"
-import { FaTimes, FaCheck, FaEdit } from "react-icons/fa"
+import { FaTimes, FaCheck } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
 import { Input } from "../../components/Input"
-import { Column, Row } from "../../components/Layout"
+import { Row } from "../../components/Layout"
 import { Table, TBody, Td, Tr } from "../../components/Table/Table"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
 import { useProfile } from "../../hooks/api/auditors"
+import { useUpdateProfile } from "../../hooks/api/auditors/useUpdateProfile"
 import { Field } from "../Claim/Field"
 import styles from "./AuditorProfile.module.scss"
 
 export const PayoutAddressSection = () => {
   const { data: profile } = useProfile()
+  const { update, isLoading, isSuccess } = useUpdateProfile()
   const [payoutAddress, setPayoutAddress] = useState<string>(profile?.payoutAddress ?? "")
 
   /**
@@ -30,6 +32,10 @@ export const PayoutAddressSection = () => {
     setPayoutAddress(profile.payoutAddress)
   }, [setPayoutAddress, profile])
 
+  const handleConfirmClick = useCallback(() => {
+    payoutAddress && update({ payoutAddress })
+  }, [payoutAddress, update])
+
   if (!profile) return null
 
   const isDirty = profile.payoutAddress !== payoutAddress
@@ -38,7 +44,14 @@ export const PayoutAddressSection = () => {
 
   return (
     <Box shadow={false}>
-      <Title variant="h2">Payout address</Title>
+      <Row alignment={["start", "baseline"]} spacing="m">
+        <Title variant="h2">Payout address</Title>
+        {isSuccess && (
+          <Text size="small" variant="secondary">
+            Updated!
+          </Text>
+        )}
+      </Row>
       <Table selectable={false}>
         <TBody>
           <Tr>
@@ -47,24 +60,29 @@ export const PayoutAddressSection = () => {
                 <Input variant="secondary" value={payoutAddress} onChange={setPayoutAddress} />
               </Field>
             </Td>
-            <Td>
-              <Row spacing="s">
-                <Button
-                  size="small"
-                  variant="secondary"
-                  disabled={!isDirty || !addressIsValid}
-                  onClick={handleCancelClick}
-                >
-                  <FaTimes />
-                </Button>
-                <Button size="small" variant="primary" disabled={!isDirty || !addressIsValid}>
-                  <FaCheck />
-                </Button>
-              </Row>
-            </Td>
           </Tr>
         </TBody>
       </Table>
+      {isDirty && (
+        <Row spacing="s" alignment={["end", "baseline"]}>
+          {isLoading && (
+            <Text size="small" variant="secondary">
+              Updating ...
+            </Text>
+          )}
+          <Button size="small" variant="secondary" disabled={!isDirty || isLoading} onClick={handleCancelClick}>
+            <FaTimes />
+          </Button>
+          <Button
+            size="small"
+            variant="primary"
+            disabled={!isDirty || !addressIsValid || isLoading}
+            onClick={handleConfirmClick}
+          >
+            <FaCheck />
+          </Button>
+        </Row>
+      )}
     </Box>
   )
 }

@@ -22,3 +22,5 @@ export const getIsAuditor = (address: string) => `is_auditor/${address}`
 export const authenticateAuditor = (address: string) => `auditors/${address}`
 export const getNonce = () => `nonce`
 export const getAuditorProfile = () => "profile"
+
+export const updateProfile = () => "profile"
