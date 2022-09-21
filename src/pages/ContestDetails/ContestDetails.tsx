@@ -10,13 +10,7 @@ import { Button } from "../../components/Button"
 import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
 import { commify } from "../../utils/units"
-import {
-  useContest,
-  useContestant,
-  useContestSignUp,
-  useOptInOut,
-  useSignatureVerification,
-} from "../../hooks/api/contests"
+import { useContest, useContestant, useOptInOut } from "../../hooks/api/contests"
 import { AuditorFormModal } from "./AuditorFormModal"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { SignUpSuccessModal } from "./SignUpSuccessModal"
@@ -28,11 +22,24 @@ import Options from "../../components/Options/Options"
 import { Markdown } from "../../components/Markdown/Markdown"
 import { ReportModal } from "./ReportModal"
 
+import { useSignUpSignatureVerification } from "../../hooks/api/contests/useSignUpSignatureVerification"
+import { useContestSignUp } from "../../hooks/api/contests/useContestSignUp"
+
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
   RUNNING: "RUNNING",
   JUDGING: "JUDGING",
   FINISHED: "FINISHED",
+}
+
+type SignUpParams = {
+  handle: string
+  githubHandle: string
+  discordHandle: string
+  twitterHandle?: string
+  telegramHandle?: string
+  signature: string
+  contestId: number
 }
 
 export const ContestDetails = () => {
@@ -48,59 +55,63 @@ export const ContestDetails = () => {
     retry: false,
   })
   const [optIn, setOptIn] = useState(contestant?.countsTowardsRanking ?? true)
+
   const {
-    signAndVerify,
-    data: auditor,
-    isFetched: auditorIsFetched,
-    signature,
+    verifySignature,
     isLoading: signatureIsLoading,
-  } = useSignatureVerification(parseInt(contestId ?? ""), {
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-  })
+    isSuccess: signatureVerificationSuccess,
+    auditor: verifiedAuditor,
+    signature,
+    reset: resetSignatureVerification,
+  } = useSignUpSignatureVerification(parseInt(contestId ?? ""))
+
   const { signAndOptIn, isLoading: optInisLoading } = useOptInOut(
     parseInt(contestId ?? ""),
     !!!contestant?.countsTowardsRanking
   )
 
-  const shouldDisplayAuditorForm = useMemo(
-    () => auditorIsFetched && (!auditor || !auditor.discordHandle || !auditor.githubHandle),
-    [auditor, auditorIsFetched]
-  )
-
-  const auditorProfileIsComplete = useMemo(
-    () => auditorIsFetched && auditor && auditor.discordHandle && auditor.githubHandle,
-    [auditorIsFetched, auditor]
-  )
-
   const {
-    signUp: doSignUp,
+    signUp,
     isLoading: signUpIsLoading,
-    isSuccess: signUpSuccess,
     data: signUpData,
     error,
     isError,
-    reset,
-  } = useContestSignUp({
-    handle: auditor?.handle ?? "",
-    githubHandle: auditor?.githubHandle ?? "",
-    discordHandle: auditor?.discordHandle ?? "",
-    contestId: contest?.id ?? 0,
-    signature: signature ?? "",
-  })
+    reset: resetSignUp,
+    isSuccess: signUpSuccess,
+  } = useContestSignUp()
+
+  const signUpToContest = useCallback(
+    async (params: SignUpParams) => {
+      signUp(params)
+    },
+    [signUp]
+  )
 
   useEffect(() => {
-    if (auditorProfileIsComplete) {
-      doSignUp()
+    resetSignatureVerification()
+    resetSignUp()
+  }, [address, resetSignatureVerification, resetSignUp])
+
+  useEffect(() => {
+    if (verifiedAuditor && verifiedAuditor.githubHandle && verifiedAuditor.discordHandle && signature && contestId) {
+      signUpToContest({
+        handle: verifiedAuditor.handle,
+        githubHandle: verifiedAuditor.githubHandle,
+        discordHandle: verifiedAuditor.discordHandle,
+        twitterHandle: verifiedAuditor.twitterHandle,
+        telegramHandle: verifiedAuditor.telegramHandle,
+        signature: signature,
+        contestId: parseInt(contestId),
+      })
     }
-  }, [auditorProfileIsComplete, doSignUp])
+  }, [signUpToContest, verifiedAuditor, signature, contestId])
 
   useEffect(() => {
     if (signUpSuccess) {
       setSuccessModalOpen(true)
+      setAuditorFormOpen(false)
     }
-  }, [signUpSuccess, contestant])
+  }, [signUpSuccess])
 
   useEffect(() => {
     if (contestant?.countsTowardsRanking !== undefined) {
@@ -109,14 +120,17 @@ export const ContestDetails = () => {
   }, [contestant?.countsTowardsRanking])
 
   useEffect(() => {
-    if (shouldDisplayAuditorForm) {
+    if (
+      signatureVerificationSuccess &&
+      (!verifiedAuditor || !verifiedAuditor.githubHandle || !verifiedAuditor.discordHandle)
+    ) {
       setAuditorFormOpen(true)
     }
-  }, [shouldDisplayAuditorForm])
+  }, [verifiedAuditor, signatureVerificationSuccess])
 
-  const sign = useCallback(async () => {
-    await signAndVerify()
-  }, [signAndVerify])
+  const sign = useCallback(() => {
+    verifySignature()
+  }, [verifySignature])
 
   const visitRepo = useCallback(async () => {
     contestant && window.open(`https://github.com/${contestant.repo}`, "__blank")
@@ -136,8 +150,8 @@ export const ContestDetails = () => {
   )
 
   const handleErrorModalClose = useCallback(() => {
-    reset()
-  }, [reset])
+    resetSignUp()
+  }, [resetSignUp])
 
   const canOptinOut = useMemo(() => contest?.status === "CREATED" || contest?.status === "RUNNING", [contest?.status])
   const canSignUp = useMemo(() => contest?.status !== "FINISHED" && contest?.status !== "JUDGING", [contest?.status])
@@ -171,7 +185,7 @@ export const ContestDetails = () => {
                 <Text>Status:</Text>&nbsp;
                 <Text strong>{STATUS_LABELS[contest.status]}</Text>
               </Row>
-              {contest.report && (
+              {contest.status === "FINISHED" && contest.report && (
                 <Button variant="secondary" onClick={handleReportClick}>
                   <FaBook /> &nbsp; Read report
                 </Button>
@@ -252,9 +266,16 @@ export const ContestDetails = () => {
           {auditorFormOpen && (
             <AuditorFormModal
               onClose={() => setAuditorFormOpen(false)}
+              onSubmit={(values) =>
+                signUpToContest({
+                  ...values,
+                  contestId: parseInt(contestId!),
+                  signature: signature!,
+                })
+              }
               contest={contest}
-              auditor={auditor}
-              signature={signature ?? ""}
+              auditor={verifiedAuditor}
+              isLoading={signUpIsLoading}
             />
           )}
           {successModalOpen && (
