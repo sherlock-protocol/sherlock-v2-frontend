@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { FaTrash, FaPlusSquare } from "react-icons/fa"
+import { AuditorForm } from "../../components/AuditorForm/AuditorForm"
 
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
@@ -14,6 +15,7 @@ import { AddressesSection } from "./AddressesSection"
 
 import styles from "./AuditorProfile.module.scss"
 import { PayoutAddressSection } from "./PayoutAddressSection"
+import { ProfileInfoSection } from "./ProfileInfoSection"
 
 export const AuditorProfile = () => {
   const { data: profile } = useProfile()
@@ -22,27 +24,7 @@ export const AuditorProfile = () => {
 
   return (
     <Row spacing="xl">
-      <Box shadow={false}>
-        <Column spacing="l">
-          <Title variant="h2">Profile</Title>
-
-          <Field label="HANDLE">
-            <Input value={profile.handle} disabled />
-          </Field>
-          <Field label="GITHUB">
-            <Input value={profile.githubHandle} disabled />
-          </Field>
-          <Field label="DISCORD">
-            <Input value={profile.discordHandle} disabled />
-          </Field>
-          <Field label="TELEGRAM">
-            <Input value={profile.telegramHandle} disabled />
-          </Field>
-          <Field label="TWITTER">
-            <Input value={profile.twitterHandle} disabled />
-          </Field>
-        </Column>
-      </Box>
+      <ProfileInfoSection />
       <Column spacing="l">
         <PayoutAddressSection />
         <AddressesSection />

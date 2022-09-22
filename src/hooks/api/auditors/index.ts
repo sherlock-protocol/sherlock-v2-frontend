@@ -4,8 +4,8 @@
 export type AuditorProfile = {
   id: number
   handle: string
+  githubHandle: string
   discordHandle?: string
-  githubHandle?: string
   twitterHandle?: string
   telegramHandle?: string
   addresses: {

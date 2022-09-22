@@ -42,6 +42,11 @@ export const useUpdateProfile = () => {
   } = useMutation<AuditorProfile, Error, UpdateProfileParams>(
     async (updates) => {
       const { data } = await contestsAPI.patch<UpdateProfileResponseData>(updateProfileUrl(), {
+        handle: updates.handle,
+        github_handle: updates.githubHandle,
+        discord_handle: updates.discordHandle,
+        twitter_handle: !updates.twitterHandle || updates.twitterHandle === "" ? null : updates.twitterHandle,
+        telegram_handle: !updates.telegramHandle || updates.telegramHandle === "" ? null : updates.telegramHandle,
         payout_address_mainnet: updates.payoutAddress,
       })
 
@@ -62,8 +67,6 @@ export const useUpdateProfile = () => {
       },
     }
   )
-
-  console.log(mutation)
 
   return {
     update,

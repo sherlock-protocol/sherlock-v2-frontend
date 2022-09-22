@@ -1,6 +1,7 @@
 import { useMemo, useCallback } from "react"
 import { useQuery, UseQueryOptions } from "react-query"
 import { useSignTypedData } from "wagmi"
+import { AuditorProfile } from "./auditors/index"
 import { contests as contestsAPI } from "./axios"
 import {
   getIsAuditor as getIsAuditorUrl,
@@ -22,8 +23,6 @@ export type Auditor = {
   payoutAddress: string
 }
 
-export type AuditorProfile = Auditor & {}
-
 type GetIsAuditorResponseData = {
   is_auditor: boolean
 }
@@ -32,7 +31,7 @@ type AuditorResponseData = {
   id: number
   handle: string
   discord_handle?: string
-  github_handle?: string
+  github_handle: string
   twitter_handle?: string
   telegram_handle?: string
   addresses: {
