@@ -105,7 +105,7 @@ export const AddressesSection = () => {
                 error={!addressIsValid && newAddress !== ""}
                 errorMessage="This is not a valid address"
               >
-                <Input variant="secondary" value={newAddress} onChange={setNewAddress} />
+                <Input variant="secondary" value={newAddress} onChange={setNewAddress} textVariant="mono" />
               </Field>
             </Td>
             <Td>
