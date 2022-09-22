@@ -2,6 +2,7 @@ import React, { PropsWithChildren, useCallback, useEffect } from "react"
 import { Navigate } from "react-router-dom"
 import { useAccount } from "wagmi"
 import { useProfile } from "../../hooks/api/auditors"
+import { useSignOut } from "../../hooks/api/auditors/useSignOut"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { Route } from "../../utils/routes"
 import { Box } from "../Box"
@@ -19,6 +20,7 @@ export const AuthenticationGate: React.FC<PropsWithChildren<Props>> = ({ childre
   const { address: connectedAddress } = useAccount()
   const { authenticate, isLoading: authenticationIsLoading } = useAuthentication()
   const { data: authenticatedProfile, isFetched, isLoading: profileIsLoading } = useProfile()
+  const { signOut } = useSignOut()
 
   const addressIsAllowed = useCallback(
     (address: string) => authenticatedProfile?.addresses.some((a) => a.address === address),
@@ -26,9 +28,10 @@ export const AuthenticationGate: React.FC<PropsWithChildren<Props>> = ({ childre
   )
 
   useEffect(() => {
-    if (connectedAddress && !addressIsAllowed(connectedAddress)) {
+    if (connectedAddress && authenticatedProfile && !addressIsAllowed(connectedAddress)) {
+      signOut()
     }
-  }, [connectedAddress, addressIsAllowed])
+  }, [connectedAddress, addressIsAllowed, signOut, authenticatedProfile])
 
   const isLoading = authenticationIsLoading || profileIsLoading
   if (authenticatedProfile) return <>{children}</>

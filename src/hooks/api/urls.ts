@@ -24,3 +24,4 @@ export const getNonce = () => `nonce`
 export const getAuditorProfile = () => "profile"
 
 export const updateProfile = () => "profile"
+export const signOut = () => "signout"
