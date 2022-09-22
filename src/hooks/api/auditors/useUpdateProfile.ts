@@ -25,10 +25,7 @@ type UpdateProfileParams = {
   githubHandle?: string
   twitterHandle?: string
   telegramHandle?: string
-  addresses?: {
-    id: number
-    address: string
-  }[]
+  addresses?: string[]
   payoutAddress?: string
 }
 
@@ -45,9 +42,10 @@ export const useUpdateProfile = () => {
         handle: updates.handle,
         github_handle: updates.githubHandle,
         discord_handle: updates.discordHandle,
-        twitter_handle: !updates.twitterHandle || updates.twitterHandle === "" ? null : updates.twitterHandle,
-        telegram_handle: !updates.telegramHandle || updates.telegramHandle === "" ? null : updates.telegramHandle,
+        twitter_handle: updates.twitterHandle === "" ? null : updates.twitterHandle,
+        telegram_handle: updates.telegramHandle === "" ? null : updates.telegramHandle,
         payout_address_mainnet: updates.payoutAddress,
+        addresses: updates.addresses,
       })
 
       return {
