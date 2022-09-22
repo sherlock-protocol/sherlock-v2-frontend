@@ -12,11 +12,12 @@ import { Title } from "../../components/Title"
 import { useProfile } from "../../hooks/api/auditors"
 import { useUpdateProfile } from "../../hooks/api/auditors/useUpdateProfile"
 import { Field } from "../Claim/Field"
+import { ErrorModal } from "../ContestDetails/ErrorModal"
 import styles from "./AuditorProfile.module.scss"
 
 export const PayoutAddressSection = () => {
   const { data: profile } = useProfile()
-  const { update, isLoading, isSuccess } = useUpdateProfile()
+  const { update, isLoading, isSuccess, isError, error, reset } = useUpdateProfile()
   const [payoutAddress, setPayoutAddress] = useState<string>(profile?.payoutAddress ?? "")
 
   /**
@@ -35,6 +36,10 @@ export const PayoutAddressSection = () => {
   const handleConfirmClick = useCallback(() => {
     payoutAddress && update({ payoutAddress })
   }, [payoutAddress, update])
+
+  const handleErrorModalClose = useCallback(() => {
+    reset()
+  }, [reset])
 
   if (!profile) return null
 
@@ -83,6 +88,7 @@ export const PayoutAddressSection = () => {
           </Button>
         </Row>
       )}
+      {isError && <ErrorModal reason={error.message} onClose={handleErrorModalClose} />}
     </Box>
   )
 }
