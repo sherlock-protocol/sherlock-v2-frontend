@@ -12,10 +12,11 @@ import { Title } from "../../components/Title"
 import { useProfile } from "../../hooks/api/auditors"
 import { useUpdateProfile } from "../../hooks/api/auditors/useUpdateProfile"
 import { Field } from "../Claim/Field"
+import { ErrorModal } from "../ContestDetails/ErrorModal"
 
 export const AddressesSection = () => {
   const { data: profile } = useProfile()
-  const { update, isLoading, isSuccess } = useUpdateProfile()
+  const { update, isLoading, isSuccess, isError, error, reset } = useUpdateProfile()
   const [addresses, setAddresses] = useState<string[]>(profile?.addresses.map((a) => a.address) ?? [])
   const [newAddress, setNewAddress] = useState("")
 
@@ -44,6 +45,19 @@ export const AddressesSection = () => {
     })
   }, [update, addresses, addressIsValid, newAddress])
 
+  const handleRemoveAddress = useCallback(
+    (address: string) => {
+      update({
+        addresses: addresses.filter((a) => a !== address),
+      })
+    },
+    [addresses, update]
+  )
+
+  const handleErrorModalClose = useCallback(() => {
+    reset()
+  }, [reset])
+
   if (!profile) return null
 
   return (
@@ -69,7 +83,12 @@ export const AddressesSection = () => {
                 <Text variant="mono">{address}</Text>
               </Td>
               <Td>
-                <Button size="small" variant="secondary">
+                <Button
+                  size="small"
+                  variant="secondary"
+                  onClick={() => handleRemoveAddress(address)}
+                  disabled={isLoading}
+                >
                   <FaTrash />
                 </Button>
               </Td>
@@ -98,6 +117,7 @@ export const AddressesSection = () => {
           </Tr>
         </TBody>
       </Table>
+      {isError && <ErrorModal reason={error.fieldErrors ?? error.message} onClose={handleErrorModalClose} />}
     </Box>
   )
 }

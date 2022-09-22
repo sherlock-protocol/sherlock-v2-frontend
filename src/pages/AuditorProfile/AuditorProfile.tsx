@@ -14,7 +14,7 @@ export const AuditorProfile = () => {
     <Row spacing="xl">
       <ProfileInfoSection />
       <Column spacing="l">
-        <Row grow={1}>
+        <Row grow={0}>
           <PayoutAddressSection />
         </Row>
         <Row grow={1}>
