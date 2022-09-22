@@ -1,6 +1,7 @@
 import { ethers } from "ethers"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { FaTrash, FaPlusSquare } from "react-icons/fa"
+import { useAccount } from "wagmi"
 
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
@@ -15,6 +16,7 @@ import { Field } from "../Claim/Field"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
 
 export const AddressesSection = () => {
+  const { address: connectedAddress } = useAccount()
   const { data: profile } = useProfile()
   const { update, isLoading, isSuccess, isError, error, reset } = useUpdateProfile()
   const [addresses, setAddresses] = useState<string[]>(profile?.addresses.map((a) => a.address) ?? [])
@@ -47,11 +49,13 @@ export const AddressesSection = () => {
 
   const handleRemoveAddress = useCallback(
     (address: string) => {
+      if (address === connectedAddress) return
+
       update({
         addresses: addresses.filter((a) => a !== address),
       })
     },
-    [addresses, update]
+    [addresses, update, connectedAddress]
   )
 
   const handleErrorModalClose = useCallback(() => {
@@ -87,7 +91,7 @@ export const AddressesSection = () => {
                   size="small"
                   variant="secondary"
                   onClick={() => handleRemoveAddress(address)}
-                  disabled={isLoading}
+                  disabled={isLoading || address === connectedAddress}
                 >
                   <FaTrash />
                 </Button>

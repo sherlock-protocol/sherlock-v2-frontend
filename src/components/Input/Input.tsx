@@ -5,6 +5,8 @@ import styles from "./Input.module.scss"
 
 type InputVariant = "regular" | "secondary" | "small"
 
+type TextVariant = "normal" | "mono"
+
 export type InputProps<T extends string | number> = {
   /**
    * onChange event handler
@@ -32,6 +34,11 @@ export type InputProps<T extends string | number> = {
   variant?: InputVariant
 
   /**
+   * Text variant
+   */
+  textVariant?: TextVariant
+
+  /**
    * Disable input
    */
   disabled?: boolean
@@ -43,6 +50,7 @@ export const Input = <T extends string | number>({
   value,
   type,
   variant = "regular",
+  textVariant = "normal",
   disabled = false,
 }: InputProps<T>) => {
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
@@ -56,7 +64,7 @@ export const Input = <T extends string | number>({
     <div className={classNames([styles.inputContainer, styles[variant]])}>
       {placeholder && <span className={styles.placeholder}>{placeholder}</span>}
       <input
-        className={classNames([styles.input, styles[variant]])}
+        className={classNames([styles.input, styles[variant], styles[textVariant]])}
         value={value}
         onChange={handleChange}
         disabled={disabled}

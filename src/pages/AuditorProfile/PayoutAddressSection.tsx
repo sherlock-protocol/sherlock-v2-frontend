@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import React, { useCallback, useEffect, useState } from "react"
-import { FaTimes, FaCheck } from "react-icons/fa"
+import { FaTimes, FaCheck, FaLink } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
@@ -11,6 +11,7 @@ import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
 import { useProfile } from "../../hooks/api/auditors"
 import { useUpdateProfile } from "../../hooks/api/auditors/useUpdateProfile"
+import { getAddressUrl } from "../../utils/explorer"
 import { Field } from "../Claim/Field"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
 import styles from "./AuditorProfile.module.scss"
@@ -41,6 +42,10 @@ export const PayoutAddressSection = () => {
     reset()
   }, [reset])
 
+  const handleExplorerClick = useCallback(() => {
+    window.open(getAddressUrl(payoutAddress), "__blank")
+  }, [payoutAddress])
+
   if (!profile) return null
 
   const isDirty = profile.payoutAddress !== payoutAddress
@@ -62,8 +67,13 @@ export const PayoutAddressSection = () => {
           <Tr>
             <Td className={styles.payoutAddressColumn}>
               <Field error={!addressIsValid} errorMessage="This is not a valid address">
-                <Input variant="secondary" value={payoutAddress} onChange={setPayoutAddress} />
+                <Input variant="secondary" value={payoutAddress} onChange={setPayoutAddress} textVariant="mono" />
               </Field>
+            </Td>
+            <Td>
+              <Button variant="secondary" size="small" onClick={handleExplorerClick}>
+                <FaLink />
+              </Button>
             </Td>
           </Tr>
         </TBody>
