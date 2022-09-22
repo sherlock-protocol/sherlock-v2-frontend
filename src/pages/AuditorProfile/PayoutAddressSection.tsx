@@ -43,7 +43,7 @@ export const PayoutAddressSection = () => {
   const addressIsValid = ethers.utils.isAddress(payoutAddress) && payoutAddress !== ethers.constants.AddressZero
 
   return (
-    <Box shadow={false}>
+    <Box shadow={false} fullWidth>
       <Row alignment={["start", "baseline"]} spacing="m">
         <Title variant="h2">Payout address</Title>
         {isSuccess && (
