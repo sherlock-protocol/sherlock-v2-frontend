@@ -1,8 +1,6 @@
 import React, { PropsWithChildren, useCallback, useEffect } from "react"
 import { Navigate } from "react-router-dom"
 import { useAccount } from "wagmi"
-import { useProfile } from "../../hooks/api/auditors"
-import { useSignOut } from "../../hooks/api/auditors/useSignOut"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { Route } from "../../utils/routes"
 import { Box } from "../Box"
@@ -18,24 +16,23 @@ type Props = {
 
 export const AuthenticationGate: React.FC<PropsWithChildren<Props>> = ({ children, redirectRoute = "/" }) => {
   const { address: connectedAddress } = useAccount()
-  const { authenticate, isLoading: authenticationIsLoading } = useAuthentication()
-  const { data: authenticatedProfile, isFetched, isLoading: profileIsLoading } = useProfile()
-  const { signOut } = useSignOut()
+  const { authenticate, isLoading: authenticationIsLoading, signOut, profile } = useAuthentication()
 
   const addressIsAllowed = useCallback(
-    (address: string) => authenticatedProfile?.addresses.some((a) => a.address === address),
-    [authenticatedProfile]
+    (address: string) => profile?.addresses.some((a) => a.address === address),
+    [profile]
   )
 
   useEffect(() => {
-    if (connectedAddress && authenticatedProfile && !addressIsAllowed(connectedAddress)) {
+    if (!connectedAddress || (profile && !addressIsAllowed(connectedAddress))) {
       signOut()
     }
-  }, [connectedAddress, addressIsAllowed, signOut, authenticatedProfile])
+  }, [connectedAddress, addressIsAllowed, signOut, profile])
 
-  const isLoading = authenticationIsLoading || profileIsLoading
-  if (authenticatedProfile) return <>{children}</>
-  if (isFetched && !authenticatedProfile && !isLoading) return <Navigate to={redirectRoute} replace />
+  const isLoading = authenticationIsLoading
+
+  if (profile) return <>{children}</>
+  if (!profile && !isLoading) return <Navigate to={redirectRoute} replace />
 
   return (
     <LoadingContainer loading={isLoading}>

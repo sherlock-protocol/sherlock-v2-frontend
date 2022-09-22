@@ -3,6 +3,9 @@ import { useAccount, useNetwork, useSignMessage } from "wagmi"
 import { SiweMessage } from "siwe"
 import { contests as contestsAPI } from "./api/axios"
 import { getNonce as getNonceUrl } from "./api/urls"
+import { useMutation, useQueryClient } from "react-query"
+import { AuditorProfile } from "./api/auditors/index"
+import { GetAuditorProfile, profileQuery } from "./api/auditors"
 
 type GetNonceResponseData = {
   nonce: string
@@ -16,6 +19,35 @@ export const useSignInWithEthereum = () => {
   const [error, setError] = useState<Error>()
 
   const { signMessageAsync } = useSignMessage()
+  const queryClient = useQueryClient()
+  const { mutate: verify, isLoading: verificationIsLoading } = useMutation<
+    AuditorProfile,
+    Error,
+    { message: string; signature: string }
+  >(
+    async ({ signature, message }) => {
+      const { data } = await contestsAPI.post<GetAuditorProfile>("/verify", {
+        message,
+        signature,
+      })
+
+      if (!data.profile) throw new Error("missing profile")
+
+      return {
+        id: data.profile.id,
+        handle: data.profile.handle,
+        githubHandle: data.profile.github_handle,
+        discordHandle: data.profile.discord_handle,
+        addresses: data.profile.addresses.map((a) => ({ id: a.id, address: a.address })),
+        payoutAddress: data.profile.payout_address_mainnet,
+      }
+    },
+    {
+      onSuccess(data) {
+        queryClient.setQueryData(profileQuery(), data)
+      },
+    }
+  )
 
   useEffect(() => {
     setSignature(undefined)
@@ -45,10 +77,7 @@ export const useSignInWithEthereum = () => {
 
       const signature = await signMessageAsync({ message })
 
-      await contestsAPI.post("/verify", {
-        message,
-        signature,
-      })
+      verify({ message, signature })
 
       setSignature(signature)
     } catch (error) {
@@ -56,10 +85,10 @@ export const useSignInWithEthereum = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [signMessageAsync, setIsLoading, address, chain])
+  }, [signMessageAsync, setIsLoading, address, chain, verify])
 
   return useMemo(
-    () => ({ signIn, isLoading, error, isError: !!error, signature }),
-    [signIn, isLoading, error, signature]
+    () => ({ signIn, isLoading: isLoading || verificationIsLoading, error, isError: !!error, signature }),
+    [signIn, isLoading, error, signature, verificationIsLoading]
   )
 }

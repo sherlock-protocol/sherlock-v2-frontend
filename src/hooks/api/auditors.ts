@@ -41,7 +41,7 @@ type AuditorResponseData = {
   payout_address_mainnet: string
 }
 
-type GetAuditorProfile = {
+export type GetAuditorProfile = {
   profile: AuditorResponseData
 }
 
