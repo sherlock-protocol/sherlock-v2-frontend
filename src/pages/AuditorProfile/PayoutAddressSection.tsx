@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import React, { useCallback, useEffect, useState } from "react"
-import { FaTimes, FaCheck, FaLink } from "react-icons/fa"
+import { FaTimes, FaCheck, FaExternalLinkAlt } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
@@ -72,7 +72,7 @@ export const PayoutAddressSection = () => {
             </Td>
             <Td>
               <Button variant="secondary" size="small" onClick={handleExplorerClick}>
-                <FaLink />
+                <FaExternalLinkAlt />
               </Button>
             </Td>
           </Tr>
