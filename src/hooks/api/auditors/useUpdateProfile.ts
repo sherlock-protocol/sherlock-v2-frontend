@@ -22,7 +22,6 @@ type UpdateProfileResponseData = {
 }
 
 type UpdateProfileParams = {
-  handle?: string
   discordHandle?: string
   githubHandle?: string
   twitterHandle?: string
@@ -42,7 +41,6 @@ export const useUpdateProfile = () => {
     async (updates) => {
       try {
         const { data } = await contestsAPI.patch<UpdateProfileResponseData>(updateProfileUrl(), {
-          handle: updates.handle,
           github_handle: updates.githubHandle,
           discord_handle: updates.discordHandle,
           twitter_handle: updates.twitterHandle === "" ? null : updates.twitterHandle,
