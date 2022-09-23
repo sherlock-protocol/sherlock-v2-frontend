@@ -15,6 +15,8 @@ import { useUpdateProfile } from "../../hooks/api/auditors/useUpdateProfile"
 import { Field } from "../Claim/Field"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
 
+import styles from "./AuditorProfile.module.scss"
+
 export const AddressesSection = () => {
   const { address: connectedAddress } = useAccount()
   const { data: profile } = useProfile()
@@ -84,7 +86,9 @@ export const AddressesSection = () => {
           {addresses.map((address) => (
             <Tr key={address}>
               <Td>
-                <Text variant="mono">{address}</Text>
+                <Text variant="mono" className={styles.address}>
+                  {address}
+                </Text>
               </Td>
               <Td>
                 <Button

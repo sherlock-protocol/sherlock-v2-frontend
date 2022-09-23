@@ -1,3 +1,9 @@
+@import "../../styles/variables";
+
 .payoutAddressColumn {
   width: 100%;
+}
+
+.address {
+  font-family: $font-family-mono;
 }
