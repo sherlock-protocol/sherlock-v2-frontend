@@ -5,7 +5,7 @@ import { FaTimes, FaCheck, FaExternalLinkAlt } from "react-icons/fa"
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
 import { Input } from "../../components/Input"
-import { Row } from "../../components/Layout"
+import { Column, Row } from "../../components/Layout"
 import { Table, TBody, Td, Tr } from "../../components/Table/Table"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
@@ -54,14 +54,21 @@ export const PayoutAddressSection = () => {
 
   return (
     <Box shadow={false} fullWidth>
-      <Row alignment={["start", "baseline"]} spacing="m">
-        <Title variant="h2">Payout address</Title>
-        {isSuccess && (
-          <Text size="small" variant="secondary">
-            Updated!
+      <Column spacing="xs">
+        <Row alignment={["start", "baseline"]} spacing="m">
+          <Title variant="h2">Payout address</Title>
+          {isSuccess && (
+            <Text size="small" variant="secondary">
+              Updated!
+            </Text>
+          )}
+        </Row>
+        <Row>
+          <Text variant="secondary" size="small">
+            (Ethereum Mainnet)
           </Text>
-        )}
-      </Row>
+        </Row>
+      </Column>
       <Table selectable={false}>
         <TBody>
           <Tr>
