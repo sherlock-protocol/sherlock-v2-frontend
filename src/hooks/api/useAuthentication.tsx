@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useMemo } from "react"
+import { createContext, PropsWithChildren, useContext, useMemo } from "react"
 import { useSignInWithEthereum } from "../useSignInWithEthereum"
 import { AuditorProfile } from "./auditors/index"
 import { useProfile } from "./auditors"
@@ -8,7 +8,6 @@ type AuthenticationContextType = {
   isLoading: boolean
   isError: boolean
   isAuthenticated: boolean
-  signature?: string
   authenticate: () => Promise<void>
   signOut: () => void
   profile?: AuditorProfile
@@ -20,10 +19,10 @@ const AuthenticationContext = createContext<AuthenticationContextType>({} as Aut
 export const useAuthentication = () => useContext(AuthenticationContext)
 
 export const AuthenticationContextProvider: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
-  const { signIn, isLoading, signature } = useSignInWithEthereum()
+  const { signIn, isLoading } = useSignInWithEthereum()
   const { signOut } = useSignOut()
 
-  const { data: authenticatedProfile, isLoading: profileIsLoading, refetch, isError, status } = useProfile()
+  const { data: authenticatedProfile, isLoading: profileIsLoading, isError, status } = useProfile()
 
   const ctx = useMemo(
     () => ({

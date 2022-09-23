@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react"
 import { Link } from "react-router-dom"
-import { FaExternalLinkAlt, FaLock, FaUnlock } from "react-icons/fa"
+import { FaExternalLinkAlt, FaLock } from "react-icons/fa"
 
 import ConnectButton from "../ConnectButton/ConnectButton"
 import CustomLink from "../CustomLink/CustomLink"
