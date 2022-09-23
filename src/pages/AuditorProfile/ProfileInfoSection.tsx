@@ -34,7 +34,13 @@ export const ProfileInfoSection = () => {
             </Text>
           )}
         </Row>
-        <AuditorForm initialValues={profile} onSubmit={update} submitLabel="SAVE" disabled={isLoading} />
+        <AuditorForm
+          initialValues={profile}
+          onSubmit={update}
+          submitLabel="SAVE"
+          disabled={isLoading}
+          disabledFields={["handle"]}
+        />
       </Column>
       {isError && <ErrorModal reason={error.fieldErrors ?? error.message} onClose={handleErrorModalClose} />}
     </Box>
