@@ -17,3 +17,16 @@ export const getTxUrl = (hash: string) => {
       return undefined
   }
 }
+
+export const getAddressUrl = (address: string) => {
+  switch (config.networkId) {
+    case 1:
+      // Mainnet
+      return `https://etherscan.io/address/${address}`
+    case 5:
+      // Goerli
+      return `https://goerli.etherscan.io/address/${address}`
+    default:
+      return undefined
+  }
+}

@@ -4,7 +4,7 @@ import cx from "classnames"
 import styles from "./Layout.module.scss"
 import { DOMAttributes } from "react"
 
-type FlexboxAlignment = "start" | "end" | "center" | "space-between" | "space-around"
+type FlexboxAlignment = "start" | "end" | "center" | "space-between" | "space-around" | "baseline"
 
 type Spacing = "xs" | "s" | "m" | "l" | "xl"
 

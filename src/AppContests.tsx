@@ -6,8 +6,12 @@ import { Footer } from "./components/Footer"
 
 import styles from "./App.module.scss"
 import { useScoreboard } from "./hooks/api/contests"
+import { useAccount } from "wagmi"
+import { useIsAuditor } from "./hooks/api/auditors"
 
 export const AppContests = () => {
+  const { address: connectedAddress } = useAccount()
+  const { data: isAuditor } = useIsAuditor(connectedAddress)
   const { data: scoreboard } = useScoreboard()
   const contentRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
@@ -28,6 +32,14 @@ export const AppContests = () => {
     navigationLinks.push({
       title: "SCOREBOARD",
       route: contestsRoutes.Scoreboard,
+    })
+  }
+
+  if (isAuditor) {
+    navigationLinks.push({
+      title: "PROFILE",
+      protected: true,
+      route: contestsRoutes.Profile,
     })
   }
 

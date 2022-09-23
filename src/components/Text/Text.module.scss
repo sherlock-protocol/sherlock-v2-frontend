@@ -1,6 +1,8 @@
 @import "../../styles/variables";
 
 .text {
+  font-family: $font-family;
+
   &.warning {
     color: red;
   }

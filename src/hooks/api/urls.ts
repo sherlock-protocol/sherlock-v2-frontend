@@ -18,3 +18,10 @@ export const contestOptIn = () => "/contests/ranking-opt-in"
 export const getContestant = (address: string, contestId: number) =>
   `/contests/contestant?address=${address}&contest_id=${contestId}`
 export const getScoreboard = () => "scoreboard"
+export const getIsAuditor = (address: string) => `is_auditor/${address}`
+export const authenticateAuditor = (address: string) => `auditors/${address}`
+export const getNonce = () => `nonce`
+export const getAuditorProfile = () => "profile"
+
+export const updateProfile = () => "profile"
+export const signOut = () => "signout"

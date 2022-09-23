@@ -9,6 +9,7 @@ const instance = axios.create({
 export const contests = axios.create({
   baseURL: config.contestsApiBaseUrl,
   timeout: 30000,
+  withCredentials: true,
 })
 
 export default instance
