@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react"
 import { Link } from "react-router-dom"
-import { FaExternalLinkAlt, FaLock } from "react-icons/fa"
+import { FaExternalLinkAlt, FaLock, FaUnlock } from "react-icons/fa"
 
 import ConnectButton from "../ConnectButton/ConnectButton"
 import CustomLink from "../CustomLink/CustomLink"
@@ -70,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({ navigationLinks = [], logoOnly =
                 target={navLink.external ? "_blank" : "_self"}
               >
                 {navLink.title}
-                {navLink.protected && <FaLock />}
+                {navLink.protected && !isAuthenticated && <FaLock />}
                 {navLink.external && <FaExternalLinkAlt />}
               </CustomLink>
             ))}
