@@ -69,7 +69,7 @@ export const AddressesSection = () => {
   return (
     <Box shadow={false}>
       <Row alignment={["start", "baseline"]} spacing="m">
-        <Title variant="h2">Addresses</Title>
+        <Title variant="h2">Authentication addresses</Title>
         {isLoading && (
           <Text size="small" variant="secondary">
             Updating ...
@@ -103,7 +103,7 @@ export const AddressesSection = () => {
             </Tr>
           ))}
           <Tr>
-            <Td>
+            <Td className={styles.newAddressColumn}>
               <Field
                 label="NEW ADDRESS"
                 error={!addressIsValid && newAddress !== ""}
