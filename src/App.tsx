@@ -20,6 +20,8 @@ import { InternalOverviewPage } from "./pages/InternalOverview/InternalOverview"
 import { ContestsPage } from "./pages/Contests"
 import { ContestDetails } from "./pages/ContestDetails"
 import { Scoreboard } from "./pages/Scoreboard"
+import { AuditorProfile } from "./pages/AuditorProfile"
+import { AuthenticationGate } from "./components/AuthenticationGate"
 
 function App() {
   return (
@@ -49,6 +51,14 @@ function App() {
           <Route path={contestsRoutes.Contests} element={<ContestsPage />} />
           <Route path={contestsRoutes.ContestDetails} element={<ContestDetails />} />
           <Route path={contestsRoutes.Scoreboard} element={<Scoreboard />} />
+          <Route
+            path={contestsRoutes.Profile}
+            element={
+              <AuthenticationGate redirectRoute={routes.AuditContests}>
+                <AuditorProfile />
+              </AuthenticationGate>
+            }
+          />
 
           <Route path="*" element={<Navigate replace to={contestsRoutes.Contests} />} />
         </Route>

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo } from "react"
 import { useMutation } from "react-query"
 import { useSignTypedData } from "wagmi"
 import { contests as contestsAPI } from "../axios"
-import { Auditor } from "../contests"
+import { Auditor } from "../auditors"
 import { validateSignature as validateSignatureUrl } from "../urls"
 
 type SignatureVerificationResponseData = {
@@ -60,6 +60,8 @@ export const useSignUpSignatureVerification = (contestId: number) => {
       handle: data.auditor.handle,
       githubHandle: data.auditor.github_handle,
       discordHandle: data.auditor.discord_handle,
+      addresses: [],
+      payoutAddress: "",
     }
   })
 

@@ -25,15 +25,6 @@ export type Contest = {
   status: ContestStatus
 }
 
-export type Auditor = {
-  id: number
-  handle: string
-  discordHandle?: string
-  githubHandle?: string
-  twitterHandle?: string
-  telegramHandle?: string
-}
-
 export type Contestant = {
   repo: string
   countsTowardsRanking: boolean

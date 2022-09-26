@@ -1,6 +1,6 @@
-import React from "react"
+import React, { useCallback, useMemo } from "react"
 import { Link } from "react-router-dom"
-import { FaExternalLinkAlt } from "react-icons/fa"
+import { FaExternalLinkAlt, FaLock } from "react-icons/fa"
 
 import ConnectButton from "../ConnectButton/ConnectButton"
 import CustomLink from "../CustomLink/CustomLink"
@@ -10,11 +10,14 @@ import { ReactComponent as Logotype } from "../../assets/icons/logotype.svg"
 
 import styles from "./Header.module.scss"
 import { Row } from "../Layout"
+import { useAuthentication } from "../../hooks/api/useAuthentication"
+import { useProfile } from "../../hooks/api/auditors"
 
 export type NavigationLink = {
   title: string
   route: Route
   external?: boolean
+  protected?: boolean
 }
 
 type HeaderProps = {
@@ -35,6 +38,20 @@ type HeaderProps = {
  * Header component including the navigation and the wallet connection.
  */
 export const Header: React.FC<HeaderProps> = ({ navigationLinks = [], logoOnly = false, homeRoute = "/" }) => {
+  const { authenticate } = useAuthentication()
+  const { data: authenticatedProfile, isFetched } = useProfile()
+
+  const isAuthenticated = useMemo(() => isFetched && authenticatedProfile, [isFetched, authenticatedProfile])
+
+  const handleNavigationLinkClick = useCallback(
+    async (navLink: NavigationLink) => {
+      if (navLink.protected && !isAuthenticated) {
+        await authenticate()
+      }
+    },
+    [authenticate, isAuthenticated]
+  )
+
   return (
     <div className={styles.container}>
       <div className={styles.leftArea}>
@@ -44,10 +61,16 @@ export const Header: React.FC<HeaderProps> = ({ navigationLinks = [], logoOnly =
       </div>
       {!logoOnly && (
         <div className={styles.centerArea}>
-          <Row alignment={["center", "center"]}>
+          <Row alignment={["center", "baseline"]}>
             {navigationLinks.map((navLink) => (
-              <CustomLink key={navLink.route} to={navLink.route} target={navLink.external ? "_blank" : "_self"}>
+              <CustomLink
+                key={navLink.route}
+                to={navLink.route}
+                onClick={() => handleNavigationLinkClick(navLink)}
+                target={navLink.external ? "_blank" : "_self"}
+              >
                 {navLink.title}
+                {navLink.protected && !isAuthenticated && <FaLock />}
                 {navLink.external && <FaExternalLinkAlt />}
               </CustomLink>
             ))}
