@@ -38,7 +38,7 @@ const StrategiesList: React.FC = () => {
     // Compute each strategies's percentage of total TVL
     const strats =
       [...strategies, { address: "0x0", name: "Uninvested funds", value: totalUninvestedFunds }].map((item) => {
-        const percentageOfTotal = +((item.value.div(1e6).toNumber() * 100) / tvl.div(1e6).toNumber()).toFixed(0)
+        const percentageOfTotal = +((item.value.div(1e6).toNumber() * 100) / tvl.div(1e6).toNumber()).toFixed(2)
 
         return {
           ...item,
@@ -95,7 +95,7 @@ const StrategiesList: React.FC = () => {
                   </Column>
                   <Column className={cx(styles.listColumn, styles.entry)} grow={1}></Column>
                   <Column className={cx(styles.listColumn, styles.entry)}>
-                    <Text>{item.percentageOfTotal.toFixed(0)}%</Text>
+                    <Text>{item.percentageOfTotal.toFixed(2)}%</Text>
                   </Column>
                 </Row>
               ))}
