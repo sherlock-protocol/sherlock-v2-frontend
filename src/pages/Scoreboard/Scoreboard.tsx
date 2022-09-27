@@ -42,7 +42,7 @@ export const Scoreboard: React.FC = () => {
                 </Td>
                 <Td>
                   <Text variant="mono" alignment="right">
-                    {s.score}
+                    {s.score.toFixed(2)}
                   </Text>
                 </Td>
               </Tr>
