@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { useContract, useProvider, useSigner } from "wagmi"
 import { SherlockProtocolManager } from "../contracts"
 import SherlockProtocolManagerABI from "../abi/SherlockProtocolManager.json"
@@ -59,6 +59,16 @@ const useProtocolManager = () => {
   )
 
   /**
+   * Fetch the protocol's agent
+   */
+  const getProtocolAgent = useCallback(
+    async (protocol: string): Promise<string> => {
+      return contract.protocolAgent(protocol)
+    },
+    [contract]
+  )
+
+  /**
    * Deposit USDC to a protocol's active balance
    */
   const depositActiveBalance = React.useCallback(
@@ -84,10 +94,18 @@ const useProtocolManager = () => {
       getProtocolActiveBalance,
       getProtocolCoverageLeft,
       getProtocolPremium,
+      getProtocolAgent,
       depositActiveBalance,
       withdrawActiveBalance,
     }),
-    [getProtocolActiveBalance, getProtocolCoverageLeft, getProtocolPremium, depositActiveBalance, withdrawActiveBalance]
+    [
+      getProtocolActiveBalance,
+      getProtocolCoverageLeft,
+      getProtocolPremium,
+      depositActiveBalance,
+      withdrawActiveBalance,
+      getProtocolAgent,
+    ]
   )
 }
 export default useProtocolManager
