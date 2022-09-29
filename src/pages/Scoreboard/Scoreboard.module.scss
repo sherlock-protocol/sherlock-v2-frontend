@@ -1,7 +1,25 @@
+@import "../../styles/variables";
+
 .scoreboardTable {
-  min-width: 420;
+  min-width: 600px;
 }
 
 .positionColumn {
   width: 16px;
+}
+
+.highlight {
+  color: $alternate-pink;
+
+  & :hover {
+    cursor: pointer;
+  }
+}
+
+.seniorWatsonModal {
+  max-width: 600px;
+
+  & h1 {
+    color: $alternate-pink;
+  }
 }

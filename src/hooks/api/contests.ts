@@ -32,6 +32,7 @@ export type Contestant = {
 
 export type Scoreboard = {
   handle: string
+  senior: boolean
   score: number
 }[]
 
@@ -176,6 +177,7 @@ export const useOptInOut = (contestId: number, optIn: boolean) => {
 
 type GetScoreboardResponseData = {
   handle: string
+  senior: boolean
   score: number
 }[]
 
@@ -186,6 +188,7 @@ export const useScoreboard = () =>
 
     return data.map((d) => ({
       handle: d.handle,
+      senior: d.senior,
       score: d.score,
     }))
   })
