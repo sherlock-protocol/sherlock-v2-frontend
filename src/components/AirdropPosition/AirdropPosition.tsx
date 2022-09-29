@@ -3,7 +3,6 @@ import { DateTime } from "luxon"
 import React from "react"
 import { MerkleDistributor } from "../../contracts"
 import MerkleDistributorABI from "../../abi/MerkleDistributor.json"
-import { format } from "../../utils/units"
 import { Box } from "../Box"
 import { Button } from "../Button"
 import { Column, Row } from "../Layout"
@@ -12,6 +11,7 @@ import { Title } from "../Title"
 import styles from "./AirdropPosition.module.scss"
 import { useContract, useProvider, useSigner } from "wagmi"
 import useWaitTx from "../../hooks/useWaitTx"
+import { formatAmount } from "../../utils/format"
 
 type Props = {
   index: number
@@ -77,7 +77,7 @@ const AirdropPosition: React.FC<Props> = ({
           </Column>
           <Column>
             <Text strong variant="mono">
-              {format(amount, units)} {tokenSymbol}
+              {formatAmount(ethers.utils.formatUnits(amount, units))} {tokenSymbol}
             </Text>
           </Column>
         </Row>
