@@ -19,7 +19,7 @@ export const SeniorWatsonModal = (props: ModalProps) => {
         </Row>
 
         <Text>
-          Senior Watson are eligible to receive guaranteed pay for competing in Sherlock contests. And they have
+          Senior Watsons are eligible to receive guaranteed pay for competing in Sherlock contests. And they have
           additional responsibilities such as conducting the fix review.
         </Text>
 
