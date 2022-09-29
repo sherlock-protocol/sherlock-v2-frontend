@@ -6,6 +6,7 @@ import { Text } from "../../components/Text"
 import { Protocol } from "../../hooks/api/protocols"
 import { Column } from "../../components/Layout"
 import { NewClaimModal } from "./NewClaimModal"
+import useProtocolManager from "../../hooks/useProtocolManager"
 
 type Props = {
   protocol: Protocol
@@ -14,11 +15,18 @@ type Props = {
 export const StartNewClaimSection: React.FC<Props> = ({ protocol }) => {
   const { address: connectedAddress } = useAccount()
   const [isCreating, setIsCreating] = useState(false)
+  const { getProtocolAgent } = useProtocolManager()
   const [canStartNewClaim, setCanStartNewClaim] = useState(false)
 
   useEffect(() => {
-    setCanStartNewClaim(connectedAddress === protocol.agent)
-  }, [connectedAddress, protocol.agent])
+    const checkProtocolAgent = async () => {
+      const protocolAgent = await getProtocolAgent(protocol.bytesIdentifier)
+
+      setCanStartNewClaim(protocolAgent === connectedAddress)
+    }
+
+    checkProtocolAgent()
+  }, [connectedAddress, getProtocolAgent, protocol.bytesIdentifier])
 
   /**
    * Handler for start claim click
