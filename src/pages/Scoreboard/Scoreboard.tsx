@@ -9,6 +9,7 @@ import { SeniorWatsonModal } from "./SeniorWatsonModal"
 import { useScoreboard } from "../../hooks/api/contests"
 
 import styles from "./Scoreboard.module.scss"
+import { commify } from "../../utils/units"
 
 export const Scoreboard: React.FC = () => {
   const [seniorWatsonModalOpen, setSeniorWatsonModalOpen] = useState(false)
@@ -35,7 +36,17 @@ export const Scoreboard: React.FC = () => {
                   <Text>Auditor</Text>
                 </Th>
                 <Th>
-                  <Text alignment="right">Points</Text>
+                  <Text alignment="center">Points</Text>
+                </Th>
+                <Th>
+                  <Text alignment="center" variant="secondary">
+                    Contest days
+                  </Text>
+                </Th>
+                <Th>
+                  <Text alignment="center" variant="secondary">
+                    Payouts
+                  </Text>
                 </Th>
               </Tr>
             </THead>
@@ -52,9 +63,17 @@ export const Scoreboard: React.FC = () => {
                     </Row>
                   </Td>
                   <Td>
-                    <Text variant="mono" alignment="right">
+                    <Text variant="mono" alignment="center" strong>
                       {s.score >= 1 ? s.score.toFixed(0) : "<1"}
                     </Text>
+                  </Td>
+                  <Td>
+                    <Text alignment="center" variant="secondary">
+                      {s.contestDays}
+                    </Text>
+                  </Td>
+                  <Td>
+                    <Text alignment="center" variant="secondary">{`${commify(s.payouts)} USDC`}</Text>
                   </Td>
                 </Tr>
               ))}
