@@ -10,7 +10,7 @@ import { Field } from "../../pages/Claim/Field"
 
 import { hasSpaces, onlyAscii } from "../../utils/strings"
 
-type AuditorFormValues = {
+export type AuditorFormValues = {
   handle: string
   githubHandle: string
   discordHandle: string
@@ -62,7 +62,10 @@ export const AuditorForm: React.FC<Props> = ({
 
     let error = ""
 
-    if (debouncedHandle.length < HANDLE_LENGTH_MIN || debouncedHandle.length > HANDLE_LENGTH_MAX) {
+    if (
+      debouncedHandle !== "" &&
+      (debouncedHandle.length < HANDLE_LENGTH_MIN || debouncedHandle.length > HANDLE_LENGTH_MAX)
+    ) {
       error = `Handle must be between ${HANDLE_LENGTH_MIN} and ${HANDLE_LENGTH_MAX} characters`
     } else if (hasSpaces(debouncedHandle)) {
       error = "Cannot contain white spaces"
