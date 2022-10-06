@@ -14,10 +14,14 @@ import { AuditorSignUpModal } from "./AuditorSignUpModal"
 import styles from "./Contests.module.scss"
 import { FinishedContests } from "./FinishedContests"
 import { UpcomingContests } from "./UpcomingContests"
+import { useIsAuditor } from "../../hooks/api/auditors"
+import { useAccount } from "wagmi"
 
 export const ContestsPage: React.FC<{}> = () => {
+  const { address: connectedAddress } = useAccount()
   const { data: contests } = useContests()
   const { signUp, isLoading, isSuccess: signUpSuccess, auditor } = useSignUp()
+  const { data: isAuditor } = useIsAuditor(connectedAddress)
   const navigate = useNavigate()
   const [signUpFormModalOpen, setSignUpFormModalOpen] = useState(false)
   const [signUpSuccessModalOpen, setSignUpSuccessModalOpen] = useState(false)
@@ -29,8 +33,6 @@ export const ContestsPage: React.FC<{}> = () => {
     [navigate]
   )
 
-  console.log(signUpSuccess, auditor)
-
   useEffect(() => {
     if (signUpSuccess) {
       setSignUpSuccessModalOpen(true)
@@ -40,20 +42,22 @@ export const ContestsPage: React.FC<{}> = () => {
 
   return (
     <Column spacing="m" className={styles.container}>
-      <Box shadow={false}>
-        <Row alignment={["space-between", "center"]}>
-          <Title variant="h2">Want to become an auditor?</Title>
-          <Button onClick={() => setSignUpFormModalOpen(true)}>Sign up</Button>
-        </Row>
-        {signUpFormModalOpen && (
-          <AuditorSignUpModal
-            onSubmit={signUp}
-            isLoading={isLoading}
-            closeable
-            onClose={() => setSignUpFormModalOpen(false)}
-          />
-        )}
-      </Box>
+      {!isAuditor && (
+        <Box shadow={false}>
+          <Row alignment={["space-between", "center"]}>
+            <Title variant="h2">Want to become an auditor?</Title>
+            <Button onClick={() => setSignUpFormModalOpen(true)}>Sign up</Button>
+          </Row>
+          {signUpFormModalOpen && (
+            <AuditorSignUpModal
+              onSubmit={signUp}
+              isLoading={isLoading}
+              closeable
+              onClose={() => setSignUpFormModalOpen(false)}
+            />
+          )}
+        </Box>
+      )}
 
       <ActiveContests contests={contests} onContestClick={handleContestClick} />
       <UpcomingContests contests={contests} onContestClick={handleContestClick} />

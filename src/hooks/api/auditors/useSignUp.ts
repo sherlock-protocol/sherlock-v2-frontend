@@ -1,9 +1,10 @@
 import { AxiosError } from "axios"
 import { useCallback } from "react"
-import { useMutation } from "react-query"
+import { useMutation, useQueryClient } from "react-query"
 import { useAccount } from "wagmi"
 import { AuditorProfile } from "."
 import { FormError } from "../../../utils/Error"
+import { isAuditorQuery } from "../auditors"
 import { contests as contestsAPI } from "../axios"
 import { signUp as signUpUrl } from "../urls"
 import { useSignSignUpMessage } from "./useSignSignUpMessage"
@@ -37,35 +38,43 @@ type SignUpParams = {
 export const useSignUp = () => {
   const { address: connectedAddress } = useAccount()
   const { signTypedDataAsync, isLoading: signatureIsLoading } = useSignSignUpMessage()
+  const queryClient = useQueryClient()
 
-  const { mutate, mutateAsync, ...mutation } = useMutation<AuditorProfile, FormError, SignUpParams>(async (params) => {
-    try {
-      const { data } = await contestsAPI.post<SignUpResponseData>(signUpUrl(), {
-        handle: params.handle,
-        github_handle: params.githubHandle,
-        discord_handle: params.discordHandle,
-        twitter_handle: params.twitterHandle && params.twitterHandle.length > 0 ? params.twitterHandle : undefined,
-        telegram_handle: params.telegramHandle && params.telegramHandle.length > 0 ? params.telegramHandle : undefined,
-        signature: params.signature,
-        address: params.address,
-      })
+  const { mutate, mutateAsync, ...mutation } = useMutation<AuditorProfile, FormError, SignUpParams>(
+    async (params) => {
+      try {
+        const { data } = await contestsAPI.post<SignUpResponseData>(signUpUrl(), {
+          handle: params.handle,
+          github_handle: params.githubHandle,
+          discord_handle: params.discordHandle,
+          twitter_handle: params.twitterHandle && params.twitterHandle.length > 0 ? params.twitterHandle : undefined,
+          telegram_handle:
+            params.telegramHandle && params.telegramHandle.length > 0 ? params.telegramHandle : undefined,
+          signature: params.signature,
+          address: params.address,
+        })
 
-      return {
-        id: data.auditor.id,
-        handle: data.auditor.handle,
-        githubHandle: data.auditor.github_handle,
-        discordHandle: data.auditor.discord_handle,
-        twitterHandle: data.auditor.twitter_handle,
-        telegramHandle: data.auditor.telegram_handle,
-        addresses: data.auditor.addresses.map((a) => ({ id: a.id, address: a.address })),
-        payoutAddress: data.auditor.payout_address_mainnet,
+        return {
+          id: data.auditor.id,
+          handle: data.auditor.handle,
+          githubHandle: data.auditor.github_handle,
+          discordHandle: data.auditor.discord_handle,
+          twitterHandle: data.auditor.twitter_handle,
+          telegramHandle: data.auditor.telegram_handle,
+          addresses: data.auditor.addresses.map((a) => ({ id: a.id, address: a.address })),
+          payoutAddress: data.auditor.payout_address_mainnet,
+        }
+      } catch (error) {
+        const axiosError = error as AxiosError
+        throw new FormError(axiosError.response?.data)
       }
-    } catch (error) {
-      console.log(error)
-      const axiosError = error as AxiosError
-      throw new FormError(axiosError.response?.data)
+    },
+    {
+      onSuccess(_data, { address }) {
+        queryClient.invalidateQueries(isAuditorQuery(address))
+      },
     }
-  })
+  )
 
   const signUp = useCallback(
     async (params: Omit<SignUpParams, "address" | "signature">) => {
