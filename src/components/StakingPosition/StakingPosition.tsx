@@ -106,7 +106,7 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
         </Row>
         <Row alignment="space-between" spacing="m">
           <Column>
-            <Text>Unlocks in</Text>
+            <Text>{isUnlocked ? "Unlocked" : "Unlocks in"}</Text>
           </Column>
           <Column>
             <Text strong variant="mono">
