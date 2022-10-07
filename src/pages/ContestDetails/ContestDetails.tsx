@@ -24,6 +24,7 @@ import { ReportModal } from "./ReportModal"
 
 import { useSignUpSignatureVerification } from "../../hooks/api/contests/useSignUpSignatureVerification"
 import { useContestSignUp } from "../../hooks/api/contests/useContestSignUp"
+import { useIsAuditor } from "../../hooks/api/auditors"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -45,6 +46,7 @@ type SignUpParams = {
 export const ContestDetails = () => {
   const { contestId } = useParams()
   const { address } = useAccount()
+  const { data: isAuditor } = useIsAuditor(address)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [auditorFormOpen, setAuditorFormOpen] = useState(false)
   const [reportModalOpen, setReportModalOpen] = useState(false)
@@ -256,7 +258,7 @@ export const ContestDetails = () => {
                 ) : (
                   canSignUp && (
                     <ConnectGate>
-                      <Button onClick={sign}>SIGN UP</Button>
+                      <Button onClick={sign}>{isAuditor ? "JOIN CONTEST" : "SIGN UP"}</Button>
                     </ConnectGate>
                   )
                 )}
