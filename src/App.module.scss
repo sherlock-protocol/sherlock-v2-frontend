@@ -19,7 +19,7 @@
 
     & .content {
       width: 100%;
-      max-width: 1080px;
+      max-width: 1240px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -36,8 +36,7 @@
   left: 0;
   right: 0;
   background-image: url("./assets/images/noise.png");
-  background-position: 0px 0px;
-  background-size: cover;
+  background-repeat: repeat;
   opacity: 0.4;
   mix-blend-mode: screen;
   pointer-events: none;

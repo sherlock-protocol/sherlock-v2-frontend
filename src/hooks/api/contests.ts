@@ -1,14 +1,13 @@
-import { AxiosError } from "axios"
-import React, { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "react-query"
 import { useAccount, useSignTypedData } from "wagmi"
 import { contests as contestsAPI } from "./axios"
 import {
   getContests as getContestsUrl,
-  validateSignature,
-  contestSignUp as contestSignUpUrl,
+  getContest as getContestUrl,
   contestOptIn as contestOptInUrl,
   getContestant as getContestantUrl,
+  getScoreboard as getScoreboardUrl,
 } from "./urls"
 
 export type ContestStatus = "CREATED" | "RUNNING" | "JUDGING" | "FINISHED"
@@ -18,6 +17,7 @@ export type Contest = {
   title: string
   shortDescription: string
   description?: string
+  report?: string
   logoURL?: string
   prizePool: number
   startDate: number // Timestamp in seconds.
@@ -25,25 +25,21 @@ export type Contest = {
   status: ContestStatus
 }
 
-export type Auditor = {
-  id: number
-  handle: string
-  discordHandle?: string
-  githubHandle?: string
-  twitterHandle?: string
-  telegramHandle?: string
-}
-
 export type Contestant = {
   repo: string
   countsTowardsRanking: boolean
 }
 
+export type Scoreboard = {
+  handle: string
+  senior: boolean
+  score: number
+}[]
+
 type GetContestsResponseData = {
   id: number
   title: string
   short_description: string
-  description: string
   logo_url: string
   prize_pool: number
   starts_at: number
@@ -53,14 +49,13 @@ type GetContestsResponseData = {
 
 export const contestsQueryKey = "contests"
 export const useContests = () =>
-  useQuery<Contest[] | null, Error>(contestsQueryKey, async () => {
+  useQuery<Contest[], Error>(contestsQueryKey, async () => {
     const { data: response } = await contestsAPI.get<GetContestsResponseData>(getContestsUrl())
 
     return response.map((d) => ({
       id: d.id,
       title: d.title,
       shortDescription: d.short_description,
-      description: d.description,
       logoURL: d.logo_url,
       prizePool: d.prize_pool,
       startDate: d.starts_at,
@@ -69,152 +64,37 @@ export const useContests = () =>
     }))
   })
 
-export const useContest = (id: number) => {
-  const { data: contests } = useContests()
-  const filteredContests = contests?.filter((c) => c.id === id)
-
-  return { data: filteredContests && filteredContests.length > 0 ? filteredContests[0] : null }
+type GetContestResponseData = {
+  id: number
+  title: string
+  short_description: string
+  logo_url: string
+  prize_pool: number
+  starts_at: number
+  ends_at: number
+  status: ContestStatus
+  description?: string
+  report?: string
 }
 
-type SignatureVerificationResponseData = {
-  auditor: {
-    id: number
-    handle: string
-    github_handle?: string
-    discord_handle?: string
-  } | null
-}
+export const contestQueryKey = (id: number) => ["contest", id]
+export const useContest = (id: number) =>
+  useQuery<Contest, Error>(contestQueryKey(id), async () => {
+    const { data: response } = await contestsAPI.get<GetContestResponseData>(getContestUrl(id))
 
-export const useSignatureVerification = (contestId: number, opts?: UseQueryOptions<Auditor | null, Error>) => {
-  const domain = {
-    name: "Sherlock Contest",
-    version: "1",
-  }
-
-  const types = {
-    Signup: [
-      { name: "action", type: "string" },
-      { name: "contest_id", type: "uint256" },
-    ],
-  }
-
-  const value = {
-    action: "participate",
-    contest_id: contestId,
-  }
-
-  const { signTypedData, data: signature, isLoading: signatureIsLoading } = useSignTypedData({ domain, types, value })
-
-  const {
-    data,
-    isLoading: requestIsLoading,
-    isFetched,
-  } = useQuery<Auditor | null, Error>(
-    ["signatureVerification", signature],
-    async () => {
-      const { data } = await contestsAPI.post<SignatureVerificationResponseData>(validateSignature(), {
-        contest_id: contestId,
-        signature,
-      })
-
-      if (!data.auditor) return null
-
-      return {
-        id: data.auditor.id,
-        handle: data.auditor.handle,
-        githubHandle: data.auditor.github_handle,
-        discordHandle: data.auditor.discord_handle,
-      }
-    },
-    { enabled: !!signature, ...opts }
-  )
-
-  const signAndVerify = useCallback(async () => {
-    try {
-      signTypedData()
-    } catch (error) {}
-  }, [signTypedData])
-
-  return React.useMemo(
-    () => ({ signAndVerify, isLoading: signatureIsLoading || requestIsLoading, data, isFetched, signature }),
-    [signAndVerify, signatureIsLoading, requestIsLoading, data, isFetched, signature]
-  )
-}
-
-type SignUpParams = {
-  handle: string
-  githubHandle: string
-  discordHandle: string
-  twitterHandle?: string
-  telegramHandle?: string
-  signature: string
-  contestId: number
-}
-type SignUpResponseData = {
-  repo_name: string
-}
-type SignUp = {
-  repo: string
-}
-
-class SignUpError extends Error {
-  fieldErrors?: Record<string, string[]>
-
-  constructor(reason?: string | Record<string, string[]>) {
-    super(typeof reason === "string" ? reason : "")
-
-    if (typeof reason === "object") {
-      this.fieldErrors = reason
+    return {
+      id: response.id,
+      title: response.title,
+      shortDescription: response.short_description,
+      logoURL: response.logo_url,
+      prizePool: response.prize_pool,
+      startDate: response.starts_at,
+      endDate: response.ends_at,
+      status: response.status,
+      description: response.description,
+      report: response.report,
     }
-  }
-}
-
-export const useContestSignUp = (params: SignUpParams) => {
-  const queryClient = useQueryClient()
-  const { address } = useAccount()
-  const {
-    mutate: signUp,
-    isLoading,
-    isSuccess,
-    data,
-    error,
-    isError,
-    reset,
-  } = useMutation<SignUp | null, SignUpError>(
-    async () => {
-      try {
-        const { data } = await contestsAPI.post<SignUpResponseData>(contestSignUpUrl(), {
-          handle: params.handle,
-          github_handle: params.githubHandle,
-          discord_handle: params.discordHandle.trim(),
-          twitter_handle: params.twitterHandle?.trim(),
-          telegram_handle: params.telegramHandle?.trim(),
-          signature: params.signature,
-          contest_id: params.contestId,
-          address,
-        })
-
-        return {
-          repo: data.repo_name,
-        }
-      } catch (error) {
-        const axiosError = error as AxiosError
-
-        throw new SignUpError(axiosError.response?.data)
-      }
-    },
-    {
-      onSettled(data, error, variables, context) {
-        queryClient.invalidateQueries(contestantQueryKey(address ?? "", params.contestId))
-      },
-    }
-  )
-
-  return useMemo(
-    () => ({ signUp, isLoading, isSuccess, data, error, isError, reset }),
-    [isLoading, isSuccess, data, error, isError, signUp, reset]
-  )
-}
+  })
 
 type GetContestantResponseData = {
   contestant: {
@@ -294,3 +174,21 @@ export const useOptInOut = (contestId: number, optIn: boolean) => {
     [mutationIsLoading, signatureIsLoading, signAndOptIn]
   )
 }
+
+type GetScoreboardResponseData = {
+  handle: string
+  senior: boolean
+  score: number
+}[]
+
+export const scoreboardQueryKey = () => "scoreboard"
+export const useScoreboard = () =>
+  useQuery<Scoreboard, Error>(scoreboardQueryKey(), async () => {
+    const { data } = await contestsAPI.get<GetScoreboardResponseData>(getScoreboardUrl())
+
+    return data.map((d) => ({
+      handle: d.handle,
+      senior: d.senior,
+      score: d.score,
+    }))
+  })

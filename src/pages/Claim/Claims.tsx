@@ -9,6 +9,7 @@ import { isInFinalState, useActiveClaim } from "../../hooks/api/claims"
 
 import { StartNewClaimSection } from "./StartNewClaimSection"
 import { ActiveClaim } from "./ActiveClaim"
+import { DateTime } from "luxon"
 
 export const ClaimsPage: React.FC = () => {
   const [selectedProtocolBytesIdentifier, setSelectedProtocolBytesIdentifier] = useState<string>()
@@ -26,10 +27,16 @@ export const ClaimsPage: React.FC = () => {
   const protocolSelectOptions = useMemo(
     () =>
       (protocols &&
-        Object.entries(protocols).map(([_, p]) => ({
-          label: p.name ?? "Unknown",
-          value: p.bytesIdentifier,
-        }))) ??
+        Object.entries(protocols)
+          .filter(
+            ([_, p]) =>
+              p.coverages[0] &&
+              (!p.coverages[0].claimableUntil || DateTime.fromJSDate(p.coverages[0].claimableUntil) > DateTime.now())
+          )
+          .map(([_, p]) => ({
+            label: p.name ?? "Unknown",
+            value: p.bytesIdentifier,
+          }))) ??
       [],
     [protocols]
   )

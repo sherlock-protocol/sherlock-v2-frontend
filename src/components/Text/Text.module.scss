@@ -1,6 +1,8 @@
 @import "../../styles/variables";
 
 .text {
+  font-family: $font-family;
+
   &.warning {
     color: red;
   }
@@ -9,16 +11,20 @@
     font-weight: 700;
   }
 
-  &.extra-large {
-    font-size: 1.5em;
+  &.tiny {
+    font-size: 0.6rem;
   }
 
   &.small {
     font-size: 0.875rem;
   }
 
-  &.tiny {
-    font-size: 0.6rem;
+  &.large {
+    font-size: 1.2rem;
+  }
+
+  &.extra-large {
+    font-size: 1.5rem;
   }
 
   &.mono {
@@ -31,6 +37,10 @@
 
   &.secondary {
     opacity: 0.5;
+  }
+
+  &.alternate {
+    color: $alternate-pink;
   }
 
   &.center {

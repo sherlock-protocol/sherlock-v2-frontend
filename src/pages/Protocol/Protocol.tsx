@@ -29,10 +29,12 @@ export const ProtocolPage: React.FC = () => {
 
   const protocolSelectOptions = React.useMemo(
     () =>
-      Object.entries(protocols ?? {}).map(([key, item]) => ({
-        label: item.name ?? "Unknown",
-        value: key,
-      })) ?? [],
+      Object.entries(protocols ?? {})
+        .filter(([_, p]) => p.agent !== ethers.constants.AddressZero)
+        .map(([key, item]) => ({
+          label: item.name ?? "Unknown",
+          value: key,
+        })) ?? [],
     [protocols]
   )
   const selectedProtocol = React.useMemo<Protocol | null>(

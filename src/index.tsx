@@ -14,6 +14,7 @@ import App from "./App"
 import "./index.module.scss"
 import reportWebVitals from "./reportWebVitals"
 import "./polyfills"
+import { AuthenticationContextProvider } from "./hooks/api/useAuthentication"
 
 global.Buffer = global.Buffer || require("buffer").Buffer
 
@@ -36,7 +37,9 @@ root.render(
             <TxWaitProvider>
               <FundraisePositionProvider>
                 <StakingPositionsProvider>
-                  <App />
+                  <AuthenticationContextProvider>
+                    <App />
+                  </AuthenticationContextProvider>
                 </StakingPositionsProvider>
               </FundraisePositionProvider>
             </TxWaitProvider>

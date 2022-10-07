@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { useDebounce } from "use-debounce"
 import axios, { AxiosError } from "axios"
 import { FaGithub, FaInfoCircle } from "react-icons/fa"
@@ -7,26 +7,34 @@ import { Button } from "../../components/Button"
 import { Input } from "../../components/Input"
 import { Column, Row } from "../../components/Layout"
 import { Modal, Props as ModalProps } from "../../components/Modal/Modal"
-import { Auditor, Contest, useContestSignUp } from "../../hooks/api/contests"
+import { Contest } from "../../hooks/api/contests"
+import { Auditor } from "../../hooks/api/auditors"
 import { Field } from "../Claim/Field"
 import { Text } from "../../components/Text"
-import { SignUpSuccessModal } from "./SignUpSuccessModal"
-import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 
 import styles from "./ContestDetails.module.scss"
 import { hasSpaces, onlyAscii } from "../../utils/strings"
-import { ErrorModal } from "./ErrorModal"
 import { Title } from "../../components/Title"
+import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
+
+type AuditorFormValues = {
+  handle: string
+  githubHandle: string
+  discordHandle: string
+  twitterHandle?: string
+  telegramHandle?: string
+}
 
 type Props = ModalProps & {
   auditor?: Auditor | null
   contest: Contest
-  signature: string
+  onSubmit: (values: AuditorFormValues) => void
+  isLoading?: boolean
 }
 
 const HANDLE_LENGTH_LIMIT = 32
 
-export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature, onClose }) => {
+export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, onClose, onSubmit, isLoading = false }) => {
   const [handle, setHandle] = useState(auditor?.handle ?? "")
   const [debouncedHandle] = useDebounce(handle, 300)
   const [verifiedHandle, setVerifiedHandle] = useState<string>()
@@ -41,24 +49,6 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
   const [discordHandle, setDiscordHandle] = useState(auditor?.discordHandle ?? "")
   const [twitterHandle, setTwitterHandle] = useState(auditor?.twitterHandle ?? "")
   const [telegramHandle, setTelegramHandle] = useState(auditor?.telegramHandle ?? "")
-
-  const {
-    signUp: doSignUp,
-    isLoading,
-    isSuccess: isSignUpSuccess,
-    data: signUpData,
-    error,
-    isError,
-    reset,
-  } = useContestSignUp({
-    handle: verifiedHandle ?? "",
-    githubHandle: verifiedGithubHandle ?? "",
-    discordHandle: discordHandle,
-    twitterHandle: twitterHandle.length > 0 ? twitterHandle : undefined,
-    telegramHandle: telegramHandle.length > 0 ? telegramHandle : undefined,
-    contestId: contest.id,
-    signature,
-  })
 
   /**
    * Verify Handle
@@ -138,13 +128,9 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
     [handle, verifiedGithubHandle, githubHandle, isVerifyingGithubHandle, discordHandle, verifiedHandle]
   )
 
-  const handleErrorModalClose = useCallback(() => {
-    reset()
-  }, [reset])
-
   return (
-    <Modal closeable onClose={onClose}>
-      <LoadingContainer loading={isLoading} label="Signing up...">
+    <Modal closeable={!isLoading} onClose={onClose}>
+      <LoadingContainer loading={isLoading} label="Signing up for contest ...">
         <Column spacing="xl" className={styles.formContainer}>
           <Row>
             <Column grow={1} spacing="s">
@@ -211,14 +197,24 @@ export const AuditorFormModal: React.FC<Props> = ({ auditor, contest, signature,
             </Field>
           </Row>
           <Row>
-            <Button fullWidth onClick={() => doSignUp()} disabled={isLoading || !readyToSubmit}>
-              {isLoading ? "SIGNING UP..." : "SIGN UP"}
+            <Button
+              fullWidth
+              onClick={() =>
+                onSubmit({
+                  handle,
+                  githubHandle,
+                  discordHandle,
+                  telegramHandle,
+                  twitterHandle,
+                })
+              }
+              disabled={!readyToSubmit}
+            >
+              SIGN UP
             </Button>
           </Row>
         </Column>
       </LoadingContainer>
-      {isSignUpSuccess && <SignUpSuccessModal contest={contest} onClose={onClose} repo={signUpData?.repo} />}
-      {isError && <ErrorModal reason={error?.fieldErrors ?? error?.message} onClose={handleErrorModalClose} />}
     </Modal>
   )
 }

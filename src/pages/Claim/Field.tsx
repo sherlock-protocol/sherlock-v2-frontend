@@ -19,7 +19,7 @@ type Props = {
 export const Field: React.FC<PropsWithChildren<Props>> = ({ label, detail, children, ...props }) => {
   return (
     <Column spacing="xs" grow={1}>
-      {label && (
+      {(label || props.error) && (
         <Row spacing="xs">
           <Column>
             <Text size="small" variant={props.error ? "warning" : "normal"} strong>

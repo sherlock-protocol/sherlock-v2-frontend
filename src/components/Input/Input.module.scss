@@ -14,6 +14,13 @@
     font-weight: 600;
     opacity: 0.3;
   }
+
+  &.secondary {
+    & .placeholder {
+      left: 0.5em;
+      font-weight: 400;
+    }
+  }
 }
 
 .input {
@@ -37,5 +44,18 @@
   &.small {
     font-size: 0.95rem;
     font-weight: 400;
+  }
+
+  &.secondary {
+    background-color: transparent;
+    border: none;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.25rem;
+  }
+
+  &.mono {
+    font-family: $font-family-mono;
+    font-variant-numeric: tabular-nums;
   }
 }

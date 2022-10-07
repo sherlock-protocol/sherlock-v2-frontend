@@ -1,0 +1,20 @@
+@import "../../styles/variables";
+
+.payoutAddressColumn {
+  width: 100%;
+  padding: 0 0 0 0.5rem !important;
+}
+
+.address {
+  font-family: $font-family-mono;
+  letter-spacing: 0;
+}
+
+.newAddressColumn {
+  width: 100%;
+  padding-top: 1.5rem !important;
+
+  input {
+    padding: 0;
+  }
+}

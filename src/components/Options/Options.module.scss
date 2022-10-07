@@ -27,17 +27,17 @@
       color: white;
     }
 
-    &:hover {
+    &:hover:not(.disabled) {
       background-color: darken($color: $primary-purple, $amount: 5%);
     }
 
-    &:active {
+    &:active:not(.disabled) {
       background-color: darken($color: $primary-purple, $amount: 10%);
     }
 
     &.disabled {
       cursor: auto;
-      opacity: 0.2;
+      opacity: 0.5;
     }
   }
 }

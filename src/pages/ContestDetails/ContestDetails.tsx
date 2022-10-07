@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { useParams } from "react-router-dom"
-import { FaGithub } from "react-icons/fa"
+import { FaGithub, FaBook } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -10,13 +10,7 @@ import { Button } from "../../components/Button"
 import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
 import { commify } from "../../utils/units"
-import {
-  useContest,
-  useContestant,
-  useContestSignUp,
-  useOptInOut,
-  useSignatureVerification,
-} from "../../hooks/api/contests"
+import { useContest, useContestant, useOptInOut } from "../../hooks/api/contests"
 import { AuditorFormModal } from "./AuditorFormModal"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { SignUpSuccessModal } from "./SignUpSuccessModal"
@@ -26,12 +20,26 @@ import { ErrorModal } from "./ErrorModal"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
 import Options from "../../components/Options/Options"
 import { Markdown } from "../../components/Markdown/Markdown"
+import { ReportModal } from "./ReportModal"
+
+import { useSignUpSignatureVerification } from "../../hooks/api/contests/useSignUpSignatureVerification"
+import { useContestSignUp } from "../../hooks/api/contests/useContestSignUp"
 
 const STATUS_LABELS = {
-  CREATED: "PENDING",
+  CREATED: "UPCOMING",
   RUNNING: "RUNNING",
   JUDGING: "JUDGING",
   FINISHED: "FINISHED",
+}
+
+type SignUpParams = {
+  handle: string
+  githubHandle: string
+  discordHandle: string
+  twitterHandle?: string
+  telegramHandle?: string
+  signature: string
+  contestId: number
 }
 
 export const ContestDetails = () => {
@@ -39,6 +47,7 @@ export const ContestDetails = () => {
   const { address } = useAccount()
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [auditorFormOpen, setAuditorFormOpen] = useState(false)
+  const [reportModalOpen, setReportModalOpen] = useState(false)
 
   const { data: contest } = useContest(parseInt(contestId ?? ""))
   const { data: contestant } = useContestant(address ?? "", parseInt(contestId ?? ""), {
@@ -46,59 +55,63 @@ export const ContestDetails = () => {
     retry: false,
   })
   const [optIn, setOptIn] = useState(contestant?.countsTowardsRanking ?? true)
+
   const {
-    signAndVerify,
-    data: auditor,
-    isFetched: auditorIsFetched,
-    signature,
+    verifySignature,
     isLoading: signatureIsLoading,
-  } = useSignatureVerification(parseInt(contestId ?? ""), {
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-  })
+    isSuccess: signatureVerificationSuccess,
+    auditor: verifiedAuditor,
+    signature,
+    reset: resetSignatureVerification,
+  } = useSignUpSignatureVerification(parseInt(contestId ?? ""))
+
   const { signAndOptIn, isLoading: optInisLoading } = useOptInOut(
     parseInt(contestId ?? ""),
     !!!contestant?.countsTowardsRanking
   )
 
-  const shouldDisplayAuditorForm = useMemo(
-    () => auditorIsFetched && (!auditor || !auditor.discordHandle || !auditor.githubHandle),
-    [auditor, auditorIsFetched]
-  )
-
-  const auditorProfileIsComplete = useMemo(
-    () => auditorIsFetched && auditor && auditor.discordHandle && auditor.githubHandle,
-    [auditorIsFetched, auditor]
-  )
-
   const {
-    signUp: doSignUp,
+    signUp,
     isLoading: signUpIsLoading,
-    isSuccess: signUpSuccess,
     data: signUpData,
     error,
     isError,
-    reset,
-  } = useContestSignUp({
-    handle: auditor?.handle ?? "",
-    githubHandle: auditor?.githubHandle ?? "",
-    discordHandle: auditor?.discordHandle ?? "",
-    contestId: contest?.id ?? 0,
-    signature: signature ?? "",
-  })
+    reset: resetSignUp,
+    isSuccess: signUpSuccess,
+  } = useContestSignUp()
+
+  const signUpToContest = useCallback(
+    async (params: SignUpParams) => {
+      signUp(params)
+    },
+    [signUp]
+  )
 
   useEffect(() => {
-    if (auditorProfileIsComplete) {
-      doSignUp()
+    resetSignatureVerification()
+    resetSignUp()
+  }, [address, resetSignatureVerification, resetSignUp])
+
+  useEffect(() => {
+    if (verifiedAuditor && verifiedAuditor.githubHandle && verifiedAuditor.discordHandle && signature && contestId) {
+      signUpToContest({
+        handle: verifiedAuditor.handle,
+        githubHandle: verifiedAuditor.githubHandle,
+        discordHandle: verifiedAuditor.discordHandle,
+        twitterHandle: verifiedAuditor.twitterHandle,
+        telegramHandle: verifiedAuditor.telegramHandle,
+        signature: signature,
+        contestId: parseInt(contestId),
+      })
     }
-  }, [auditorProfileIsComplete, doSignUp])
+  }, [signUpToContest, verifiedAuditor, signature, contestId])
 
   useEffect(() => {
     if (signUpSuccess) {
       setSuccessModalOpen(true)
+      setAuditorFormOpen(false)
     }
-  }, [signUpSuccess, contestant])
+  }, [signUpSuccess])
 
   useEffect(() => {
     if (contestant?.countsTowardsRanking !== undefined) {
@@ -107,18 +120,25 @@ export const ContestDetails = () => {
   }, [contestant?.countsTowardsRanking])
 
   useEffect(() => {
-    if (shouldDisplayAuditorForm) {
+    if (
+      signatureVerificationSuccess &&
+      (!verifiedAuditor || !verifiedAuditor.githubHandle || !verifiedAuditor.discordHandle)
+    ) {
       setAuditorFormOpen(true)
     }
-  }, [shouldDisplayAuditorForm])
+  }, [verifiedAuditor, signatureVerificationSuccess])
 
-  const sign = useCallback(async () => {
-    await signAndVerify()
-  }, [signAndVerify])
+  const sign = useCallback(() => {
+    verifySignature()
+  }, [verifySignature])
 
   const visitRepo = useCallback(async () => {
     contestant && window.open(`https://github.com/${contestant.repo}`, "__blank")
   }, [contestant])
+
+  const handleReportClick = useCallback(async () => {
+    setReportModalOpen(true)
+  }, [setReportModalOpen])
 
   const handleOptInChange = useCallback(
     (_optIn: boolean) => {
@@ -130,12 +150,16 @@ export const ContestDetails = () => {
   )
 
   const handleErrorModalClose = useCallback(() => {
-    reset()
-  }, [reset])
+    resetSignUp()
+  }, [resetSignUp])
 
   const canOptinOut = useMemo(() => contest?.status === "CREATED" || contest?.status === "RUNNING", [contest?.status])
+  const canSignUp = useMemo(() => contest?.status !== "FINISHED" && contest?.status !== "JUDGING", [contest?.status])
 
   if (!contest) return null
+
+  const startDate = DateTime.fromSeconds(contest.startDate)
+  const endDate = DateTime.fromSeconds(contest.endDate)
 
   return (
     <Column spacing="m" className={styles.container}>
@@ -161,6 +185,11 @@ export const ContestDetails = () => {
                 <Text>Status:</Text>&nbsp;
                 <Text strong>{STATUS_LABELS[contest.status]}</Text>
               </Row>
+              {contest.status === "FINISHED" && contest.report && (
+                <Button variant="secondary" onClick={handleReportClick}>
+                  <FaBook /> &nbsp; Read report
+                </Button>
+              )}
               <hr />
               <Row>
                 <Column>
@@ -174,17 +203,25 @@ export const ContestDetails = () => {
               <Row>
                 <Column>
                   <Title variant="h3">{contest.status === "CREATED" ? "STARTS" : "STARTED"}</Title>
-                  <Text size="extra-large" strong>
-                    {DateTime.fromSeconds(contest.startDate).toLocaleString(DateTime.DATE_MED)}
-                  </Text>
+                  <Row alignment={["center", "center"]} spacing="s">
+                    <Text size="extra-large" strong>
+                      {startDate.toLocaleString(DateTime.DATE_MED)}
+                    </Text>
+                    <Text size="small">{startDate.toLocaleString(DateTime.TIME_24_SIMPLE)}</Text>
+                  </Row>
                 </Column>
               </Row>
               <Row>
                 <Column>
-                  <Title variant="h3">ENDS</Title>
-                  <Text size="extra-large" strong>
-                    {DateTime.fromSeconds(contest.endDate).toLocaleString(DateTime.DATE_MED)}
-                  </Text>
+                  <Title variant="h3">
+                    {contest.status === "FINISHED" || contest.status === "JUDGING" ? "ENDED" : "ENDS"}
+                  </Title>
+                  <Row alignment={["center", "center"]} spacing="s">
+                    <Text size="extra-large" strong>
+                      {endDate.toLocaleString(DateTime.DATE_MED)}
+                    </Text>
+                    <Text size="small">{endDate.toLocaleString(DateTime.TIME_24_SIMPLE)}</Text>
+                  </Row>
                 </Column>
               </Row>
               <hr />
@@ -202,32 +239,26 @@ export const ContestDetails = () => {
                       </Text>
                     )}
 
-                    <Text>You're competing for:</Text>
-                    {/* {canOptinOut && (
-                      <Button variant={contestant.countsTowardsRanking ? "alternate" : "primary"} onClick={optInOut}>
-                        {contestant.countsTowardsRanking ? <FaSignOutAlt /> : <FaSignInAlt />}
-                        &nbsp;
-                        {contestant.countsTowardsRanking ? "Compete just for money" : "Compete for money and points"}
-                      </Button>
-                    )} */}
-                    {canOptinOut && (
-                      <Options
-                        options={[
-                          {
-                            value: true,
-                            label: "USDC + Points",
-                          },
-                          { value: false, label: "Only USDC" },
-                        ]}
-                        value={optIn}
-                        onChange={handleOptInChange}
-                      />
-                    )}
+                    <Text>{canOptinOut ? "You're competing for:" : "You've competed for:"}</Text>
+                    <Options
+                      options={[
+                        {
+                          value: true,
+                          label: "USDC + Points",
+                        },
+                        { value: false, label: "Only USDC" },
+                      ]}
+                      value={optIn}
+                      onChange={handleOptInChange}
+                      disabled={!canOptinOut}
+                    />
                   </Column>
                 ) : (
-                  <ConnectGate>
-                    <Button onClick={sign}>SIGN UP</Button>
-                  </ConnectGate>
+                  canSignUp && (
+                    <ConnectGate>
+                      <Button onClick={sign}>SIGN UP</Button>
+                    </ConnectGate>
+                  )
                 )}
               </Row>
             </Column>
@@ -235,15 +266,25 @@ export const ContestDetails = () => {
           {auditorFormOpen && (
             <AuditorFormModal
               onClose={() => setAuditorFormOpen(false)}
+              onSubmit={(values) =>
+                signUpToContest({
+                  ...values,
+                  contestId: parseInt(contestId!),
+                  signature: signature!,
+                })
+              }
               contest={contest}
-              auditor={auditor}
-              signature={signature ?? ""}
+              auditor={verifiedAuditor}
+              isLoading={signUpIsLoading}
             />
           )}
           {successModalOpen && (
             <SignUpSuccessModal onClose={() => setSuccessModalOpen(false)} contest={contest} repo={signUpData?.repo} />
           )}
           {isError && <ErrorModal reason={error?.fieldErrors ?? error?.message} onClose={handleErrorModalClose} />}
+          {reportModalOpen && (
+            <ReportModal report={contest.report} contest={contest} onClose={() => setReportModalOpen(false)} />
+          )}
         </LoadingContainer>
       </Box>
     </Column>
