@@ -37,7 +37,7 @@ type SignUpParams = {
 
 export const useSignUp = () => {
   const { address: connectedAddress } = useAccount()
-  const { signTypedDataAsync, isLoading: signatureIsLoading } = useSignSignUpMessage()
+  const { signTypedDataAsync, isLoading: signatureIsLoading, reset: resetSignature } = useSignSignUpMessage()
   const queryClient = useQueryClient()
 
   const { mutate, mutateAsync, ...mutation } = useMutation<AuditorProfile, FormError, SignUpParams>(
@@ -97,11 +97,18 @@ export const useSignUp = () => {
     [signTypedDataAsync, mutate, connectedAddress]
   )
 
+  const reset = useCallback(() => {
+    resetSignature()
+    mutation.reset()
+  }, [resetSignature, mutation])
+
   return {
     signUp,
     isLoading: signatureIsLoading || mutation.isLoading,
+    isError: mutation.isError,
     auditor: mutation.data,
     error: mutation.error,
     isSuccess: mutation.isSuccess,
+    reset,
   }
 }
