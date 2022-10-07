@@ -64,10 +64,10 @@ export const Scoreboard: React.FC = () => {
                     </Text>
                   </Td>
                   <Td>
-                    <Text alignment="center">{s.contestDays}</Text>
+                    <Text alignment="center">{s.contestDays.toFixed(1)}</Text>
                   </Td>
                   <Td>
-                    <Text alignment="center">{`${commify(s.payouts)}`}</Text>
+                    <Text alignment="center">{`${commify(s.payouts, 2)}`}</Text>
                   </Td>
                 </Tr>
               ))}
