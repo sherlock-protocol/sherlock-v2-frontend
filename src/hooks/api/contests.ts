@@ -34,6 +34,8 @@ export type Scoreboard = {
   handle: string
   senior: boolean
   score: number
+  contestDays: number
+  payouts: number
 }[]
 
 type GetContestsResponseData = {
@@ -179,6 +181,8 @@ type GetScoreboardResponseData = {
   handle: string
   senior: boolean
   score: number
+  days: number
+  payout: number
 }[]
 
 export const scoreboardQueryKey = () => "scoreboard"
@@ -190,5 +194,7 @@ export const useScoreboard = () =>
       handle: d.handle,
       senior: d.senior,
       score: d.score,
+      contestDays: d.days,
+      payouts: d.payout,
     }))
   })
