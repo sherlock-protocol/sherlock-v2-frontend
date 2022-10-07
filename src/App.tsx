@@ -50,7 +50,7 @@ function App() {
         <Route path={`${routes.AuditContests}/*`} element={<AppContests />}>
           <Route path={contestsRoutes.Contests} element={<ContestsPage />} />
           <Route path={contestsRoutes.ContestDetails} element={<ContestDetails />} />
-          <Route path={contestsRoutes.Scoreboard} element={<Scoreboard />} />
+          <Route path={contestsRoutes.Leaderboard} element={<Scoreboard />} />
           <Route
             path={contestsRoutes.Profile}
             element={

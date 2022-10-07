@@ -22,7 +22,7 @@ export const Scoreboard: React.FC = () => {
     <>
       <Box>
         <Column className={styles.scoreboardTable}>
-          <Title>SCOREBOARD</Title>
+          <Title>LEADERBOARD</Title>
           <Table selectable={false}>
             <THead>
               <Tr>
@@ -39,14 +39,10 @@ export const Scoreboard: React.FC = () => {
                   <Text alignment="center">Points</Text>
                 </Th>
                 <Th>
-                  <Text alignment="center" variant="secondary">
-                    Contest days
-                  </Text>
+                  <Text alignment="center">Contest days</Text>
                 </Th>
                 <Th>
-                  <Text alignment="center" variant="secondary">
-                    Payouts
-                  </Text>
+                  <Text alignment="center">Payouts (USDC)</Text>
                 </Th>
               </Tr>
             </THead>
@@ -68,12 +64,10 @@ export const Scoreboard: React.FC = () => {
                     </Text>
                   </Td>
                   <Td>
-                    <Text alignment="center" variant="secondary">
-                      {s.contestDays}
-                    </Text>
+                    <Text alignment="center">{s.contestDays}</Text>
                   </Td>
                   <Td>
-                    <Text alignment="center" variant="secondary">{`${commify(s.payouts)} USDC`}</Text>
+                    <Text alignment="center">{`${commify(s.payouts)}`}</Text>
                   </Td>
                 </Tr>
               ))}
