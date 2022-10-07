@@ -9,6 +9,7 @@ import { SeniorWatsonModal } from "./SeniorWatsonModal"
 import { useScoreboard } from "../../hooks/api/contests"
 
 import styles from "./Scoreboard.module.scss"
+import { commify } from "../../utils/units"
 
 export const Scoreboard: React.FC = () => {
   const [seniorWatsonModalOpen, setSeniorWatsonModalOpen] = useState(false)
@@ -21,7 +22,7 @@ export const Scoreboard: React.FC = () => {
     <>
       <Box>
         <Column className={styles.scoreboardTable}>
-          <Title>SCOREBOARD</Title>
+          <Title>LEADERBOARD</Title>
           <Table selectable={false}>
             <THead>
               <Tr>
@@ -35,7 +36,13 @@ export const Scoreboard: React.FC = () => {
                   <Text>Auditor</Text>
                 </Th>
                 <Th>
-                  <Text alignment="right">Points</Text>
+                  <Text alignment="center">Points</Text>
+                </Th>
+                <Th>
+                  <Text alignment="center">Contest days</Text>
+                </Th>
+                <Th>
+                  <Text alignment="center">Payouts (USDC)</Text>
                 </Th>
               </Tr>
             </THead>
@@ -52,9 +59,15 @@ export const Scoreboard: React.FC = () => {
                     </Row>
                   </Td>
                   <Td>
-                    <Text variant="mono" alignment="right">
+                    <Text variant="mono" alignment="center" strong>
                       {s.score >= 1 ? s.score.toFixed(0) : "<1"}
                     </Text>
+                  </Td>
+                  <Td>
+                    <Text alignment="center">{s.contestDays.toFixed(1)}</Text>
+                  </Td>
+                  <Td>
+                    <Text alignment="center">{`${commify(s.payouts, 2)}`}</Text>
                   </Td>
                 </Tr>
               ))}
