@@ -30,8 +30,8 @@ export const AppContests = () => {
 
   if (scoreboard && scoreboard.length > 0) {
     navigationLinks.push({
-      title: "SCOREBOARD",
-      route: contestsRoutes.Scoreboard,
+      title: "LEADERBOARD",
+      route: contestsRoutes.Leaderboard,
     })
   }
 
