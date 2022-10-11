@@ -65,8 +65,8 @@ export const ContestsPage: React.FC<{}> = () => {
     <Column spacing="m" className={styles.container}>
       {!isAuditor && (
         <Box shadow={false}>
-          <Row alignment={["space-between", "center"]}>
-            <Title variant="h2">Want to become an auditor?</Title>
+          <Row spacing="xl" alignment={["start", "center"]}>
+            <Title variant="h2">Not an auditor yet?</Title>
             <Button onClick={() => setSignUpFormModalOpen(true)}>Sign up</Button>
           </Row>
           {signUpFormModalOpen && (
