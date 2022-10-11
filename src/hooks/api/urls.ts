@@ -25,3 +25,4 @@ export const getAuditorProfile = () => "profile"
 
 export const updateProfile = () => "profile"
 export const signOut = () => "signout"
+export const signUp = () => "signup"
