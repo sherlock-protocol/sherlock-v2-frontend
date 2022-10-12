@@ -16,7 +16,7 @@ type Props = ModalProps & {
 export const AuditorSignUpModal: React.FC<Props> = ({ onSubmit, isLoading = false, ...props }) => {
   return (
     <Modal {...props}>
-      <LoadingContainer loading={isLoading} label="Check your wallet. You need to sign a message ...">
+      <LoadingContainer loading={isLoading} label="Loading ...">
         <Column spacing="l" className={styles.formContainer}>
           <Title>SIGN UP</Title>
           <Row className={styles.c4Banner}>
