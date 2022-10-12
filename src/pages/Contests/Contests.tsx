@@ -67,7 +67,7 @@ export const ContestsPage: React.FC<{}> = () => {
       {!isAuditor && (
         <Box shadow={false}>
           <Row spacing="xl" alignment={["start", "center"]}>
-            <Title variant="h2">Not an auditor yet?</Title>
+            <Title variant="h2">Not a Watson yet?</Title>
             <ConnectGate>
               <Button onClick={() => setSignUpFormModalOpen(true)}>Sign up</Button>
             </ConnectGate>
