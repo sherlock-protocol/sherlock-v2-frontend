@@ -38,7 +38,7 @@ export const CapitalChart = () => {
     const { stakingPool, nexus } = chartData[chartData.length - 1]
 
     return stakingPool + nexus
-  }, [])
+  }, [chartData])
 
   return (
     <Box shadow={false} fullWidth>
