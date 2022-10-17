@@ -17,6 +17,7 @@ import { UpcomingContests } from "./UpcomingContests"
 import { useIsAuditor } from "../../hooks/api/auditors"
 import { useAccount } from "wagmi"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
+import ConnectGate from "../../components/ConnectGate/ConnectGate"
 
 export const ContestsPage: React.FC<{}> = () => {
   const { address: connectedAddress } = useAccount()
@@ -65,9 +66,11 @@ export const ContestsPage: React.FC<{}> = () => {
     <Column spacing="m" className={styles.container}>
       {!isAuditor && (
         <Box shadow={false}>
-          <Row alignment={["space-between", "center"]}>
-            <Title variant="h2">Want to become an auditor?</Title>
-            <Button onClick={() => setSignUpFormModalOpen(true)}>Sign up</Button>
+          <Row spacing="xl" alignment={["start", "center"]}>
+            <Title variant="h2">Not a Watson yet?</Title>
+            <ConnectGate>
+              <Button onClick={() => setSignUpFormModalOpen(true)}>Sign up</Button>
+            </ConnectGate>
           </Row>
           {signUpFormModalOpen && (
             <AuditorSignUpModal
