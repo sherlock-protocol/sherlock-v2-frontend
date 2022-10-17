@@ -39,10 +39,10 @@ export const ActiveContests: React.FC<Props> = ({ contests, onContestClick }) =>
               <Text alignment="center">Prize pool</Text>
             </Th>
             <Th>
-              <Text alignment="center">Started</Text>
+              <Text alignment="center">{`Started (${DateTime.now().offsetNameShort})`}</Text>
             </Th>
             <Th>
-              <Text alignment="center">Ends</Text>
+              <Text alignment="center">{`Ends (${DateTime.now().offsetNameShort})`}</Text>
             </Th>
           </Tr>
         </THead>
@@ -52,7 +52,7 @@ export const ActiveContests: React.FC<Props> = ({ contests, onContestClick }) =>
             const endDate = DateTime.fromSeconds(contest.endDate)
 
             const timeLeft = endDate.diffNow(["day", "hour", "minute", "second"])
-            const endingSoon = timeLeft.days < 2
+            const endingSoon = timeLeft.as("days") < 2
 
             return (
               <Tr key={contest.id} onClick={() => onContestClick && onContestClick(contest.id)}>

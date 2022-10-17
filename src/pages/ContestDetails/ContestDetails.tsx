@@ -221,20 +221,24 @@ export const ContestDetails = () => {
                     <Text size="extra-large" strong>
                       {startDate.toLocaleString(DateTime.DATE_MED)}
                     </Text>
-                    <Text size="small">{startDate.toLocaleString(DateTime.TIME_24_SIMPLE)}</Text>
+                    <Text size="small">
+                      {`${startDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${endDate.offsetNameShort}`}
+                    </Text>
                   </Row>
                 </Column>
               </Row>
               <Row>
                 <Column>
-                  <Title variant="h3">
+                  <Text size="normal" strong variant={endingSoon ? "alternate" : "normal"}>
                     {contest.status === "FINISHED" || contest.status === "JUDGING" ? "ENDED" : "ENDS"}
-                  </Title>
+                  </Text>
                   <Row alignment={["center", "center"]} spacing="s">
-                    <Text size="extra-large" strong>
+                    <Text size="extra-large" strong variant={endingSoon ? "alternate" : "normal"}>
                       {endDate.toLocaleString(DateTime.DATE_MED)}
                     </Text>
-                    <Text size="small">{endDate.toLocaleString(DateTime.TIME_24_SIMPLE)}</Text>
+                    <Text size="small" variant={endingSoon ? "alternate" : "normal"}>
+                      {`${endDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${endDate.offsetNameShort}`}
+                    </Text>
                   </Row>
                 </Column>
               </Row>
