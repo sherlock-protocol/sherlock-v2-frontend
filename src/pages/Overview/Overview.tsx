@@ -14,6 +14,7 @@ import CoveredProtocolsList from "../../components/CoveredProtocolsList/CoveredP
 import { formatAmount } from "../../utils/format"
 import StrategiesList from "../../components/StrategiesList/StrategiesList"
 import { CapitalChart } from "./CapitalChart"
+import config from "../../config"
 
 type ChartDataPoint = {
   name: string
@@ -61,9 +62,12 @@ export const OverviewPage: React.FC = () => {
         name: DateTime.fromMillis(timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
         value: Number(utils.formatUnits(tvl.value, 6)),
       })
+
+      const sherlockTVC = timestamp > config.nexusMutualStartTimestamp ? tvc.value.mul(75).div(100) : tvc.value
+
       capitalEfficiencyChartData.push({
         name: DateTime.fromMillis(timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
-        value: Number(utils.formatUnits(tvc.value, 6)) / Number(utils.formatUnits(tvl.value, 6)),
+        value: Number(utils.formatUnits(sherlockTVC, 6)) / Number(utils.formatUnits(tvl.value, 6)),
       })
     }
 
