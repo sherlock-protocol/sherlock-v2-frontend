@@ -8,12 +8,15 @@ import { formatAmount } from "../../utils/format"
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
+import config from "../../config"
 
 const tooltipTitles: Record<string, string> = {
   nexus: "Nexus Mutual",
   stakingPool: "Staking Pool",
   totalValue: "Total Capital",
 }
+
+const nexusStartDate = DateTime.fromSeconds(config.nexusMutualStartTimestamp)
 
 export const CapitalChart = () => {
   const { data: tvlData } = useTVLOverTime()
@@ -26,7 +29,7 @@ export const CapitalChart = () => {
         return {
           name: date.toLocaleString({ month: "2-digit", day: "2-digit" }),
           stakingPool: Number(utils.formatUnits(item.value, 6)),
-          nexus: Number(utils.formatUnits(item.value.mul(25).div(75), 6)),
+          nexus: date > nexusStartDate ? Number(utils.formatUnits(item.value.mul(25).div(75), 6)) : 0,
         }
       }),
     [tvlData]
@@ -63,13 +66,3 @@ export const CapitalChart = () => {
     </Box>
   )
 }
-
-/**
- *
- * 75 ___ TVL
- * 25 ___ x
- *
- * x = (25*TVL)/75
- *
- *
- */
