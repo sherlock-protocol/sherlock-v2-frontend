@@ -37,9 +37,10 @@ const CoveredProtocolsList: React.FC = () => {
     // Compute each protocol's max claimable amount
     const protocolsWithCoverages =
       activeProtocols.map((item) => {
-        const [current, previous] = item.coverages.map((item) => item.coverageAmount)
-        const maxClaimableAmount = previous?.gt(current) ? previous : current
-        const coverage = item.tvl?.lt(maxClaimableAmount) ? item.tvl : maxClaimableAmount
+        const [current] = item.coverages.sort(
+          (a, b) => b.coverageAmountSetAt.getTime() - a.coverageAmountSetAt.getTime()
+        )
+        const coverage = item.tvl?.lt(current.coverageAmount) ? item.tvl : current.coverageAmount
 
         const percentageOfTotal = +((coverage.div(1e6).toNumber() * 100) / tvc.div(1e6).toNumber()).toFixed(2)
 

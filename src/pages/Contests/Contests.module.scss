@@ -27,3 +27,12 @@
     opacity: 1;
   }
 }
+
+.c4Banner {
+  background-color: transparentize($color: $primary-purple, $amount: 0.7);
+  padding: 1em;
+}
+
+.formContainer {
+  max-width: 520px;
+}
