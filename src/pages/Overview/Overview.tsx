@@ -13,7 +13,6 @@ import APYChart from "../../components/APYChart/APYChart"
 import CoveredProtocolsList from "../../components/CoveredProtocolsList/CoveredProtocolsList"
 import { formatAmount } from "../../utils/format"
 import StrategiesList from "../../components/StrategiesList/StrategiesList"
-import { CapitalChart } from "./CapitalChart"
 import config from "../../config"
 import { ExcessCoverageChart } from "./ExcessCoverageChart"
 

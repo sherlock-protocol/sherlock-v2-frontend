@@ -9,7 +9,6 @@ import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
 import config from "../../config"
-import { Text } from "../../components/Text"
 
 const tooltipTitles: Record<string, string> = {
   value: "Nexus Mutual",
