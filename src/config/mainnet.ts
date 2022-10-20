@@ -19,4 +19,5 @@ export const config: Config = {
   countdownEndTimestamp: 1649347200,
   incentivesAPYBytesIdentifier: "0x47a46b3628edc31155b950156914c27d25890563476422202887ed4298fc3c98",
   stakingHardcap: BigNumber.from("25000000000000"),
+  nexusMutualStartTimestamp: 1666137600,
 }
