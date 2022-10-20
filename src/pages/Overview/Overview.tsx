@@ -53,24 +53,36 @@ export const OverviewPage: React.FC = () => {
       }
 
       const timestamp = Math.min(tvc.timestamp, tvl.timestamp)
+      const formattedDate = DateTime.fromSeconds(timestamp).toLocaleString({ month: "2-digit", day: "2-digit" })
 
-      tvcChartData.push({
+      const tvcDataPoint = {
         name: DateTime.fromMillis(timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
         value: Number(utils.formatUnits(tvc.value, 6)),
-      })
-      tvlChartData.push({
+      }
+
+      const tvlDataPoint = {
         name: DateTime.fromMillis(timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
         value: Number(utils.formatUnits(tvl.value, 6)),
-      })
+      }
 
       // TVC is increased by 25% due to our agreement with Nexus.
       // To calculate capital efficiency, we only used what is being covered by Sherlock's staking pool.
       const sherlockTVC = timestamp > config.nexusMutualStartTimestamp ? tvc.value.mul(75).div(100) : tvc.value
 
-      capitalEfficiencyChartData.push({
+      const capitalEfficiencyDataPoint = {
         name: DateTime.fromMillis(timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
         value: Number(utils.formatUnits(sherlockTVC, 6)) / Number(utils.formatUnits(tvl.value, 6)),
-      })
+      }
+
+      if (tvcChartData.length > 0 && tvcChartData[tvcChartData.length - 1].name === formattedDate) {
+        tvcChartData.pop()
+        tvlChartData.pop()
+        capitalEfficiencyChartData.pop()
+      }
+
+      tvcChartData.push(tvcDataPoint)
+      tvlChartData.push(tvlDataPoint)
+      capitalEfficiencyChartData.push(capitalEfficiencyDataPoint)
     }
 
     return {
