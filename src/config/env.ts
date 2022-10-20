@@ -22,4 +22,5 @@ export const config: Config = {
   stakingHardcap: BigNumber.from(
     process.env.REACT_APP_STAKING_HARDCAP ? (process.env.REACT_APP_STAKING_HARDCAP as string) : "0"
   ),
+  nexusMutualStartTimestamp: parseInt(process.env.REACT_APP_NEXUS_MUTUAL_START_TIMESTAMP as string),
 }

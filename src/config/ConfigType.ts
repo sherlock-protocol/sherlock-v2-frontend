@@ -107,4 +107,9 @@ export type Config = {
    * Sometimes, we want to limit the amount of USDC we allow investors to put in.
    */
   stakingHardcap: BigNumber
+
+  /**
+   * Nexus Mutual 25% coverage start timestamp (in seconds).
+   */
+  nexusMutualStartTimestamp: number
 }
