@@ -15,7 +15,6 @@ const tooltipTitles: Record<string, string> = {
 }
 
 const nexusStartDate = DateTime.fromSeconds(config.nexusMutualStartTimestamp)
-console.log(nexusStartDate.toLocaleString())
 
 export const ExcessCoverageChart = () => {
   const { data: tvcData } = useTVCOverTime()
@@ -36,8 +35,6 @@ export const ExcessCoverageChart = () => {
       }, []),
     [tvcData]
   )
-
-  console.log(chartData)
 
   const totalAmount = useMemo(() => {
     if (!chartData || chartData.length === 0) return null
