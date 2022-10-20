@@ -15,6 +15,7 @@ import { formatAmount } from "../../utils/format"
 import StrategiesList from "../../components/StrategiesList/StrategiesList"
 import { CapitalChart } from "./CapitalChart"
 import config from "../../config"
+import { ExcessCoverageChart } from "./ExcessCoverageChart"
 
 type ChartDataPoint = {
   name: string
@@ -63,6 +64,8 @@ export const OverviewPage: React.FC = () => {
         value: Number(utils.formatUnits(tvl.value, 6)),
       })
 
+      // TVC is increased by 25% due to our agreement with Nexus.
+      // To calculate capital efficiency, we only used what is being covered by Sherlock's staking pool.
       const sherlockTVC = timestamp > config.nexusMutualStartTimestamp ? tvc.value.mul(75).div(100) : tvc.value
 
       capitalEfficiencyChartData.push({
@@ -103,9 +106,6 @@ export const OverviewPage: React.FC = () => {
         </Box>
       </Row>
       <Row spacing="m">
-        <CapitalChart />
-      </Row>
-      <Row spacing="m">
         <Box shadow={false}>
           <Column spacing="m">
             <Row>
@@ -127,7 +127,7 @@ export const OverviewPage: React.FC = () => {
           </Column>
         </Box>
         <Column>
-          <APYChart />
+          <ExcessCoverageChart />
         </Column>
       </Row>
       <Row spacing="m">
@@ -155,6 +155,9 @@ export const OverviewPage: React.FC = () => {
             </Row>
           </Column>
         </Box>
+        <Column>
+          <APYChart />
+        </Column>
       </Row>
       <Row spacing="m">
         <Column grow={1}>
