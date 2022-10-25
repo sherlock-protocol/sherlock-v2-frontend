@@ -54,7 +54,7 @@ const APYChart: React.FC = () => {
     <Box shadow={false}>
       <Column spacing="m">
         <Row>
-          <Title variant="h3">APY</Title>
+          <Title variant="h3">USDC APY</Title>
         </Row>
         <Row>
           <Title>{chartData?.at(chartData.length - 1)?.totalAPY}%</Title>
