@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { FaCrown } from "react-icons/fa"
+import { FaCrown, FaUsers } from "react-icons/fa"
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Table, TBody, Td, Th, THead, Tr } from "../../components/Table/Table"
@@ -53,6 +53,7 @@ export const Scoreboard: React.FC = () => {
                   <Td>
                     <Row spacing="l">
                       <Text>{s.handle}</Text>
+                      <Text className={styles.highlight}>{s.isTeam && <FaUsers title="Team" />}</Text>
                       <Text className={styles.highlight}>
                         {s.senior && <FaCrown onClick={() => setSeniorWatsonModalOpen(true)} title="Senior Watson" />}
                       </Text>
