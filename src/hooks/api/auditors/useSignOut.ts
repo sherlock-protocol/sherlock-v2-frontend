@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "react-query"
-import { profileQuery } from "../auditors"
+import { profileQuery } from "../auditors/useProfile"
 import { contests as contestsAPI } from "../axios"
 import { signOut as signOutUrl } from "../urls"
 

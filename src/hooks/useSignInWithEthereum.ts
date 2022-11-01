@@ -5,7 +5,7 @@ import { contests as contestsAPI } from "./api/axios"
 import { getNonce as getNonceUrl } from "./api/urls"
 import { useMutation, useQueryClient } from "react-query"
 import { AuditorProfile } from "./api/auditors/index"
-import { GetAuditorProfile, profileQuery } from "./api/auditors"
+import { GetAuditorProfile, profileQuery } from "./api/auditors/useProfile"
 
 type GetNonceResponseData = {
   nonce: string

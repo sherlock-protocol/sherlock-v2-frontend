@@ -3,7 +3,7 @@ import { AddressesSection } from "./AddressesSection"
 import { PayoutAddressSection } from "./PayoutAddressSection"
 import { ProfileInfoSection } from "./ProfileInfoSection"
 
-import { useProfile } from "../../hooks/api/auditors"
+import { useProfile } from "../../hooks/api/auditors/useProfile"
 
 export const AuditorProfile = () => {
   const { data: profile } = useProfile()

@@ -4,7 +4,7 @@ import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
-import { useProfile } from "../../hooks/api/auditors"
+import { useProfile } from "../../hooks/api/auditors/useProfile"
 import { useUpdateProfile } from "../../hooks/api/auditors/useUpdateProfile"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
 

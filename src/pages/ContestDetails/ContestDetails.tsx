@@ -26,6 +26,7 @@ import { useSignUpSignatureVerification } from "../../hooks/api/contests/useSign
 import { useContestSignUp } from "../../hooks/api/contests/useContestSignUp"
 import { useIsAuditor } from "../../hooks/api/auditors"
 import { timeLeftString } from "../../utils/dates"
+import { useProfile } from "../../hooks/api/auditors/useProfile"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -48,6 +49,7 @@ export const ContestDetails = () => {
   const { contestId } = useParams()
   const { address } = useAccount()
   const { data: isAuditor } = useIsAuditor(address)
+  const { data: profile } = useProfile()
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [auditorFormOpen, setAuditorFormOpen] = useState(false)
   const [reportModalOpen, setReportModalOpen] = useState(false)
@@ -166,6 +168,8 @@ export const ContestDetails = () => {
 
   const timeLeft = endDate.diffNow(["day", "hour", "minute", "second"])
   const endingSoon = contest.status === "RUNNING" && timeLeft.days < 2
+
+  console.log(profile)
 
   return (
     <Column spacing="m" className={styles.container}>

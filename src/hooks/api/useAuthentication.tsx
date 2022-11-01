@@ -1,7 +1,7 @@
 import { createContext, PropsWithChildren, useContext, useMemo } from "react"
 import { useSignInWithEthereum } from "../useSignInWithEthereum"
 import { AuditorProfile } from "./auditors/index"
-import { useProfile } from "./auditors"
+import { useProfile } from "./auditors/useProfile"
 import { useSignOut } from "./auditors/useSignOut"
 
 type AuthenticationContextType = {
