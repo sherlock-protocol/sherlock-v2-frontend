@@ -1,6 +1,5 @@
-import React, { PropsWithChildren, useCallback, useEffect } from "react"
+import React, { PropsWithChildren } from "react"
 import { Navigate } from "react-router-dom"
-import { useAccount } from "wagmi"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { Route } from "../../utils/routes"
 import { Box } from "../Box"
