@@ -24,6 +24,7 @@ import { ReportModal } from "./ReportModal"
 import { timeLeftString } from "../../utils/dates"
 import { useProfile } from "../../hooks/api/auditors/useProfile"
 import { useJoinContest } from "../../hooks/api/auditors/useJoinContest"
+import { JoinContestModal } from "./JoinContestModal"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -39,6 +40,7 @@ export const ContestDetails = () => {
 
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [reportModalOpen, setReportModalOpen] = useState(false)
+  const [joinContestModalOpen, setJoinContestModalOpen] = useState(false)
 
   const { data: contest } = useContest(parseInt(contestId ?? ""))
   const { data: contestant } = useContestant(address ?? "", parseInt(contestId ?? ""), {
@@ -62,10 +64,6 @@ export const ContestDetails = () => {
     !!!contestant?.countsTowardsRanking
   )
 
-  // useEffect(() => {
-  //   resetJoinContest()
-  // }, [address, resetJoinContest])
-
   useEffect(() => {
     if (joinContestSuccess) {
       setSuccessModalOpen(true)
@@ -83,10 +81,19 @@ export const ContestDetails = () => {
 
     // If the auditor is also a team admin, we give them the option to join the contest as a team.
     if (profile.managedTeams.length > 0) {
+      setJoinContestModalOpen(true)
     } else {
       joinContest(profile.handle)
     }
   }, [joinContest, profile])
+
+  const handleJoinContestWithHandle = useCallback(
+    (handle: string) => {
+      joinContest(handle)
+      setJoinContestModalOpen(false)
+    },
+    [joinContest]
+  )
 
   const visitRepo = useCallback(async () => {
     contestant && window.open(`https://github.com/${contestant.repo}`, "__blank")
@@ -248,6 +255,14 @@ export const ContestDetails = () => {
           {isError && <ErrorModal reason={error?.message} onClose={handleErrorModalClose} />}
           {reportModalOpen && (
             <ReportModal report={contest.report} contest={contest} onClose={() => setReportModalOpen(false)} />
+          )}
+          {joinContestModalOpen && (
+            <JoinContestModal
+              contest={contest}
+              auditor={profile!!}
+              onClose={() => setJoinContestModalOpen(false)}
+              onSelectHandle={handleJoinContestWithHandle}
+            />
           )}
         </LoadingContainer>
       </Box>
