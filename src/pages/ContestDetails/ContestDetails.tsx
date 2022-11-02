@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { useParams } from "react-router-dom"
-import { FaGithub, FaBook, FaClock } from "react-icons/fa"
+import { FaGithub, FaBook, FaClock, FaUsers } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -11,7 +11,6 @@ import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
 import { commify } from "../../utils/units"
 import { useContest, useContestant, useOptInOut } from "../../hooks/api/contests"
-import { AuditorFormModal } from "./AuditorFormModal"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { SignUpSuccessModal } from "./SignUpSuccessModal"
 
@@ -22,11 +21,9 @@ import Options from "../../components/Options/Options"
 import { Markdown } from "../../components/Markdown/Markdown"
 import { ReportModal } from "./ReportModal"
 
-import { useSignUpSignatureVerification } from "../../hooks/api/contests/useSignUpSignatureVerification"
-import { useContestSignUp } from "../../hooks/api/contests/useContestSignUp"
-import { useIsAuditor } from "../../hooks/api/auditors"
 import { timeLeftString } from "../../utils/dates"
 import { useProfile } from "../../hooks/api/auditors/useProfile"
+import { useJoinContest } from "../../hooks/api/auditors/useJoinContest"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -35,23 +32,12 @@ const STATUS_LABELS = {
   FINISHED: "FINISHED",
 }
 
-type SignUpParams = {
-  handle: string
-  githubHandle: string
-  discordHandle: string
-  twitterHandle?: string
-  telegramHandle?: string
-  signature: string
-  contestId: number
-}
-
 export const ContestDetails = () => {
   const { contestId } = useParams()
   const { address } = useAccount()
-  const { data: isAuditor } = useIsAuditor(address)
   const { data: profile } = useProfile()
+
   const [successModalOpen, setSuccessModalOpen] = useState(false)
-  const [auditorFormOpen, setAuditorFormOpen] = useState(false)
   const [reportModalOpen, setReportModalOpen] = useState(false)
 
   const { data: contest } = useContest(parseInt(contestId ?? ""))
@@ -62,61 +48,29 @@ export const ContestDetails = () => {
   const [optIn, setOptIn] = useState(contestant?.countsTowardsRanking ?? true)
 
   const {
-    verifySignature,
-    isLoading: signatureIsLoading,
-    isSuccess: signatureVerificationSuccess,
-    auditor: verifiedAuditor,
-    signature,
-    reset: resetSignatureVerification,
-  } = useSignUpSignatureVerification(parseInt(contestId ?? ""))
+    joinContest,
+    isLoading: joinContestIsLoading,
+    isSuccess: joinContestSuccess,
+    data: joinContestData,
+    reset: resetJoinContest,
+    isError,
+    error,
+  } = useJoinContest(parseInt(contestId ?? ""))
 
   const { signAndOptIn, isLoading: optInisLoading } = useOptInOut(
     parseInt(contestId ?? ""),
     !!!contestant?.countsTowardsRanking
   )
 
-  const {
-    signUp,
-    isLoading: signUpIsLoading,
-    data: signUpData,
-    error,
-    isError,
-    reset: resetSignUp,
-    isSuccess: signUpSuccess,
-  } = useContestSignUp()
-
-  const signUpToContest = useCallback(
-    async (params: SignUpParams) => {
-      signUp(params)
-    },
-    [signUp]
-  )
+  // useEffect(() => {
+  //   resetJoinContest()
+  // }, [address, resetJoinContest])
 
   useEffect(() => {
-    resetSignatureVerification()
-    resetSignUp()
-  }, [address, resetSignatureVerification, resetSignUp])
-
-  useEffect(() => {
-    if (verifiedAuditor && verifiedAuditor.githubHandle && verifiedAuditor.discordHandle && signature && contestId) {
-      signUpToContest({
-        handle: verifiedAuditor.handle,
-        githubHandle: verifiedAuditor.githubHandle,
-        discordHandle: verifiedAuditor.discordHandle,
-        twitterHandle: verifiedAuditor.twitterHandle,
-        telegramHandle: verifiedAuditor.telegramHandle,
-        signature: signature,
-        contestId: parseInt(contestId),
-      })
-    }
-  }, [signUpToContest, verifiedAuditor, signature, contestId])
-
-  useEffect(() => {
-    if (signUpSuccess) {
+    if (joinContestSuccess) {
       setSuccessModalOpen(true)
-      setAuditorFormOpen(false)
     }
-  }, [signUpSuccess])
+  }, [joinContestSuccess])
 
   useEffect(() => {
     if (contestant?.countsTowardsRanking !== undefined) {
@@ -124,18 +78,15 @@ export const ContestDetails = () => {
     }
   }, [contestant?.countsTowardsRanking])
 
-  useEffect(() => {
-    if (
-      signatureVerificationSuccess &&
-      (!verifiedAuditor || !verifiedAuditor.githubHandle || !verifiedAuditor.discordHandle)
-    ) {
-      setAuditorFormOpen(true)
-    }
-  }, [verifiedAuditor, signatureVerificationSuccess])
+  const handleJoinContest = useCallback(() => {
+    if (!profile) return
 
-  const sign = useCallback(() => {
-    verifySignature()
-  }, [verifySignature])
+    // If the auditor is also a team admin, we give them the option to join the contest as a team.
+    if (profile.managedTeams.length > 0) {
+    } else {
+      joinContest(profile.handle)
+    }
+  }, [joinContest, profile])
 
   const visitRepo = useCallback(async () => {
     contestant && window.open(`https://github.com/${contestant.repo}`, "__blank")
@@ -155,8 +106,8 @@ export const ContestDetails = () => {
   )
 
   const handleErrorModalClose = useCallback(() => {
-    resetSignUp()
-  }, [resetSignUp])
+    resetJoinContest()
+  }, [resetJoinContest])
 
   const canOptinOut = useMemo(() => contest?.status === "CREATED" || contest?.status === "RUNNING", [contest?.status])
   const canSignUp = useMemo(() => contest?.status !== "FINISHED" && contest?.status !== "JUDGING", [contest?.status])
@@ -169,12 +120,10 @@ export const ContestDetails = () => {
   const timeLeft = endDate.diffNow(["day", "hour", "minute", "second"])
   const endingSoon = contest.status === "RUNNING" && timeLeft.days < 2
 
-  console.log(profile)
-
   return (
     <Column spacing="m" className={styles.container}>
       <Box shadow={false} fullWidth>
-        <LoadingContainer loading={signatureIsLoading || signUpIsLoading || optInisLoading} label={"Loading..."}>
+        <LoadingContainer loading={joinContestIsLoading || optInisLoading} label={"Loading..."}>
           <Row spacing="xl">
             <Column>
               <img src={contest.logoURL} width={80} height={80} alt={contest.title} className={styles.logo} />
@@ -250,7 +199,11 @@ export const ContestDetails = () => {
               <Row>
                 {contestant ? (
                   <Column spacing="m" grow={1}>
-                    <Text strong>Signed up</Text>
+                    <Row spacing="xs">
+                      <Text>Joined contest as</Text>
+                      {contestant.isTeam && <FaUsers title="Team" />}
+                      <Text strong>{contestant.handle}</Text>
+                    </Row>
 
                     <Button variant="secondary" onClick={visitRepo} disabled={!contestant.repo}>
                       <FaGithub /> &nbsp; View repository
@@ -278,32 +231,21 @@ export const ContestDetails = () => {
                 ) : (
                   canSignUp && (
                     <ConnectGate>
-                      <Button onClick={sign}>{isAuditor ? "JOIN CONTEST" : "SIGN UP"}</Button>
+                      <Button onClick={handleJoinContest}>JOIN CONTEST</Button>
                     </ConnectGate>
                   )
                 )}
               </Row>
             </Column>
           </Row>
-          {auditorFormOpen && (
-            <AuditorFormModal
-              onClose={() => setAuditorFormOpen(false)}
-              onSubmit={(values) =>
-                signUpToContest({
-                  ...values,
-                  contestId: parseInt(contestId!),
-                  signature: signature!,
-                })
-              }
+          {successModalOpen && (
+            <SignUpSuccessModal
+              onClose={() => setSuccessModalOpen(false)}
               contest={contest}
-              auditor={verifiedAuditor}
-              isLoading={signUpIsLoading}
+              repo={joinContestData?.repoName}
             />
           )}
-          {successModalOpen && (
-            <SignUpSuccessModal onClose={() => setSuccessModalOpen(false)} contest={contest} repo={signUpData?.repo} />
-          )}
-          {isError && <ErrorModal reason={error?.fieldErrors ?? error?.message} onClose={handleErrorModalClose} />}
+          {isError && <ErrorModal reason={error?.message} onClose={handleErrorModalClose} />}
           {reportModalOpen && (
             <ReportModal report={contest.report} contest={contest} onClose={() => setReportModalOpen(false)} />
           )}

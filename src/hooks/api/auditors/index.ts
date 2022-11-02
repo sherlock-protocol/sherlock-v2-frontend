@@ -12,5 +12,9 @@ export type AuditorProfile = {
     id: number
     address: string
   }[]
+  managedTeams: {
+    id: number
+    handle: string
+  }[]
   payoutAddress: string
 }

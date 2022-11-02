@@ -25,24 +25,6 @@ export type GetAuditorProfile = {
   profile: AuditorResponseData
 }
 
-export type Auditor = {
-  id: number
-  handle: string
-  discordHandle?: string
-  githubHandle?: string
-  twitterHandle?: string
-  telegramHandle?: string
-  addresses: {
-    id: number
-    address: string
-  }[]
-  managedTeams: {
-    id: number
-    handle: string
-  }[]
-  payoutAddress: string
-}
-
 export const profileQuery = () => "profile"
 export const useProfile = () =>
   useQuery<AuditorProfile, Error>(
