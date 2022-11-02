@@ -252,7 +252,7 @@ export const ContestDetails = () => {
               repo={joinContestData?.repoName}
             />
           )}
-          {isError && <ErrorModal reason={error?.message} onClose={handleErrorModalClose} />}
+          {isError && <ErrorModal reason={error?.fieldErrors || error?.message} onClose={handleErrorModalClose} />}
           {reportModalOpen && (
             <ReportModal report={contest.report} contest={contest} onClose={() => setReportModalOpen(false)} />
           )}

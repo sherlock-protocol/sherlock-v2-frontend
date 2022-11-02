@@ -5,6 +5,8 @@ import { useSignJoinContestMessage } from "./useSignJoinContestMessage"
 import { joinContest as joinContestUrl } from "../urls"
 import { contests as contestsAPI } from "../axios"
 import { contestantQueryKey } from "../contests"
+import { AxiosError } from "axios"
+import { FormError } from "../../../utils/Error"
 
 type JoinContestResponseData = {
   repo_name: string
@@ -29,17 +31,22 @@ export const useJoinContest = (contestId: number) => {
     reset: resetSignature,
   } = useSignJoinContestMessage(contestId)
 
-  const { mutate, mutateAsync, ...mutation } = useMutation<JoinContest, Error, JoinContestParams>(
+  const { mutate, mutateAsync, ...mutation } = useMutation<JoinContest, FormError, JoinContestParams>(
     async (params) => {
-      const { data } = await contestsAPI.post<JoinContestResponseData>(joinContestUrl(), {
-        handle: params.handle,
-        signature: params.signature,
-        contest_id: contestId,
-        address: connectedAddress,
-      })
+      try {
+        const { data } = await contestsAPI.post<JoinContestResponseData>(joinContestUrl(), {
+          handle: params.handle,
+          signature: params.signature,
+          contest_id: contestId,
+          address: connectedAddress,
+        })
 
-      return {
-        repoName: data.repo_name,
+        return {
+          repoName: data.repo_name,
+        }
+      } catch (error) {
+        const axiosError = error as AxiosError
+        throw new FormError(axiosError.response?.data)
       }
     },
     {
