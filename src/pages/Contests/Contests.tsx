@@ -72,14 +72,7 @@ export const ContestsPage: React.FC<{}> = () => {
               <Button onClick={() => setSignUpFormModalOpen(true)}>Sign up</Button>
             </ConnectGate>
           </Row>
-          {signUpFormModalOpen && (
-            <AuditorSignUpModal
-              onSubmit={signUp}
-              isLoading={isLoading}
-              closeable
-              onClose={() => setSignUpFormModalOpen(false)}
-            />
-          )}
+          {signUpFormModalOpen && <AuditorSignUpModal closeable onClose={() => setSignUpFormModalOpen(false)} />}
         </Box>
       )}
 

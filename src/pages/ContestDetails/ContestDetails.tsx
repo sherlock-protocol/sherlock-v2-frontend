@@ -25,6 +25,9 @@ import { timeLeftString } from "../../utils/dates"
 import { useProfile } from "../../hooks/api/auditors/useProfile"
 import { useJoinContest } from "../../hooks/api/auditors/useJoinContest"
 import { JoinContestModal } from "./JoinContestModal"
+import { AuditorSignUpModal } from "../Contests/AuditorSignUpModal"
+import { useIsAuditor } from "../../hooks/api/auditors"
+import { useAuthentication } from "../../hooks/api/useAuthentication"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -37,10 +40,13 @@ export const ContestDetails = () => {
   const { contestId } = useParams()
   const { address } = useAccount()
   const { data: profile } = useProfile()
+  const { data: isAuditor } = useIsAuditor(address)
+  const { authenticate, isLoading: authenticationIsLoading } = useAuthentication()
 
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [reportModalOpen, setReportModalOpen] = useState(false)
   const [joinContestModalOpen, setJoinContestModalOpen] = useState(false)
+  const [signUpModalOpen, setSignUpModalOpen] = useState(false)
 
   const { data: contest } = useContest(parseInt(contestId ?? ""))
   const { data: contestant } = useContestant(address ?? "", parseInt(contestId ?? ""), {
@@ -95,6 +101,18 @@ export const ContestDetails = () => {
     [joinContest]
   )
 
+  const handleSignUp = useCallback(() => {
+    setSignUpModalOpen(true)
+  }, [setSignUpModalOpen])
+
+  const handleSignUpModalClose = useCallback(() => {
+    setSignUpModalOpen(false)
+  }, [setSignUpModalOpen])
+
+  const handleSignIn = useCallback(() => {
+    authenticate()
+  }, [authenticate])
+
   const visitRepo = useCallback(async () => {
     contestant && window.open(`https://github.com/${contestant.repo}`, "__blank")
   }, [contestant])
@@ -129,8 +147,21 @@ export const ContestDetails = () => {
 
   return (
     <Column spacing="m" className={styles.container}>
+      {!isAuditor && (
+        <Box shadow={false}>
+          <Row spacing="xl" alignment={["start", "center"]}>
+            <Title variant="h2">Not a Watson yet?</Title>
+            <ConnectGate>
+              <Button onClick={handleSignUp}>Sign up</Button>
+            </ConnectGate>
+          </Row>
+        </Box>
+      )}
       <Box shadow={false} fullWidth>
-        <LoadingContainer loading={joinContestIsLoading || optInisLoading} label={"Loading..."}>
+        <LoadingContainer
+          loading={authenticationIsLoading || joinContestIsLoading || optInisLoading}
+          label={"Loading..."}
+        >
           <Row spacing="xl">
             <Column>
               <img src={contest.logoURL} width={80} height={80} alt={contest.title} className={styles.logo} />
@@ -203,46 +234,55 @@ export const ContestDetails = () => {
                 </Column>
               </Row>
               <hr />
-              <Row>
-                {contestant ? (
-                  <Column spacing="m" grow={1}>
-                    <Row spacing="xs">
-                      <Text>Joined contest as</Text>
-                      {contestant.isTeam && <FaUsers title="Team" />}
-                      <Text strong>{contestant.handle}</Text>
-                    </Row>
+              {profile && (
+                <Row>
+                  {contestant ? (
+                    <Column spacing="m" grow={1}>
+                      <Row spacing="xs">
+                        <Text>Joined contest as</Text>
+                        {contestant.isTeam && <FaUsers title="Team" />}
+                        <Text strong>{contestant.handle}</Text>
+                      </Row>
 
-                    <Button variant="secondary" onClick={visitRepo} disabled={!contestant.repo}>
-                      <FaGithub /> &nbsp; View repository
-                    </Button>
-                    {!contestant.repo && (
-                      <Text size="small" variant="secondary">
-                        Repository will be available once the contest starts
-                      </Text>
-                    )}
+                      <Button variant="secondary" onClick={visitRepo} disabled={!contestant.repo}>
+                        <FaGithub /> &nbsp; View repository
+                      </Button>
+                      {!contestant.repo && (
+                        <Text size="small" variant="secondary">
+                          Repository will be available once the contest starts
+                        </Text>
+                      )}
 
-                    <Text>{canOptinOut ? "You're competing for:" : "You've competed for:"}</Text>
-                    <Options
-                      options={[
-                        {
-                          value: true,
-                          label: "USDC + Points",
-                        },
-                        { value: false, label: "Only USDC" },
-                      ]}
-                      value={optIn}
-                      onChange={handleOptInChange}
-                      disabled={!canOptinOut}
-                    />
-                  </Column>
-                ) : (
-                  canSignUp && (
-                    <ConnectGate>
-                      <Button onClick={handleJoinContest}>JOIN CONTEST</Button>
-                    </ConnectGate>
-                  )
-                )}
-              </Row>
+                      <Text>{canOptinOut ? "You're competing for:" : "You've competed for:"}</Text>
+                      <Options
+                        options={[
+                          {
+                            value: true,
+                            label: "USDC + Points",
+                          },
+                          { value: false, label: "Only USDC" },
+                        ]}
+                        value={optIn}
+                        onChange={handleOptInChange}
+                        disabled={!canOptinOut}
+                      />
+                    </Column>
+                  ) : (
+                    canSignUp && (
+                      <ConnectGate>
+                        <Button onClick={handleJoinContest}>JOIN CONTEST</Button>
+                      </ConnectGate>
+                    )
+                  )}
+                </Row>
+              )}
+              {!profile && isAuditor && (
+                <Row>
+                  <ConnectGate>
+                    <Button onClick={handleSignIn}>SIGN IN</Button>
+                  </ConnectGate>
+                </Row>
+              )}
             </Column>
           </Row>
           {successModalOpen && (
@@ -264,6 +304,7 @@ export const ContestDetails = () => {
               onSelectHandle={handleJoinContestWithHandle}
             />
           )}
+          {signUpModalOpen && <AuditorSignUpModal closeable onClose={handleSignUpModalClose} />}
         </LoadingContainer>
       </Box>
     </Column>
