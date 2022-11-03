@@ -194,11 +194,25 @@ export const ContestDetails = () => {
               )}
               <hr />
               <Row>
-                <Column>
-                  <Title variant="h3">PRIZE POOL</Title>
-                  <Text size="extra-large" strong>
-                    {commify(contest.prizePool)} USDC
-                  </Text>
+                <Column spacing="l">
+                  <Row>
+                    <Column>
+                      <Title variant="h3">TOTAL PRIZE POOL</Title>
+                      <Text size="extra-large" strong>
+                        {`${commify(contest.prizePool + contest.leadSeniorAuditorFixedPay)} USDC`}
+                      </Text>
+                    </Column>
+                  </Row>
+                  <Row spacing="l">
+                    <Column>
+                      <Title variant="h4">Senior Watson</Title>
+                      <Text strong>{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
+                    </Column>
+                    <Column>
+                      <Title variant="h4">Contest Pool</Title>
+                      <Text strong>{`${commify(contest.prizePool)} USDC`}</Text>
+                    </Column>
+                  </Row>
                 </Column>
               </Row>
               <hr />
