@@ -205,12 +205,12 @@ export const ContestDetails = () => {
                   </Row>
                   <Row spacing="l">
                     <Column>
-                      <Title variant="h4">Senior Watson</Title>
-                      <Text strong>{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
-                    </Column>
-                    <Column>
                       <Title variant="h4">Contest Pool</Title>
                       <Text strong>{`${commify(contest.prizePool)} USDC`}</Text>
+                    </Column>
+                    <Column>
+                      <Title variant="h4">Lead Senior Watson</Title>
+                      <Text strong>{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
                     </Column>
                   </Row>
                 </Column>
