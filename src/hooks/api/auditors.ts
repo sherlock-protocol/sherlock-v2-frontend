@@ -1,13 +1,8 @@
 import { useMemo, useCallback } from "react"
 import { useQuery, UseQueryOptions } from "react-query"
 import { useSignTypedData } from "wagmi"
-import { AuditorProfile } from "./auditors/index"
 import { contests as contestsAPI } from "./axios"
-import {
-  getIsAuditor as getIsAuditorUrl,
-  getAuditorProfile as getProfileUrl,
-  validateSignature as validateSignatureUrl,
-} from "./urls"
+import { getIsAuditor as getIsAuditorUrl, validateSignature as validateSignatureUrl } from "./urls"
 
 export type Auditor = {
   id: number
@@ -117,30 +112,4 @@ export const useIsAuditor = (address?: string) =>
       return data.is_auditor
     },
     { enabled: address !== undefined }
-  )
-
-export const profileQuery = () => "profile"
-export const useProfile = () =>
-  useQuery<AuditorProfile, Error>(
-    profileQuery(),
-    async () => {
-      const { data } = await contestsAPI.get<GetAuditorProfile>(getProfileUrl())
-
-      return {
-        id: data.profile.id,
-        handle: data.profile.handle,
-        discordHandle: data.profile.discord_handle,
-        githubHandle: data.profile.github_handle,
-        twitterHandle: data.profile.twitter_handle,
-        telegramHandle: data.profile.telegram_handle,
-        addresses: data.profile.addresses.map((a) => ({
-          id: a.id,
-          address: a.address,
-        })),
-        payoutAddress: data.profile.payout_address_mainnet,
-      }
-    },
-    {
-      retry: false,
-    }
   )
