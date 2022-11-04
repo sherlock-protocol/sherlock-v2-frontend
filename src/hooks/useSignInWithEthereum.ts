@@ -5,7 +5,7 @@ import { contests as contestsAPI } from "./api/axios"
 import { getNonce as getNonceUrl } from "./api/urls"
 import { useMutation, useQueryClient } from "react-query"
 import { AuditorProfile } from "./api/auditors/index"
-import { GetAuditorProfile, profileQuery } from "./api/auditors"
+import { GetAuditorProfile, profileQuery } from "./api/auditors/useProfile"
 
 type GetNonceResponseData = {
   nonce: string
@@ -40,6 +40,7 @@ export const useSignInWithEthereum = () => {
         discordHandle: data.profile.discord_handle,
         addresses: data.profile.addresses.map((a) => ({ id: a.id, address: a.address })),
         payoutAddress: data.profile.payout_address_mainnet,
+        managedTeams: data.profile.managed_teams.map((t) => ({ id: t.id, handle: t.handle })),
       }
     },
     {

@@ -1,6 +1,5 @@
-import React, { PropsWithChildren, useCallback, useEffect } from "react"
+import React, { PropsWithChildren } from "react"
 import { Navigate } from "react-router-dom"
-import { useAccount } from "wagmi"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { Route } from "../../utils/routes"
 import { Box } from "../Box"
@@ -15,19 +14,7 @@ type Props = {
 }
 
 export const AuthenticationGate: React.FC<PropsWithChildren<Props>> = ({ children, redirectRoute = "/" }) => {
-  const { address: connectedAddress } = useAccount()
-  const { authenticate, isLoading: authenticationIsLoading, signOut, profile } = useAuthentication()
-
-  const addressIsAllowed = useCallback(
-    (address: string) => profile?.addresses.some((a) => a.address === address),
-    [profile]
-  )
-
-  useEffect(() => {
-    if (!connectedAddress || (profile && !addressIsAllowed(connectedAddress))) {
-      signOut()
-    }
-  }, [connectedAddress, addressIsAllowed, signOut, profile])
+  const { authenticate, isLoading: authenticationIsLoading, profile } = useAuthentication()
 
   const isLoading = authenticationIsLoading
 
