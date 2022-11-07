@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from "react"
 
 import styles from "./Title.module.scss"
 
-type TitleVariant = "h1" | "h2" | "h3"
+type TitleVariant = "h1" | "h2" | "h3" | "h4"
 
 type TitleProps = {
   variant?: TitleVariant
