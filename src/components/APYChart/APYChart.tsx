@@ -6,6 +6,14 @@ import { Column, Row } from "../Layout"
 import { Title } from "../Title"
 import { DateTime } from "luxon"
 
+type DataPoint = {
+  name: string
+  premiumsAPY: number
+  strategiesAPY: number
+  incentivesAPY: number
+  totalAPY: number
+}
+
 const tooltipTitles: Record<string, string> = {
   premiumsAPY: "Premiums APY",
   strategiesAPY: "Strategies APY",
@@ -20,17 +28,24 @@ const APYChart: React.FC = () => {
   const { data: apyData } = useAPYOverTime()
 
   const chartData = useMemo(() => {
-    const apyChartData = apyData?.map((item) => {
-      const date = DateTime.fromMillis(item.timestamp * 1000)
+    const apyChartData = apyData?.reduce<DataPoint[]>((dataPoints, item) => {
+      const date = DateTime.fromSeconds(item.timestamp)
+      const formattedDate = date.toLocaleString({ month: "2-digit", day: "2-digit" })
 
-      return {
-        name: date.toLocaleString({ month: "2-digit", day: "2-digit" }),
+      if (dataPoints.length > 0 && dataPoints[dataPoints.length - 1].name === formattedDate) {
+        dataPoints.pop()
+      }
+
+      dataPoints.push({
+        name: formattedDate,
         strategiesAPY: item.totalAPY - item.premiumsAPY - item.incentivesAPY,
         premiumsAPY: item.premiumsAPY,
         incentivesAPY: item.incentivesAPY,
         totalAPY: item.totalAPY,
-      }
-    })
+      })
+
+      return dataPoints
+    }, [])
 
     return apyChartData
   }, [apyData])
@@ -39,7 +54,7 @@ const APYChart: React.FC = () => {
     <Box shadow={false}>
       <Column spacing="m">
         <Row>
-          <Title variant="h3">APY</Title>
+          <Title variant="h3">USDC APY</Title>
         </Row>
         <Row>
           <Title>{chartData?.at(chartData.length - 1)?.totalAPY}%</Title>
