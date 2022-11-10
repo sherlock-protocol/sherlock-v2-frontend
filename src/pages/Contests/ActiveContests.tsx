@@ -77,7 +77,7 @@ export const ActiveContests: React.FC<Props> = ({ contests, onContestClick }) =>
                 </Td>
                 <Td>
                   <Text variant="mono" strong size="large" alignment="center">
-                    {commify(contest.prizePool)} USDC
+                    {commify(contest.prizePool + contest.leadSeniorAuditorFixedPay)} USDC
                   </Text>
                 </Td>
                 <Td>

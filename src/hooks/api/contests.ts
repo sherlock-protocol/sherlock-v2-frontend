@@ -23,6 +23,7 @@ export type Contest = {
   startDate: number // Timestamp in seconds.
   endDate: number // Timestamp in seconds.
   status: ContestStatus
+  leadSeniorAuditorFixedPay: number
 }
 
 export type Contestant = {
@@ -48,6 +49,7 @@ type GetContestsResponseData = {
   starts_at: number
   ends_at: number
   status: ContestStatus
+  lead_senior_auditor_fixed_pay: number
 }[]
 
 export const contestsQueryKey = "contests"
@@ -64,6 +66,7 @@ export const useContests = () =>
       startDate: d.starts_at,
       endDate: d.ends_at,
       status: d.status,
+      leadSeniorAuditorFixedPay: d.lead_senior_auditor_fixed_pay,
     }))
   })
 
@@ -78,6 +81,7 @@ type GetContestResponseData = {
   status: ContestStatus
   description?: string
   report?: string
+  lead_senior_auditor_fixed_pay: number
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -96,6 +100,7 @@ export const useContest = (id: number) =>
       status: response.status,
       description: response.description,
       report: response.report,
+      leadSeniorAuditorFixedPay: response.lead_senior_auditor_fixed_pay,
     }
   })
 
