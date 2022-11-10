@@ -67,7 +67,8 @@ export const ContestDetails = () => {
 
   const { signAndOptIn, isLoading: optInisLoading } = useOptInOut(
     parseInt(contestId ?? ""),
-    !!!contestant?.countsTowardsRanking
+    !!!contestant?.countsTowardsRanking,
+    contestant?.handle ?? ""
   )
 
   useEffect(() => {

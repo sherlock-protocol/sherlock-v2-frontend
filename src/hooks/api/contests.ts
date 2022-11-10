@@ -135,7 +135,7 @@ export const useContestant = (address: string, contestId: number, opts?: UseQuer
     opts
   )
 
-export const useOptInOut = (contestId: number, optIn: boolean) => {
+export const useOptInOut = (contestId: number, optIn: boolean, handle: string) => {
   const domain = {
     name: "Sherlock Contest",
     version: "1",
@@ -162,6 +162,7 @@ export const useOptInOut = (contestId: number, optIn: boolean) => {
       contest_id: contestId,
       opt_in: optIn,
       signature,
+      handle,
     })
   })
 
