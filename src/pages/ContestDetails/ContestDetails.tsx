@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { useParams } from "react-router-dom"
-import { FaGithub, FaBook, FaClock, FaUsers, FaCrown } from "react-icons/fa"
+import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -28,6 +28,7 @@ import { JoinContestModal } from "./JoinContestModal"
 import { AuditorSignUpModal } from "../Contests/AuditorSignUpModal"
 import { useIsAuditor } from "../../hooks/api/auditors"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
+import { ContestLeaderboardModal } from "./ContestLeaderboardModal"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -47,6 +48,7 @@ export const ContestDetails = () => {
   const [reportModalOpen, setReportModalOpen] = useState(false)
   const [joinContestModalOpen, setJoinContestModalOpen] = useState(false)
   const [signUpModalOpen, setSignUpModalOpen] = useState(false)
+  const [leaderboardModalOpen, setLeaderboardModalOpen] = useState(false)
 
   const { data: contest } = useContest(parseInt(contestId ?? ""))
   const { data: contestant } = useContestant(address ?? "", parseInt(contestId ?? ""), {
@@ -114,13 +116,17 @@ export const ContestDetails = () => {
     authenticate()
   }, [authenticate])
 
-  const visitRepo = useCallback(async () => {
+  const visitRepo = useCallback(() => {
     contestant && window.open(`https://github.com/${contestant.repo}`, "__blank")
   }, [contestant])
 
-  const handleReportClick = useCallback(async () => {
+  const handleReportClick = useCallback(() => {
     setReportModalOpen(true)
   }, [setReportModalOpen])
+
+  const handleLeaderboardClick = useCallback(() => {
+    setLeaderboardModalOpen(true)
+  }, [setLeaderboardModalOpen])
 
   const handleOptInChange = useCallback(
     (_optIn: boolean) => {
@@ -134,6 +140,10 @@ export const ContestDetails = () => {
   const handleErrorModalClose = useCallback(() => {
     resetJoinContest()
   }, [resetJoinContest])
+
+  const handleLeaderboardModalClose = useCallback(() => {
+    setLeaderboardModalOpen(false)
+  }, [setLeaderboardModalOpen])
 
   const canOptinOut = useMemo(() => contest?.status === "CREATED" || contest?.status === "RUNNING", [contest?.status])
   const canSignUp = useMemo(() => contest?.status !== "FINISHED" && contest?.status !== "JUDGING", [contest?.status])
@@ -194,6 +204,11 @@ export const ContestDetails = () => {
               {contest.status === "FINISHED" && contest.report && (
                 <Button variant="secondary" onClick={handleReportClick}>
                   <FaBook /> &nbsp; Read report
+                </Button>
+              )}
+              {contest.status === "FINISHED" && (
+                <Button variant="secondary" onClick={handleLeaderboardClick}>
+                  <FaTrophy /> &nbsp; View Leaderboard
                 </Button>
               )}
               <hr />
@@ -325,6 +340,9 @@ export const ContestDetails = () => {
             />
           )}
           {signUpModalOpen && <AuditorSignUpModal closeable onClose={handleSignUpModalClose} />}
+          {leaderboardModalOpen && (
+            <ContestLeaderboardModal contestID={contest.id} onClose={handleLeaderboardModalClose} />
+          )}
         </LoadingContainer>
       </Box>
     </Column>
