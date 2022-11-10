@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { useParams } from "react-router-dom"
-import { FaGithub, FaBook, FaClock, FaUsers, FaTrophy } from "react-icons/fa"
+import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -69,7 +69,8 @@ export const ContestDetails = () => {
 
   const { signAndOptIn, isLoading: optInisLoading } = useOptInOut(
     parseInt(contestId ?? ""),
-    !!!contestant?.countsTowardsRanking
+    !!!contestant?.countsTowardsRanking,
+    contestant?.handle ?? ""
   )
 
   useEffect(() => {
@@ -232,6 +233,11 @@ export const ContestDetails = () => {
                     </Column>
                   </Row>
                 </Column>
+              </Row>
+              <hr />
+              <Row spacing="s" alignment={["start", "center"]}>
+                <FaCrown title="Lead Senior Watson" />
+                <Text strong>{contest.leadSeniorAuditorHandle}</Text>
               </Row>
               <hr />
               <Row>

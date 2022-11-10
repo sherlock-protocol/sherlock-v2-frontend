@@ -24,6 +24,7 @@ export type Contest = {
   endDate: number // Timestamp in seconds.
   status: ContestStatus
   leadSeniorAuditorFixedPay: number
+  leadSeniorAuditorHandle: string
 }
 
 export type Contestant = {
@@ -52,6 +53,7 @@ type GetContestsResponseData = {
   ends_at: number
   status: ContestStatus
   lead_senior_auditor_fixed_pay: number
+  lead_senior_auditor_handle: string
 }[]
 
 export const contestsQueryKey = "contests"
@@ -69,6 +71,7 @@ export const useContests = () =>
       endDate: d.ends_at,
       status: d.status,
       leadSeniorAuditorFixedPay: d.lead_senior_auditor_fixed_pay,
+      leadSeniorAuditorHandle: d.lead_senior_auditor_handle,
     }))
   })
 
@@ -84,6 +87,7 @@ type GetContestResponseData = {
   description?: string
   report?: string
   lead_senior_auditor_fixed_pay: number
+  lead_senior_auditor_handle: string
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -103,6 +107,7 @@ export const useContest = (id: number) =>
       description: response.description,
       report: response.report,
       leadSeniorAuditorFixedPay: response.lead_senior_auditor_fixed_pay,
+      leadSeniorAuditorHandle: response.lead_senior_auditor_handle,
     }
   })
 
@@ -135,7 +140,7 @@ export const useContestant = (address: string, contestId: number, opts?: UseQuer
     opts
   )
 
-export const useOptInOut = (contestId: number, optIn: boolean) => {
+export const useOptInOut = (contestId: number, optIn: boolean, handle: string) => {
   const domain = {
     name: "Sherlock Contest",
     version: "1",
@@ -162,6 +167,7 @@ export const useOptInOut = (contestId: number, optIn: boolean) => {
       contest_id: contestId,
       opt_in: optIn,
       signature,
+      handle,
     })
   })
 
