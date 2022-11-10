@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback, useEffect } from "react"
 import { Route, Routes, Navigate } from "react-router-dom"
 import { ReactQueryDevtools } from "react-query/devtools"
 
@@ -22,8 +22,24 @@ import { ContestDetails } from "./pages/ContestDetails"
 import { Scoreboard } from "./pages/Scoreboard"
 import { AuditorProfile } from "./pages/AuditorProfile"
 import { AuthenticationGate } from "./components/AuthenticationGate"
+import { useAccount } from "wagmi"
+import { useAuthentication } from "./hooks/api/useAuthentication"
 
 function App() {
+  const { address: connectedAddress } = useAccount()
+  const { signOut, profile } = useAuthentication()
+
+  const addressIsAllowed = useCallback(
+    (address: string) => profile?.addresses.some((a) => a.address === address),
+    [profile]
+  )
+
+  useEffect(() => {
+    if (!connectedAddress || (profile && !addressIsAllowed(connectedAddress))) {
+      signOut()
+    }
+  }, [connectedAddress, addressIsAllowed, signOut, profile])
+
   return (
     <>
       <Routes>

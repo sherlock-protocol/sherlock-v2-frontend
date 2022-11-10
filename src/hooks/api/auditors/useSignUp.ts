@@ -7,6 +7,7 @@ import { FormError } from "../../../utils/Error"
 import { isAuditorQuery } from "../auditors"
 import { contests as contestsAPI } from "../axios"
 import { signUp as signUpUrl } from "../urls"
+import { profileQuery } from "./useProfile"
 import { useSignSignUpMessage } from "./useSignSignUpMessage"
 
 type SignUpResponseData = {
@@ -20,6 +21,10 @@ type SignUpResponseData = {
     addresses: {
       id: number
       address: string
+    }[]
+    managed_teams: {
+      id: number
+      handle: string
     }[]
     payout_address_mainnet: string
   }
@@ -63,6 +68,7 @@ export const useSignUp = () => {
           telegramHandle: data.auditor.telegram_handle,
           addresses: data.auditor.addresses.map((a) => ({ id: a.id, address: a.address })),
           payoutAddress: data.auditor.payout_address_mainnet,
+          managedTeams: data.auditor.managed_teams.map((t) => ({ id: t.id, handle: t.handle })),
         }
       } catch (error) {
         const axiosError = error as AxiosError
@@ -72,6 +78,7 @@ export const useSignUp = () => {
     {
       onSuccess(_data, { address }) {
         queryClient.invalidateQueries(isAuditorQuery(address))
+        queryClient.invalidateQueries(profileQuery())
       },
     }
   )

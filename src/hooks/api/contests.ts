@@ -24,11 +24,14 @@ export type Contest = {
   endDate: number // Timestamp in seconds.
   status: ContestStatus
   leadSeniorAuditorFixedPay: number
+  leadSeniorAuditorHandle: string
 }
 
 export type Contestant = {
   repo: string
   countsTowardsRanking: boolean
+  handle: string
+  isTeam: boolean
 }
 
 export type Scoreboard = {
@@ -50,6 +53,7 @@ type GetContestsResponseData = {
   ends_at: number
   status: ContestStatus
   lead_senior_auditor_fixed_pay: number
+  lead_senior_auditor_handle: string
 }[]
 
 export const contestsQueryKey = "contests"
@@ -67,6 +71,7 @@ export const useContests = () =>
       endDate: d.ends_at,
       status: d.status,
       leadSeniorAuditorFixedPay: d.lead_senior_auditor_fixed_pay,
+      leadSeniorAuditorHandle: d.lead_senior_auditor_handle,
     }))
   })
 
@@ -82,6 +87,7 @@ type GetContestResponseData = {
   description?: string
   report?: string
   lead_senior_auditor_fixed_pay: number
+  lead_senior_auditor_handle: string
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -101,15 +107,16 @@ export const useContest = (id: number) =>
       description: response.description,
       report: response.report,
       leadSeniorAuditorFixedPay: response.lead_senior_auditor_fixed_pay,
+      leadSeniorAuditorHandle: response.lead_senior_auditor_handle,
     }
   })
 
 type GetContestantResponseData = {
-  contestant: {
-    repo_name: string
-    counts_towards_ranking: boolean
-  } | null
-}
+  repo_name: string
+  counts_towards_ranking: boolean
+  handle: string
+  is_team: boolean
+} | null
 export const contestantQueryKey = (address: string, contestId: number) => ["contestant", address, contestId]
 export const useContestant = (address: string, contestId: number, opts?: UseQueryOptions<Contestant | null, Error>) =>
   useQuery<Contestant | null, Error>(
@@ -118,13 +125,13 @@ export const useContestant = (address: string, contestId: number, opts?: UseQuer
       try {
         const { data } = await contestsAPI.get<GetContestantResponseData>(getContestantUrl(address, contestId))
 
-        if (data.contestant === null) return null
-
-        const { contestant } = data
+        if (!data) return null
 
         return {
-          repo: contestant.repo_name,
-          countsTowardsRanking: contestant.counts_towards_ranking,
+          repo: data.repo_name,
+          countsTowardsRanking: data.counts_towards_ranking,
+          handle: data.handle,
+          isTeam: data.is_team,
         }
       } catch (error) {
         return null
@@ -133,7 +140,7 @@ export const useContestant = (address: string, contestId: number, opts?: UseQuer
     opts
   )
 
-export const useOptInOut = (contestId: number, optIn: boolean) => {
+export const useOptInOut = (contestId: number, optIn: boolean, handle: string) => {
   const domain = {
     name: "Sherlock Contest",
     version: "1",
@@ -160,6 +167,7 @@ export const useOptInOut = (contestId: number, optIn: boolean) => {
       contest_id: contestId,
       opt_in: optIn,
       signature,
+      handle,
     })
   })
 

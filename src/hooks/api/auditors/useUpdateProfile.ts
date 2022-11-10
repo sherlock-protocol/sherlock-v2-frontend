@@ -17,6 +17,10 @@ type UpdateProfileResponseData = {
       id: number
       address: string
     }[]
+    managed_teams: {
+      id: number
+      handle: string
+    }[]
     payout_address_mainnet: string
   }
 }
@@ -58,6 +62,7 @@ export const useUpdateProfile = () => {
           telegramHandle: data.profile.telegram_handle,
           addresses: data.profile.addresses.map((a) => ({ id: a.id, address: a.address })),
           payoutAddress: data.profile.payout_address_mainnet,
+          managedTeams: data.profile.managed_teams.map((t) => ({ id: t.id, handle: t.handle })),
         }
       } catch (error) {
         const axiosError = error as AxiosError

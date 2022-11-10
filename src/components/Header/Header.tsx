@@ -11,7 +11,7 @@ import { ReactComponent as Logotype } from "../../assets/icons/logotype.svg"
 import styles from "./Header.module.scss"
 import { Row } from "../Layout"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
-import { useProfile } from "../../hooks/api/auditors"
+import { useProfile } from "../../hooks/api/auditors/useProfile"
 
 export type NavigationLink = {
   title: string
