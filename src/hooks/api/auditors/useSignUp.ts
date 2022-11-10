@@ -7,6 +7,7 @@ import { FormError } from "../../../utils/Error"
 import { isAuditorQuery } from "../auditors"
 import { contests as contestsAPI } from "../axios"
 import { signUp as signUpUrl } from "../urls"
+import { profileQuery } from "./useProfile"
 import { useSignSignUpMessage } from "./useSignSignUpMessage"
 
 type SignUpResponseData = {
@@ -77,6 +78,7 @@ export const useSignUp = () => {
     {
       onSuccess(_data, { address }) {
         queryClient.invalidateQueries(isAuditorQuery(address))
+        queryClient.invalidateQueries(profileQuery())
       },
     }
   )
