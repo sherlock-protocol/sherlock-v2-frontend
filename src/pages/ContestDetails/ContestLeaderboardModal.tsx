@@ -1,7 +1,4 @@
-import React, { useCallback } from "react"
 import { FaCrown, FaUsers } from "react-icons/fa"
-
-import { Button } from "../../components/Button"
 import { Column, Row } from "../../components/Layout"
 import { Modal, Props as ModalProps } from "../../components/Modal/Modal"
 import { Text } from "../../components/Text"
@@ -63,8 +60,17 @@ export const ContestLeaderboardModal: React.FC<Props> = ({ contestID, onClose })
                 <Td>
                   <Row spacing="l">
                     <Text>{c.handle}</Text>
-                    <Text className={styles.highlight}>{c.isTeam && <FaUsers title="Team" />}</Text>
-                    <Text className={styles.highlight}>{c.isSenior && <FaCrown title="Senior Watson" />}</Text>
+                    {c.isTeam && (
+                      <Text className={styles.highlight}>
+                        {" "}
+                        <FaUsers title="Team" />
+                      </Text>
+                    )}
+                    {c.isSenior && (
+                      <Text className={styles.highlight}>
+                        <FaCrown title="Senior Watson" />
+                      </Text>
+                    )}
                   </Row>
                 </Td>
                 <Td>
