@@ -66,7 +66,7 @@ export const ContestLeaderboardModal: React.FC<Props> = ({ contestID, onClose })
                         <FaUsers title="Team" />
                       </Text>
                     )}
-                    {c.isSenior && (
+                    {c.isLeadSenior && (
                       <Text className={styles.highlight}>
                         <FaCrown title="Senior Watson" />
                       </Text>
