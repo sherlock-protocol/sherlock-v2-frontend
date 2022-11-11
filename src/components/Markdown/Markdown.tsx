@@ -14,7 +14,7 @@ type Props = {
 
 export const Markdown: React.FC<Props> = ({ content = "" }) => {
   const dirtyHTML = converter.makeHtml(content)
-  const cleanHTML = DOMPurify.sanitize(dirtyHTML, { USE_PROFILES: { html: true } })
+  const cleanHTML = DOMPurify.sanitize(dirtyHTML, { USE_PROFILES: { html: true }, FORBID_TAGS: ["img"] })
 
   return <div className={styles.markdown}>{parseHTML(cleanHTML)}</div>
 }
