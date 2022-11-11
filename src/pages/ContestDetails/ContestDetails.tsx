@@ -237,7 +237,7 @@ export const ContestDetails = () => {
               <hr />
               <Row spacing="s" alignment={["start", "center"]}>
                 <FaCrown title="Lead Senior Watson" />
-                <Text strong>{contest.leadSeniorAuditorHandle}</Text>
+                <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
               </Row>
               <hr />
               <Row>
