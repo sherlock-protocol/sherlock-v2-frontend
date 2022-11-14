@@ -75,7 +75,7 @@ export const ContestLeaderboardModal: React.FC<Props> = ({ contestID, onClose })
                 </Td>
                 <Td>
                   <Text variant="mono" alignment="center" strong>
-                    {c.score >= 1 ? c.score.toFixed(0) : "<1"}
+                    {c.score === 0 ? "-" : c.score < 1 ? "<1" : c.score.toFixed(0)}
                   </Text>
                 </Td>
                 <Td>

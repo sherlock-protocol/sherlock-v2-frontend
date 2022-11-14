@@ -202,14 +202,14 @@ export const ContestDetails = () => {
                 </Row>
               )}
               {contest.status === "FINISHED" && contest.report && (
-                <Button variant="secondary" onClick={handleReportClick}>
-                  <FaBook /> &nbsp; Read report
-                </Button>
-              )}
-              {contest.status === "FINISHED" && (
-                <Button variant="secondary" onClick={handleLeaderboardClick}>
-                  <FaTrophy /> &nbsp; View Leaderboard
-                </Button>
+                <>
+                  <Button variant="secondary" onClick={handleReportClick}>
+                    <FaBook /> &nbsp; Read report
+                  </Button>
+                  <Button variant="secondary" onClick={handleLeaderboardClick}>
+                    <FaTrophy /> &nbsp; View Leaderboard
+                  </Button>
+                </>
               )}
               <hr />
               <Row>

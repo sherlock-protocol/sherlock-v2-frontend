@@ -37,7 +37,7 @@ export const useContestLeaderboard = (contestID: number) =>
         isLeadSenior: c.is_lead_senior,
         isSenior: c.is_senior,
         isTeam: c.is_team,
-        score: c.score,
+        score: c.score ?? 0,
         payout: c.payout,
       })),
       totalContestants: data.total_contestants,
