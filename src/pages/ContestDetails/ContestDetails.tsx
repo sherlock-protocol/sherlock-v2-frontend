@@ -29,6 +29,7 @@ import { AuditorSignUpModal } from "../Contests/AuditorSignUpModal"
 import { useIsAuditor } from "../../hooks/api/auditors"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { ContestLeaderboardModal } from "./ContestLeaderboardModal"
+import { useContestLeaderboard } from "../../hooks/api/contests/useContestLeaderboard"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -72,6 +73,8 @@ export const ContestDetails = () => {
     !!!contestant?.countsTowardsRanking,
     contestant?.handle ?? ""
   )
+
+  const { data: contestLeaderboard } = useContestLeaderboard(parseInt(contestId ?? ""))
 
   useEffect(() => {
     if (joinContestSuccess) {
@@ -206,7 +209,7 @@ export const ContestDetails = () => {
                   <FaBook /> &nbsp; Read report
                 </Button>
               )}
-              {contest.status === "FINISHED" && (
+              {contestLeaderboard && contestLeaderboard.contestants.length > 0 && (
                 <Button variant="secondary" onClick={handleLeaderboardClick}>
                   <FaTrophy /> &nbsp; View Leaderboard
                 </Button>
