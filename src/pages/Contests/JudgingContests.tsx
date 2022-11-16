@@ -15,17 +15,17 @@ type Props = {
   onContestClick?: (id: number) => void
 }
 
-export const FinishedContests: React.FC<Props> = ({ contests, onContestClick }) => {
-  const finishedContests = useMemo(
-    () => contests?.filter((c) => c.status === "FINISHED").sort((a, b) => b.endDate - a.endDate),
+export const JudgingContests: React.FC<Props> = ({ contests, onContestClick }) => {
+  const judgingContests = useMemo(
+    () => contests?.filter((c) => c.status === "JUDGING").sort((a, b) => b.endDate - a.endDate),
     [contests]
   )
 
-  if (!finishedContests || finishedContests.length === 0) return null
+  if (!judgingContests || judgingContests.length === 0) return null
 
   return (
     <Box shadow={false} fullWidth>
-      <Title variant="h2">FINISHED</Title>
+      <Title variant="h2">JUDGING</Title>
       <Table>
         <THead>
           <Tr>
@@ -45,16 +45,12 @@ export const FinishedContests: React.FC<Props> = ({ contests, onContestClick }) 
           </Tr>
         </THead>
         <TBody>
-          {finishedContests?.map((contest) => {
+          {judgingContests.map((contest) => {
             const startDate = DateTime.fromSeconds(contest.startDate)
             const endDate = DateTime.fromSeconds(contest.endDate)
 
             return (
-              <Tr
-                key={contest.id}
-                onClick={() => onContestClick && onContestClick(contest.id)}
-                className={styles.finishedContest}
-              >
+              <Tr key={contest.id} onClick={() => onContestClick && onContestClick(contest.id)}>
                 <Td>
                   <img src={contest.logoURL} alt={contest.title} width={80} className={styles.logo} />
                 </Td>
