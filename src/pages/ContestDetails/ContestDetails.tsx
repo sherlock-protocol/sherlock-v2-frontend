@@ -270,46 +270,57 @@ export const ContestDetails = () => {
               </Row>
               <hr />
               {profile && (
-                <Row>
-                  {contestant ? (
-                    <Column spacing="m" grow={1}>
-                      <Row spacing="xs">
-                        <Text>Joined contest as</Text>
-                        {contestant.isTeam && <FaUsers title="Team" />}
-                        <Text strong>{contestant.handle}</Text>
-                      </Row>
+                <>
+                  <Row>
+                    {contestant ? (
+                      <Column spacing="m" grow={1}>
+                        <Row spacing="xs">
+                          <Text>Joined contest as</Text>
+                          {contestant.isTeam && <FaUsers title="Team" />}
+                          <Text strong>{contestant.handle}</Text>
+                        </Row>
 
-                      <Button variant="secondary" onClick={visitRepo} disabled={!contestant.repo}>
-                        <FaGithub /> &nbsp; View repository
-                      </Button>
-                      {!contestant.repo && (
-                        <Text size="small" variant="secondary">
-                          Repository will be available once the contest starts
-                        </Text>
-                      )}
+                        <Button variant="secondary" onClick={visitRepo} disabled={!contestant.repo}>
+                          <FaGithub /> &nbsp; View repository
+                        </Button>
+                        {!contestant.repo && (
+                          <Text size="small" variant="secondary">
+                            Repository will be available once the contest starts
+                          </Text>
+                        )}
 
-                      <Text>{canOptinOut ? "You're competing for:" : "You've competed for:"}</Text>
-                      <Options
-                        options={[
-                          {
-                            value: true,
-                            label: "USDC + Points",
-                          },
-                          { value: false, label: "Only USDC" },
-                        ]}
-                        value={optIn}
-                        onChange={handleOptInChange}
-                        disabled={!canOptinOut}
-                      />
+                        <Text>{canOptinOut ? "You're competing for:" : "You've competed for:"}</Text>
+                        <Options
+                          options={[
+                            {
+                              value: true,
+                              label: "USDC + Points",
+                            },
+                            { value: false, label: "Only USDC" },
+                          ]}
+                          value={optIn}
+                          onChange={handleOptInChange}
+                          disabled={!canOptinOut}
+                        />
+                      </Column>
+                    ) : (
+                      canSignUp && (
+                        <ConnectGate>
+                          <Button onClick={handleJoinContest}>Join Audit Contest</Button>
+                        </ConnectGate>
+                      )
+                    )}
+                  </Row>
+                  <hr />
+                  <Row>
+                    <Column spacing="s">
+                      <Text variant="secondary" size="small">
+                        The judging contest starts as soon as the audit contest ends.
+                      </Text>
+                      <Button variant="alternate">Judge Contest</Button>
                     </Column>
-                  ) : (
-                    canSignUp && (
-                      <ConnectGate>
-                        <Button onClick={handleJoinContest}>JOIN CONTEST</Button>
-                      </ConnectGate>
-                    )
-                  )}
-                </Row>
+                  </Row>
+                </>
               )}
               {!profile && isAuditor && (
                 <Row>
