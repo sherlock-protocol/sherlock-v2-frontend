@@ -35,6 +35,8 @@ const STATUS_LABELS = {
   RUNNING: "RUNNING",
   JUDGING: "JUDGING",
   FINISHED: "FINISHED",
+  ESCALATING: "ESCALATIONS OPEN",
+  SHERLOCK_JUDGING: "JUDGING",
 }
 
 export const ContestDetails = () => {
