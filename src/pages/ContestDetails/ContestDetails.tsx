@@ -29,6 +29,7 @@ import { AuditorSignUpModal } from "../Contests/AuditorSignUpModal"
 import { useIsAuditor } from "../../hooks/api/auditors"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { ContestLeaderboardModal } from "./ContestLeaderboardModal"
+import { useContestLeaderboard } from "../../hooks/api/contests/useContestLeaderboard"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -72,6 +73,8 @@ export const ContestDetails = () => {
     !!!contestant?.countsTowardsRanking,
     contestant?.handle ?? ""
   )
+
+  const { data: contestLeaderboard } = useContestLeaderboard(parseInt(contestId ?? ""))
 
   useEffect(() => {
     if (joinContestSuccess) {
@@ -202,14 +205,14 @@ export const ContestDetails = () => {
                 </Row>
               )}
               {contest.status === "FINISHED" && contest.report && (
-                <>
-                  <Button variant="secondary" onClick={handleReportClick}>
-                    <FaBook /> &nbsp; Read report
-                  </Button>
-                  <Button variant="secondary" onClick={handleLeaderboardClick}>
-                    <FaTrophy /> &nbsp; View Leaderboard
-                  </Button>
-                </>
+                <Button variant="secondary" onClick={handleReportClick}>
+                  <FaBook /> &nbsp; Read report
+                </Button>
+              )}
+              {contestLeaderboard && contestLeaderboard.contestants.length > 0 && (
+                <Button variant="secondary" onClick={handleLeaderboardClick}>
+                  <FaTrophy /> &nbsp; View Leaderboard
+                </Button>
               )}
               <hr />
               <Row>
@@ -237,7 +240,7 @@ export const ContestDetails = () => {
               <hr />
               <Row spacing="s" alignment={["start", "center"]}>
                 <FaCrown title="Lead Senior Watson" />
-                <Text strong>{contest.leadSeniorAuditorHandle}</Text>
+                <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
               </Row>
               <hr />
               <Row>
