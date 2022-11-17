@@ -1,7 +1,6 @@
 import { useCallback } from "react"
 import { useMutation, useQueryClient } from "react-query"
 import { useAccount } from "wagmi"
-import { useSignJoinContestMessage } from "./useSignJoinContestMessage"
 import { joinContest as joinContestUrl } from "../urls"
 import { contests as contestsAPI } from "../axios"
 import { contestantQueryKey } from "../contests"
@@ -17,7 +16,6 @@ type JoinContest = {
 }
 
 type JoinContestParams = {
-  signature: string
   handle: string
 }
 
@@ -25,20 +23,12 @@ export const useJoinContest = (contestId: number) => {
   const { address: connectedAddress } = useAccount()
   const queryClient = useQueryClient()
 
-  const {
-    signTypedDataAsync,
-    isLoading: signatureIsLoading,
-    reset: resetSignature,
-  } = useSignJoinContestMessage(contestId)
-
   const { mutate, mutateAsync, ...mutation } = useMutation<JoinContest, FormError, JoinContestParams>(
     async (params) => {
       try {
         const { data } = await contestsAPI.post<JoinContestResponseData>(joinContestUrl(), {
           handle: params.handle,
-          signature: params.signature,
           contest_id: contestId,
-          address: connectedAddress,
         })
 
         return {
@@ -58,30 +48,24 @@ export const useJoinContest = (contestId: number) => {
 
   const joinContest = useCallback(
     async (handle: string) => {
-      if (!connectedAddress) return
-
       try {
-        const signature = await signTypedDataAsync()
-
         mutate({
-          signature,
           handle,
         })
       } catch (error) {
         console.error(error)
       }
     },
-    [signTypedDataAsync, mutate, connectedAddress]
+    [mutate]
   )
 
   const reset = useCallback(() => {
-    resetSignature()
     mutation.reset()
-  }, [mutation, resetSignature])
+  }, [mutation])
 
   return {
     joinContest,
-    isLoading: signatureIsLoading || mutation.isLoading,
+    isLoading: mutation.isLoading,
     isSuccess: mutation.isSuccess,
     isError: mutation.isError,
     data: mutation.data,
