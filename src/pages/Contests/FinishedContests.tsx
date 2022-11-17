@@ -19,7 +19,9 @@ type Props = {
 export const FinishedContests: React.FC<Props> = ({ contests, onContestClick }) => {
   const finishedContests = useMemo(
     () =>
-      contests?.filter((c) => c.status === "FINISHED" || c.status === "JUDGING").sort((a, b) => b.endDate - a.endDate),
+      contests
+        ?.filter((c) => ["FINISHED", "JUDGING", "ESCALATING", "SHERLOCK_JUDGING"].includes(c.status))
+        .sort((a, b) => b.endDate - a.endDate),
     [contests]
   )
 
@@ -62,9 +64,14 @@ export const FinishedContests: React.FC<Props> = ({ contests, onContestClick }) 
                 </Td>
                 <Td>
                   <Column spacing="s">
-                    {contest.status === "JUDGING" && (
+                    {["JUDGING", "SHERLOCK_JUDGING"].includes(contest.status) && (
                       <Text variant="alternate" strong size="small">
                         JUDGING
+                      </Text>
+                    )}
+                    {contest.status === "ESCALATING" && (
+                      <Text variant="alternate" strong size="small">
+                        ESCALATIONS OPEN
                       </Text>
                     )}
                     <Title variant="h2">{contest.title}</Title>
