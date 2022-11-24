@@ -36,7 +36,7 @@ export const FinishedContests: React.FC<Props> = ({ contests, onContestClick }) 
               <Text>Contest</Text>
             </Th>
             <Th>
-              <Text alignment="center">Prize pool</Text>
+              <Text alignment="center">Total Rewards</Text>
             </Th>
             <Th>
               <Text alignment="center">Started</Text>

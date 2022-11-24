@@ -219,7 +219,7 @@ export const ContestDetails = () => {
                 <Column spacing="l">
                   <Row>
                     <Column>
-                      <Title variant="h3">TOTAL PRIZE POOL</Title>
+                      <Title variant="h3">TOTAL REWARDS</Title>
                       <Text size="extra-large" strong>
                         {`${commify(contest.prizePool + contest.leadSeniorAuditorFixedPay)} USDC`}
                       </Text>
