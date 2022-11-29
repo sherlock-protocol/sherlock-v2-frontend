@@ -10,7 +10,7 @@ import {
   getScoreboard as getScoreboardUrl,
 } from "./urls"
 
-export type ContestStatus = "CREATED" | "RUNNING" | "JUDGING" | "FINISHED"
+export type ContestStatus = "CREATED" | "RUNNING" | "JUDGING" | "FINISHED" | "ESCALATING" | "SHERLOCK_JUDGING"
 
 export type Contest = {
   id: number

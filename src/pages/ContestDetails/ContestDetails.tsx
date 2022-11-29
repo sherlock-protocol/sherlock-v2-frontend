@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
@@ -36,9 +36,12 @@ const STATUS_LABELS = {
   RUNNING: "RUNNING",
   JUDGING: "JUDGING",
   FINISHED: "FINISHED",
+  ESCALATING: "ESCALATIONS OPEN",
+  SHERLOCK_JUDGING: "JUDGING",
 }
 
 export const ContestDetails = () => {
+  const navigate = useNavigate()
   const { contestId } = useParams()
   const { address } = useAccount()
   const { data: profile } = useProfile()
@@ -158,6 +161,8 @@ export const ContestDetails = () => {
 
   const timeLeft = endDate.diffNow(["day", "hour", "minute", "second"])
   const endingSoon = contest.status === "RUNNING" && timeLeft.days < 2
+
+  const profileIsComplete = profile && profile.githubHandle && profile.discordHandle
 
   return (
     <Column spacing="m" className={styles.container}>
@@ -305,13 +310,20 @@ export const ContestDetails = () => {
                         disabled={!canOptinOut}
                       />
                     </Column>
-                  ) : (
-                    canSignUp && (
+                  ) : canSignUp ? (
+                    profileIsComplete ? (
                       <ConnectGate>
                         <Button onClick={handleJoinContest}>JOIN CONTEST</Button>
                       </ConnectGate>
+                    ) : (
+                      <Column spacing="m">
+                        <Text variant="secondary" size="small">
+                          Before joining a contest, you need to fill in your profile details
+                        </Text>
+                        <Button onClick={() => navigate("../profile")}>Complete Profile</Button>
+                      </Column>
                     )
-                  )}
+                  ) : null}
                 </Row>
               )}
               {!profile && isAuditor && (
