@@ -25,6 +25,7 @@ export type Contest = {
   status: ContestStatus
   leadSeniorAuditorFixedPay: number
   leadSeniorAuditorHandle: string
+  private: boolean
 }
 
 export type Contestant = {
@@ -54,6 +55,7 @@ type GetContestsResponseData = {
   status: ContestStatus
   lead_senior_auditor_fixed_pay: number
   lead_senior_auditor_handle: string
+  private: boolean
 }[]
 
 export const contestsQueryKey = "contests"
@@ -72,6 +74,7 @@ export const useContests = () =>
       status: d.status,
       leadSeniorAuditorFixedPay: d.lead_senior_auditor_fixed_pay,
       leadSeniorAuditorHandle: d.lead_senior_auditor_handle,
+      private: d.private,
     }))
   })
 
@@ -88,6 +91,7 @@ type GetContestResponseData = {
   report?: string
   lead_senior_auditor_fixed_pay: number
   lead_senior_auditor_handle: string
+  private: boolean
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -108,6 +112,7 @@ export const useContest = (id: number) =>
       report: response.report,
       leadSeniorAuditorFixedPay: response.lead_senior_auditor_fixed_pay,
       leadSeniorAuditorHandle: response.lead_senior_auditor_handle,
+      private: response.private,
     }
   })
 
