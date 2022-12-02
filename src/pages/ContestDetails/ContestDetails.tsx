@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { useNavigate, useParams } from "react-router-dom"
-import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy } from "react-icons/fa"
+import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy, FaLock } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -149,7 +149,10 @@ export const ContestDetails = () => {
   }, [setLeaderboardModalOpen])
 
   const canOptinOut = useMemo(() => contest?.status === "CREATED" || contest?.status === "RUNNING", [contest?.status])
-  const canSignUp = useMemo(() => contest?.status !== "FINISHED" && contest?.status !== "JUDGING", [contest?.status])
+  const canSignUp = useMemo(
+    () => contest?.status !== "FINISHED" && contest?.status !== "JUDGING" && !contest?.private,
+    [contest?.status, contest?.private]
+  )
 
   if (!contest) return null
 
@@ -217,6 +220,27 @@ export const ContestDetails = () => {
                 </>
               )}
               <hr />
+              {contest.private && (
+                <>
+                  <Row>
+                    <Column spacing="m">
+                      <Row spacing="xs">
+                        <Text variant="alternate" size="small" strong>
+                          <FaLock />
+                          &nbsp; PRIVATE CONTEST
+                        </Text>
+                      </Row>
+                      <Text variant="secondary" size="small">
+                        This is a private contest. Only whitelisted Watsons can join.
+                      </Text>
+                      <Text variant="secondary" size="small">
+                        Keep an eye on the discord for future opportunities in private contests.
+                      </Text>
+                    </Column>
+                  </Row>
+                  <hr />
+                </>
+              )}
               <Row>
                 <Column spacing="l">
                   <Row>

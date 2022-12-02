@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
