@@ -234,7 +234,7 @@ export const ContestDetails = () => {
                         This is a private contest. Only whitelisted Watsons can join.
                       </Text>
                       <Text variant="secondary" size="small">
-                        If you're interested into competing in private contests, reach us out in Discord.
+                        Keep an eye on the discord for future opportunities in private contests.
                       </Text>
                     </Column>
                   </Row>
