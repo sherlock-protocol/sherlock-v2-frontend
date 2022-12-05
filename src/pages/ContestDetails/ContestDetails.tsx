@@ -192,8 +192,20 @@ export const ContestDetails = () => {
                   <Text alignment="justify">{contest?.shortDescription}</Text>
                 </Column>
               </Row>
-              <Column>
-                <Markdown content={contest.description} />
+              <Column alignment={["center", "center"]} grow={1}>
+                {contest.private && !contestant ? (
+                  <Row alignment={["center", "center"]}>
+                    <Column alignment="center" spacing="m">
+                      <Text variant="secondary" strong>
+                        <FaLock />
+                        &nbsp; PRIVATE CONTEST
+                      </Text>
+                      <Text variant="secondary">The details of this contest are hidden</Text>
+                    </Column>
+                  </Row>
+                ) : (
+                  <Markdown content={contest.description} />
+                )}
               </Column>
             </Column>
             <Column spacing="xl" shrink={0} className={styles.sidebar}>
