@@ -151,7 +151,10 @@ export const ContestDetails = () => {
     setLeaderboardModalOpen(false)
   }, [setLeaderboardModalOpen])
 
-  const canOptinOut = useMemo(() => contest?.status === "CREATED" || contest?.status === "RUNNING", [contest?.status])
+  const canOptinOut = useMemo(
+    () => !contest?.private && (contest?.status === "CREATED" || contest?.status === "RUNNING"),
+    [contest?.status, contest?.private]
+  )
   const canSignUp = useMemo(
     () => contest?.status !== "FINISHED" && contest?.status !== "JUDGING" && !contest?.private,
     [contest?.status, contest?.private]
@@ -332,7 +335,11 @@ export const ContestDetails = () => {
                         </Text>
                       )}
 
-                      <Text>{canOptinOut ? "You're competing for:" : "You've competed for:"}</Text>
+                      <Text>
+                        {contest.status === "CREATED" || contest.status === "RUNNING"
+                          ? "You're competing for:"
+                          : "You've competed for:"}
+                      </Text>
                       <Options
                         options={[
                           {
