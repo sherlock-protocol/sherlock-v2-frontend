@@ -193,7 +193,7 @@ export const ContestDetails = () => {
                 </Column>
               </Row>
               <Column alignment={["center", "center"]} grow={1}>
-                {contest.private && !contestant ? (
+                {contest.private ? (
                   <Row alignment={["center", "center"]}>
                     <Column alignment="center" spacing="m">
                       <Text variant="secondary" strong>
