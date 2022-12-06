@@ -10,7 +10,7 @@ import { Button } from "../../components/Button"
 import { Title } from "../../components/Title"
 import { Text } from "../../components/Text"
 import { commify } from "../../utils/units"
-import { useContest, useContestant, useOptInOut } from "../../hooks/api/contests"
+import { useContest, useOptInOut } from "../../hooks/api/contests"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { SignUpSuccessModal } from "./SignUpSuccessModal"
 
@@ -29,6 +29,8 @@ import { AuditorSignUpModal } from "../Contests/AuditorSignUpModal"
 import { useIsAuditor } from "../../hooks/api/auditors"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { ContestLeaderboardModal } from "./ContestLeaderboardModal"
+import { useContestant } from "../../hooks/api/contests/useContestant"
+import { useContestLeaderboard } from "../../hooks/api/contests/useContestLeaderboard"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -50,6 +52,7 @@ export const ContestDetails = () => {
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [reportModalOpen, setReportModalOpen] = useState(false)
   const [joinContestModalOpen, setJoinContestModalOpen] = useState(false)
+  const [joinJudgingContestModalOpen, setJoinJudgingContestModalOpen] = useState(false)
   const [signUpModalOpen, setSignUpModalOpen] = useState(false)
   const [leaderboardModalOpen, setLeaderboardModalOpen] = useState(false)
 
@@ -58,7 +61,7 @@ export const ContestDetails = () => {
     enabled: !!address,
     retry: false,
   })
-  const [optIn, setOptIn] = useState(contestant?.countsTowardsRanking ?? true)
+  const [optIn, setOptIn] = useState(contestant?.audit?.countsTowardsRanking ?? true)
 
   const {
     joinContest,
@@ -72,9 +75,11 @@ export const ContestDetails = () => {
 
   const { signAndOptIn, isLoading: optInisLoading } = useOptInOut(
     parseInt(contestId ?? ""),
-    !!!contestant?.countsTowardsRanking,
-    contestant?.handle ?? ""
+    !!!contestant?.audit?.countsTowardsRanking,
+    contestant?.audit?.handle ?? ""
   )
+
+  const { data: contestLeaderboard } = useContestLeaderboard(parseInt(contestId ?? ""))
 
   useEffect(() => {
     if (joinContestSuccess) {
@@ -83,10 +88,10 @@ export const ContestDetails = () => {
   }, [joinContestSuccess])
 
   useEffect(() => {
-    if (contestant?.countsTowardsRanking !== undefined) {
-      setOptIn(contestant.countsTowardsRanking)
+    if (contestant?.audit?.countsTowardsRanking !== undefined) {
+      setOptIn(contestant.audit.countsTowardsRanking)
     }
-  }, [contestant?.countsTowardsRanking])
+  }, [contestant?.audit?.countsTowardsRanking])
 
   const handleJoinContest = useCallback(() => {
     if (!profile) return
@@ -99,9 +104,28 @@ export const ContestDetails = () => {
     }
   }, [joinContest, profile])
 
+  const handleJoinJudgingContest = useCallback(() => {
+    if (!profile) return
+
+    // If the auditor is also a team admin, we give them the option to join the contest as a team.
+    if (profile.managedTeams.length > 0) {
+      setJoinJudgingContestModalOpen(true)
+    } else {
+      joinContest(profile.handle, true)
+    }
+  }, [joinContest, profile])
+
   const handleJoinContestWithHandle = useCallback(
     (handle: string) => {
       joinContest(handle)
+      setJoinContestModalOpen(false)
+    },
+    [joinContest]
+  )
+
+  const handleJoinJudgingContestWithHandle = useCallback(
+    (handle: string) => {
+      joinContest(handle, true)
       setJoinContestModalOpen(false)
     },
     [joinContest]
@@ -120,7 +144,7 @@ export const ContestDetails = () => {
   }, [authenticate])
 
   const visitRepo = useCallback(() => {
-    contestant && window.open(`https://github.com/${contestant.repo}`, "__blank")
+    contestant?.audit && window.open(`https://github.com/${contestant.audit.repo}`, "__blank")
   }, [contestant])
 
   const handleReportClick = useCallback(() => {
@@ -133,11 +157,11 @@ export const ContestDetails = () => {
 
   const handleOptInChange = useCallback(
     (_optIn: boolean) => {
-      if (_optIn !== contestant?.countsTowardsRanking) {
+      if (_optIn !== contestant?.audit?.countsTowardsRanking) {
         signAndOptIn()
       }
     },
-    [signAndOptIn, contestant?.countsTowardsRanking]
+    [signAndOptIn, contestant?.audit?.countsTowardsRanking]
   )
 
   const handleErrorModalClose = useCallback(() => {
@@ -149,9 +173,13 @@ export const ContestDetails = () => {
   }, [setLeaderboardModalOpen])
 
   const canOptinOut = useMemo(() => contest?.status === "CREATED" || contest?.status === "RUNNING", [contest?.status])
-  const canSignUp = useMemo(
+  const canJoinContest = useMemo(
     () => contest?.status !== "FINISHED" && contest?.status !== "JUDGING" && !contest?.private,
     [contest?.status, contest?.private]
+  )
+  const canJoinJudging = useMemo(
+    () => contest?.status !== "FINISHED" && contest?.status !== "ESCALATING" && contest?.status !== "SHERLOCK_JUDGING",
+    [contest?.status]
   )
 
   if (!contest) return null
@@ -222,14 +250,14 @@ export const ContestDetails = () => {
                 </Row>
               )}
               {contest.status === "FINISHED" && contest.report && (
-                <>
-                  <Button variant="secondary" onClick={handleReportClick}>
-                    <FaBook /> &nbsp; Read report
-                  </Button>
-                  <Button variant="secondary" onClick={handleLeaderboardClick}>
-                    <FaTrophy /> &nbsp; View Leaderboard
-                  </Button>
-                </>
+                <Button variant="secondary" onClick={handleReportClick}>
+                  <FaBook /> &nbsp; Read report
+                </Button>
+              )}
+              {contestLeaderboard && contestLeaderboard.contestants.length > 0 && (
+                <Button variant="secondary" onClick={handleLeaderboardClick}>
+                  <FaTrophy /> &nbsp; View Leaderboard
+                </Button>
               )}
               <hr />
               {contest.private && (
@@ -257,7 +285,7 @@ export const ContestDetails = () => {
                 <Column spacing="l">
                   <Row>
                     <Column>
-                      <Title variant="h3">TOTAL PRIZE POOL</Title>
+                      <Title variant="h3">TOTAL REWARDS</Title>
                       <Text size="extra-large" strong>
                         {`${commify(contest.prizePool + contest.leadSeniorAuditorFixedPay)} USDC`}
                       </Text>
@@ -278,7 +306,7 @@ export const ContestDetails = () => {
               <hr />
               <Row spacing="s" alignment={["start", "center"]}>
                 <FaCrown title="Lead Senior Watson" />
-                <Text strong>{contest.leadSeniorAuditorHandle}</Text>
+                <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
               </Row>
               <hr />
               <Row>
@@ -311,42 +339,51 @@ export const ContestDetails = () => {
               </Row>
               <hr />
               {profile && (
-                <Row>
-                  {contestant ? (
-                    <Column spacing="m" grow={1}>
-                      <Row spacing="xs">
-                        <Text>Joined contest as</Text>
-                        {contestant.isTeam && <FaUsers title="Team" />}
-                        <Text strong>{contestant.handle}</Text>
+                <>
+                  {contestant?.audit ? (
+                    <>
+                      <Row>
+                        <Column spacing="m" grow={1}>
+                          <Row spacing="xs">
+                            <Text>Joined contest as</Text>
+                            {contestant.audit.isTeam && <FaUsers title="Team" />}
+                            <Text strong>{contestant.audit.handle}</Text>
+                          </Row>
+
+                          <Button variant="secondary" onClick={visitRepo} disabled={!contestant.audit.repo}>
+                            <FaGithub /> &nbsp; View audit repository
+                          </Button>
+                          {!contestant.audit.repo && (
+                            <Text size="small" variant="secondary">
+                              Repository will be available once the contest starts
+                            </Text>
+                          )}
+
+                          <Text>
+                            {contest.status === "CREATED" || contest.status === "RUNNING"
+                              ? "You're competing for:"
+                              : "You've competed for:"}
+                          </Text>
+                          <Options
+                            options={[
+                              {
+                                value: true,
+                                label: "USDC + Points",
+                              },
+                              { value: false, label: "Only USDC" },
+                            ]}
+                            value={optIn}
+                            onChange={handleOptInChange}
+                            disabled={!canOptinOut}
+                          />
+                        </Column>
                       </Row>
-
-                      <Button variant="secondary" onClick={visitRepo} disabled={!contestant.repo}>
-                        <FaGithub /> &nbsp; View repository
-                      </Button>
-                      {!contestant.repo && (
-                        <Text size="small" variant="secondary">
-                          Repository will be available once the contest starts
-                        </Text>
-                      )}
-
-                      <Text>{canOptinOut ? "You're competing for:" : "You've competed for:"}</Text>
-                      <Options
-                        options={[
-                          {
-                            value: true,
-                            label: "USDC + Points",
-                          },
-                          { value: false, label: "Only USDC" },
-                        ]}
-                        value={optIn}
-                        onChange={handleOptInChange}
-                        disabled={!canOptinOut}
-                      />
-                    </Column>
-                  ) : canSignUp ? (
+                      <hr />
+                    </>
+                  ) : canJoinContest ? (
                     profileIsComplete ? (
                       <ConnectGate>
-                        <Button onClick={handleJoinContest}>JOIN CONTEST</Button>
+                        <Button onClick={handleJoinContest}>Join Audit Contest</Button>
                       </ConnectGate>
                     ) : (
                       <Column spacing="m">
@@ -357,7 +394,54 @@ export const ContestDetails = () => {
                       </Column>
                     )
                   ) : null}
-                </Row>
+                  {contestant?.judging ? (
+                    <>
+                      <Row>
+                        <Column spacing="m" grow={1}>
+                          <Row spacing="xs">
+                            <Text>Joined judging as</Text>
+                            {contestant.judging.isTeam && <FaUsers title="Team" />}
+                            <Text strong>{contestant.judging.handle}</Text>
+                          </Row>
+
+                          <Button variant="secondary" onClick={visitRepo} disabled={!contestant.judging.repo}>
+                            <FaGithub /> &nbsp; View judging repository
+                          </Button>
+                          {!contestant.judging.repo && (
+                            <Text size="small" variant="secondary">
+                              Repository will be available once the judging phase starts
+                            </Text>
+                          )}
+                        </Column>
+                      </Row>
+                      <hr />
+                    </>
+                  ) : canJoinJudging ? (
+                    profileIsComplete ? (
+                      <>
+                        <Row>
+                          <Column spacing="s" grow={1}>
+                            {contest.status !== "JUDGING" && (
+                              <Text size="small" variant="secondary">
+                                The judging contest starts as soon as the audit contest ends.
+                              </Text>
+                            )}
+                            <Button variant="alternate" onClick={handleJoinJudgingContest}>
+                              Judge Contest
+                            </Button>
+                          </Column>
+                        </Row>
+                      </>
+                    ) : (
+                      <Column spacing="m">
+                        <Text variant="secondary" size="small">
+                          Before joining a contest, you need to fill in your profile details
+                        </Text>
+                        <Button onClick={() => navigate("../profile")}>Complete Profile</Button>
+                      </Column>
+                    )
+                  ) : null}
+                </>
               )}
               {!profile && isAuditor && (
                 <Row>
@@ -373,6 +457,7 @@ export const ContestDetails = () => {
               onClose={() => setSuccessModalOpen(false)}
               contest={contest}
               repo={joinContestData?.repoName}
+              judging={joinContestData?.judging}
             />
           )}
           {isError && <ErrorModal reason={error?.fieldErrors || error?.message} onClose={handleErrorModalClose} />}
@@ -385,6 +470,15 @@ export const ContestDetails = () => {
               auditor={profile!!}
               onClose={() => setJoinContestModalOpen(false)}
               onSelectHandle={handleJoinContestWithHandle}
+            />
+          )}
+          {joinJudgingContestModalOpen && (
+            <JoinContestModal
+              contest={contest}
+              auditor={profile!!}
+              onClose={() => setJoinJudgingContestModalOpen(false)}
+              onSelectHandle={handleJoinJudgingContestWithHandle}
+              judging
             />
           )}
           {signUpModalOpen && <AuditorSignUpModal closeable onClose={handleSignUpModalClose} />}

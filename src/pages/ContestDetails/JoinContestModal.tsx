@@ -11,9 +11,10 @@ type Props = ModalProps & {
   contest: Contest
   auditor: AuditorProfile
   onSelectHandle: (handle: string) => void
+  judging?: boolean
 }
 
-export const JoinContestModal: React.FC<Props> = ({ onClose, onSelectHandle, contest, auditor }) => {
+export const JoinContestModal: React.FC<Props> = ({ onClose, onSelectHandle, contest, auditor, judging = false }) => {
   return (
     <Modal closeable onClose={onClose}>
       <Column alignment="stretch" spacing="l">
@@ -21,8 +22,12 @@ export const JoinContestModal: React.FC<Props> = ({ onClose, onSelectHandle, con
           <Row>
             <img src={contest.logoURL} width={80} height={80} alt={contest.title} />
           </Row>
-          <Title>{`Join ${contest.title} contest`}</Title>
-          <Text>You can compete in this contest individually, or as a team.</Text>
+          <Title>{`${judging ? "Judge" : "Join"} ${contest.title} contest`}</Title>
+          {judging ? (
+            <Text>You can judge this contest individually, or as a team.</Text>
+          ) : (
+            <Text>You can compete in this contest individually, or as a team.</Text>
+          )}
           <Text>Select one of the options below:</Text>
         </Column>
         <Row>

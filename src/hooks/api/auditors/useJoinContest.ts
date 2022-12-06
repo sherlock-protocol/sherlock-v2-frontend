@@ -3,9 +3,9 @@ import { useMutation, useQueryClient } from "react-query"
 import { useAccount } from "wagmi"
 import { joinContest as joinContestUrl } from "../urls"
 import { contests as contestsAPI } from "../axios"
-import { contestantQueryKey } from "../contests"
 import { AxiosError } from "axios"
 import { FormError } from "../../../utils/Error"
+import { contestantQueryKey } from "../contests/useContestant"
 
 type JoinContestResponseData = {
   repo_name: string
@@ -13,10 +13,12 @@ type JoinContestResponseData = {
 
 type JoinContest = {
   repoName: string
+  judging: boolean
 }
 
 type JoinContestParams = {
   handle: string
+  judging: boolean
 }
 
 export const useJoinContest = (contestId: number) => {
@@ -29,10 +31,12 @@ export const useJoinContest = (contestId: number) => {
         const { data } = await contestsAPI.post<JoinContestResponseData>(joinContestUrl(), {
           handle: params.handle,
           contest_id: contestId,
+          judging: params.judging,
         })
 
         return {
           repoName: data.repo_name,
+          judging: params.judging,
         }
       } catch (error) {
         const axiosError = error as AxiosError
@@ -47,10 +51,11 @@ export const useJoinContest = (contestId: number) => {
   )
 
   const joinContest = useCallback(
-    async (handle: string) => {
+    async (handle: string, judging: boolean = false) => {
       try {
         mutate({
           handle,
+          judging,
         })
       } catch (error) {
         console.error(error)

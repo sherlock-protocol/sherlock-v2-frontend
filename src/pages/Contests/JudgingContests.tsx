@@ -1,7 +1,7 @@
 import React, { useMemo } from "react"
 import { DateTime } from "luxon"
 import { Box } from "../../components/Box"
-import { Column, Row } from "../../components/Layout"
+import { Column } from "../../components/Layout"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
 
@@ -9,24 +9,23 @@ import styles from "./Contests.module.scss"
 import { commify } from "../../utils/units"
 import { Table, TBody, Td, Th, THead, Tr } from "../../components/Table/Table"
 import { Contest } from "../../hooks/api/contests"
-import { FaLock } from "react-icons/fa"
 
 type Props = {
   contests?: Contest[]
   onContestClick?: (id: number) => void
 }
 
-export const FinishedContests: React.FC<Props> = ({ contests, onContestClick }) => {
-  const finishedContests = useMemo(
-    () => contests?.filter((c) => c.status === "FINISHED").sort((a, b) => b.endDate - a.endDate),
+export const JudgingContests: React.FC<Props> = ({ contests, onContestClick }) => {
+  const judgingContests = useMemo(
+    () => contests?.filter((c) => c.status === "JUDGING").sort((a, b) => b.endDate - a.endDate),
     [contests]
   )
 
-  if (!finishedContests || finishedContests.length === 0) return null
+  if (!judgingContests || judgingContests.length === 0) return null
 
   return (
     <Box shadow={false} fullWidth>
-      <Title variant="h2">FINISHED</Title>
+      <Title variant="h2">JUDGING</Title>
       <Table>
         <THead>
           <Tr>
@@ -35,7 +34,7 @@ export const FinishedContests: React.FC<Props> = ({ contests, onContestClick }) 
               <Text>Contest</Text>
             </Th>
             <Th>
-              <Text alignment="center">Total Rewards</Text>
+              <Text alignment="center">Prize pool</Text>
             </Th>
             <Th>
               <Text alignment="center">Started</Text>
@@ -46,42 +45,18 @@ export const FinishedContests: React.FC<Props> = ({ contests, onContestClick }) 
           </Tr>
         </THead>
         <TBody>
-          {finishedContests?.map((contest) => {
+          {judgingContests.map((contest) => {
             const startDate = DateTime.fromSeconds(contest.startDate)
             const endDate = DateTime.fromSeconds(contest.endDate)
 
             return (
-              <Tr
-                key={contest.id}
-                onClick={() => onContestClick && onContestClick(contest.id)}
-                className={styles.finishedContest}
-              >
+              <Tr key={contest.id} onClick={() => onContestClick && onContestClick(contest.id)}>
                 <Td>
                   <img src={contest.logoURL} alt={contest.title} width={80} className={styles.logo} />
                 </Td>
                 <Td>
                   <Column spacing="s">
-                    {["JUDGING", "SHERLOCK_JUDGING"].includes(contest.status) && (
-                      <Text variant="alternate" strong size="small">
-                        JUDGING
-                      </Text>
-                    )}
-                    {contest.status === "ESCALATING" && (
-                      <Text variant="alternate" strong size="small">
-                        ESCALATIONS OPEN
-                      </Text>
-                    )}
-                    <Row alignment={["start", "center"]} spacing="m">
-                      <Title variant="h2">{contest.title}</Title>
-                      {contest.private ? (
-                        <Row spacing="xs">
-                          <Text variant="secondary" size="small" strong>
-                            <FaLock />
-                            &nbsp; PRIVATE CONTEST
-                          </Text>
-                        </Row>
-                      ) : null}
-                    </Row>{" "}
+                    <Title variant="h2">{contest.title}</Title>
                     <Text size="small">{contest.shortDescription}</Text>
                   </Column>
                 </Td>
