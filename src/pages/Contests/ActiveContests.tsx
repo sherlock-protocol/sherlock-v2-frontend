@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { FaClock } from "react-icons/fa"
+import { FaClock, FaLock } from "react-icons/fa"
 import { DateTime } from "luxon"
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -36,7 +36,7 @@ export const ActiveContests: React.FC<Props> = ({ contests, onContestClick }) =>
               <Text>Contest</Text>
             </Th>
             <Th>
-              <Text alignment="center">Prize pool</Text>
+              <Text alignment="center">Total Rewards</Text>
             </Th>
             <Th>
               <Text alignment="center">{`Started (${DateTime.now().offsetNameShort})`}</Text>
@@ -71,7 +71,17 @@ export const ActiveContests: React.FC<Props> = ({ contests, onContestClick }) =>
                         </Text>
                       </Row>
                     )}
-                    <Title variant="h2">{contest.title}</Title>
+                    <Row alignment={["start", "center"]} spacing="m">
+                      <Title variant="h2">{contest.title}</Title>
+                      {contest.private ? (
+                        <Row spacing="xs">
+                          <Text variant="secondary" size="small" strong>
+                            <FaLock />
+                            &nbsp; PRIVATE CONTEST
+                          </Text>
+                        </Row>
+                      ) : null}
+                    </Row>{" "}
                     <Text size="small">{contest.shortDescription}</Text>
                   </Column>
                 </Td>

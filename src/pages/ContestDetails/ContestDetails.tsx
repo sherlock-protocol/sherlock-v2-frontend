@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
-import { useParams } from "react-router-dom"
-import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy } from "react-icons/fa"
+import { useNavigate, useParams } from "react-router-dom"
+import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy, FaLock } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -30,6 +30,7 @@ import { useIsAuditor } from "../../hooks/api/auditors"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { ContestLeaderboardModal } from "./ContestLeaderboardModal"
 import { useContestant } from "../../hooks/api/contests/useContestant"
+import { useContestLeaderboard } from "../../hooks/api/contests/useContestLeaderboard"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -41,6 +42,7 @@ const STATUS_LABELS = {
 }
 
 export const ContestDetails = () => {
+  const navigate = useNavigate()
   const { contestId } = useParams()
   const { address } = useAccount()
   const { data: profile } = useProfile()
@@ -76,6 +78,8 @@ export const ContestDetails = () => {
     !!!contestant?.audit?.countsTowardsRanking,
     contestant?.audit?.handle ?? ""
   )
+
+  const { data: contestLeaderboard } = useContestLeaderboard(parseInt(contestId ?? ""))
 
   useEffect(() => {
     if (joinContestSuccess) {
@@ -170,8 +174,8 @@ export const ContestDetails = () => {
 
   const canOptinOut = useMemo(() => contest?.status === "CREATED" || contest?.status === "RUNNING", [contest?.status])
   const canJoinContest = useMemo(
-    () => contest?.status !== "FINISHED" && contest?.status !== "JUDGING",
-    [contest?.status]
+    () => contest?.status !== "FINISHED" && contest?.status !== "JUDGING" && !contest?.private,
+    [contest?.status, contest?.private]
   )
   const canJoinJudging = useMemo(
     () => contest?.status !== "FINISHED" && contest?.status !== "ESCALATING" && contest?.status !== "SHERLOCK_JUDGING",
@@ -185,6 +189,8 @@ export const ContestDetails = () => {
 
   const timeLeft = endDate.diffNow(["day", "hour", "minute", "second"])
   const endingSoon = contest.status === "RUNNING" && timeLeft.days < 2
+
+  const profileIsComplete = profile && profile.githubHandle && profile.discordHandle
 
   return (
     <Column spacing="m" className={styles.container}>
@@ -214,8 +220,20 @@ export const ContestDetails = () => {
                   <Text alignment="justify">{contest?.shortDescription}</Text>
                 </Column>
               </Row>
-              <Column>
-                <Markdown content={contest.description} />
+              <Column alignment={["center", "center"]} grow={1}>
+                {contest.private ? (
+                  <Row alignment={["center", "center"]}>
+                    <Column alignment="center" spacing="m">
+                      <Text variant="secondary" strong>
+                        <FaLock />
+                        &nbsp; PRIVATE CONTEST
+                      </Text>
+                      <Text variant="secondary">The details of this contest are hidden</Text>
+                    </Column>
+                  </Row>
+                ) : (
+                  <Markdown content={contest.description} />
+                )}
               </Column>
             </Column>
             <Column spacing="xl" shrink={0} className={styles.sidebar}>
@@ -232,21 +250,42 @@ export const ContestDetails = () => {
                 </Row>
               )}
               {contest.status === "FINISHED" && contest.report && (
-                <>
-                  <Button variant="secondary" onClick={handleReportClick}>
-                    <FaBook /> &nbsp; Read report
-                  </Button>
-                  <Button variant="secondary" onClick={handleLeaderboardClick}>
-                    <FaTrophy /> &nbsp; View Leaderboard
-                  </Button>
-                </>
+                <Button variant="secondary" onClick={handleReportClick}>
+                  <FaBook /> &nbsp; Read report
+                </Button>
+              )}
+              {contestLeaderboard && contestLeaderboard.contestants.length > 0 && (
+                <Button variant="secondary" onClick={handleLeaderboardClick}>
+                  <FaTrophy /> &nbsp; View Leaderboard
+                </Button>
               )}
               <hr />
+              {contest.private && (
+                <>
+                  <Row>
+                    <Column spacing="m">
+                      <Row spacing="xs">
+                        <Text variant="alternate" size="small" strong>
+                          <FaLock />
+                          &nbsp; PRIVATE CONTEST
+                        </Text>
+                      </Row>
+                      <Text variant="secondary" size="small">
+                        This is a private contest. Only whitelisted Watsons can join.
+                      </Text>
+                      <Text variant="secondary" size="small">
+                        Keep an eye on the discord for future opportunities in private contests.
+                      </Text>
+                    </Column>
+                  </Row>
+                  <hr />
+                </>
+              )}
               <Row>
                 <Column spacing="l">
                   <Row>
                     <Column>
-                      <Title variant="h3">TOTAL PRIZE POOL</Title>
+                      <Title variant="h3">TOTAL REWARDS</Title>
                       <Text size="extra-large" strong>
                         {`${commify(contest.prizePool + contest.leadSeniorAuditorFixedPay)} USDC`}
                       </Text>
@@ -267,7 +306,7 @@ export const ContestDetails = () => {
               <hr />
               <Row spacing="s" alignment={["start", "center"]}>
                 <FaCrown title="Lead Senior Watson" />
-                <Text strong>{contest.leadSeniorAuditorHandle}</Text>
+                <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
               </Row>
               <hr />
               <Row>
@@ -320,7 +359,11 @@ export const ContestDetails = () => {
                             </Text>
                           )}
 
-                          <Text>{canOptinOut ? "You're competing for:" : "You've competed for:"}</Text>
+                          <Text>
+                            {contest.status === "CREATED" || contest.status === "RUNNING"
+                              ? "You're competing for:"
+                              : "You've competed for:"}
+                          </Text>
                           <Options
                             options={[
                               {
@@ -337,17 +380,20 @@ export const ContestDetails = () => {
                       </Row>
                       <hr />
                     </>
-                  ) : (
-                    canJoinContest && (
-                      <Row>
-                        <Column grow={1}>
-                          <ConnectGate>
-                            <Button onClick={handleJoinContest}>Join Audit Contest</Button>
-                          </ConnectGate>
-                        </Column>
-                      </Row>
+                  ) : canJoinContest ? (
+                    profileIsComplete ? (
+                      <ConnectGate>
+                        <Button onClick={handleJoinContest}>Join Audit Contest</Button>
+                      </ConnectGate>
+                    ) : (
+                      <Column spacing="m">
+                        <Text variant="secondary" size="small">
+                          Before joining a contest, you need to fill in your profile details
+                        </Text>
+                        <Button onClick={() => navigate("../profile")}>Complete Profile</Button>
+                      </Column>
                     )
-                  )}
+                  ) : null}
                   {contestant?.judging ? (
                     <>
                       <Row>

@@ -1,7 +1,7 @@
 import React, { useMemo } from "react"
 import { DateTime } from "luxon"
 import { Box } from "../../components/Box"
-import { Column } from "../../components/Layout"
+import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
 
@@ -9,6 +9,7 @@ import styles from "./Contests.module.scss"
 import { commify } from "../../utils/units"
 import { Table, TBody, Td, Th, THead, Tr } from "../../components/Table/Table"
 import { Contest } from "../../hooks/api/contests"
+import { FaLock } from "react-icons/fa"
 
 type Props = {
   contests?: Contest[]
@@ -34,7 +35,7 @@ export const UpcomingContests: React.FC<Props> = ({ contests, onContestClick }) 
               <Text>Contest</Text>
             </Th>
             <Th>
-              <Text alignment="center">Prize pool</Text>
+              <Text alignment="center">Total Rewards</Text>
             </Th>
             <Th>
               <Text alignment="center">Starts</Text>
@@ -56,7 +57,17 @@ export const UpcomingContests: React.FC<Props> = ({ contests, onContestClick }) 
                 </Td>
                 <Td>
                   <Column spacing="s">
-                    <Title variant="h2">{contest.title}</Title>
+                    <Row alignment={["start", "center"]} spacing="m">
+                      <Title variant="h2">{contest.title}</Title>
+                      {contest.private ? (
+                        <Row spacing="xs">
+                          <Text variant="secondary" size="small" strong>
+                            <FaLock />
+                            &nbsp; PRIVATE CONTEST
+                          </Text>
+                        </Row>
+                      ) : null}
+                    </Row>
                     <Text size="small">{contest.shortDescription}</Text>
                   </Column>
                 </Td>
