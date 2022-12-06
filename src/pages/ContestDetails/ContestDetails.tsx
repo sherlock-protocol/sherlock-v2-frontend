@@ -416,8 +416,8 @@ export const ContestDetails = () => {
                       </Row>
                       <hr />
                     </>
-                  ) : (
-                    canJoinJudging && (
+                  ) : canJoinJudging ? (
+                    profileIsComplete ? (
                       <>
                         <Row>
                           <Column spacing="s" grow={1}>
@@ -432,8 +432,15 @@ export const ContestDetails = () => {
                           </Column>
                         </Row>
                       </>
+                    ) : (
+                      <Column spacing="m">
+                        <Text variant="secondary" size="small">
+                          Before joining a contest, you need to fill in your profile details
+                        </Text>
+                        <Button onClick={() => navigate("../profile")}>Complete Profile</Button>
+                      </Column>
                     )
-                  )}
+                  ) : null}
                 </>
               )}
               {!profile && isAuditor && (
