@@ -27,6 +27,7 @@ type SignUpResponseData = {
       handle: string
     }[]
     payout_address_mainnet: string
+    days: number
   }
 }
 
@@ -69,6 +70,7 @@ export const useSignUp = () => {
           addresses: data.auditor.addresses.map((a) => ({ id: a.id, address: a.address })),
           payoutAddress: data.auditor.payout_address_mainnet,
           managedTeams: data.auditor.managed_teams.map((t) => ({ id: t.id, handle: t.handle })),
+          auditDays: data.auditor.days,
         }
       } catch (error) {
         const axiosError = error as AxiosError

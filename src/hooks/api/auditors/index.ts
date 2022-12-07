@@ -17,4 +17,5 @@ export type AuditorProfile = {
     handle: string
   }[]
   payoutAddress: string
+  auditDays: number
 }

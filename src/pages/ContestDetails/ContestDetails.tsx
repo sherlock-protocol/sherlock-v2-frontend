@@ -171,6 +171,8 @@ export const ContestDetails = () => {
 
   const profileIsComplete = profile && profile.githubHandle && profile.discordHandle
 
+  const hasEnoughAuditDays = profile && profile.auditDays > 28
+
   return (
     <Column spacing="m" className={styles.container}>
       {!isAuditor && (
@@ -394,13 +396,22 @@ export const ContestDetails = () => {
                     </Column>
                   ) : joinContestEnabled ? (
                     profileIsComplete ? (
-                      <ConnectGate>
-                        <Button onClick={handleJoinContest}>JOIN CONTEST</Button>
-                      </ConnectGate>
+                      <Column spacing="m">
+                        <ConnectGate>
+                          <Button onClick={handleJoinContest} disabled={contest.private && !hasEnoughAuditDays}>
+                            JOIN CONTEST
+                          </Button>
+                        </ConnectGate>
+                        {contest.private && !hasEnoughAuditDays && (
+                          <Text variant="secondary" size="small">
+                            You need to reach at least 28 contest days to compete in this contest.
+                          </Text>
+                        )}
+                      </Column>
                     ) : (
                       <Column spacing="m">
                         <Text variant="secondary" size="small">
-                          Before joining a contest, you need to fill in your profile details
+                          Before joining a contest, you need to fill in your profile details.
                         </Text>
                         <Button onClick={() => navigate("../profile")}>Complete Profile</Button>
                       </Column>
