@@ -322,38 +322,75 @@ export const ContestDetails = () => {
                 <Row>
                   {contestant ? (
                     <Column spacing="m" grow={1}>
-                      <Row spacing="xs">
-                        <Text>Joined contest as</Text>
-                        {contestant.isTeam && <FaUsers title="Team" />}
-                        <Text strong>{contestant.handle}</Text>
-                      </Row>
-
-                      <Button variant="secondary" onClick={visitRepo} disabled={!contestant.repo}>
-                        <FaGithub /> &nbsp; View repository
-                      </Button>
-                      {!contestant.repo && (
-                        <Text size="small" variant="secondary">
-                          Repository will be available once the contest starts
-                        </Text>
+                      {contest.private ? (
+                        contestant.repo ? (
+                          <>
+                            <Row spacing="xs">
+                              <Text>Joined contest as</Text>
+                              {contestant.isTeam && <FaUsers title="Team" />}
+                              <Text strong>{contestant.handle}</Text>
+                            </Row>
+                            <Button variant="secondary" onClick={visitRepo}>
+                              <FaGithub /> &nbsp; View repository
+                            </Button>
+                          </>
+                        ) : contest.status === "CREATED" ? (
+                          <>
+                            <Row spacing="xs">
+                              <Text>Joined contest as</Text>
+                              {contestant.isTeam && <FaUsers title="Team" />}
+                              <Text strong>{contestant.handle}</Text>
+                            </Row>
+                            <Row>
+                              <Text variant="secondary">A repo will be made for you if you make it to the Top 10.</Text>
+                            </Row>
+                          </>
+                        ) : (
+                          <>
+                            <Row>
+                              <Text>Sorry, you didn't make it to the Top 10.</Text>
+                            </Row>
+                          </>
+                        )
+                      ) : (
+                        <>
+                          <Row spacing="xs">
+                            <Text>Joined contest as</Text>
+                            {contestant.isTeam && <FaUsers title="Team" />}
+                            <Text strong>{contestant.handle}</Text>
+                          </Row>
+                          <Button variant="secondary" onClick={visitRepo} disabled={!contestant.repo}>
+                            <FaGithub /> &nbsp; View repository
+                          </Button>
+                          {!contestant.repo && (
+                            <Text size="small" variant="secondary">
+                              Repository will be available once the contest starts
+                            </Text>
+                          )}
+                        </>
                       )}
 
-                      <Text>
-                        {contest.status === "CREATED" || contest.status === "RUNNING"
-                          ? "You're competing for:"
-                          : "You've competed for:"}
-                      </Text>
-                      <Options
-                        options={[
-                          {
-                            value: true,
-                            label: "USDC + Points",
-                          },
-                          { value: false, label: "Only USDC" },
-                        ]}
-                        value={optIn}
-                        onChange={handleOptInChange}
-                        disabled={!canOptinOut}
-                      />
+                      {!contest.private && (
+                        <>
+                          <Text>
+                            {contest.status === "CREATED" || contest.status === "RUNNING"
+                              ? "You're competing for:"
+                              : "You've competed for:"}
+                          </Text>
+                          <Options
+                            options={[
+                              {
+                                value: true,
+                                label: "USDC + Points",
+                              },
+                              { value: false, label: "Only USDC" },
+                            ]}
+                            value={optIn}
+                            onChange={handleOptInChange}
+                            disabled={!canOptinOut}
+                          />
+                        </>
+                      )}
                     </Column>
                   ) : joinContestEnabled ? (
                     profileIsComplete ? (
