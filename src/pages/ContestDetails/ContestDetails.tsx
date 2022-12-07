@@ -155,8 +155,9 @@ export const ContestDetails = () => {
     () => !contest?.private && (contest?.status === "CREATED" || contest?.status === "RUNNING"),
     [contest?.status, contest?.private]
   )
-  const canSignUp = useMemo(
-    () => contest?.status !== "FINISHED" && contest?.status !== "JUDGING" && !contest?.private,
+
+  const joinContestEnabled = useMemo(
+    () => contest?.status === "CREATED" || (contest?.status === "RUNNING" && !contest.private),
     [contest?.status, contest?.private]
   )
 
@@ -238,27 +239,6 @@ export const ContestDetails = () => {
                 </Button>
               )}
               <hr />
-              {contest.private && (
-                <>
-                  <Row>
-                    <Column spacing="m">
-                      <Row spacing="xs">
-                        <Text variant="alternate" size="small" strong>
-                          <FaLock />
-                          &nbsp; PRIVATE CONTEST
-                        </Text>
-                      </Row>
-                      <Text variant="secondary" size="small">
-                        This is a private contest. Only whitelisted Watsons can join.
-                      </Text>
-                      <Text variant="secondary" size="small">
-                        Keep an eye on the discord for future opportunities in private contests.
-                      </Text>
-                    </Column>
-                  </Row>
-                  <hr />
-                </>
-              )}
               <Row>
                 <Column spacing="l">
                   <Row>
@@ -316,6 +296,28 @@ export const ContestDetails = () => {
                 </Column>
               </Row>
               <hr />
+              {contest.private && (
+                <>
+                  <Row>
+                    <Column spacing="m">
+                      <Row spacing="xs">
+                        <Text variant="alternate" size="small" strong>
+                          <FaLock />
+                          &nbsp; PRIVATE CONTEST
+                        </Text>
+                      </Row>
+                      <Text variant="secondary" size="small">
+                        This is a private contest. Every Watson with more than 28 contest days can join but only the top
+                        10 will be selected to participate.
+                      </Text>
+                      <Text variant="secondary" size="small">
+                        Every participant is forced to compete for USDC+Points.
+                      </Text>
+                    </Column>
+                  </Row>
+                  <hr />
+                </>
+              )}
               {profile && (
                 <Row>
                   {contestant ? (
@@ -353,7 +355,7 @@ export const ContestDetails = () => {
                         disabled={!canOptinOut}
                       />
                     </Column>
-                  ) : canSignUp ? (
+                  ) : joinContestEnabled ? (
                     profileIsComplete ? (
                       <ConnectGate>
                         <Button onClick={handleJoinContest}>JOIN CONTEST</Button>
