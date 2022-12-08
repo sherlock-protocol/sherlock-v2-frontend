@@ -346,7 +346,7 @@ export const ContestDetails = () => {
                             <Row>
                               <Text variant="secondary">
                                 The top 10 Watsons will receive an invitation to their private repos once the contest
-                                starts
+                                starts.
                               </Text>
                             </Row>
                           </>
