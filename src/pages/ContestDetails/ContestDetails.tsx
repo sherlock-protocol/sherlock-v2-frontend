@@ -344,13 +344,16 @@ export const ContestDetails = () => {
                               <Text strong>{contestant.handle}</Text>
                             </Row>
                             <Row>
-                              <Text variant="secondary">A repo will be made for you if you make it to the Top 10.</Text>
+                              <Text variant="secondary">
+                                The top 10 Watsons will receive an invitation to their private repos once the contest
+                                starts
+                              </Text>
                             </Row>
                           </>
                         ) : (
                           <>
                             <Row>
-                              <Text>Sorry, you didn't make it to the Top 10.</Text>
+                              <Text>You were not selected to participate in this contest.</Text>
                             </Row>
                           </>
                         )
