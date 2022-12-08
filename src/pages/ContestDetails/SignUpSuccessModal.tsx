@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { FaDiscord } from "react-icons/fa"
+import { FaDiscord, FaLock } from "react-icons/fa"
 
 import { Button } from "../../components/Button"
 import { Column, Row } from "../../components/Layout"
@@ -23,7 +23,7 @@ export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose, repo }) 
 
   return (
     <Modal closeable onClose={onClose}>
-      <Column alignment={["center", "center"]} spacing="xl">
+      <Column alignment={["center", "center"]} spacing="xl" className={styles.successModal}>
         <Row>
           <img src={contest.logoURL} width={80} height={80} alt={contest.title} className={styles.logo} />
         </Row>
@@ -40,8 +40,18 @@ export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose, repo }) 
             </Row>
           </Column>
         </Row>
-        <Row alignment={["center", "center"]}>
-          {repo ? (
+        <Column alignment={["center", "center"]} spacing="m">
+          {contest.private ? (
+            <>
+              <Text variant="alternate" strong>
+                <FaLock /> PRIVATE CONTEST
+              </Text>
+              <Text alignment="center">
+                This is a private contest. Once the contest starts, only the Top 10 auditors will be selected to
+                compete.
+              </Text>
+            </>
+          ) : repo ? (
             <Text>
               We've created{" "}
               <a href={`https://github.com/${repo}`} target="__blank">
@@ -54,7 +64,7 @@ export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose, repo }) 
               Once the contest starts, we'll create a repo for you to start submitting issues.
             </Text>
           )}
-        </Row>
+        </Column>
         <Row>
           <Button fullWidth onClick={handleJoinDiscord}>
             <FaDiscord />

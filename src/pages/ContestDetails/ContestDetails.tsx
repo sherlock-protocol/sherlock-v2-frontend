@@ -155,8 +155,9 @@ export const ContestDetails = () => {
     () => !contest?.private && (contest?.status === "CREATED" || contest?.status === "RUNNING"),
     [contest?.status, contest?.private]
   )
-  const canSignUp = useMemo(
-    () => contest?.status !== "FINISHED" && contest?.status !== "JUDGING" && !contest?.private,
+
+  const joinContestEnabled = useMemo(
+    () => contest?.status === "CREATED" || (contest?.status === "RUNNING" && !contest.private),
     [contest?.status, contest?.private]
   )
 
@@ -169,6 +170,8 @@ export const ContestDetails = () => {
   const endingSoon = contest.status === "RUNNING" && timeLeft.days < 2
 
   const profileIsComplete = profile && profile.githubHandle && profile.discordHandle
+
+  const hasEnoughAuditDays = profile && profile.auditDays > 28
 
   return (
     <Column spacing="m" className={styles.container}>
@@ -238,27 +241,6 @@ export const ContestDetails = () => {
                 </Button>
               )}
               <hr />
-              {contest.private && (
-                <>
-                  <Row>
-                    <Column spacing="m">
-                      <Row spacing="xs">
-                        <Text variant="alternate" size="small" strong>
-                          <FaLock />
-                          &nbsp; PRIVATE CONTEST
-                        </Text>
-                      </Row>
-                      <Text variant="secondary" size="small">
-                        This is a private contest. Only whitelisted Watsons can join.
-                      </Text>
-                      <Text variant="secondary" size="small">
-                        Keep an eye on the discord for future opportunities in private contests.
-                      </Text>
-                    </Column>
-                  </Row>
-                  <hr />
-                </>
-              )}
               <Row>
                 <Column spacing="l">
                   <Row>
@@ -316,52 +298,123 @@ export const ContestDetails = () => {
                 </Column>
               </Row>
               <hr />
+              {contest.private && (
+                <>
+                  <Row>
+                    <Column spacing="m">
+                      <Row spacing="xs">
+                        <Text variant="alternate" size="small" strong>
+                          <FaLock />
+                          &nbsp; PRIVATE CONTEST
+                        </Text>
+                      </Row>
+                      <Text variant="secondary" size="small">
+                        This is a private contest. Every Watson with more than 28 contest days can join but only the top
+                        10 will be selected to participate.
+                      </Text>
+                      <Text variant="secondary" size="small">
+                        Every participant is forced to compete for USDC+Points.
+                      </Text>
+                    </Column>
+                  </Row>
+                  <hr />
+                </>
+              )}
               {profile && (
                 <Row>
                   {contestant ? (
                     <Column spacing="m" grow={1}>
-                      <Row spacing="xs">
-                        <Text>Joined contest as</Text>
-                        {contestant.isTeam && <FaUsers title="Team" />}
-                        <Text strong>{contestant.handle}</Text>
-                      </Row>
-
-                      <Button variant="secondary" onClick={visitRepo} disabled={!contestant.repo}>
-                        <FaGithub /> &nbsp; View repository
-                      </Button>
-                      {!contestant.repo && (
-                        <Text size="small" variant="secondary">
-                          Repository will be available once the contest starts
-                        </Text>
+                      {contest.private ? (
+                        contestant.repo ? (
+                          <>
+                            <Row spacing="xs">
+                              <Text>Joined contest as</Text>
+                              {contestant.isTeam && <FaUsers title="Team" />}
+                              <Text strong>{contestant.handle}</Text>
+                            </Row>
+                            <Button variant="secondary" onClick={visitRepo}>
+                              <FaGithub /> &nbsp; View repository
+                            </Button>
+                          </>
+                        ) : contest.status === "CREATED" ? (
+                          <>
+                            <Row spacing="xs">
+                              <Text>Joined contest as</Text>
+                              {contestant.isTeam && <FaUsers title="Team" />}
+                              <Text strong>{contestant.handle}</Text>
+                            </Row>
+                            <Row>
+                              <Text variant="secondary">
+                                The top 10 Watsons will receive an invitation to their private repos once the contest
+                                starts.
+                              </Text>
+                            </Row>
+                          </>
+                        ) : (
+                          <>
+                            <Row>
+                              <Text>You were not selected to participate in this contest.</Text>
+                            </Row>
+                          </>
+                        )
+                      ) : (
+                        <>
+                          <Row spacing="xs">
+                            <Text>Joined contest as</Text>
+                            {contestant.isTeam && <FaUsers title="Team" />}
+                            <Text strong>{contestant.handle}</Text>
+                          </Row>
+                          <Button variant="secondary" onClick={visitRepo} disabled={!contestant.repo}>
+                            <FaGithub /> &nbsp; View repository
+                          </Button>
+                          {!contestant.repo && (
+                            <Text size="small" variant="secondary">
+                              Repository will be available once the contest starts
+                            </Text>
+                          )}
+                        </>
                       )}
 
-                      <Text>
-                        {contest.status === "CREATED" || contest.status === "RUNNING"
-                          ? "You're competing for:"
-                          : "You've competed for:"}
-                      </Text>
-                      <Options
-                        options={[
-                          {
-                            value: true,
-                            label: "USDC + Points",
-                          },
-                          { value: false, label: "Only USDC" },
-                        ]}
-                        value={optIn}
-                        onChange={handleOptInChange}
-                        disabled={!canOptinOut}
-                      />
+                      {!contest.private && (
+                        <>
+                          <Text>
+                            {contest.status === "CREATED" || contest.status === "RUNNING"
+                              ? "You're competing for:"
+                              : "You've competed for:"}
+                          </Text>
+                          <Options
+                            options={[
+                              {
+                                value: true,
+                                label: "USDC + Points",
+                              },
+                              { value: false, label: "Only USDC" },
+                            ]}
+                            value={optIn}
+                            onChange={handleOptInChange}
+                            disabled={!canOptinOut}
+                          />
+                        </>
+                      )}
                     </Column>
-                  ) : canSignUp ? (
+                  ) : joinContestEnabled ? (
                     profileIsComplete ? (
-                      <ConnectGate>
-                        <Button onClick={handleJoinContest}>JOIN CONTEST</Button>
-                      </ConnectGate>
+                      <Column spacing="m">
+                        <ConnectGate>
+                          <Button onClick={handleJoinContest} disabled={contest.private && !hasEnoughAuditDays}>
+                            JOIN CONTEST
+                          </Button>
+                        </ConnectGate>
+                        {contest.private && !hasEnoughAuditDays && (
+                          <Text variant="secondary" size="small">
+                            You need to reach at least 28 contest days to compete in this contest.
+                          </Text>
+                        )}
+                      </Column>
                     ) : (
                       <Column spacing="m">
                         <Text variant="secondary" size="small">
-                          Before joining a contest, you need to fill in your profile details
+                          Before joining a contest, you need to fill in your profile details.
                         </Text>
                         <Button onClick={() => navigate("../profile")}>Complete Profile</Button>
                       </Column>
