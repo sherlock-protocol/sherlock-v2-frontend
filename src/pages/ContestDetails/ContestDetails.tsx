@@ -171,7 +171,7 @@ export const ContestDetails = () => {
 
   const profileIsComplete = profile && profile.githubHandle && profile.discordHandle
 
-  const hasEnoughAuditDays = profile && profile.auditDays > 28
+  const hasEnoughAuditDays = profile && profile.auditDays >= 28
 
   return (
     <Column spacing="m" className={styles.container}>
