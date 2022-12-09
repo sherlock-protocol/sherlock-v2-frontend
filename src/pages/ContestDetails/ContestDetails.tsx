@@ -147,6 +147,10 @@ export const ContestDetails = () => {
     contestant?.audit && window.open(`https://github.com/${contestant.audit.repo}`, "__blank")
   }, [contestant])
 
+  const visitJudgingRepo = useCallback(() => {
+    contestant?.judging && window.open(`https://github.com/${contestant.judging.repo}`, "__blank")
+  }, [contestant])
+
   const handleReportClick = useCallback(() => {
     setReportModalOpen(true)
   }, [setReportModalOpen])
@@ -455,7 +459,7 @@ export const ContestDetails = () => {
                             <Text strong>{contestant.judging.handle}</Text>
                           </Row>
 
-                          <Button variant="secondary" onClick={visitRepo} disabled={!contestant.judging.repo}>
+                          <Button variant="secondary" onClick={visitJudgingRepo} disabled={!contestant.judging.repo}>
                             <FaGithub /> &nbsp; View judging repository
                           </Button>
                           {!contestant.judging.repo && (
