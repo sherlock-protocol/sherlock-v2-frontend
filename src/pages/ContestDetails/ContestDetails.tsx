@@ -126,7 +126,7 @@ export const ContestDetails = () => {
   const handleJoinJudgingContestWithHandle = useCallback(
     (handle: string) => {
       joinContest(handle, true)
-      setJoinContestModalOpen(false)
+      setJoinJudgingContestModalOpen(false)
     },
     [joinContest]
   )
