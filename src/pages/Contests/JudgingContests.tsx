@@ -17,7 +17,10 @@ type Props = {
 
 export const JudgingContests: React.FC<Props> = ({ contests, onContestClick }) => {
   const judgingContests = useMemo(
-    () => contests?.filter((c) => c.status === "JUDGING").sort((a, b) => b.endDate - a.endDate),
+    () =>
+      contests
+        ?.filter((c) => c.status === "JUDGING" || c.status === "ESCALATING" || c.status === "SHERLOCK_JUDGING")
+        .sort((a, b) => b.endDate - a.endDate),
     [contests]
   )
 
