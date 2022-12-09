@@ -194,6 +194,18 @@ export const StakingPage: React.FC = () => {
                 />
               </Row>
             )}
+            <Column className={styles.warning} spacing="m">
+              <Text strong>IMPORTANT!</Text>
+              <Text>
+                Sherlock advises against staking while the Maple losses have yet to be reflected.&nbsp;
+                <a
+                  href="https://mirror.xyz/0xE400820f3D60d77a3EC8018d44366ed0d334f93C/1oCUnnQsVfIFX9okOa4ritG-ENuL2W55nTPTJ12cdL0"
+                  target="blank"
+                >
+                  See Sherlock's announcement.
+                </a>
+              </Text>
+            </Column>
             <Row className={styles.rewardsContainer}>
               <Column grow={1} spacing="l">
                 <TokenInput
@@ -201,14 +213,9 @@ export const StakingPage: React.FC = () => {
                   token="USDC"
                   placeholder="Choose amount"
                   balance={usdcBalance}
-                  disabled={stakingDisabled}
+                  disabled
                 />
-                <Options
-                  options={STAKING_PERIOD_OPTIONS}
-                  value={stakingPeriod}
-                  onChange={setStakingPeriod}
-                  disabled={stakingDisabled}
-                />
+                <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} disabled />
                 {sherRewards && (
                   <>
                     <Row>
