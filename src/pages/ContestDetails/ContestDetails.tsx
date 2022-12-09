@@ -186,8 +186,12 @@ export const ContestDetails = () => {
     [contest?.status, contest?.private]
   )
   const canJoinJudging = useMemo(
-    () => contest?.status !== "FINISHED" && contest?.status !== "ESCALATING" && contest?.status !== "SHERLOCK_JUDGING",
-    [contest?.status]
+    () =>
+      contest?.status !== "FINISHED" &&
+      contest?.status !== "ESCALATING" &&
+      contest?.status !== "SHERLOCK_JUDGING" &&
+      !contest?.private,
+    [contest?.status, contest?.private]
   )
 
   if (!contest) return null
