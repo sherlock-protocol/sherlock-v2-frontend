@@ -61,16 +61,6 @@ export const FinishedContests: React.FC<Props> = ({ contests, onContestClick }) 
                 </Td>
                 <Td>
                   <Column spacing="s">
-                    {["JUDGING", "SHERLOCK_JUDGING"].includes(contest.status) && (
-                      <Text variant="alternate" strong size="small">
-                        JUDGING
-                      </Text>
-                    )}
-                    {contest.status === "ESCALATING" && (
-                      <Text variant="alternate" strong size="small">
-                        ESCALATIONS OPEN
-                      </Text>
-                    )}
                     <Row alignment={["start", "center"]} spacing="m">
                       <Title variant="h2">{contest.title}</Title>
                       {contest.private ? (

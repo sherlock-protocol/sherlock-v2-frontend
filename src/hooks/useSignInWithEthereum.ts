@@ -41,6 +41,7 @@ export const useSignInWithEthereum = () => {
         addresses: data.profile.addresses.map((a) => ({ id: a.id, address: a.address })),
         payoutAddress: data.profile.payout_address_mainnet,
         managedTeams: data.profile.managed_teams.map((t) => ({ id: t.id, handle: t.handle })),
+        auditDays: data.profile.days,
       }
     },
     {
