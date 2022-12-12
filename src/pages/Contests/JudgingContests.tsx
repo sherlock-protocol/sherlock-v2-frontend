@@ -59,6 +59,16 @@ export const JudgingContests: React.FC<Props> = ({ contests, onContestClick }) =
                 </Td>
                 <Td>
                   <Column spacing="s">
+                    {contest.status === "SHERLOCK_JUDGING" && (
+                      <Text variant="alternate" strong size="small">
+                        SHERLOCK JUDGING
+                      </Text>
+                    )}
+                    {contest.status === "ESCALATING" && (
+                      <Text variant="alternate" strong size="small">
+                        ESCALATIONS OPEN
+                      </Text>
+                    )}
                     <Title variant="h2">{contest.title}</Title>
                     <Text size="small">{contest.shortDescription}</Text>
                   </Column>
