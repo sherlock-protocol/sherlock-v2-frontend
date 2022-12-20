@@ -51,7 +51,7 @@ function App() {
           <Route path={routes.Claim} element={<FundraisingClaimPage />} />
           <Route path={routes.USForbidden} element={<USForbiddenPage />} />
 
-          <Route path="*" element={<Navigate replace to={`/${routes.Stake}`} />} />
+          <Route path="*" element={<Navigate replace to={`/${routes.Overview}`} />} />
         </Route>
 
         {/** Protocols section routes */}
