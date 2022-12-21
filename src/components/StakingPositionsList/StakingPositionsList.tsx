@@ -136,7 +136,7 @@ export const StakingPositionsList: React.FC = () => {
     navigate("/")
   }, [navigate])
 
-  const mapleAlertVisible = useMemo(() => positions?.some((item) => item.id < 25), [positions])
+  const mapleAlertVisible = useMemo(() => positions?.some((item) => item.id <= 442), [positions])
 
   if (!data) return null
 
