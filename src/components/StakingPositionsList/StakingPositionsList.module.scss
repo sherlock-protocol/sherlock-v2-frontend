@@ -25,7 +25,11 @@
 
 .alert {
   margin-bottom: 2rem;
-  background-color: $alternate-pink;
-  border: 1px solid red;
+  background-color: transparent;
+  border: 1px solid $alternate-pink;
   padding: 1rem;
+
+  & h1 {
+    color: $alternate-pink;
+  }
 }
