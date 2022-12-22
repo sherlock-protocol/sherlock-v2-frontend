@@ -15,6 +15,7 @@ import { FaCheckCircle } from "react-icons/fa"
 import { useMemo, useState } from "react"
 import { useSubmitPayment } from "../../hooks/api/contests/useSubmitPayment"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
+import { DateTime } from "luxon"
 
 export const AuditPayments = () => {
   const { contestId } = useParams()
@@ -39,6 +40,8 @@ export const AuditPayments = () => {
 
   const initialPayment = paymentsInfo.payments.at(0)
   const finalPayment = paymentsInfo.payments.at(1)
+
+  const startDate = DateTime.fromSeconds(contest.startDate)
 
   return (
     <div className={styles.app}>
@@ -124,21 +127,45 @@ export const AuditPayments = () => {
                     </Box>
                     <Box shadow={false} disabled={!initialPaymentDone || fullPaymentDone}>
                       <Column spacing="m">
-                        <Title variant="h2">Step 2: Full Payment</Title>
+                        <Row alignment={["start", "center"]} spacing="m">
+                          <Title variant="h2">Step 2: Full Payment</Title>
+                          {fullPaymentDone && <FaCheckCircle className={styles.check} />}
+                        </Row>
                         <Text>Amount: {commify(paymentsInfo.totalAmount * 0.75)} USDC</Text>
                         <Column spacing="xs">
                           <Text size="small">Transaction hash</Text>
-                          <Row spacing="m">
-                            <Input value={finalPaymentTx} onChange={setFinalPaymentTx} />
-                            <Button
-                              onClick={() =>
-                                submitPayment({ contestID: parseInt(contestId ?? ""), txHash: finalPaymentTx })
-                              }
-                            >
-                              Submit
-                            </Button>
-                          </Row>
+                          {fullPaymentDone ? (
+                            <Text>{finalPayment?.txHash}</Text>
+                          ) : (
+                            <Row spacing="m">
+                              <Input value={finalPaymentTx} onChange={setFinalPaymentTx} />
+                              <Button
+                                onClick={() =>
+                                  submitPayment({ contestID: parseInt(contestId ?? ""), txHash: finalPaymentTx })
+                                }
+                              >
+                                Submit
+                              </Button>
+                            </Row>
+                          )}
                         </Column>
+                      </Column>
+                    </Box>
+                    <Box shadow={false}>
+                      <Column spacing="m">
+                        <Row spacing="m">
+                          <Text variant="alternate" size="extra-large" strong>
+                            Payment completed
+                          </Text>
+                          <FaCheckCircle className={styles.check} />
+                        </Row>
+                        <Row spacing="s">
+                          <Text>Contest starts:</Text>
+                          <Text strong>
+                            {startDate.toLocaleString(DateTime.DATE_MED)}{" "}
+                            {`${startDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${startDate.offsetNameShort}`}
+                          </Text>
+                        </Row>
                       </Column>
                     </Box>
                   </Column>
