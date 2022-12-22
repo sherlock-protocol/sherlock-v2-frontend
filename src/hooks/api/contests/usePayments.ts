@@ -1,4 +1,4 @@
-import { useQuery } from "wagmi"
+import { useQuery } from "react-query"
 import { contests as contestsAPI } from "../axios"
 import { getContestPayments as getContestPaymentsUrl } from "../urls"
 
