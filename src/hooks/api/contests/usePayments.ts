@@ -2,13 +2,15 @@ import { useQuery } from "react-query"
 import { contests as contestsAPI } from "../axios"
 import { getContestPayments as getContestPaymentsUrl } from "../urls"
 
+export type Payment = {
+  txHash: string
+  amount: number
+}
+
 type PaymentsInfo = {
   totalAmount: number
   totalPaid: number
-  payments: {
-    txHash: string
-    amount: number
-  }[]
+  payments: Payment[]
 }
 
 type PaymentsResponse = {

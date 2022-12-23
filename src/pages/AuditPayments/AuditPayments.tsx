@@ -7,15 +7,18 @@ import { useContest } from "../../hooks/api/contests"
 import { Box } from "../../components/Box"
 import { Table, TBody, Td, Tr } from "../../components/Table/Table"
 import { Text } from "../../components/Text"
-import { usePayments } from "../../hooks/api/contests/usePayments"
+import { Payment, usePayments } from "../../hooks/api/contests/usePayments"
 import { commify } from "../../utils/units"
 import { Input } from "../../components/Input"
 import { Button } from "../../components/Button"
 import { FaCheckCircle } from "react-icons/fa"
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { useSubmitPayment } from "../../hooks/api/contests/useSubmitPayment"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { DateTime } from "luxon"
+import { useDebounce } from "use-debounce"
+import { useValidateTransaction } from "../../hooks/useValidateTransaction"
+import { TypePredicateKind } from "typescript"
 
 export const AuditPayments = () => {
   const { contestId } = useParams()
@@ -25,6 +28,10 @@ export const AuditPayments = () => {
 
   const [initialPaymentTx, setInitialPaymentTx] = useState("")
   const [finalPaymentTx, setFinalPaymentTx] = useState("")
+  const [debouncedInitialTx] = useDebounce(initialPaymentTx, 300)
+  const [debouncedFinalTx] = useDebounce(finalPaymentTx, 300)
+  const { isValid: initialTxValid, isError: initialTxError } = useValidateTransaction(debouncedInitialTx)
+  const { isValid: finalTxValid, isError: finalTxError } = useValidateTransaction(debouncedFinalTx)
 
   const initialPaymentDone = useMemo(
     () => paymentsInfo && contest && paymentsInfo.totalPaid >= contest.fullPayment * 0.25,
@@ -35,17 +42,40 @@ export const AuditPayments = () => {
     [paymentsInfo, contest]
   )
 
+  const [initialPayments, finalPayments] = useMemo(() => {
+    if (!paymentsInfo?.payments) return []
+    const initialPayments: Payment[] = []
+    const finalPayments: Payment[] = []
+    let totalPaid = 0
+    paymentsInfo.payments.forEach((p) => {
+      if (totalPaid < paymentsInfo.totalAmount * 0.25) {
+        initialPayments.push(p)
+      } else {
+        finalPayments.push(p)
+      }
+      totalPaid += p.amount
+    })
+
+    return [initialPayments, finalPayments]
+  }, [paymentsInfo])
+
+  const handleSubmitPayment = useCallback(
+    (txHash: string) => {
+      submitPayment({ contestID: parseInt(contestId ?? ""), txHash })
+      setInitialPaymentTx("")
+      setFinalPaymentTx("")
+    },
+    [submitPayment, contestId]
+  )
+
   if (!contest) return null
   if (!paymentsInfo) return null
-
-  const initialPayment = paymentsInfo.payments.at(0)
-  const finalPayment = paymentsInfo.payments.at(1)
 
   const startDate = DateTime.fromSeconds(contest.startDate)
   const endDate = DateTime.fromSeconds(contest.endDate)
   const length = endDate.diff(startDate, "days").days
 
-  console.log(startDate.diff(endDate))
+  console.log(initialTxError)
 
   return (
     <div className={styles.app}>
@@ -111,21 +141,39 @@ export const AuditPayments = () => {
 
                         <Text>Amount: {commify(paymentsInfo.totalAmount * 0.25)} USDC</Text>
                         <Column spacing="xs">
-                          <Text size="small">Transaction hash</Text>
-                          {initialPaymentDone ? (
-                            <Text>{initialPayment?.txHash}</Text>
-                          ) : (
-                            <Row spacing="m">
-                              <Input value={initialPaymentTx} onChange={setInitialPaymentTx} />
-                              <Button
-                                onClick={() =>
-                                  submitPayment({ contestID: parseInt(contestId ?? ""), txHash: initialPaymentTx })
-                                }
-                              >
-                                Submit
-                              </Button>
-                            </Row>
+                          {!initialPaymentDone && (
+                            <Column spacing="xs">
+                              <Text size="small">Transaction hash</Text>
+                              <Row spacing="m">
+                                <Input value={initialPaymentTx} onChange={setInitialPaymentTx} variant="small" />
+                                <Button
+                                  onClick={() => handleSubmitPayment(initialPaymentTx)}
+                                  disabled={!initialTxValid}
+                                >
+                                  Submit
+                                </Button>
+                              </Row>
+                              {initialTxError && (
+                                <Text variant="warning" size="small">
+                                  Invalid transaction hash
+                                </Text>
+                              )}
+                            </Column>
                           )}
+                          <Column spacing="s">
+                            <Column spacing="xs">
+                              {initialPayments && initialPayments.length > 0 && (
+                                <>
+                                  <Title variant="h4">Previous payments</Title>
+                                  {initialPayments?.map((p) => (
+                                    <Text size="small" variant="secondary">
+                                      {p.txHash}
+                                    </Text>
+                                  ))}
+                                </>
+                              )}
+                            </Column>
+                          </Column>
                         </Column>
                       </Column>
                     </Box>
@@ -135,23 +183,47 @@ export const AuditPayments = () => {
                           <Title variant="h2">Step 2: Full Payment</Title>
                           {fullPaymentDone && <FaCheckCircle className={styles.check} />}
                         </Row>
-                        <Text>Amount: {commify(paymentsInfo.totalAmount * 0.75)} USDC</Text>
-                        <Column spacing="xs">
-                          <Text size="small">Transaction hash</Text>
-                          {fullPaymentDone ? (
-                            <Text>{finalPayment?.txHash}</Text>
-                          ) : (
+
+                        {!fullPaymentDone && (
+                          <Column spacing="xs">
+                            <Text size="small">Transaction hash</Text>
                             <Row spacing="m">
-                              <Input value={finalPaymentTx} onChange={setFinalPaymentTx} />
-                              <Button
-                                onClick={() =>
-                                  submitPayment({ contestID: parseInt(contestId ?? ""), txHash: finalPaymentTx })
-                                }
-                              >
+                              <Input
+                                disabled={!initialPaymentDone}
+                                value={finalPaymentTx}
+                                onChange={setFinalPaymentTx}
+                                variant="small"
+                              />
+                              <Button onClick={() => handleSubmitPayment(finalPaymentTx)} disabled={!finalTxValid}>
                                 Submit
                               </Button>
                             </Row>
-                          )}
+                            {finalTxError && (
+                              <Text variant="warning" size="small">
+                                Invalid transaction hash
+                              </Text>
+                            )}
+                          </Column>
+                        )}
+
+                        <Text>Total paid: {commify(paymentsInfo.totalPaid)} USDC</Text>
+                        {!fullPaymentDone && (
+                          <Text>Amount due: {commify(paymentsInfo.totalAmount - paymentsInfo.totalPaid)} USDC</Text>
+                        )}
+
+                        <Column spacing="s">
+                          <Column spacing="xs">
+                            {finalPayments && finalPayments.length > 0 && (
+                              <>
+                                <Title variant="h4">Previous payments</Title>
+                                {finalPayments?.map((p) => (
+                                  <Text size="small" variant="secondary">
+                                    {p.txHash}
+                                  </Text>
+                                ))}
+                              </>
+                            )}
+                          </Column>
                         </Column>
                       </Column>
                     </Box>
