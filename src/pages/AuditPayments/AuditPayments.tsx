@@ -42,6 +42,10 @@ export const AuditPayments = () => {
   const finalPayment = paymentsInfo.payments.at(1)
 
   const startDate = DateTime.fromSeconds(contest.startDate)
+  const endDate = DateTime.fromSeconds(contest.endDate)
+  const length = endDate.diff(startDate, "days").days
+
+  console.log(startDate.diff(endDate))
 
   return (
     <div className={styles.app}>
@@ -66,7 +70,7 @@ export const AuditPayments = () => {
                               <Text strong>Estimated Start Date</Text>
                             </Td>
                             <Td>
-                              <Text alignment="right">{contest.startDate}</Text>
+                              <Text alignment="right">{startDate.toLocaleString(DateTime.DATE_MED)}</Text>
                             </Td>
                           </Tr>
                           <Tr>
@@ -74,7 +78,7 @@ export const AuditPayments = () => {
                               <Text strong>Audit Length</Text>
                             </Td>
                             <Td>
-                              <Text alignment="right">{contest.endDate - contest.startDate}</Text>
+                              <Text alignment="right">{`${length} days`}</Text>
                             </Td>
                           </Tr>
                           <Tr>
@@ -82,7 +86,7 @@ export const AuditPayments = () => {
                               <Text strong>Contest Pot</Text>
                             </Td>
                             <Td>
-                              <Text alignment="right">{contest.prizePool}</Text>
+                              <Text alignment="right">{`${commify(contest.prizePool)} USDC`}</Text>
                             </Td>
                           </Tr>
                           <Tr>
@@ -151,23 +155,25 @@ export const AuditPayments = () => {
                         </Column>
                       </Column>
                     </Box>
-                    <Box shadow={false}>
-                      <Column spacing="m">
-                        <Row spacing="m">
-                          <Text variant="alternate" size="extra-large" strong>
-                            Payment completed
-                          </Text>
-                          <FaCheckCircle className={styles.check} />
-                        </Row>
-                        <Row spacing="s">
-                          <Text>Contest starts:</Text>
-                          <Text strong>
-                            {startDate.toLocaleString(DateTime.DATE_MED)}{" "}
-                            {`${startDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${startDate.offsetNameShort}`}
-                          </Text>
-                        </Row>
-                      </Column>
-                    </Box>
+                    {fullPaymentDone && (
+                      <Box shadow={false}>
+                        <Column spacing="m">
+                          <Row spacing="m">
+                            <Text variant="alternate" size="extra-large" strong>
+                              Payment completed
+                            </Text>
+                            <FaCheckCircle className={styles.check} />
+                          </Row>
+                          <Row spacing="s">
+                            <Text>Contest starts:</Text>
+                            <Text strong>
+                              {startDate.toLocaleString(DateTime.DATE_MED)}{" "}
+                              {`${startDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${startDate.offsetNameShort}`}
+                            </Text>
+                          </Row>
+                        </Column>
+                      </Box>
+                    )}
                   </Column>
                 </Row>
               </Column>
