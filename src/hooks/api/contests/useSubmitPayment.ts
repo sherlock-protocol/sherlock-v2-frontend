@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from "react-query"
 import { submitPayment as submitPaymentUrl } from "../urls"
 import { contests as contestsAPI } from "../axios"
-import { contestPaymentsQuery } from "./usePayments"
+import { protocolDashboardQuery } from "./useProtocolDashboard"
 
 type SubmitPaymentParams = {
-  contestID: number
+  protocolDashboardID: string
   txHash: string
 }
 
@@ -18,7 +18,7 @@ export const useSubmitPayment = () => {
   } = useMutation<null, Error, SubmitPaymentParams>(
     async (params) => {
       await contestsAPI.post(submitPaymentUrl(), {
-        contest_id: params.contestID,
+        dashboard_id: params.protocolDashboardID,
         tx_hash: params.txHash,
       })
 
@@ -26,8 +26,7 @@ export const useSubmitPayment = () => {
     },
     {
       onSuccess(data, params) {
-        console.log("HEREEEEEE")
-        queryClient.invalidateQueries(contestPaymentsQuery(params.contestID))
+        queryClient.invalidateQueries(protocolDashboardQuery(params.protocolDashboardID))
       },
     }
   )

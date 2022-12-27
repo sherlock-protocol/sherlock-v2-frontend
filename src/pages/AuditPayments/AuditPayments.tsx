@@ -3,11 +3,10 @@ import { Title } from "../../components/Title"
 import styles from "./AuditPayments.module.scss"
 import { Column, Row } from "../../components/Layout"
 import { useParams } from "react-router-dom"
-import { useContest } from "../../hooks/api/contests"
 import { Box } from "../../components/Box"
 import { Table, TBody, Td, Tr } from "../../components/Table/Table"
 import { Text } from "../../components/Text"
-import { Payment, usePayments } from "../../hooks/api/contests/usePayments"
+import { Payment, useProtocolDashboard } from "../../hooks/api/contests/useProtocolDashboard"
 import { commify } from "../../utils/units"
 import { Input } from "../../components/Input"
 import { Button } from "../../components/Button"
@@ -18,12 +17,10 @@ import LoadingContainer from "../../components/LoadingContainer/LoadingContainer
 import { DateTime } from "luxon"
 import { useDebounce } from "use-debounce"
 import { useValidateTransaction } from "../../hooks/useValidateTransaction"
-import { TypePredicateKind } from "typescript"
 
 export const AuditPayments = () => {
-  const { contestId } = useParams()
-  const { data: contest } = useContest(parseInt(contestId ?? ""))
-  const { data: paymentsInfo } = usePayments(parseInt(contestId ?? ""))
+  const { dashboardID } = useParams()
+  const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
   const { submitPayment, isLoading } = useSubmitPayment()
 
   const [initialPaymentTx, setInitialPaymentTx] = useState("")
@@ -33,12 +30,15 @@ export const AuditPayments = () => {
   const { isValid: initialTxValid, isError: initialTxError } = useValidateTransaction(debouncedInitialTx)
   const { isValid: finalTxValid, isError: finalTxError } = useValidateTransaction(debouncedFinalTx)
 
+  const contest = protocolDashboard?.contest
+  const paymentsInfo = protocolDashboard?.payments
+
   const initialPaymentDone = useMemo(
-    () => paymentsInfo && contest && paymentsInfo.totalPaid >= contest.fullPayment * 0.25,
+    () => paymentsInfo && contest && paymentsInfo.totalPaid >= paymentsInfo.totalAmount * 0.25,
     [paymentsInfo, contest]
   )
   const fullPaymentDone = useMemo(
-    () => paymentsInfo && contest && paymentsInfo.totalPaid >= contest.fullPayment,
+    () => paymentsInfo && contest && paymentsInfo.totalPaid >= paymentsInfo.totalAmount,
     [paymentsInfo, contest]
   )
 
@@ -61,11 +61,11 @@ export const AuditPayments = () => {
 
   const handleSubmitPayment = useCallback(
     (txHash: string) => {
-      submitPayment({ contestID: parseInt(contestId ?? ""), txHash })
+      submitPayment({ protocolDashboardID: dashboardID ?? "", txHash })
       setInitialPaymentTx("")
       setFinalPaymentTx("")
     },
-    [submitPayment, contestId]
+    [submitPayment, dashboardID]
   )
 
   if (!contest) return null
@@ -74,8 +74,6 @@ export const AuditPayments = () => {
   const startDate = DateTime.fromSeconds(contest.startDate)
   const endDate = DateTime.fromSeconds(contest.endDate)
   const length = endDate.diff(startDate, "days").days
-
-  console.log(initialTxError)
 
   return (
     <div className={styles.app}>

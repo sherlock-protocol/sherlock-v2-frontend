@@ -36,6 +36,8 @@ export const useValidateTransaction = (txHash: string) => {
       try {
         const tx = await provider.getTransaction(txHash)
 
+        console.log(tx)
+
         setStatus({
           isLoading: false,
           isValid: !!tx,
