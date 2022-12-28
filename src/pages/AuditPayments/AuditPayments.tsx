@@ -18,7 +18,6 @@ import { DateTime } from "luxon"
 import { useDebounce } from "use-debounce"
 import { useValidateTransaction } from "../../hooks/useValidateTransaction"
 import { getTxUrl } from "../../utils/explorer"
-import config from "../../config"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
 
 export const AuditPayments = () => {
@@ -160,7 +159,7 @@ export const AuditPayments = () => {
                         <Title variant="h2">PAYMENTS</Title>
                         <Text>Send USDC to the address below and paste the transaction hash</Text>
                         <Text size="large" className={styles.mainAddress}>
-                          {config.auditPaymentsRecipientAddress}
+                          {protocolDashboard.paymentsRecipient}
                         </Text>
                       </Column>
                     </Box>

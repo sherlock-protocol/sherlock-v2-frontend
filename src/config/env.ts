@@ -23,5 +23,4 @@ export const config: Config = {
     process.env.REACT_APP_STAKING_HARDCAP ? (process.env.REACT_APP_STAKING_HARDCAP as string) : "0"
   ),
   nexusMutualStartTimestamp: parseInt(process.env.REACT_APP_NEXUS_MUTUAL_START_TIMESTAMP as string),
-  auditPaymentsRecipientAddress: process.env.REACT_APP_AUDIT_PAYMENTS_RECIPIENT_ADDRESS as string,
 }

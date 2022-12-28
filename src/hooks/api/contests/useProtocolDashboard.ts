@@ -28,6 +28,7 @@ type PaymentsDetails = {
 type DashboardInfo = {
   contest: ContestDetails
   payments: PaymentsDetails
+  paymentsRecipient: string
 }
 
 type PaymentsResponse = {
@@ -46,6 +47,7 @@ type PaymentsResponse = {
     tx_hash: string
     amount: number
   }[]
+  payments_recipient: string
 }
 
 export const protocolDashboardQuery = (id: string) => ["protocol-dashboard", id]
@@ -73,5 +75,6 @@ export const useProtocolDashboard = (dashboardID: string) =>
           amount: p.amount,
         })),
       },
+      paymentsRecipient: data.payments_recipient,
     }
   })
