@@ -29,8 +29,16 @@ export const AuditPayments = () => {
   const [finalPaymentTx, setFinalPaymentTx] = useState("")
   const [debouncedInitialTx] = useDebounce(initialPaymentTx, 300)
   const [debouncedFinalTx] = useDebounce(finalPaymentTx, 300)
-  const { isValid: initialTxValid, isError: initialTxError } = useValidateTransaction(debouncedInitialTx)
-  const { isValid: finalTxValid, isError: finalTxError } = useValidateTransaction(debouncedFinalTx)
+  const {
+    isValid: initialTxValid,
+    isError: initialTxError,
+    isLoading: initialTxLoading,
+  } = useValidateTransaction(debouncedInitialTx)
+  const {
+    isValid: finalTxValid,
+    isError: finalTxError,
+    isLoading: finalTxLoading,
+  } = useValidateTransaction(debouncedFinalTx)
   const [displayCopiedMessage, setDisplayCopiedMessage] = useState(false)
 
   const contest = protocolDashboard?.contest
@@ -201,7 +209,9 @@ export const AuditPayments = () => {
                         <Column spacing="xs">
                           {!initialPaymentDone && (
                             <Column spacing="xs">
-                              <Text size="small">Transaction hash</Text>
+                              <Text size="small">{`Transaction Hash ${
+                                initialTxLoading ? "- Validating..." : ""
+                              }`}</Text>
                               <Row spacing="m">
                                 <Input value={initialPaymentTx} onChange={setInitialPaymentTx} variant="small" />
                                 <Button
@@ -256,7 +266,7 @@ export const AuditPayments = () => {
 
                         {!fullPaymentDone && (
                           <Column spacing="xs">
-                            <Text size="small">Transaction Hash</Text>
+                            <Text size="small">{`Transaction Hash ${finalTxLoading ? "- Validating..." : ""}`}</Text>
                             <Row spacing="m">
                               <Input
                                 disabled={!initialPaymentDone}
