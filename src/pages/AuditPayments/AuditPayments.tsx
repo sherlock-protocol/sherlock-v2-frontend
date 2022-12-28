@@ -164,7 +164,7 @@ export const AuditPayments = () => {
                                 <>
                                   <Title variant="h4">Previous payments</Title>
                                   {initialPayments?.map((p) => (
-                                    <Text size="small" variant="secondary">
+                                    <Text size="small" variant="mono" className={styles.address}>
                                       {p.txHash}
                                     </Text>
                                   ))}
@@ -215,7 +215,7 @@ export const AuditPayments = () => {
                               <>
                                 <Title variant="h4">Previous payments</Title>
                                 {finalPayments?.map((p) => (
-                                  <Text size="small" variant="secondary">
+                                  <Text size="small" variant="mono" className={styles.address}>
                                     {p.txHash}
                                   </Text>
                                 ))}
