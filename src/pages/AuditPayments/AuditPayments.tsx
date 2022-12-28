@@ -1,5 +1,6 @@
+import { useCallback, useMemo, useState } from "react"
+import cx from "classnames"
 import { Title } from "../../components/Title"
-
 import styles from "./AuditPayments.module.scss"
 import { Column, Row } from "../../components/Layout"
 import { useParams } from "react-router-dom"
@@ -10,8 +11,7 @@ import { Payment, useProtocolDashboard } from "../../hooks/api/contests/useProto
 import { commify } from "../../utils/units"
 import { Input } from "../../components/Input"
 import { Button } from "../../components/Button"
-import { FaCheckCircle } from "react-icons/fa"
-import { useCallback, useMemo, useState } from "react"
+import { FaCheckCircle, FaCopy } from "react-icons/fa"
 import { useSubmitPayment } from "../../hooks/api/contests/useSubmitPayment"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { DateTime } from "luxon"
@@ -31,6 +31,7 @@ export const AuditPayments = () => {
   const [debouncedFinalTx] = useDebounce(finalPaymentTx, 300)
   const { isValid: initialTxValid, isError: initialTxError } = useValidateTransaction(debouncedInitialTx)
   const { isValid: finalTxValid, isError: finalTxError } = useValidateTransaction(debouncedFinalTx)
+  const [displayCopiedMessage, setDisplayCopiedMessage] = useState(false)
 
   const contest = protocolDashboard?.contest
   const paymentsInfo = protocolDashboard?.payments
@@ -69,6 +70,17 @@ export const AuditPayments = () => {
     },
     [submitPayment, dashboardID]
   )
+
+  const handleRecipientAddressCopy = useCallback(async () => {
+    protocolDashboard?.paymentsRecipient && (await navigator.clipboard.writeText(protocolDashboard.paymentsRecipient))
+    setDisplayCopiedMessage(true)
+
+    const timer = setTimeout(() => {
+      setDisplayCopiedMessage(false)
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [protocolDashboard?.paymentsRecipient])
 
   const handleErrorModalClose = useCallback(() => {
     resetSubmitPayment()
@@ -158,9 +170,24 @@ export const AuditPayments = () => {
                       <Column spacing="m">
                         <Title variant="h2">PAYMENTS</Title>
                         <Text>Send USDC to the address below and paste the transaction hash</Text>
-                        <Text size="large" className={styles.mainAddress}>
-                          {protocolDashboard.paymentsRecipient}
-                        </Text>
+                        <Row
+                          spacing="m"
+                          className={cx({
+                            [styles.mainAddress]: true,
+                            [styles.copied]: displayCopiedMessage,
+                          })}
+                          alignment={[displayCopiedMessage ? "center" : "space-between", "center"]}
+                          onClick={handleRecipientAddressCopy}
+                        >
+                          <Text size="large">
+                            {displayCopiedMessage ? "Copied!" : protocolDashboard.paymentsRecipient}
+                          </Text>
+                          {!displayCopiedMessage && (
+                            <Button variant="secondary" size="small" onClick={handleRecipientAddressCopy}>
+                              <FaCopy />
+                            </Button>
+                          )}
+                        </Row>
                       </Column>
                     </Box>
                     <Box shadow={false} disabled={initialPaymentDone}>
