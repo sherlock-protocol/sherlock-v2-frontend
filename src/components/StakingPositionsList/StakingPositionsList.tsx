@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useMemo } from "react"
 import { useAccount } from "wagmi"
 
 import StakingPositionItem from "../StakingPosition/StakingPosition"
@@ -8,12 +8,13 @@ import { StakingPosition, useStakingPositions } from "../../hooks/api/useStaking
 import styles from "./StakingPositionsList.module.scss"
 import { BigNumber } from "ethers"
 import { Title } from "../Title"
-import { Column } from "../Layout"
+import { Column, Row } from "../Layout"
 import { Button } from "../Button/Button"
 import { useLocation, useNavigate } from "react-router-dom"
 import useInterval from "../../hooks/useInterval"
 import { useWaitForBlock } from "../../hooks/api/useWaitForBlock"
 import LoadingContainer from "../LoadingContainer/LoadingContainer"
+import { Text } from "../Text"
 
 type LocationState = {
   refreshAfterBlockNumber?: number
@@ -135,10 +136,30 @@ export const StakingPositionsList: React.FC = () => {
     navigate("/")
   }, [navigate])
 
+  const mapleAlertVisible = useMemo(() => positions?.some((item) => item.id <= 442), [positions])
+
   if (!data) return null
 
   return (
     <LoadingContainer loading={isRefreshing} label="Refreshing...">
+      {mapleAlertVisible && (
+        <Row className={styles.alert}>
+          <Column spacing="m">
+            <Title>Stakers affected by the Maple loss</Title>
+            <Text>
+              A portion of the Maple funds will be airdropped directly to staker addresses instead of delivered when
+              unstaking. More info{" "}
+              <a
+                href="https://discord.com/channels/812037309376495636/881691425253761026/1054616702102544394"
+                target="blank"
+              >
+                here
+              </a>
+              .
+            </Text>
+          </Column>
+        </Row>
+      )}
       <div className={styles.container}>
         {positions.map((position) => (
           <StakingPositionItem
