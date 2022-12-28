@@ -113,6 +113,14 @@ export const AuditPayments = () => {
                           </Tr>
                           <Tr>
                             <Td>
+                              <Text strong>Lead Senior Watson</Text>
+                            </Td>
+                            <Td>
+                              <Text alignment="right">{contest.leadSeniorAuditorHandle}</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td>
                               <Text strong>Contest Pot</Text>
                             </Td>
                             <Td>
@@ -121,12 +129,22 @@ export const AuditPayments = () => {
                           </Tr>
                           <Tr>
                             <Td>
-                              <Text strong>Lead Senior Watson</Text>
+                              <Text strong>Lead Senior Watson Fixed Pay</Text>
                             </Td>
                             <Td>
-                              <Text alignment="right">{contest.leadSeniorAuditorHandle}</Text>
+                              <Text alignment="right">{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
                             </Td>
                           </Tr>
+                          {contest.sherlockFee > 0 && (
+                            <Tr>
+                              <Td>
+                                <Text strong>Sherlock Judging</Text>
+                              </Td>
+                              <Td>
+                                <Text alignment="right">{`${commify(contest.sherlockFee)} USDC`}</Text>
+                              </Td>
+                            </Tr>
+                          )}
                         </TBody>
                       </Table>
                     </Box>
