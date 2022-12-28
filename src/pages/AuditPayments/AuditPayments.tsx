@@ -19,11 +19,12 @@ import { useDebounce } from "use-debounce"
 import { useValidateTransaction } from "../../hooks/useValidateTransaction"
 import { getTxUrl } from "../../utils/explorer"
 import config from "../../config"
+import { ErrorModal } from "../ContestDetails/ErrorModal"
 
 export const AuditPayments = () => {
   const { dashboardID } = useParams()
   const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
-  const { submitPayment, isLoading } = useSubmitPayment()
+  const { submitPayment, isLoading, error: submitPaymentError, reset: resetSubmitPayment } = useSubmitPayment()
 
   const [initialPaymentTx, setInitialPaymentTx] = useState("")
   const [finalPaymentTx, setFinalPaymentTx] = useState("")
@@ -69,6 +70,10 @@ export const AuditPayments = () => {
     },
     [submitPayment, dashboardID]
   )
+
+  const handleErrorModalClose = useCallback(() => {
+    resetSubmitPayment()
+  }, [resetSubmitPayment])
 
   if (!contest) return null
   if (!paymentsInfo) return null
@@ -301,6 +306,7 @@ export const AuditPayments = () => {
                 </Row>
               </Column>
             </Row>
+            {submitPaymentError && <ErrorModal reason={submitPaymentError.message} onClose={handleErrorModalClose} />}
           </LoadingContainer>
         </div>
       </div>
