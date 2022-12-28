@@ -67,3 +67,10 @@
   text-decoration: none;
   font-size: 0.875rem;
 }
+
+.mainAddress {
+  font-family: $font-family-mono;
+  font-variant-numeric: tabular-nums;
+  background-color: transparentize($color: $primary-purple, $amount: 0.8);
+  padding: 0.8rem;
+}

@@ -20,4 +20,5 @@ export const config: Config = {
   incentivesAPYBytesIdentifier: "0x47a46b3628edc31155b950156914c27d25890563476422202887ed4298fc3c98",
   stakingHardcap: BigNumber.from("25000000000000"),
   nexusMutualStartTimestamp: 1666137600,
+  auditPaymentsRecipientAddress: "0x3ccbc14905DdDfFd9Da173dc0513202F3C646416",
 }

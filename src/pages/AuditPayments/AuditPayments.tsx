@@ -17,8 +17,8 @@ import LoadingContainer from "../../components/LoadingContainer/LoadingContainer
 import { DateTime } from "luxon"
 import { useDebounce } from "use-debounce"
 import { useValidateTransaction } from "../../hooks/useValidateTransaction"
-import { shortenAddress } from "../../utils/format"
 import { getTxUrl } from "../../utils/explorer"
+import config from "../../config"
 
 export const AuditPayments = () => {
   const { dashboardID } = useParams()
@@ -132,6 +132,15 @@ export const AuditPayments = () => {
                     </Box>
                   </Column>
                   <Column spacing="xl" grow={1}>
+                    <Box shadow={false}>
+                      <Column spacing="m">
+                        <Title variant="h2">PAYMENTS</Title>
+                        <Text>Send USDC to the address below and paste the transaction hash</Text>
+                        <Text size="large" className={styles.mainAddress}>
+                          {config.auditPaymentsRecipientAddress}
+                        </Text>
+                      </Column>
+                    </Box>
                     <Box shadow={false} disabled={initialPaymentDone}>
                       <Column spacing="m">
                         <Row alignment={["start", "center"]} spacing="m">
@@ -198,7 +207,7 @@ export const AuditPayments = () => {
 
                         {!fullPaymentDone && (
                           <Column spacing="xs">
-                            <Text size="small">Transaction hash</Text>
+                            <Text size="small">Transaction Hash</Text>
                             <Row spacing="m">
                               <Input
                                 disabled={!initialPaymentDone}

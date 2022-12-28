@@ -112,4 +112,9 @@ export type Config = {
    * Nexus Mutual 25% coverage start timestamp (in seconds).
    */
   nexusMutualStartTimestamp: number
+
+  /**
+   * Address receiving USDC payments for audits
+   */
+  auditPaymentsRecipientAddress: string
 }
