@@ -59,6 +59,11 @@
   font-size: 1.5rem;
 }
 
-.address {
-  opacity: 0.5;
+.transactionHash {
+  font-family: $font-family-mono;
+  font-variant-numeric: tabular-nums;
+  color: $primary-purple;
+  opacity: 0.8;
+  text-decoration: none;
+  font-size: 0.875rem;
 }

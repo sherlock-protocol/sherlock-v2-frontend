@@ -17,6 +17,8 @@ import LoadingContainer from "../../components/LoadingContainer/LoadingContainer
 import { DateTime } from "luxon"
 import { useDebounce } from "use-debounce"
 import { useValidateTransaction } from "../../hooks/useValidateTransaction"
+import { shortenAddress } from "../../utils/format"
+import { getTxUrl } from "../../utils/explorer"
 
 export const AuditPayments = () => {
   const { dashboardID } = useParams()
@@ -164,9 +166,21 @@ export const AuditPayments = () => {
                                 <>
                                   <Title variant="h4">Previous payments</Title>
                                   {initialPayments?.map((p) => (
-                                    <Text size="small" variant="mono" className={styles.address}>
-                                      {p.txHash}
-                                    </Text>
+                                    <Row spacing="m">
+                                      <Column>
+                                        <a
+                                          href={getTxUrl(p.txHash)}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          className={styles.transactionHash}
+                                        >{`${p.txHash.slice(0, 16)}...`}</a>
+                                      </Column>
+                                      <Column>
+                                        <Text size="small" variant="secondary" strong>
+                                          {`${commify(p.amount)} USDC`}
+                                        </Text>
+                                      </Column>
+                                    </Row>
                                   ))}
                                 </>
                               )}
@@ -215,9 +229,21 @@ export const AuditPayments = () => {
                               <>
                                 <Title variant="h4">Previous payments</Title>
                                 {finalPayments?.map((p) => (
-                                  <Text size="small" variant="mono" className={styles.address}>
-                                    {p.txHash}
-                                  </Text>
+                                  <Row spacing="m">
+                                    <Column>
+                                      <a
+                                        href={getTxUrl(p.txHash)}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className={styles.transactionHash}
+                                      >{`${p.txHash.slice(0, 16)}...`}</a>
+                                    </Column>
+                                    <Column>
+                                      <Text size="small" variant="secondary" strong>
+                                        {`${commify(p.amount)} USDC`}
+                                      </Text>
+                                    </Column>
+                                  </Row>
                                 ))}
                               </>
                             )}
