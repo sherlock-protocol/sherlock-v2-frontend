@@ -41,4 +41,12 @@ $FIXED_WIDTH: 500px;
   &.fixedWidth {
     width: $FIXED_WIDTH;
   }
+
+  &.disabled {
+    opacity: 0.5;
+
+    & input {
+      pointer-events: none;
+    }
+  }
 }

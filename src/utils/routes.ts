@@ -20,6 +20,7 @@ export const contestsRoutes = {
   ContestDetails: "contests/:contestId",
   Leaderboard: "leaderboard",
   Profile: "profile",
+  ProtocolDashboard: "audits/dashboard/:dashboardID",
 } as const
 
 export const internalRoutes = {

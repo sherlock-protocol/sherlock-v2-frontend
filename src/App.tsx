@@ -24,6 +24,7 @@ import { AuditorProfile } from "./pages/AuditorProfile"
 import { AuthenticationGate } from "./components/AuthenticationGate"
 import { useAccount } from "wagmi"
 import { useAuthentication } from "./hooks/api/useAuthentication"
+import { AuditPayments } from "./pages/AuditPayments/AuditPayments"
 
 function App() {
   const { address: connectedAddress } = useAccount()
@@ -63,6 +64,8 @@ function App() {
         </Route>
 
         {/** Audit Contests section routes */}
+        <Route path={contestsRoutes.ProtocolDashboard} element={<AuditPayments />} />
+
         <Route path={`${routes.AuditContests}/*`} element={<AppContests />}>
           <Route path={contestsRoutes.Contests} element={<ContestsPage />} />
           <Route path={contestsRoutes.ContestDetails} element={<ContestDetails />} />

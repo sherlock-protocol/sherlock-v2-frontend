@@ -28,3 +28,5 @@ export const signOut = () => "signout"
 export const signUp = () => "signup"
 export const joinContest = () => "/contests/join-contest"
 export const getContestLeaderboard = (id: number) => `/contests/${id}/scoreboard`
+export const getProtocolDashboard = (dashboardID: string) => `/contests/dashboard/${dashboardID}`
+export const submitPayment = () => "/contests/payments/transaction"
