@@ -20,7 +20,7 @@ import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 
 export const ProtocolPage: React.FC = () => {
-  const [selectedProtocolId, setSelectedProtocolId] = React.useState<string>()
+  const [selectedProtocolId, setSelectedProtocolId] = React.useState<`0x${string}`>()
   const [balance, setBalance] = React.useState<BigNumber>()
   const [coverageLeft, setCoverageLeft] = React.useState<BigNumber>()
 
@@ -33,7 +33,7 @@ export const ProtocolPage: React.FC = () => {
         .filter(([_, p]) => p.agent !== ethers.constants.AddressZero)
         .map(([key, item]) => ({
           label: item.name ?? "Unknown",
-          value: key,
+          value: key as `0x${string}`,
         })) ?? [],
     [protocols]
   )
@@ -55,7 +55,7 @@ export const ProtocolPage: React.FC = () => {
   /**
    * Handler for changing the protocol
    */
-  const handleOnProtocolChanged = React.useCallback((option: string) => {
+  const handleOnProtocolChanged = React.useCallback((option: `0x${string}`) => {
     setSelectedProtocolId(option)
   }, [])
 

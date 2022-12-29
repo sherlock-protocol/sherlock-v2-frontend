@@ -104,7 +104,7 @@ export const StakingPage: React.FC = () => {
       })
 
       // Navigate to positions page
-      navigate("/positions", { state: { refreshAfterBlockNumber: result.blockNumber } })
+      result?.blockNumber && navigate("/positions", { state: { refreshAfterBlockNumber: result.blockNumber } })
     } catch (e) {
       return false
     }
