@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from "react"
-import { useContract, useProvider, useSigner } from "wagmi"
-import SherClaimInterface from "../abi/SherClaim.json"
-import { SherClaim } from "../contracts/SherClaim"
+import { Address, useContract, useProvider, useSigner } from "wagmi"
+import SherClaimInterface from "../abi/SherClaim"
 import { DateTime } from "luxon"
 import config from "../config"
 
@@ -19,9 +18,9 @@ export const SHER_CLAIM_START = SHER_BUY_ENTRY_DEADLINE + 60 * 60 * 24 * 7 * 26 
 export const useSherClaimContract = () => {
   const provider = useProvider()
   const { data: signerData } = useSigner()
-  const contract = useContract<SherClaim>({
-    addressOrName: SHER_CLAIM_ADDRESS,
-    contractInterface: SherClaimInterface.abi,
+  const contract = useContract({
+    address: SHER_CLAIM_ADDRESS,
+    abi: SherClaimInterface,
     signerOrProvider: signerData || provider,
   })
 
@@ -51,7 +50,7 @@ export const useSherClaimContract = () => {
    * Claim SHER tokens.
    */
   const claim = useCallback(async () => {
-    return contract.claim()
+    return contract?.claim()
   }, [contract])
 
   /**
@@ -62,8 +61,8 @@ export const useSherClaimContract = () => {
    * @returns claimable amount
    */
   const getClaimableAmount = useCallback(
-    async (address: string) => {
-      const sherAmount = await contract.userClaims(address)
+    async (address: Address) => {
+      const sherAmount = await contract?.userClaims(address)
       return sherAmount
     },
     [contract]
