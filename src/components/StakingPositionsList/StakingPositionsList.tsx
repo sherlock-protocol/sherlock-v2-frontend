@@ -136,29 +136,26 @@ export const StakingPositionsList: React.FC = () => {
     navigate("/")
   }, [navigate])
 
-  const mapleAlertVisible = useMemo(() => positions?.some((item) => item.id < 25), [positions])
+  const mapleAlertVisible = useMemo(() => positions?.some((item) => item.id <= 442), [positions])
 
   if (!data) return null
 
   return (
     <LoadingContainer loading={isRefreshing} label="Refreshing...">
       {mapleAlertVisible && (
-        <Row alignment="center" className={styles.alert}>
+        <Row className={styles.alert}>
           <Column spacing="m">
-            <Title>Logistical update on the Maple situation</Title>
+            <Title>Stakers affected by the Maple loss</Title>
             <Text>
-              Due to the suboptimal design of Maple V1, Maple is migrating the Maven 11 pool to Maple V2. Because of
-              this, the Maple V1 strategy will need to be force-removed from Sherlock's yield strategy contracts so that
-              Sherlock can accommodate Maple's migration to their V2 contracts. All funds that are recovered from Maple
-              by Sherlock (still estimated to be ~1M USDC) will need to be airdropped to affected Sherlock stakers.
-              Normally, the recovered funds would be part of the funds released when a staker unstakes, but because of
-              this situation, Sherlock will need to airdrop them separately.
-            </Text>
-            <Text>
-              The force-remove action will be taken on Tuesday, December 20th and the staking pool will appear to
-              decrease by 5M USDC at that time. Again, the estimated 1M USDC that Maven 11 expects to return to Sherlock
-              will be airdropped to affected stakers when those funds become available (still waiting on borrower
-              repayments in the Maple pool).
+              A portion of the Maple funds will be airdropped directly to staker addresses instead of delivered when
+              unstaking. More info{" "}
+              <a
+                href="https://discord.com/channels/812037309376495636/881691425253761026/1054616702102544394"
+                target="blank"
+              >
+                here
+              </a>
+              .
             </Text>
           </Column>
         </Row>
