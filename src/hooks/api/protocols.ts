@@ -14,7 +14,7 @@ export type Protocol = {
   /**
    * Protocol Identifier
    */
-  bytesIdentifier: string
+  bytesIdentifier: `0x${string}`
 
   /**
    * Protocol agent's address
@@ -102,7 +102,7 @@ type GetProtocolsResponseData =
         description: string
         website?: string
         logo?: string
-        bytes_identifier: string
+        bytes_identifier: `0x${string}`
         coverage_ended_at: number
         premium: string
         premium_set_at: number

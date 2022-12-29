@@ -94,10 +94,15 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
     try {
       setIsWaitingTx(true)
       const txReceipt = await waitForTx(async () => await escalateClaim(claim.id, UMA_BOND))
-      await waitForBlock(txReceipt.blockNumber)
-      await queryClient.invalidateQueries(activeClaimQueryKey(claim.protocolID))
 
-      return true
+      if (txReceipt) {
+        await waitForBlock(txReceipt.blockNumber)
+        await queryClient.invalidateQueries(activeClaimQueryKey(claim.protocolID))
+
+        return true
+      }
+
+      return false
     } catch (e) {
       return false
     } finally {
@@ -109,10 +114,15 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
     try {
       setIsWaitingTx(true)
       const txReceipt = await waitForTx(async () => await cleanUpClaim(protocol.bytesIdentifier, claim.id))
-      await waitForBlock(txReceipt.blockNumber)
-      await queryClient.invalidateQueries(activeClaimQueryKey(protocol.id))
 
-      return true
+      if (txReceipt) {
+        await waitForBlock(txReceipt.blockNumber)
+        await queryClient.invalidateQueries(activeClaimQueryKey(protocol.id))
+
+        return true
+      }
+
+      return false
     } catch (e) {
       return false
     } finally {
@@ -230,9 +240,10 @@ const Payout: React.FC<Props> = ({ claim }) => {
 
       const txReceipt = await waitForTx(async () => await payoutClaim(claim.id))
 
-      await waitForBlock(txReceipt.blockNumber)
-
-      await queryClient.invalidateQueries(activeClaimQueryKey(claim.protocolID))
+      if (txReceipt) {
+        await waitForBlock(txReceipt.blockNumber)
+        await queryClient.invalidateQueries(activeClaimQueryKey(claim.protocolID))
+      }
     } catch (e) {
     } finally {
       setIsWaitingPayout(false)

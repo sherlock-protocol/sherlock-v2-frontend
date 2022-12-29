@@ -53,10 +53,8 @@ const AirdropPosition: React.FC<Props> = ({
     }
 
     try {
-      const result = await waitForTx(
-        async () => (await contract?.claim(BigNumber.from(index), address, amount, proof)) as ethers.ContractTransaction
-      )
-      onSuccess?.(result.blockNumber)
+      const result = await waitForTx(async () => await contract?.claim(BigNumber.from(index), address, amount, proof))
+      result?.blockNumber && onSuccess?.(result.blockNumber)
     } catch (e) {
       return false
     }

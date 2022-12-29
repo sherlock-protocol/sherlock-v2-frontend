@@ -1,4 +1,5 @@
 import { BigNumber } from "ethers"
+import { Address } from "wagmi"
 
 export type Config = {
   /**
@@ -46,56 +47,56 @@ export type Config = {
    *
    * See: https://github.com/sherlock-protocol/sherlock-v2-core/blob/main/contracts/Sherlock.sol
    */
-  sherlockAddress: string
+  sherlockAddress: Address
 
   /**
    * Sherlock Protocol Manager Address
    *
    * See: https://github.com/sherlock-protocol/sherlock-v2-core/blob/main/contracts/managers/SherlockProtocolManager.sol
    */
-  sherlockProtocolManagerAddress: string
+  sherlockProtocolManagerAddress: Address
 
   /**
    * SherlockClaimManager Address
    *
    * See: https://github.com/sherlock-protocol/sherlock-v2-core/blob/main/contracts/managers/SherlockClaimManager.sol
    */
-  sherlockClaimManagerAddress: string
+  sherlockClaimManagerAddress: Address
 
   /**
    * SHER Token Address
    *
    * See: https://docs.openzeppelin.com/contracts/2.x/api/token/erc20
    */
-  sherAddress: string
+  sherAddress: Address
 
   /**
    * SherBuy Address
    *
    * See: https://github.com/sherlock-protocol/sherlock-v2-core/blob/main/contracts/SherBuy.sol
    */
-  sherBuyAddress: string
+  sherBuyAddress: Address
 
   /**
    * SherClaim Address
    *
    * See: https://github.com/sherlock-protocol/sherlock-v2-core/blob/main/contracts/SherClaim.sol
    */
-  sherClaimAddress: string
+  sherClaimAddress: Address
 
   /**
    * SherDistributionManager
    *
    * See: https://github.com/sherlock-protocol/sherlock-v2-core/blob/main/contracts/managers/SherDistributionManagerEmpty.sol
    */
-  sherDistributionManagerAddress: string
+  sherDistributionManagerAddress: Address
 
   /**
    * USDC Token Address
    *
    * See: https://docs.openzeppelin.com/contracts/2.x/api/token/erc20
    */
-  usdcAddress: string
+  usdcAddress: Address
 
   /**
    * Bytes identifier used as a fake protocol to add incentives APY
