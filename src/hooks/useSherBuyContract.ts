@@ -1,9 +1,8 @@
 import { ethers, BigNumber } from "ethers"
 import { useCallback, useMemo } from "react"
 import { useContract, useProvider, useSigner } from "wagmi"
-import SherBuyABI from "../abi/SherBuy.json"
+import SherBuyABI from "../abi/SherBuy"
 import config from "../config"
-import { SherBuy } from "../contracts/SherBuy"
 
 export type { PurchaseEvent } from "../contracts/SherBuy"
 
@@ -36,9 +35,9 @@ export type CapitalRequirements = {
 export const useSherBuyContract = () => {
   const provider = useProvider()
   const { data: signerData } = useSigner()
-  const contract = useContract<SherBuy>({
-    addressOrName: SHER_BUY_ADDRESS,
-    contractInterface: SherBuyABI.abi,
+  const contract = useContract({
+    address: SHER_BUY_ADDRESS,
+    abi: SherBuyABI,
     signerOrProvider: signerData || provider,
   })
 
@@ -57,11 +56,11 @@ export const useSherBuyContract = () => {
   /**
    * Fetch USDC needed to buy up to `sherAmountWant` SHER tokens
    *
-   * @returns {CapitalRequirementsa} {@link CapitalRequirements}
+   * @returns {CapitalRequirements} {@link CapitalRequirements}
    */
   const getCapitalRequirements = useCallback(
-    async (sherAmountWant: BigNumber): Promise<CapitalRequirements> => {
-      return await contract.viewCapitalRequirements(sherAmountWant)
+    async (sherAmountWant: BigNumber): Promise<CapitalRequirements | undefined> => {
+      return await contract?.viewCapitalRequirements(sherAmountWant)
     },
     [contract]
   )
@@ -76,7 +75,7 @@ export const useSherBuyContract = () => {
    */
   const execute = useCallback(
     async (sherAmountWant: BigNumber) => {
-      return contract.execute(sherAmountWant)
+      return contract?.execute(sherAmountWant)
     },
     [contract]
   )
