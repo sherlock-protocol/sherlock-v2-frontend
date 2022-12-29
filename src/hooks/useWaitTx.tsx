@@ -10,11 +10,11 @@ import { addTransactionBreadcrumb, captureException } from "../utils/sentry"
 
 interface TxWaitContextType {
   waitForTx: (
-    tx: () => Promise<ethers.ContractTransaction>,
+    tx: () => Promise<ethers.ContractTransaction | undefined>,
     options?: {
       transactionType?: TxType
     }
-  ) => Promise<ethers.ContractReceipt>
+  ) => Promise<ethers.ContractReceipt | undefined>
 }
 
 const TxWaitContext = React.createContext<TxWaitContextType>({} as TxWaitContextType)
@@ -35,11 +35,11 @@ export const TxWaitProvider: React.FC<PropsWithChildren<unknown>> = ({ children 
    */
   const waitForTx = React.useCallback(
     async (
-      tx: () => Promise<ethers.ContractTransaction>,
+      tx: () => Promise<ethers.ContractTransaction | undefined>,
       options?: {
         transactionType?: TxType
       }
-    ): Promise<ethers.ContractReceipt> => {
+    ): Promise<ethers.ContractReceipt | undefined> => {
       setTxHash(undefined)
       setTxState(TxState.REQUESTED)
       setTxType(options?.transactionType ?? TxType.GENERIC)
@@ -47,6 +47,8 @@ export const TxWaitProvider: React.FC<PropsWithChildren<unknown>> = ({ children 
 
       try {
         const transaction = await tx()
+
+        if (!transaction) return
 
         addTransactionBreadcrumb(transaction)
 
