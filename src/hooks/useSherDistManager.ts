@@ -1,7 +1,6 @@
 import React from "react"
 import { useContract, useProvider, useSigner } from "wagmi"
-import { SherDistributionManager } from "../contracts"
-import SherDistManagerABI from "../abi/SherDistributionManager.json"
+import SherDistManagerABI from "../abi/SherDistributionManager"
 import { BigNumber } from "ethers"
 import config from "../config"
 
@@ -18,10 +17,10 @@ export const SHERLOCK_DIST_MANAGER_ADDRESS = config.sherDistributionManagerAddre
 const useSherDistManager = () => {
   const provider = useProvider()
   const { data: signerData } = useSigner()
-  const contract: SherDistributionManager = useContract({
-    addressOrName: SHERLOCK_DIST_MANAGER_ADDRESS,
+  const contract = useContract({
+    address: SHERLOCK_DIST_MANAGER_ADDRESS,
     signerOrProvider: signerData || provider,
-    contractInterface: SherDistManagerABI.abi,
+    abi: SherDistManagerABI,
   })
 
   /**
@@ -34,8 +33,8 @@ const useSherDistManager = () => {
    * @param period Lock period
    */
   const computeRewards = React.useCallback(
-    (tvl: BigNumber, amount: BigNumber, period: number): Promise<BigNumber> => {
-      return contract.calcReward(tvl, amount, period)
+    (tvl: BigNumber, amount: BigNumber, period: number) => {
+      return contract?.calcReward(tvl, amount, BigNumber.from(period))
     },
     [contract]
   )
