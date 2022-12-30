@@ -203,7 +203,7 @@ export const StakingPage: React.FC = () => {
                   balance={usdcBalance}
                   disabled={stakingDisabled}
                 />
-                <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} disabled />
+                <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
                 {sherRewards && (
                   <>
                     <Row>
