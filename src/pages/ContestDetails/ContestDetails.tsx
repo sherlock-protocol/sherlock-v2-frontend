@@ -272,13 +272,21 @@ export const ContestDetails = () => {
               <Row>
                 <Column>
                   <Title variant="h3">{contest.status === "CREATED" ? "STARTS" : "STARTED"}</Title>
-                  <Row alignment={["center", "center"]} spacing="s">
-                    <Text size="extra-large" strong>
-                      {startDate.toLocaleString(DateTime.DATE_MED)}
-                    </Text>
-                    <Text size="small">
-                      {`${startDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${endDate.offsetNameShort}`}
-                    </Text>
+                  <Row spacing="s">
+                    {contest.id !== 6 ? (
+                      <>
+                        <Text size="extra-large" strong>
+                          {startDate.toLocaleString(DateTime.DATE_MED)}
+                        </Text>
+                        <Text size="small">
+                          {`${startDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${endDate.offsetNameShort}`}
+                        </Text>
+                      </>
+                    ) : (
+                      <Text size="extra-large" strong>
+                        TBD
+                      </Text>
+                    )}
                   </Row>
                 </Column>
               </Row>
@@ -288,12 +296,20 @@ export const ContestDetails = () => {
                     {contest.status === "FINISHED" || contest.status === "JUDGING" ? "ENDED" : "ENDS"}
                   </Text>
                   <Row alignment={["center", "center"]} spacing="s">
-                    <Text size="extra-large" strong variant={endingSoon ? "alternate" : "normal"}>
-                      {endDate.toLocaleString(DateTime.DATE_MED)}
-                    </Text>
-                    <Text size="small" variant={endingSoon ? "alternate" : "normal"}>
-                      {`${endDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${endDate.offsetNameShort}`}
-                    </Text>
+                    {contest.id !== 6 ? (
+                      <>
+                        <Text size="extra-large" strong variant={endingSoon ? "alternate" : "normal"}>
+                          {endDate.toLocaleString(DateTime.DATE_MED)}
+                        </Text>
+                        <Text size="small">
+                          {`${endDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${endDate.offsetNameShort}`}
+                        </Text>
+                      </>
+                    ) : (
+                      <Text size="extra-large" strong>
+                        TBD
+                      </Text>
+                    )}
                   </Row>
                 </Column>
               </Row>
