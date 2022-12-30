@@ -158,5 +158,6 @@ export const useProtocols = () =>
     },
     {
       retry: false,
+      refetchOnWindowFocus: false,
     }
   )
