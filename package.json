@@ -34,7 +34,7 @@
     "siwe": "^2.0.5",
     "typescript": "^4.9.4",
     "use-debounce": "^7.0.1",
-    "wagmi": "^0.10.0",
+    "wagmi": "^0.10.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -42,7 +42,6 @@
     "build": "REACT_APP_VERSION=`git rev-parse --short HEAD` react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "contract-typings": "typechain --target=ethers-v5 --out-dir src/contracts src/abi/*.json",
     "prepare": "husky install"
   },
   "husky": {
@@ -74,7 +73,6 @@
     ]
   },
   "devDependencies": {
-    "@typechain/ethers-v5": "^9.0.0",
     "@types/dompurify": "^2.3.4",
     "@types/js-cookie": "^3.0.2",
     "@types/luxon": "^2.0.9",
@@ -82,7 +80,6 @@
     "csv-parser": "^3.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.2",
-    "prettier": "2.5.1",
-    "typechain": "^7.0.0"
+    "prettier": "2.5.1"
   }
 }

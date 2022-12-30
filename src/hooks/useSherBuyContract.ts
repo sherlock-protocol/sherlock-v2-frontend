@@ -4,8 +4,6 @@ import { useContract, useProvider, useSigner } from "wagmi"
 import SherBuyABI from "../abi/SherBuy"
 import config from "../config"
 
-export type { PurchaseEvent } from "../contracts/SherBuy"
-
 /**
  * SherBuy smart contract address
  */
