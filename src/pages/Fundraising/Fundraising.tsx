@@ -138,13 +138,16 @@ export const FundraisingPage: React.FC = () => {
         // So 10**11 for direct conversion
         const sherAmountWantedAsBigNumber = debouncedUsdcInput.mul(10 ** 11)
 
-        const { sherAmount, stake, price } = await sherBuyContract.getCapitalRequirements(sherAmountWantedAsBigNumber)
+        const capitalRequirements = await sherBuyContract.getCapitalRequirements(sherAmountWantedAsBigNumber)
 
-        setRewards({
-          sherAmount,
-          stake,
-          price,
-        })
+        if (capitalRequirements) {
+          const { sherAmount, stake, price } = capitalRequirements
+          setRewards({
+            sherAmount,
+            stake,
+            price,
+          })
+        }
       } catch (error) {
         console.error(error)
       } finally {

@@ -3,7 +3,7 @@ import React, { useState, useCallback, useEffect } from "react"
 import { Modal, Props as ModalProps } from "../../components/Modal/Modal"
 import { BigNumber, ethers } from "ethers"
 import { useQueryClient } from "react-query"
-import { useAccount, useProvider } from "wagmi"
+import { Address, useAccount, useProvider } from "wagmi"
 import { Button } from "../../components/Button"
 import { Text } from "../../components/Text"
 import { Protocol } from "../../hooks/api/protocols"
@@ -156,7 +156,7 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
           await startClaim(
             protocol.bytesIdentifier,
             claimAmount,
-            receiverAddress,
+            receiverAddress as Address,
             exploitBlock.number,
             {
               link: protocol.agreement,
@@ -171,9 +171,11 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
           )
       )
 
-      await waitForBlock(txReceipt.blockNumber)
+      if (txReceipt) {
+        await waitForBlock(txReceipt.blockNumber)
 
-      await queryClient.invalidateQueries(activeClaimQueryKey(protocol.id))
+        await queryClient.invalidateQueries(activeClaimQueryKey(protocol.id))
+      }
     } catch (e) {
     } finally {
       setSubmittingClaim(false)

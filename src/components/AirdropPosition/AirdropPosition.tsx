@@ -1,26 +1,25 @@
 import { ethers, BigNumber } from "ethers"
 import { DateTime } from "luxon"
 import React from "react"
-import { MerkleDistributor } from "../../contracts"
-import MerkleDistributorABI from "../../abi/MerkleDistributor.json"
+import MerkleDistributorABI from "../../abi/MerkleDistributor"
 import { Box } from "../Box"
 import { Button } from "../Button"
 import { Column, Row } from "../Layout"
 import { Text } from "../Text"
 import { Title } from "../Title"
 import styles from "./AirdropPosition.module.scss"
-import { useContract, useProvider, useSigner } from "wagmi"
+import { useContract, useProvider, useSigner, Address } from "wagmi"
 import useWaitTx from "../../hooks/useWaitTx"
 import { formatAmount } from "../../utils/format"
 
 type Props = {
   index: number
-  proof: string[]
+  proof: `0x${string}`[]
   contractAddress: string
   amount: BigNumber
   claimedAt: DateTime | null
   tokenSymbol: string
-  address: string
+  address: Address
   onSuccess?: (blockNumber: number) => void
 }
 
@@ -36,10 +35,10 @@ const AirdropPosition: React.FC<Props> = ({
 }) => {
   const { data: signerData } = useSigner()
   const provider = useProvider()
-  const contract: MerkleDistributor = useContract({
-    addressOrName: contractAddress,
+  const contract = useContract({
+    address: contractAddress,
     signerOrProvider: signerData || provider,
-    contractInterface: MerkleDistributorABI.abi,
+    abi: MerkleDistributorABI,
   })
   const { waitForTx } = useWaitTx()
 
@@ -54,10 +53,8 @@ const AirdropPosition: React.FC<Props> = ({
     }
 
     try {
-      const result = await waitForTx(
-        async () => (await contract.claim(index, address, amount, proof)) as ethers.ContractTransaction
-      )
-      onSuccess?.(result.blockNumber)
+      const result = await waitForTx(async () => await contract?.claim(BigNumber.from(index), address, amount, proof))
+      result?.blockNumber && onSuccess?.(result.blockNumber)
     } catch (e) {
       return false
     }

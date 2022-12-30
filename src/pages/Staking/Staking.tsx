@@ -104,7 +104,7 @@ export const StakingPage: React.FC = () => {
       })
 
       // Navigate to positions page
-      navigate("/positions", { state: { refreshAfterBlockNumber: result.blockNumber } })
+      result?.blockNumber && navigate("/positions", { state: { refreshAfterBlockNumber: result.blockNumber } })
     } catch (e) {
       return false
     }
@@ -203,7 +203,7 @@ export const StakingPage: React.FC = () => {
                   balance={usdcBalance}
                   disabled={stakingDisabled}
                 />
-                <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} disabled />
+                <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
                 {sherRewards && (
                   <>
                     <Row>

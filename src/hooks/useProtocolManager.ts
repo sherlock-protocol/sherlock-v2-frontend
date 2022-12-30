@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
 import { useContract, useProvider, useSigner } from "wagmi"
-import { SherlockProtocolManager } from "../contracts"
-import SherlockProtocolManagerABI from "../abi/SherlockProtocolManager.json"
+
+import SherlockProtocolManagerABI from "../abi/SherlockProtocolManager"
 import { BigNumber } from "ethers"
 import config from "../config"
 
@@ -18,10 +18,10 @@ export const SHERLOCK_PROTOCOL_MANAGER_ADDRESS = config.sherlockProtocolManagerA
 const useProtocolManager = () => {
   const provider = useProvider()
   const { data: signerData } = useSigner()
-  const contract: SherlockProtocolManager = useContract({
-    addressOrName: SHERLOCK_PROTOCOL_MANAGER_ADDRESS,
+  const contract = useContract({
+    address: SHERLOCK_PROTOCOL_MANAGER_ADDRESS,
     signerOrProvider: signerData || provider,
-    contractInterface: SherlockProtocolManagerABI.abi,
+    abi: SherlockProtocolManagerABI,
   })
 
   /**
@@ -30,8 +30,8 @@ const useProtocolManager = () => {
    * See https://docs.sherlock.xyz/protocols/premiums#maintaining-an-active-balance
    */
   const getProtocolActiveBalance = React.useCallback(
-    async (protocol: string): Promise<BigNumber> => {
-      return contract.activeBalance(protocol)
+    async (protocol: `0x${string}`) => {
+      return contract?.activeBalance(protocol)
     },
     [contract]
   )
@@ -40,8 +40,8 @@ const useProtocolManager = () => {
    * Fetch the protocol's number of seconds of coverage left.
    */
   const getProtocolCoverageLeft = React.useCallback(
-    async (protocol: string): Promise<BigNumber> => {
-      return contract.secondsOfCoverageLeft(protocol)
+    async (protocol: `0x${string}`) => {
+      return contract?.secondsOfCoverageLeft(protocol)
     },
     [contract]
   )
@@ -52,8 +52,8 @@ const useProtocolManager = () => {
    * See https://docs.sherlock.xyz/protocols/premiums
    */
   const getProtocolPremium = React.useCallback(
-    async (protocol: string): Promise<BigNumber> => {
-      return contract.premium(protocol)
+    async (protocol: `0x${string}`) => {
+      return contract?.premium(protocol)
     },
     [contract]
   )
@@ -62,8 +62,8 @@ const useProtocolManager = () => {
    * Fetch the protocol's agent
    */
   const getProtocolAgent = useCallback(
-    async (protocol: string): Promise<string> => {
-      return contract.protocolAgent(protocol)
+    async (protocol: `0x${string}`) => {
+      return contract?.protocolAgent(protocol)
     },
     [contract]
   )
@@ -72,8 +72,8 @@ const useProtocolManager = () => {
    * Deposit USDC to a protocol's active balance
    */
   const depositActiveBalance = React.useCallback(
-    (protocol: string, amount: BigNumber) => {
-      return contract.depositToActiveBalance(protocol, amount)
+    (protocol: `0x${string}`, amount: BigNumber) => {
+      return contract?.depositToActiveBalance(protocol, amount)
     },
     [contract]
   )
@@ -82,8 +82,8 @@ const useProtocolManager = () => {
    * Withdraw USDC from a protocol's active balance
    */
   const withdrawActiveBalance = React.useCallback(
-    (protocol: string, amount: BigNumber) => {
-      return contract.withdrawActiveBalance(protocol, amount)
+    (protocol: `0x${string}`, amount: BigNumber) => {
+      return contract?.withdrawActiveBalance(protocol, amount)
     },
     [contract]
   )

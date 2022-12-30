@@ -1,7 +1,6 @@
 import React from "react"
 import { useAccount, useContract, useProvider, useSigner } from "wagmi"
-import { Sherlock } from "../contracts"
-import SherlockABI from "../abi/Sherlock.json"
+import SherlockABI from "../abi/Sherlock"
 import { BigNumber } from "ethers"
 import config from "../config"
 
@@ -21,17 +20,17 @@ const useSherlock = () => {
   const provider = useProvider()
   const { data: signerData } = useSigner()
   const { address: connectedAddress } = useAccount()
-  const contract: Sherlock = useContract({
-    addressOrName: SHERLOCK_ADDRESS,
+  const contract = useContract({
+    address: SHERLOCK_ADDRESS,
     signerOrProvider: signerData || provider,
-    contractInterface: SherlockABI.abi,
+    abi: SherlockABI,
   })
 
   /**
    * Fetch Sherlock's Total Value Locked
    */
   const refreshTvl = React.useCallback(async () => {
-    const latestTvl = await contract.totalTokenBalanceStakers()
+    const latestTvl = await contract?.totalTokenBalanceStakers()
     setTvl(latestTvl)
   }, [contract])
 
@@ -47,7 +46,7 @@ const useSherlock = () => {
         return
       }
 
-      return contract.initialStake(amount, period, connectedAddress)
+      return contract?.initialStake(amount, BigNumber.from(period), connectedAddress)
     },
     [connectedAddress, contract]
   )
@@ -57,7 +56,7 @@ const useSherlock = () => {
    */
   const unstake = React.useCallback(
     async (id: BigNumber) => {
-      return contract.redeemNFT(id)
+      return contract?.redeemNFT(id)
     },
     [contract]
   )
@@ -67,7 +66,7 @@ const useSherlock = () => {
    */
   const restake = React.useCallback(
     async (id: BigNumber, period: number) => {
-      return contract.ownerRestake(id, period)
+      return contract?.ownerRestake(id, BigNumber.from(period))
     },
     [contract]
   )
