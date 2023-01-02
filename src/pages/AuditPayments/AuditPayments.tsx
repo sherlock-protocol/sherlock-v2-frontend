@@ -106,65 +106,6 @@ export const AuditPayments = () => {
       <Row grow={1}>
         <Column grow={1} spacing="xl">
           <Row spacing="xl">
-            <Column>
-              <Box shadow={false}>
-                <Title variant="h2">AUDIT DETAILS</Title>
-                <Table selectable={false}>
-                  <TBody>
-                    <Tr>
-                      <Td>
-                        <Text strong>Estimated Start Date</Text>
-                      </Td>
-                      <Td>
-                        <Text alignment="right">{startDate.toLocaleString(DateTime.DATE_MED)}</Text>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Text strong>Audit Length</Text>
-                      </Td>
-                      <Td>
-                        <Text alignment="right">{`${length} days`}</Text>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Text strong>Lead Senior Watson</Text>
-                      </Td>
-                      <Td>
-                        <Text alignment="right">{contest.leadSeniorAuditorHandle}</Text>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Text strong>Contest Pot</Text>
-                      </Td>
-                      <Td>
-                        <Text alignment="right">{`${commify(contest.prizePool)} USDC`}</Text>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Text strong>Lead Senior Watson Fixed Pay</Text>
-                      </Td>
-                      <Td>
-                        <Text alignment="right">{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
-                      </Td>
-                    </Tr>
-                    {contest.sherlockFee > 0 && (
-                      <Tr>
-                        <Td>
-                          <Text strong>Sherlock Judging</Text>
-                        </Td>
-                        <Td>
-                          <Text alignment="right">{`${commify(contest.sherlockFee)} USDC`}</Text>
-                        </Td>
-                      </Tr>
-                    )}
-                  </TBody>
-                </Table>
-              </Box>
-            </Column>
             <Column spacing="xl" grow={1}>
               <Box shadow={false}>
                 <Column spacing="m">
