@@ -30,3 +30,6 @@ export const joinContest = () => "/contests/join-contest"
 export const getContestLeaderboard = (id: number) => `/contests/${id}/scoreboard`
 export const getProtocolDashboard = (dashboardID: string) => `/contests/dashboard/${dashboardID}`
 export const submitPayment = () => "/contests/payments/transaction"
+
+export const getProtocolGithubHandles = (dashboardID: string) => `dashboard/${dashboardID}/github_handles`
+export const addProtocolGithubHandle = (dashboardID: string) => `dashboard/${dashboardID}/github_handles`
