@@ -5,6 +5,7 @@ export const routes = {
   Claim: "claim",
   Protocols: "protocols",
   AuditContests: "audits",
+  ProtocolDashboard: "dashboard/:dashboardID",
   Internal: "internal",
   Overview: "overview",
   USForbidden: "us",
@@ -20,14 +21,21 @@ export const contestsRoutes = {
   ContestDetails: "contests/:contestId",
   Leaderboard: "leaderboard",
   Profile: "profile",
-  ProtocolDashboard: "audits/dashboard/:dashboardID",
 } as const
 
 export const internalRoutes = {
   InternalOverview: "overview",
 } as const
 
-type R = typeof routes & typeof protocolsRoutes & typeof contestsRoutes & typeof internalRoutes
+export const protocolDashboardRoutes = {
+  Payments: "payments",
+} as const
+
+type R = typeof routes &
+  typeof protocolsRoutes &
+  typeof contestsRoutes &
+  typeof internalRoutes &
+  typeof protocolDashboardRoutes
 
 type ValueOf<T> = T[keyof T]
 
