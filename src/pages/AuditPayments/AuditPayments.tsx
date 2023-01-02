@@ -5,7 +5,6 @@ import styles from "./AuditPayments.module.scss"
 import { Column, Row } from "../../components/Layout"
 import { useParams } from "react-router-dom"
 import { Box } from "../../components/Box"
-import { Table, TBody, Td, Tr } from "../../components/Table/Table"
 import { Text } from "../../components/Text"
 import { Payment, useProtocolDashboard } from "../../hooks/api/contests/useProtocolDashboard"
 import { commify } from "../../utils/units"
@@ -98,8 +97,6 @@ export const AuditPayments = () => {
   if (!paymentsInfo) return null
 
   const startDate = DateTime.fromSeconds(contest.startDate)
-  const endDate = DateTime.fromSeconds(contest.endDate)
-  const length = endDate.diff(startDate, "days").days
 
   return (
     <LoadingContainer loading={isLoading}>

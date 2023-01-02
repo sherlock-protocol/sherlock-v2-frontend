@@ -29,6 +29,7 @@ export const internalRoutes = {
 
 export const protocolDashboardRoutes = {
   Payments: "payments",
+  Team: "team",
 } as const
 
 type R = typeof routes &

@@ -22,6 +22,10 @@ const AppProtocolDashboard = () => {
 
   const navigationLinks: NavigationLink[] = [
     {
+      title: "TEAM",
+      route: protocolDashboardRoutes.Team,
+    },
+    {
       title: "PAYMENTS",
       route: protocolDashboardRoutes.Payments,
     },
