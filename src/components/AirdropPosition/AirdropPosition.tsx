@@ -11,9 +11,7 @@ import styles from "./AirdropPosition.module.scss"
 import { useContract, useProvider, useSigner, Address } from "wagmi"
 import useWaitTx from "../../hooks/useWaitTx"
 import { formatAmount } from "../../utils/format"
-
-const AIRDROP_ADDRESS = "0xDA3ec2E372c4DcbDB07c3157Bae438BcC11de25D"
-const AIRDROP_CLAIMABLE_TIMESTAMP = 1672923957
+import config from "../../config"
 
 type Props = {
   index: number
@@ -66,12 +64,10 @@ const AirdropPosition: React.FC<Props> = ({
   }, [amount, claimedAt, address, contract, proof, waitForTx, index, onSuccess])
 
   const readyToClaim = useMemo(() => {
-    if (address !== AIRDROP_ADDRESS) return true
+    if (address !== config.airdropAdress) return true
 
-    return DateTime.now() > DateTime.fromSeconds(AIRDROP_CLAIMABLE_TIMESTAMP)
+    return DateTime.now() > DateTime.fromSeconds(config.airdropClaimableTimestamp)
   }, [address])
-
-  console.log(claimedAt)
 
   return (
     <Box className={styles.container}>
@@ -110,7 +106,7 @@ const AirdropPosition: React.FC<Props> = ({
                 </Column>
                 <Column>
                   <Text strong variant="mono">
-                    {DateTime.fromSeconds(AIRDROP_CLAIMABLE_TIMESTAMP).toLocaleString(DateTime.DATETIME_MED)}
+                    {DateTime.fromSeconds(config.airdropClaimableTimestamp).toLocaleString(DateTime.DATETIME_MED)}
                   </Text>
                 </Column>
               </Row>
