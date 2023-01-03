@@ -33,3 +33,5 @@ export const submitPayment = () => "/contests/payments/transaction"
 
 export const getProtocolGithubHandles = (dashboardID: string) => `dashboard/${dashboardID}/github_handles`
 export const addProtocolGithubHandle = (dashboardID: string) => `dashboard/${dashboardID}/github_handles`
+export const getProtocolDiscordHandles = (dashboardID: string) => `dashboard/${dashboardID}/discord_handles`
+export const addProtocolDiscordHandle = (dashboardID: string) => `dashboard/${dashboardID}/discord_handles`

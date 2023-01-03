@@ -16,10 +16,12 @@ import { useValidateGithubHandle } from "../../hooks/useValidateGithubHandle"
 import { FaGithub } from "react-icons/fa"
 import { useAddGithubHandle } from "../../hooks/api/protocols/useAddGithubHandle"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
+import { useDiscordHandles } from "../../hooks/api/protocols/useDiscordHandles"
 
 export const ProtocolTeam = () => {
   const { dashboardID } = useParams()
-  const { data: members, isFetching } = useGithubHandles(dashboardID)
+  const { data: githubMembers } = useGithubHandles(dashboardID)
+  const { data: discordHandles } = useDiscordHandles(dashboardID)
 
   const [githubHandle, setGithubHandle] = useState("")
   const [debouncedGithubHandle] = useDebounce(githubHandle, 300)
@@ -61,7 +63,7 @@ export const ProtocolTeam = () => {
           <Column spacing="m">
             <Title variant="h2">GITHUB HANDLES</Title>
             <Column spacing="s">
-              {members?.map((member) => (
+              {githubMembers?.map((member) => (
                 <Row
                   alignment={["space-between"]}
                   className={styles.itemRow}
@@ -108,6 +110,11 @@ export const ProtocolTeam = () => {
         <Box shadow={false}>
           <Column spacing="m">
             <Title variant="h2">DISCORD HANDLES</Title>
+            {discordHandles?.map((handle) => (
+              <Row alignment={["space-between"]} className={styles.itemRow} key={`discord-handle-${handle}`}>
+                <Text>{`@${handle}`}</Text>
+              </Row>
+            ))}
             <Row spacing="m">
               <Input />
               <Button>Add</Button>
