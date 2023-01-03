@@ -13,7 +13,7 @@ import { useDebounce } from "use-debounce"
 
 import styles from "./ProtocolTeam.module.scss"
 import { useValidateGithubHandle } from "../../hooks/useValidateGithubHandle"
-import { FaGithub } from "react-icons/fa"
+import { FaDiscord, FaGithub } from "react-icons/fa"
 import { useAddGithubHandle } from "../../hooks/api/protocols/useAddGithubHandle"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
 import { useDiscordHandles } from "../../hooks/api/protocols/useDiscordHandles"
@@ -78,7 +78,10 @@ export const ProtocolTeam = () => {
         </Box>
         <Box shadow={false}>
           <Column spacing="m">
-            <Title variant="h2">GITHUB HANDLES</Title>
+            <Title variant="h2">
+              <FaGithub />
+              &nbsp;GITHUB HANDLES
+            </Title>
             <Column spacing="s">
               {githubMembers?.map((member) => (
                 <Row
@@ -97,6 +100,9 @@ export const ProtocolTeam = () => {
               ))}
             </Column>
             <Column spacing="xs">
+              <Text size="small" strong>
+                Add new Github handle
+              </Text>
               <Row spacing="m">
                 <Input value={githubHandle} onChange={setGithubHandle} />
                 <Button
@@ -126,12 +132,18 @@ export const ProtocolTeam = () => {
         </Box>
         <Box shadow={false}>
           <Column spacing="m">
-            <Title variant="h2">DISCORD HANDLES</Title>
+            <Title variant="h2">
+              <FaDiscord />
+              &nbsp; DISCORD HANDLES
+            </Title>
             {discordHandles?.map((handle) => (
               <Row alignment={["space-between"]} className={styles.itemRow} key={`discord-handle-${handle}`}>
                 <Text>{`@${handle}`}</Text>
               </Row>
             ))}
+            <Text size="small" strong>
+              Add new Discord handle
+            </Text>
             <Row spacing="m">
               <Input value={discordHandle} onChange={setDiscordHandle} />
               <Button disabled={discordHandle === ""} onClick={handleAddDiscordHandleClick}>
