@@ -20,6 +20,6 @@ export const config: Config = {
   incentivesAPYBytesIdentifier: "0x47a46b3628edc31155b950156914c27d25890563476422202887ed4298fc3c98",
   stakingHardcap: BigNumber.from("25000000000000"),
   nexusMutualStartTimestamp: 1666137600,
-  airdropAdress: "0x22475cbf01e124e0d61a4fba4b5cf91a719b085c",
+  airdropAdress: "0x731751e3C0B67014b560F98b26601A5587F954B0",
   airdropClaimableTimestamp: 1682848801,
 }
