@@ -1,6 +1,6 @@
 import { ethers, BigNumber } from "ethers"
 import { DateTime } from "luxon"
-import React from "react"
+import React, { useMemo } from "react"
 import MerkleDistributorABI from "../../abi/MerkleDistributor"
 import { Box } from "../Box"
 import { Button } from "../Button"
@@ -11,6 +11,7 @@ import styles from "./AirdropPosition.module.scss"
 import { useContract, useProvider, useSigner, Address } from "wagmi"
 import useWaitTx from "../../hooks/useWaitTx"
 import { formatAmount } from "../../utils/format"
+import config from "../../config"
 
 type Props = {
   index: number
@@ -62,6 +63,12 @@ const AirdropPosition: React.FC<Props> = ({
     return true
   }, [amount, claimedAt, address, contract, proof, waitForTx, index, onSuccess])
 
+  const readyToClaim = useMemo(() => {
+    if (address !== config.airdropAdress) return true
+
+    return DateTime.now() > DateTime.fromSeconds(config.airdropClaimableTimestamp)
+  }, [address])
+
   return (
     <Box className={styles.container}>
       <Column spacing="m">
@@ -92,8 +99,20 @@ const AirdropPosition: React.FC<Props> = ({
                 </Column>
               </Row>
             )}
+            {!readyToClaim && (
+              <Row alignment="space-between">
+                <Column>
+                  <Text strong>Claimable at</Text>
+                </Column>
+                <Column>
+                  <Text strong variant="mono">
+                    {DateTime.fromSeconds(config.airdropClaimableTimestamp).toLocaleString(DateTime.DATETIME_MED)}
+                  </Text>
+                </Column>
+              </Row>
+            )}
             <Row alignment="center">
-              <Button onClick={handleOnClaim} disabled={!!claimedAt}>
+              <Button onClick={handleOnClaim} disabled={claimedAt !== null || !readyToClaim}>
                 Claim
               </Button>
             </Row>

@@ -24,4 +24,6 @@ export const config: Config = {
     process.env.REACT_APP_STAKING_HARDCAP ? (process.env.REACT_APP_STAKING_HARDCAP as string) : "0"
   ),
   nexusMutualStartTimestamp: parseInt(process.env.REACT_APP_NEXUS_MUTUAL_START_TIMESTAMP as string),
+  airdropAdress: process.env.REACT_APP_AIRDROP_ADDRESS as string,
+  airdropClaimableTimestamp: parseInt(process.env.REACT_APP_AIRDROP_CLAIMABLE_TIMESTAMP as string),
 }

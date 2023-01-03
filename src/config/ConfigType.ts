@@ -113,4 +113,14 @@ export type Config = {
    * Nexus Mutual 25% coverage start timestamp (in seconds).
    */
   nexusMutualStartTimestamp: number
+
+  /**
+   * Airdrop address
+   */
+  airdropAdress: string
+
+  /**
+   * Airdrop claimable date
+   */
+  airdropClaimableTimestamp: number
 }
