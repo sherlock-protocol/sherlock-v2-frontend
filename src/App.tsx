@@ -13,8 +13,9 @@ import AppStakers from "./AppStakers"
 import AppProtocols from "./AppProtocols"
 import AppInternal from "./AppInternal"
 import { AppContests } from "./AppContests"
+import AppProtocolDashboard from "./AppProtocolDashboard"
 
-import { routes, protocolsRoutes, contestsRoutes, internalRoutes } from "./utils/routes"
+import { routes, protocolsRoutes, contestsRoutes, internalRoutes, protocolDashboardRoutes } from "./utils/routes"
 import MobileBlock from "./components/MobileBlock/MobileBlock"
 import { InternalOverviewPage } from "./pages/InternalOverview/InternalOverview"
 import { ContestsPage } from "./pages/Contests"
@@ -25,6 +26,7 @@ import { AuthenticationGate } from "./components/AuthenticationGate"
 import { useAccount } from "wagmi"
 import { useAuthentication } from "./hooks/api/useAuthentication"
 import { AuditPayments } from "./pages/AuditPayments/AuditPayments"
+import { ProtocolTeam } from "./pages/ProtocolTeam/ProtocolTeam"
 
 function App() {
   const { address: connectedAddress } = useAccount()
@@ -63,9 +65,15 @@ function App() {
           <Route path="*" element={<Navigate replace to={protocolsRoutes.Balance} />} />
         </Route>
 
-        {/** Audit Contests section routes */}
-        <Route path={contestsRoutes.ProtocolDashboard} element={<AuditPayments />} />
+        {/** Protocol Dashboard section routes */}
+        <Route path={`${routes.ProtocolDashboard}/*`} element={<AppProtocolDashboard />}>
+          <Route path={protocolDashboardRoutes.Team} element={<ProtocolTeam />} />
+          <Route path={protocolDashboardRoutes.Payments} element={<AuditPayments />} />
 
+          <Route path="*" element={<Navigate replace to={protocolDashboardRoutes.Payments} />} />
+        </Route>
+
+        {/** Audit Contests section routes */}
         <Route path={`${routes.AuditContests}/*`} element={<AppContests />}>
           <Route path={contestsRoutes.Contests} element={<ContestsPage />} />
           <Route path={contestsRoutes.ContestDetails} element={<ContestDetails />} />
