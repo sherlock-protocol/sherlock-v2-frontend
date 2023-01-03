@@ -17,6 +17,7 @@ import { FaGithub } from "react-icons/fa"
 import { useAddGithubHandle } from "../../hooks/api/protocols/useAddGithubHandle"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
 import { useDiscordHandles } from "../../hooks/api/protocols/useDiscordHandles"
+import { useAddDiscordHandle } from "../../hooks/api/protocols/useAddDiscordHandle"
 
 export const ProtocolTeam = () => {
   const { dashboardID } = useParams()
@@ -25,6 +26,7 @@ export const ProtocolTeam = () => {
 
   const [githubHandle, setGithubHandle] = useState("")
   const [debouncedGithubHandle] = useDebounce(githubHandle, 300)
+  const [discordHandle, setDiscordHandle] = useState("")
   const { data: githubHanldleIsValid, isLoading: isValidatingGithubHandle } =
     useValidateGithubHandle(debouncedGithubHandle)
   const {
@@ -33,6 +35,12 @@ export const ProtocolTeam = () => {
     error: addGithubHandleError,
     reset: resetAddGithubHandle,
   } = useAddGithubHandle()
+  const {
+    addDiscordHandle,
+    isLoading: addDiscordHandleIsLoading,
+    error: addDiscordHandleError,
+    reset: resetAddDiscordHandle,
+  } = useAddDiscordHandle()
 
   const handleGithubHandleClick = useCallback((handle: string) => {
     window.open(`https://github.com/${handle}`, "blank")
@@ -46,12 +54,21 @@ export const ProtocolTeam = () => {
     setGithubHandle("")
   }, [addGithubHandle, debouncedGithubHandle, dashboardID])
 
+  const handleAddDiscordHandleClick = useCallback(() => {
+    addDiscordHandle({
+      protocolDashboardID: dashboardID ?? "",
+      handle: discordHandle,
+    })
+    setDiscordHandle("")
+  }, [addDiscordHandle, discordHandle, dashboardID])
+
   const handleErrorModalClose = useCallback(() => {
     resetAddGithubHandle()
-  }, [resetAddGithubHandle])
+    resetAddDiscordHandle()
+  }, [resetAddGithubHandle, resetAddDiscordHandle])
 
   return (
-    <LoadingContainer loading={addGithubHandleIsLoading}>
+    <LoadingContainer loading={addGithubHandleIsLoading || addDiscordHandleIsLoading}>
       <Column spacing="xl">
         <Box shadow={false}>
           <Column spacing="m">
@@ -116,13 +133,16 @@ export const ProtocolTeam = () => {
               </Row>
             ))}
             <Row spacing="m">
-              <Input />
-              <Button>Add</Button>
+              <Input value={discordHandle} onChange={setDiscordHandle} />
+              <Button disabled={discordHandle === ""} onClick={handleAddDiscordHandleClick}>
+                Add
+              </Button>
             </Row>
           </Column>
         </Box>
       </Column>
       {addGithubHandleError && <ErrorModal reason={addGithubHandleError.message} onClose={handleErrorModalClose} />}
+      {addDiscordHandleError && <ErrorModal reason={addDiscordHandleError.message} onClose={handleErrorModalClose} />}
     </LoadingContainer>
   )
 }

@@ -1,22 +1,22 @@
 import { AxiosError } from "axios"
 import { useMutation, useQueryClient } from "react-query"
 import { contests as contestsAPI } from "../axios"
-import { addProtocolGithubHandle as addProtocolGithubHandleUrl } from "../urls"
-import { protocolGithubHandlesQuery } from "./useGithubHandles"
+import { addProtocolDiscordHandle as addProtocolDiscordHandleUrl } from "../urls"
+import { protocolDiscordHandlesQuery } from "./useDiscordHandles"
 
-type AddGithubHandleParams = {
+type AddDiscordHandleParams = {
   protocolDashboardID: string
   handle: string
 }
 
-export const useAddGithubHandle = () => {
+export const useAddDiscordHandle = () => {
   const queryClient = useQueryClient()
 
-  const { mutate: addGithubHandle, ...mutation } = useMutation<null, Error, AddGithubHandleParams>(
+  const { mutate: addDiscordHandle, ...mutation } = useMutation<null, Error, AddDiscordHandleParams>(
     async (params) => {
       try {
-        await contestsAPI.post(addProtocolGithubHandleUrl(params.protocolDashboardID), {
-          github_handle: params.handle,
+        await contestsAPI.post(addProtocolDiscordHandleUrl(params.protocolDashboardID), {
+          discord_handle: params.handle,
         })
       } catch (error) {
         const axiosError = error as AxiosError
@@ -27,13 +27,13 @@ export const useAddGithubHandle = () => {
     },
     {
       async onSuccess(data, params) {
-        await queryClient.invalidateQueries(protocolGithubHandlesQuery(params.protocolDashboardID))
+        await queryClient.invalidateQueries(protocolDiscordHandlesQuery(params.protocolDashboardID))
       },
     }
   )
 
   return {
-    addGithubHandle,
+    addDiscordHandle,
     ...mutation,
   }
 }
