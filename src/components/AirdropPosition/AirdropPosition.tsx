@@ -64,10 +64,10 @@ const AirdropPosition: React.FC<Props> = ({
   }, [amount, claimedAt, address, contract, proof, waitForTx, index, onSuccess])
 
   const readyToClaim = useMemo(() => {
-    if (address !== config.airdropAdress) return true
+    if (contractAddress !== config.airdropAdress) return true
 
     return DateTime.now() > DateTime.fromSeconds(config.airdropClaimableTimestamp)
-  }, [address])
+  }, [contractAddress])
 
   return (
     <Box className={styles.container}>
