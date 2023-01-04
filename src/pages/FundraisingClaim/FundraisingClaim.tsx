@@ -93,7 +93,7 @@ export const FundraisingClaimPage = () => {
   const handleClaim = useCallback(async () => {
     try {
       const result = await waitForTx(async () => (await sherClaim.claim()) as ethers.ContractTransaction)
-      handleOnSuccess(result.blockNumber)
+      result?.blockNumber && handleOnSuccess(result.blockNumber)
     } catch (error) {
       console.log(error)
     }

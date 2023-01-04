@@ -1,26 +1,26 @@
 import { ethers, BigNumber } from "ethers"
 import { DateTime } from "luxon"
-import React from "react"
-import { MerkleDistributor } from "../../contracts"
-import MerkleDistributorABI from "../../abi/MerkleDistributor.json"
+import React, { useMemo } from "react"
+import MerkleDistributorABI from "../../abi/MerkleDistributor"
 import { Box } from "../Box"
 import { Button } from "../Button"
 import { Column, Row } from "../Layout"
 import { Text } from "../Text"
 import { Title } from "../Title"
 import styles from "./AirdropPosition.module.scss"
-import { useContract, useProvider, useSigner } from "wagmi"
+import { useContract, useProvider, useSigner, Address } from "wagmi"
 import useWaitTx from "../../hooks/useWaitTx"
 import { formatAmount } from "../../utils/format"
+import config from "../../config"
 
 type Props = {
   index: number
-  proof: string[]
+  proof: `0x${string}`[]
   contractAddress: string
   amount: BigNumber
   claimedAt: DateTime | null
   tokenSymbol: string
-  address: string
+  address: Address
   onSuccess?: (blockNumber: number) => void
 }
 
@@ -36,10 +36,10 @@ const AirdropPosition: React.FC<Props> = ({
 }) => {
   const { data: signerData } = useSigner()
   const provider = useProvider()
-  const contract: MerkleDistributor = useContract({
-    addressOrName: contractAddress,
+  const contract = useContract({
+    address: contractAddress,
     signerOrProvider: signerData || provider,
-    contractInterface: MerkleDistributorABI.abi,
+    abi: MerkleDistributorABI,
   })
   const { waitForTx } = useWaitTx()
 
@@ -54,16 +54,20 @@ const AirdropPosition: React.FC<Props> = ({
     }
 
     try {
-      const result = await waitForTx(
-        async () => (await contract.claim(index, address, amount, proof)) as ethers.ContractTransaction
-      )
-      onSuccess?.(result.blockNumber)
+      const result = await waitForTx(async () => await contract?.claim(BigNumber.from(index), address, amount, proof))
+      result?.blockNumber && onSuccess?.(result.blockNumber)
     } catch (e) {
       return false
     }
 
     return true
   }, [amount, claimedAt, address, contract, proof, waitForTx, index, onSuccess])
+
+  const readyToClaim = useMemo(() => {
+    if (contractAddress !== config.airdropAdress) return true
+
+    return DateTime.now() > DateTime.fromSeconds(config.airdropClaimableTimestamp)
+  }, [contractAddress])
 
   return (
     <Box className={styles.container}>
@@ -95,8 +99,20 @@ const AirdropPosition: React.FC<Props> = ({
                 </Column>
               </Row>
             )}
+            {!readyToClaim && (
+              <Row alignment="space-between">
+                <Column>
+                  <Text strong>Claimable at</Text>
+                </Column>
+                <Column>
+                  <Text strong variant="mono">
+                    {DateTime.fromSeconds(config.airdropClaimableTimestamp).toLocaleString(DateTime.DATETIME_MED)}
+                  </Text>
+                </Column>
+              </Row>
+            )}
             <Row alignment="center">
-              <Button onClick={handleOnClaim} disabled={!!claimedAt}>
+              <Button onClick={handleOnClaim} disabled={claimedAt !== null || !readyToClaim}>
                 Claim
               </Button>
             </Row>

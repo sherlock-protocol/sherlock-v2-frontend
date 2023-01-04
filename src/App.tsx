@@ -13,8 +13,9 @@ import AppStakers from "./AppStakers"
 import AppProtocols from "./AppProtocols"
 import AppInternal from "./AppInternal"
 import { AppContests } from "./AppContests"
+import AppProtocolDashboard from "./AppProtocolDashboard"
 
-import { routes, protocolsRoutes, contestsRoutes, internalRoutes } from "./utils/routes"
+import { routes, protocolsRoutes, contestsRoutes, internalRoutes, protocolDashboardRoutes } from "./utils/routes"
 import MobileBlock from "./components/MobileBlock/MobileBlock"
 import { InternalOverviewPage } from "./pages/InternalOverview/InternalOverview"
 import { ContestsPage } from "./pages/Contests"
@@ -24,6 +25,8 @@ import { AuditorProfile } from "./pages/AuditorProfile"
 import { AuthenticationGate } from "./components/AuthenticationGate"
 import { useAccount } from "wagmi"
 import { useAuthentication } from "./hooks/api/useAuthentication"
+import { AuditPayments } from "./pages/AuditPayments/AuditPayments"
+import { ProtocolTeam } from "./pages/ProtocolTeam/ProtocolTeam"
 
 function App() {
   const { address: connectedAddress } = useAccount()
@@ -51,7 +54,7 @@ function App() {
           <Route path={routes.Claim} element={<FundraisingClaimPage />} />
           <Route path={routes.USForbidden} element={<USForbiddenPage />} />
 
-          <Route path="*" element={<Navigate replace to={`/${routes.Stake}`} />} />
+          <Route path="*" element={<Navigate replace to={`/${routes.Overview}`} />} />
         </Route>
 
         {/** Protocols section routes */}
@@ -60,6 +63,14 @@ function App() {
           <Route path={protocolsRoutes.Claims} element={<ClaimsPage />} />
 
           <Route path="*" element={<Navigate replace to={protocolsRoutes.Balance} />} />
+        </Route>
+
+        {/** Protocol Dashboard section routes */}
+        <Route path={`${routes.ProtocolDashboard}/*`} element={<AppProtocolDashboard />}>
+          <Route path={protocolDashboardRoutes.Team} element={<ProtocolTeam />} />
+          <Route path={protocolDashboardRoutes.Payments} element={<AuditPayments />} />
+
+          <Route path="*" element={<Navigate replace to={protocolDashboardRoutes.Payments} />} />
         </Route>
 
         {/** Audit Contests section routes */}

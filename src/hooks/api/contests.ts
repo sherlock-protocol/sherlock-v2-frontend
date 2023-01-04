@@ -26,6 +26,7 @@ export type Contest = {
   leadSeniorAuditorFixedPay: number
   leadSeniorAuditorHandle: string
   private: boolean
+  fullPayment: number
 }
 
 export type Scoreboard = {
@@ -49,6 +50,7 @@ type GetContestsResponseData = {
   lead_senior_auditor_fixed_pay: number
   lead_senior_auditor_handle: string
   private: boolean
+  full_payment: number
 }[]
 
 export const contestsQueryKey = "contests"
@@ -68,6 +70,7 @@ export const useContests = () =>
       leadSeniorAuditorFixedPay: d.lead_senior_auditor_fixed_pay,
       leadSeniorAuditorHandle: d.lead_senior_auditor_handle,
       private: d.private,
+      fullPayment: d.full_payment,
     }))
   })
 
@@ -85,6 +88,7 @@ type GetContestResponseData = {
   lead_senior_auditor_fixed_pay: number
   lead_senior_auditor_handle: string
   private: boolean
+  full_payment: number
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -106,6 +110,7 @@ export const useContest = (id: number) =>
       leadSeniorAuditorFixedPay: response.lead_senior_auditor_fixed_pay,
       leadSeniorAuditorHandle: response.lead_senior_auditor_handle,
       private: response.private,
+      fullPayment: response.full_payment,
     }
   })
 

@@ -1,8 +1,7 @@
 import { useCallback, useMemo } from "react"
-import { useContract, useProvider, useSigner } from "wagmi"
+import { Address, useContract, useProvider, useSigner } from "wagmi"
 import config from "../config"
-import SherlockClaimManagerABI from "../abi/SherlockClaimManager.json"
-import { SherlockClaimManager } from "../contracts"
+import SherlockClaimManagerABI from "../abi/SherlockClaimManager"
 import { BigNumber, ethers } from "ethers"
 import { formatUSDC } from "../utils/units"
 
@@ -23,6 +22,8 @@ type AncillaryData = {
   Resources?: string
 }
 
+type BytesIdentifier = `0x${string}`
+
 /**
  * React Hook for interacting with SherlockClaimManager smart contract
  *
@@ -31,10 +32,10 @@ type AncillaryData = {
 export const useClaimManager = () => {
   const provider = useProvider()
   const { data: signerData } = useSigner()
-  const contract: SherlockClaimManager = useContract({
-    addressOrName: SHERLOCK_CLAIM_MANAGER_ADDRESS,
+  const contract = useContract({
+    address: SHERLOCK_CLAIM_MANAGER_ADDRESS,
     signerOrProvider: signerData || provider,
-    contractInterface: SherlockClaimManagerABI.abi,
+    abi: SherlockClaimManagerABI,
   })
 
   /**
@@ -50,9 +51,9 @@ export const useClaimManager = () => {
    */
   const startClaim = useCallback(
     async (
-      protocol: string,
+      protocol: BytesIdentifier,
       amount: BigNumber,
-      receiver: string,
+      receiver: Address,
       exploitStartBlock: number,
       coverageAgreement: HashedRemoteFile,
       additionalResources?: HashedRemoteFile
@@ -66,8 +67,9 @@ export const useClaimManager = () => {
         additionalResources
       )
       const ancillaryDataBytes = ethers.utils.toUtf8Bytes(ancillaryData)
+      const hex = ethers.utils.hexlify(ancillaryDataBytes) as `0x${string}`
 
-      return await contract.startClaim(protocol, amount, receiver, block.timestamp, ancillaryDataBytes)
+      return await contract?.startClaim(protocol, amount, receiver, block.timestamp, hex)
     },
     [contract, provider]
   )
@@ -118,7 +120,7 @@ export const useClaimManager = () => {
    */
   const payoutClaim = useCallback(
     async (claimID: number) => {
-      return await contract.payoutClaim(claimID)
+      return await contract?.payoutClaim(BigNumber.from(claimID))
     },
     [contract]
   )
@@ -129,7 +131,7 @@ export const useClaimManager = () => {
    */
   const escalateClaim = useCallback(
     async (claimID: number, amount: BigNumber) => {
-      return await contract.escalate(claimID, amount)
+      return await contract?.escalate(BigNumber.from(claimID), amount)
     },
     [contract]
   )
@@ -139,8 +141,8 @@ export const useClaimManager = () => {
    * Only the protocol agent can call this method.
    */
   const cleanUpClaim = useCallback(
-    async (protocolBytesIdentifier: string, claimID: number) => {
-      return await contract.cleanUp(protocolBytesIdentifier, claimID)
+    async (protocolBytesIdentifier: `0x${string}`, claimID: number) => {
+      return await contract?.cleanUp(protocolBytesIdentifier, BigNumber.from(claimID))
     },
     [contract]
   )

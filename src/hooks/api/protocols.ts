@@ -14,7 +14,7 @@ export type Protocol = {
   /**
    * Protocol Identifier
    */
-  bytesIdentifier: string
+  bytesIdentifier: `0x${string}`
 
   /**
    * Protocol agent's address
@@ -102,7 +102,7 @@ type GetProtocolsResponseData =
         description: string
         website?: string
         logo?: string
-        bytes_identifier: string
+        bytes_identifier: `0x${string}`
         coverage_ended_at: number
         premium: string
         premium_set_at: number
@@ -123,34 +123,41 @@ type Protocols = {
 
 export const protocolsQueryKey = "protocols"
 export const useProtocols = () =>
-  useQuery<Protocols | null, Error>(protocolsQueryKey, async () => {
-    const { data: response } = await axios.get<GetProtocolsResponseData>(getCoveredProtocolsUrl())
+  useQuery<Protocols | null, Error>(
+    protocolsQueryKey,
+    async () => {
+      const { data: response } = await axios.get<GetProtocolsResponseData>(getCoveredProtocolsUrl())
 
-    if (response.ok === false) throw Error(response.error)
+      if (response.ok === false) throw Error(response.error)
 
-    return response.data.reduce<Record<string, Protocol>>((map, p) => {
-      if (p.bytes_identifier === config.incentivesAPYBytesIdentifier) return map
+      return response.data.reduce<Record<string, Protocol>>((map, p) => {
+        if (p.bytes_identifier === config.incentivesAPYBytesIdentifier) return map
 
-      map[p.bytes_identifier] = {
-        id: p.id,
-        name: p.name,
-        description: p.description,
-        website: p.website,
-        logo: p.logo,
-        agent: p.agent,
-        bytesIdentifier: p.bytes_identifier,
-        premium: BigNumber.from(p.premium),
-        coverageEndedAt: p.coverage_ended_at ? new Date(p.coverage_ended_at * 1000) : null,
-        premiumSetAt: p.premium_set_at ? new Date(p.premium_set_at * 1000) : null,
-        coverages: p.coverages.map((item) => ({
-          claimableUntil: item.claimable_until ? new Date(item.claimable_until * 1000) : null,
-          coverageAmount: BigNumber.from(item.coverage_amount),
-          coverageAmountSetAt: new Date(item.coverage_amount_set_at * 1000),
-        })),
-        tvl: p?.tvl ? BigNumber.from(p?.tvl) : undefined,
-        agreement: p.agreement,
-        agreementHash: p.agreement_hash,
-      }
-      return map
-    }, {})
-  })
+        map[p.bytes_identifier] = {
+          id: p.id,
+          name: p.name,
+          description: p.description,
+          website: p.website,
+          logo: p.logo,
+          agent: p.agent,
+          bytesIdentifier: p.bytes_identifier,
+          premium: BigNumber.from(p.premium),
+          coverageEndedAt: p.coverage_ended_at ? new Date(p.coverage_ended_at * 1000) : null,
+          premiumSetAt: p.premium_set_at ? new Date(p.premium_set_at * 1000) : null,
+          coverages: p.coverages.map((item) => ({
+            claimableUntil: item.claimable_until ? new Date(item.claimable_until * 1000) : null,
+            coverageAmount: BigNumber.from(item.coverage_amount),
+            coverageAmountSetAt: new Date(item.coverage_amount_set_at * 1000),
+          })),
+          tvl: p?.tvl ? BigNumber.from(p?.tvl) : undefined,
+          agreement: p.agreement,
+          agreementHash: p.agreement_hash,
+        }
+        return map
+      }, {})
+    },
+    {
+      retry: false,
+      refetchOnWindowFocus: false,
+    }
+  )

@@ -1,0 +1,14 @@
+@import "../../styles/variables";
+
+.itemRow {
+  background-color: darken($color: $primary-purple, $amount: 35%);
+  padding: 0.5rem;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &.preview {
+    background-color: transparent;
+  }
+}

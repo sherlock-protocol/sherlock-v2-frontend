@@ -1,7 +1,6 @@
 import React from "react"
-import { ERC20 } from "../contracts"
-import ERC20ABI from "../abi/ERC20.json"
-import { useAccount, useContract, useProvider, useSigner } from "wagmi"
+import ERC20ABI from "../abi/ERC20"
+import { Address, useAccount, useContract, useProvider, useSigner } from "wagmi"
 import { BigNumber, ethers } from "ethers"
 import config from "../config"
 
@@ -42,10 +41,10 @@ const useERC20 = (token: AvailableERC20Tokens) => {
   const { data: signerData } = useSigner()
   const { address: connectedAddress } = useAccount()
 
-  const contract: ERC20 = useContract({
-    addressOrName: address,
+  const contract = useContract({
+    address: address,
     signerOrProvider: signerData || provider,
-    contractInterface: ERC20ABI.abi,
+    abi: ERC20ABI,
   })
 
   /**
@@ -56,7 +55,7 @@ const useERC20 = (token: AvailableERC20Tokens) => {
       return
     }
 
-    const latestBalance = await contract.balanceOf(connectedAddress)
+    const latestBalance = await contract?.balanceOf(connectedAddress)
     setBalance(latestBalance)
   }, [contract, connectedAddress])
 
@@ -64,8 +63,8 @@ const useERC20 = (token: AvailableERC20Tokens) => {
    * Fetch balance of specific address
    */
   const getBalanceOf = React.useCallback(
-    async (address: string) => {
-      return contract.balanceOf(address)
+    async (address: Address) => {
+      return contract?.balanceOf(address)
     },
     [contract]
   )
@@ -74,7 +73,7 @@ const useERC20 = (token: AvailableERC20Tokens) => {
    * Fetch the allowance amount for a given spender
    */
   const getAllowance = React.useCallback(
-    async (address: string, invalidateCache?: boolean) => {
+    async (address: Address, invalidateCache?: boolean) => {
       if (!connectedAddress || !address) {
         return
       }
@@ -83,8 +82,8 @@ const useERC20 = (token: AvailableERC20Tokens) => {
         return allowances[address]
       }
 
-      const lastAllowance = await contract.allowance(connectedAddress, address)
-      setAllowances({ ...allowances, [address]: lastAllowance })
+      const lastAllowance = await contract?.allowance(connectedAddress, address)
+      lastAllowance && setAllowances({ ...allowances, [address]: lastAllowance })
 
       return lastAllowance
     },
@@ -95,12 +94,12 @@ const useERC20 = (token: AvailableERC20Tokens) => {
    * Approve spending amount of tokens for a given address
    */
   const approve = React.useCallback(
-    (address: string, amount: BigNumber) => {
+    (address: Address, amount: BigNumber) => {
       if (!address || !amount) {
         return
       }
 
-      return contract.approve(address, amount)
+      return contract?.approve(address, amount)
     },
     [contract]
   )

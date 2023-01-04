@@ -15,6 +15,7 @@ import { formatAmount } from "../../utils/format"
 import StrategiesList from "../../components/StrategiesList/StrategiesList"
 import config from "../../config"
 import { ExcessCoverageChart } from "./ExcessCoverageChart"
+import { Text } from "../../components/Text"
 
 type ChartDataPoint = {
   name: string
@@ -178,6 +179,21 @@ export const OverviewPage: React.FC = () => {
       <Row spacing="m">
         <Column grow={1}>
           <StrategiesList />
+        </Column>
+      </Row>
+      <Row spacing="m">
+        <Column grow={1} spacing="m">
+          <Box shadow={false}>
+            <Row grow={1}>
+              <Column spacing="l" grow={1}>
+                <Title variant="h3">CLAIMS</Title>
+                <Title>0</Title>
+                <Row alignment={["center", "center"]}>
+                  <Text>Sherlock has not experienced any claims or payouts in its history.</Text>
+                </Row>
+              </Column>
+            </Row>
+          </Box>
         </Column>
       </Row>
     </Column>
