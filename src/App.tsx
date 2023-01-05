@@ -11,11 +11,11 @@ import { ProtocolPage } from "./pages/Protocol"
 import { ClaimsPage } from "./pages/Claim"
 import AppStakers from "./AppStakers"
 import AppProtocols from "./AppProtocols"
-import AppInternal from "./AppInternal"
+import AppAdmin from "./AppAdmin"
 import { AppContests } from "./AppContests"
 import AppProtocolDashboard from "./AppProtocolDashboard"
 
-import { routes, protocolsRoutes, contestsRoutes, internalRoutes, protocolDashboardRoutes } from "./utils/routes"
+import { routes, protocolsRoutes, contestsRoutes, protocolDashboardRoutes, adminRoutes } from "./utils/routes"
 import MobileBlock from "./components/MobileBlock/MobileBlock"
 import { InternalOverviewPage } from "./pages/InternalOverview/InternalOverview"
 import { ContestsPage } from "./pages/Contests"
@@ -97,10 +97,10 @@ function App() {
         </Route>
 
         {/** Internal section routes */}
-        <Route path={`${routes.Internal}/*`} element={<AppInternal />}>
-          <Route path={internalRoutes.InternalOverview} element={<InternalOverviewPage />} />
+        <Route path={`${routes.Admin}/*`} element={<AppAdmin />}>
+          <Route path={adminRoutes.InternalOverview} element={<InternalOverviewPage />} />
 
-          <Route path="*" element={<Navigate replace to={internalRoutes.InternalOverview} />} />
+          <Route path="*" element={<Navigate replace to={adminRoutes.InternalOverview} />} />
         </Route>
 
         <Route path="*" element={<Navigate replace to="/" />} />
