@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react"
 import { useDebounce } from "use-debounce"
 import axios, { AxiosError } from "axios"
-import { FaGithub } from "react-icons/fa"
+import { FaDiscord, FaGithub } from "react-icons/fa"
 
 import { Button } from "../../components/Button"
 import { Input } from "../../components/Input"
@@ -9,6 +9,8 @@ import { Column, Row } from "../../components/Layout"
 import { Field } from "../../pages/Claim/Field"
 
 import { hasSpaces, onlyAscii } from "../../utils/strings"
+import { useValidateDiscordHandle } from "../../hooks/api/auditors/useValidateDiscordHandle"
+import { Text } from "../Text"
 
 export type AuditorFormValues = {
   handle: string
@@ -48,8 +50,16 @@ export const AuditorForm: React.FC<Props> = ({
   const [githubVerificationError, setGithubVerificationError] = useState(false)
 
   const [discordHandle, setDiscordHandle] = useState(initialValues?.discordHandle ?? "")
+  const [debouncedDiscordHandle] = useDebounce(discordHandle, 300)
+
   const [twitterHandle, setTwitterHandle] = useState(initialValues?.twitterHandle ?? "")
   const [telegramHandle, setTelegramHandle] = useState(initialValues?.telegramHandle ?? "")
+
+  const {
+    data: validatedDiscordHandle,
+    isError: discordHandleValidationError,
+    isLoading: isValidatingDiscordHandle,
+  } = useValidateDiscordHandle(debouncedDiscordHandle)
 
   /**
    * Verify Handle
@@ -172,7 +182,22 @@ export const AuditorForm: React.FC<Props> = ({
         </Field>
       </Row>
       <Row>
-        <Field label="DISCORD *">
+        <Field
+          label="DISCORD"
+          error={discordHandleValidationError}
+          errorMessage={"Handle must join Sherlock's Discord server"}
+          detail={
+            <Row spacing="xs">
+              {isValidatingDiscordHandle && <Text>Validtating...</Text>}
+              {validatedDiscordHandle && (
+                <>
+                  <FaDiscord />
+                  <Text>{validatedDiscordHandle}</Text>
+                </>
+              )}
+            </Row>
+          }
+        >
           <Input
             value={discordHandle}
             onChange={setDiscordHandle}
