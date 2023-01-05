@@ -27,6 +27,7 @@ export type Contest = {
   leadSeniorAuditorHandle: string
   private: boolean
   fullPayment: number
+  judgingPrizePool?: number
 }
 
 export type Scoreboard = {
@@ -89,6 +90,7 @@ type GetContestResponseData = {
   lead_senior_auditor_handle: string
   private: boolean
   full_payment: number
+  judging_prize_pool: number | null
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -111,6 +113,7 @@ export const useContest = (id: number) =>
       leadSeniorAuditorHandle: response.lead_senior_auditor_handle,
       private: response.private,
       fullPayment: response.full_payment,
+      judgingPrizePool: response.judging_prize_pool ?? undefined,
     }
   })
 

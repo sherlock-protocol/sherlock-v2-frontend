@@ -190,8 +190,10 @@ export const ContestDetails = () => {
       contest?.status !== "FINISHED" &&
       contest?.status !== "ESCALATING" &&
       contest?.status !== "SHERLOCK_JUDGING" &&
-      !contest?.private,
-    [contest?.status, contest?.private]
+      !contest?.private &&
+      !!contest?.judgingPrizePool &&
+      contest.judgingPrizePool > 0,
+    [contest?.status, contest?.private, contest?.judgingPrizePool]
   )
 
   if (!contest) return null
