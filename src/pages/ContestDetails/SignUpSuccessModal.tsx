@@ -13,9 +13,10 @@ import styles from "./ContestDetails.module.scss"
 type Props = ModalProps & {
   contest: Contest
   repo?: string | null
+  judging?: boolean
 }
 
-export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose, repo }) => {
+export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose, repo, judging = false }) => {
   const handleJoinDiscord = useCallback(() => {
     window.open("https://discord.gg/MABEWyASkp", "__blank")
     onClose && onClose()
@@ -33,7 +34,7 @@ export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose, repo }) 
         <Row>
           <Column spacing="s" alignment={["center", "center"]}>
             <Row>
-              <Text>You signed up for</Text>
+              <Text>You signed up for {judging ? "judging" : ""}</Text>
             </Row>
             <Row>
               <Text strong>{contest.title}</Text>
@@ -61,7 +62,9 @@ export const SignUpSuccessModal: React.FC<Props> = ({ contest, onClose, repo }) 
             </Text>
           ) : (
             <Text alignment="center">
-              Once the contest starts, we'll create a repo for you to start submitting issues.
+              {judging
+                ? "Once the judging phase starts, we'll create a repo for you to start judging issues."
+                : "Once the contest starts, we'll create a repo for you to start submitting issues."}
             </Text>
           )}
         </Column>
