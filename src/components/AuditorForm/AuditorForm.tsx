@@ -11,6 +11,7 @@ import { Field } from "../../pages/Claim/Field"
 import { hasSpaces, onlyAscii } from "../../utils/strings"
 import { useValidateDiscordHandle } from "../../hooks/api/auditors/useValidateDiscordHandle"
 import { Text } from "../Text"
+import config from "../../config"
 
 export type AuditorFormValues = {
   handle: string
@@ -191,7 +192,7 @@ export const AuditorForm: React.FC<Props> = ({
       </Row>
       <Row>
         <Field
-          label="DISCORD"
+          label="DISCORD (optional)"
           error={discordHandleValidationError}
           errorMessage={"Handle must join Sherlock's Discord server"}
           detail={
@@ -203,6 +204,19 @@ export const AuditorForm: React.FC<Props> = ({
                   <Text>{discordValidation.handle}</Text>
                   <Text variant="secondary">{`#${discordValidation.discriminator}`}</Text>
                 </>
+              )}
+              {!isValidatingDiscordHandle && !discordValidation && (
+                <Row spacing="xs" alignment={["start", "center"]}>
+                  <Text variant="secondary">You must join Sherlock's Discord server first.</Text>
+                  <Button
+                    size="small"
+                    variant="secondary"
+                    onClick={() => window.open(config.discordServerLink, "blank")}
+                  >
+                    <FaDiscord />
+                    &nbsp; Join Discord
+                  </Button>
+                </Row>
               )}
             </Row>
           }
