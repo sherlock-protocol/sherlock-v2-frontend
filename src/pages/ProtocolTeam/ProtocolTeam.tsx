@@ -22,7 +22,7 @@ import { useAddDiscordHandle } from "../../hooks/api/protocols/useAddDiscordHand
 export const ProtocolTeam = () => {
   const { dashboardID } = useParams()
   const { data: githubMembers } = useGithubHandles(dashboardID)
-  const { data: discordHandles } = useDiscordHandles(dashboardID)
+  const { data: discordMembers } = useDiscordHandles(dashboardID)
 
   const [githubHandle, setGithubHandle] = useState("")
   const [debouncedGithubHandle] = useDebounce(githubHandle, 300)
@@ -136,9 +136,10 @@ export const ProtocolTeam = () => {
               <FaDiscord />
               &nbsp; DISCORD HANDLES
             </Title>
-            {discordHandles?.map((handle) => (
-              <Row alignment={["space-between"]} className={styles.itemRow} key={`discord-handle-${handle}`}>
-                <Text>{`@${handle}`}</Text>
+            {discordMembers?.map((member) => (
+              <Row spacing="xs" className={styles.itemRow} key={`discord-handle-${member.handle}`}>
+                <Text>{`@ ${member.handle}`}</Text>
+                <Text variant="secondary">{`#${member.discriminator}`}</Text>
               </Row>
             ))}
             <Text size="small" strong>
