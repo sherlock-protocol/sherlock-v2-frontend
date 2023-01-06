@@ -15,7 +15,7 @@ import { Text } from "../Text"
 export type AuditorFormValues = {
   handle: string
   githubHandle: string
-  discordHandle: string
+  discordHandle?: string
   twitterHandle?: string
   telegramHandle?: string
 }
@@ -56,7 +56,7 @@ export const AuditorForm: React.FC<Props> = ({
   const [telegramHandle, setTelegramHandle] = useState(initialValues?.telegramHandle ?? "")
 
   const {
-    data: validatedDiscordHandle,
+    data: discordValidation,
     isError: discordHandleValidationError,
     isLoading: isValidatingDiscordHandle,
   } = useValidateDiscordHandle(debouncedDiscordHandle)
@@ -149,10 +149,18 @@ export const AuditorForm: React.FC<Props> = ({
       !!verifiedGithubHandle &&
       !isVerifyingGithubHandle &&
       verifiedGithubHandle === githubHandle &&
-      !!discordHandle,
-    [handle, verifiedGithubHandle, githubHandle, isVerifyingGithubHandle, discordHandle, verifiedHandle, isDirty]
+      (discordHandle === "" || discordValidation),
+    [
+      handle,
+      verifiedGithubHandle,
+      githubHandle,
+      isVerifyingGithubHandle,
+      discordHandle,
+      verifiedHandle,
+      discordValidation,
+      isDirty,
+    ]
   )
-
   return (
     <Column spacing="l">
       <Row>
@@ -189,10 +197,11 @@ export const AuditorForm: React.FC<Props> = ({
           detail={
             <Row spacing="xs">
               {isValidatingDiscordHandle && <Text>Validtating...</Text>}
-              {validatedDiscordHandle && (
+              {discordValidation && (
                 <>
                   <FaDiscord />
-                  <Text>{validatedDiscordHandle}</Text>
+                  <Text>{discordValidation.handle}</Text>
+                  <Text variant="secondary">{`#${discordValidation.discriminator}`}</Text>
                 </>
               )}
             </Row>
@@ -230,7 +239,7 @@ export const AuditorForm: React.FC<Props> = ({
             onSubmit({
               handle,
               githubHandle,
-              discordHandle,
+              discordHandle: discordValidation?.handle,
               telegramHandle,
               twitterHandle,
             })

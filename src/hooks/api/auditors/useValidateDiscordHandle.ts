@@ -3,17 +3,26 @@ import { contests as contestsAPI } from "../axios"
 import { validateDiscordHandle as validateDiscordHandleUrl } from "../urls"
 
 type ValidateDiscordHandleResponse = {
-  validated_handle: string
+  handle: string
+  discriminator: number
+}
+
+type DiscordHandleValidation = {
+  handle: string
+  discriminator: number
 }
 
 export const validateDiscordHandleKey = (handle: string) => ["validate-discord", handle]
 export const useValidateDiscordHandle = (handle?: string) =>
-  useQuery(
+  useQuery<DiscordHandleValidation, Error>(
     validateDiscordHandleKey(handle ?? ""),
     async () => {
       const { data } = await contestsAPI.get<ValidateDiscordHandleResponse>(validateDiscordHandleUrl(handle ?? ""))
 
-      return data.validated_handle
+      return {
+        handle: data.handle,
+        discriminator: data.discriminator,
+      }
     },
     {
       enabled: !!handle,
