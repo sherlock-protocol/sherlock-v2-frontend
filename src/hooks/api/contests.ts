@@ -28,6 +28,7 @@ export type Contest = {
   private: boolean
   fullPayment: number
   judgingPrizePool?: number
+  jugdingEndDate?: number // Timestamp in seconds.
 }
 
 export type Scoreboard = {
@@ -52,6 +53,8 @@ type GetContestsResponseData = {
   lead_senior_auditor_handle: string
   private: boolean
   full_payment: number
+  judging_ends_at?: number
+  judging_prize_pool: number | null
 }[]
 
 export const contestsQueryKey = "contests"
@@ -72,6 +75,8 @@ export const useContests = () =>
       leadSeniorAuditorHandle: d.lead_senior_auditor_handle,
       private: d.private,
       fullPayment: d.full_payment,
+      judgingPrizePool: d.judging_prize_pool ?? undefined,
+      jugdingEndDate: d.judging_ends_at,
     }))
   })
 
@@ -91,6 +96,7 @@ type GetContestResponseData = {
   private: boolean
   full_payment: number
   judging_prize_pool: number | null
+  judging_ends_at?: number
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -114,6 +120,7 @@ export const useContest = (id: number) =>
       private: response.private,
       fullPayment: response.full_payment,
       judgingPrizePool: response.judging_prize_pool ?? undefined,
+      jugdingEndDate: response.judging_ends_at,
     }
   })
 
