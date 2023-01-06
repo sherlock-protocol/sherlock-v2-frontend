@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo } from "react"
-import { useMutation, useQuery, useQueryClient, UseQueryOptions } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useAccount, useSignTypedData } from "wagmi"
 import { contests as contestsAPI } from "./axios"
+import { contestantQueryKey } from "./contests/useContestant"
 import {
   getContests as getContestsUrl,
   getContest as getContestUrl,
   contestOptIn as contestOptInUrl,
-  getContestant as getContestantUrl,
   getScoreboard as getScoreboardUrl,
 } from "./urls"
 
@@ -27,13 +27,8 @@ export type Contest = {
   leadSeniorAuditorHandle: string
   private: boolean
   fullPayment: number
-}
-
-export type Contestant = {
-  repo: string
-  countsTowardsRanking: boolean
-  handle: string
-  isTeam: boolean
+  judgingPrizePool?: number
+  jugdingEndDate?: number // Timestamp in seconds.
 }
 
 export type Scoreboard = {
@@ -58,6 +53,8 @@ type GetContestsResponseData = {
   lead_senior_auditor_handle: string
   private: boolean
   full_payment: number
+  judging_ends_at?: number
+  judging_prize_pool: number | null
 }[]
 
 export const contestsQueryKey = "contests"
@@ -78,6 +75,8 @@ export const useContests = () =>
       leadSeniorAuditorHandle: d.lead_senior_auditor_handle,
       private: d.private,
       fullPayment: d.full_payment,
+      judgingPrizePool: d.judging_prize_pool ?? undefined,
+      jugdingEndDate: d.judging_ends_at,
     }))
   })
 
@@ -96,6 +95,8 @@ type GetContestResponseData = {
   lead_senior_auditor_handle: string
   private: boolean
   full_payment: number
+  judging_prize_pool: number | null
+  judging_ends_at?: number
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -118,37 +119,10 @@ export const useContest = (id: number) =>
       leadSeniorAuditorHandle: response.lead_senior_auditor_handle,
       private: response.private,
       fullPayment: response.full_payment,
+      judgingPrizePool: response.judging_prize_pool ?? undefined,
+      jugdingEndDate: response.judging_ends_at,
     }
   })
-
-type GetContestantResponseData = {
-  repo_name: string
-  counts_towards_ranking: boolean
-  handle: string
-  is_team: boolean
-} | null
-export const contestantQueryKey = (address: string, contestId: number) => ["contestant", address, contestId]
-export const useContestant = (address: string, contestId: number, opts?: UseQueryOptions<Contestant | null, Error>) =>
-  useQuery<Contestant | null, Error>(
-    contestantQueryKey(address, contestId),
-    async () => {
-      try {
-        const { data } = await contestsAPI.get<GetContestantResponseData>(getContestantUrl(address, contestId))
-
-        if (!data) return null
-
-        return {
-          repo: data.repo_name,
-          countsTowardsRanking: data.counts_towards_ranking,
-          handle: data.handle,
-          isTeam: data.is_team,
-        }
-      } catch (error) {
-        return null
-      }
-    },
-    opts
-  )
 
 export const useOptInOut = (contestId: number, optIn: boolean, handle: string) => {
   const domain = {
