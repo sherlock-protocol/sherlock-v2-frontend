@@ -36,9 +36,11 @@ const APYChart: React.FC = () => {
         dataPoints.pop()
       }
 
+      const strategiesAPY = item.totalAPY - item.premiumsAPY - item.incentivesAPY
+
       dataPoints.push({
         name: formattedDate,
-        strategiesAPY: item.totalAPY - item.premiumsAPY - item.incentivesAPY,
+        strategiesAPY: Math.max(0, strategiesAPY),
         premiumsAPY: item.premiumsAPY,
         incentivesAPY: item.incentivesAPY,
         totalAPY: item.totalAPY,

@@ -1,0 +1,86 @@
+@import "../../styles/variables";
+
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  background-color: $background-color;
+  z-index: 100;
+
+  & .contentContainer {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    overflow-y: scroll;
+    padding: 2rem 0;
+
+    & .content {
+      width: 100%;
+      max-width: 1240px;
+      display: flex;
+      flex-direction: column;
+
+      flex-grow: 1;
+      z-index: 300;
+    }
+  }
+}
+
+.noise {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-image: url("../../assets/images/noise.png");
+  background-repeat: repeat;
+  opacity: 0.4;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+@media only screen and (max-width: 820px) {
+  .app {
+    display: none;
+  }
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+}
+
+.check {
+  color: $alternate-pink;
+  font-size: 1.5rem;
+}
+
+.transactionHash {
+  font-family: $font-family-mono;
+  font-variant-numeric: tabular-nums;
+  color: $primary-purple;
+  opacity: 0.8;
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.mainAddress {
+  font-family: $font-family-mono;
+  font-variant-numeric: tabular-nums;
+  background-color: transparentize($color: $primary-purple, $amount: 0.8);
+  padding: 0.8rem;
+  height: 1.5rem;
+  transition: background-color 0.3s;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &.copied {
+    background-color: $primary-purple;
+  }
+}

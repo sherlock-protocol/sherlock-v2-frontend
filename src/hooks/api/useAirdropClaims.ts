@@ -3,6 +3,7 @@ import { useQuery } from "react-query"
 import axios from "./axios"
 import { DateTime } from "luxon"
 import { getAirdropClaims as getAirdropClaimsUrl } from "./urls"
+import { Address } from "wagmi"
 
 type AirdropClaim = {
   id: number
@@ -11,9 +12,9 @@ type AirdropClaim = {
   claimedAtBlock: number | null
   claimedAt: DateTime | null
   contractAddress: string
-  proof: string[]
+  proof: `0x${string}`[]
   tokenSymbol: string
-  address: string
+  address: Address
 }
 
 type GetAirdropClaimsResponseData =
@@ -26,9 +27,9 @@ type GetAirdropClaimsResponseData =
         claimed_at_block: number | null
         claimed_at_timestamp: number | null
         contract_address: string
-        proof: string[]
+        proof: `0x${string}`[]
         token_symbol: string
-        address: string
+        address: Address
       }[]
     }
   | {

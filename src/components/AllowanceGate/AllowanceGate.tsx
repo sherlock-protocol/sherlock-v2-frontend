@@ -8,12 +8,13 @@ import { Button } from "../Button/Button"
 import { Row } from "../Layout"
 import styles from "./AllowanceGate.module.scss"
 import cx from "classnames"
+import { Address } from "wagmi"
 
 interface Props {
   /**
    * Spender's address
    */
-  spender: string
+  spender: Address
 
   /**
    * Required amount to spend

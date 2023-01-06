@@ -1,5 +1,6 @@
 import React, { useMemo } from "react"
 import { DateTime } from "luxon"
+import cx from "classnames"
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components/Text"
@@ -18,7 +19,10 @@ type Props = {
 
 export const FinishedContests: React.FC<Props> = ({ contests, onContestClick }) => {
   const finishedContests = useMemo(
-    () => contests?.filter((c) => c.status === "FINISHED").sort((a, b) => b.endDate - a.endDate),
+    () =>
+      contests
+        ?.filter((c) => c.status === "FINISHED" || c.status === "ESCALATING" || c.status === "SHERLOCK_JUDGING")
+        .sort((a, b) => b.endDate - a.endDate),
     [contests]
   )
 
@@ -54,13 +58,23 @@ export const FinishedContests: React.FC<Props> = ({ contests, onContestClick }) 
               <Tr
                 key={contest.id}
                 onClick={() => onContestClick && onContestClick(contest.id)}
-                className={styles.finishedContest}
+                className={cx({ [styles.finishedContest]: contest.status === "FINISHED" })}
               >
                 <Td>
                   <img src={contest.logoURL} alt={contest.title} width={80} className={styles.logo} />
                 </Td>
                 <Td>
                   <Column spacing="s">
+                    {contest.status === "SHERLOCK_JUDGING" && (
+                      <Text variant="alternate" strong size="small">
+                        SHERLOCK JUDGING
+                      </Text>
+                    )}
+                    {contest.status === "ESCALATING" && (
+                      <Text variant="alternate" strong size="small">
+                        ESCALATIONS OPEN
+                      </Text>
+                    )}
                     <Row alignment={["start", "center"]} spacing="m">
                       <Title variant="h2">{contest.title}</Title>
                       {contest.private ? (

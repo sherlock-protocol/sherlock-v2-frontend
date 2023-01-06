@@ -65,7 +65,7 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
    */
   const handleUnstake = React.useCallback(async () => {
     const result = await waitForTx(async () => await unstake(id))
-    onUpdate(result.blockNumber)
+    result?.blockNumber && onUpdate(result.blockNumber)
   }, [unstake, id, waitForTx, onUpdate])
 
   /**
@@ -77,7 +77,7 @@ const StakingPosition: React.FC<Props> = ({ id, usdcBalance, sherRewards, lockup
     }
 
     const result = await waitForTx(async () => await restake(id, stakingPeriod))
-    onUpdate(result.blockNumber)
+    result?.blockNumber && onUpdate(result.blockNumber)
   }, [restake, id, stakingPeriod, waitForTx, onUpdate])
 
   return (
