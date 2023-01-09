@@ -34,7 +34,7 @@ type SignUpResponseData = {
 type SignUpParams = {
   handle: string
   githubHandle: string
-  discordHandle: string
+  discordHandle?: string
   twitterHandle?: string
   telegramHandle?: string
   address: string

@@ -123,4 +123,9 @@ export type Config = {
    * Airdrop claimable date
    */
   airdropClaimableTimestamp: number
+
+  /**
+   * Link to Sherlock's Discord server
+   */
+  discordServerLink: string
 }
