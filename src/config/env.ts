@@ -26,4 +26,5 @@ export const config: Config = {
   nexusMutualStartTimestamp: parseInt(process.env.REACT_APP_NEXUS_MUTUAL_START_TIMESTAMP as string),
   airdropAdress: process.env.REACT_APP_AIRDROP_ADDRESS as string,
   airdropClaimableTimestamp: parseInt(process.env.REACT_APP_AIRDROP_CLAIMABLE_TIMESTAMP as string),
+  discordServerLink: process.env.REACT_APP_DISCORD_SERVER_LINK as string,
 }
