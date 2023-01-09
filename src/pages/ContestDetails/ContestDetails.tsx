@@ -427,7 +427,7 @@ export const ContestDetails = () => {
                       )}
 
                       {!contest.private && (
-                        <>
+                        <Column>
                           <Text>
                             {contest.status === "CREATED" || contest.status === "RUNNING"
                               ? "You're competing for:"
@@ -445,7 +445,7 @@ export const ContestDetails = () => {
                             onChange={handleOptInChange}
                             disabled={!canOptinOut}
                           />
-                        </>
+                        </Column>
                       )}
                     </Column>
                   ) : joinContestEnabled ? (
