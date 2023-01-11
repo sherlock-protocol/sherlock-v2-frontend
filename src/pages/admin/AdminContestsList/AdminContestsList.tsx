@@ -43,7 +43,7 @@ export const AdminContestsList = () => {
                   </Row>
                 </Td>
                 <Td>
-                  {c.adminApproved ? (
+                  {c.adminUpcomingApproved ? (
                     <Text variant="secondary" size="small" strong>
                       Approved
                     </Text>
