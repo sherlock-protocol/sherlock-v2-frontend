@@ -6,7 +6,6 @@ import { Header, NavigationLink } from "./components/Header"
 import styles from "./App.module.scss"
 import { adminRoutes } from "./utils/routes"
 import { useAdminProfile } from "./hooks/api/admin/useAdminProfile"
-import { Text } from "./components/Text"
 import { Button } from "./components/Button"
 import { Box } from "./components/Box"
 import { useAdminSignIn } from "./hooks/api/admin/useAdminSignIn"
@@ -30,13 +29,17 @@ const AppInternal = () => {
           title: "OVERVIEW",
           route: adminRoutes.InternalOverview,
         },
+        {
+          title: "CONTESTS",
+          route: adminRoutes.Contests,
+        },
       ]
     : []
 
   return (
     <div className={styles.app}>
       <div className={styles.noise} />
-      <Header navigationLinks={navigationLinks} connectButton={false} />
+      <Header navigationLinks={navigationLinks} />
       <div className={styles.contentContainer}>
         <div className={styles.content}>
           {adminAddress ? (
