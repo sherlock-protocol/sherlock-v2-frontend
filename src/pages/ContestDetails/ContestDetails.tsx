@@ -204,7 +204,7 @@ export const ContestDetails = () => {
   const timeLeft = endDate.diffNow(["day", "hour", "minute", "second"])
   const endingSoon = contest.status === "RUNNING" && timeLeft.days < 2
 
-  const profileIsComplete = profile && profile.githubHandle && profile.discordHandle
+  const profileIsComplete = profile && profile.githubHandle
 
   const hasEnoughAuditDays = profile && profile.auditDays >= 28
 
