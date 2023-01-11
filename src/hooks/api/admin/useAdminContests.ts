@@ -13,7 +13,7 @@ export type ContestsListItem = {
   initialPayment: boolean
   fullPayment: boolean
   adminApproved: boolean
-  dashboardID: string
+  dashboardID?: string
 }
 
 type GetAdminContestsResponse = {

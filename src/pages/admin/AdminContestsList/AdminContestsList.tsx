@@ -52,7 +52,12 @@ export const AdminContestsList = () => {
                   )}
                 </Td>
                 <Td>
-                  <Button size="small" variant="secondary" onClick={() => window.open(`/dashboard/${c.dashboardID}`)}>
+                  <Button
+                    size="small"
+                    variant="secondary"
+                    disabled={!c.dashboardID}
+                    onClick={() => window.open(`/dashboard/${c.dashboardID}`)}
+                  >
                     <FaClipboardList />
                   </Button>
                 </Td>
