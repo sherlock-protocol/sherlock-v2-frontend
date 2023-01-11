@@ -1,3 +1,4 @@
+import { FaClipboardList } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Row } from "../../../components/Layout"
@@ -27,9 +28,8 @@ export const AdminContestsList = () => {
               <Th className={styles.contestColumn}>
                 <Text>Contest</Text>
               </Th>
-              <Th>
-                <Text>Actions</Text>
-              </Th>
+              <Th></Th>
+              <Th></Th>
             </Tr>
           </THead>
           <TBody>
@@ -50,6 +50,11 @@ export const AdminContestsList = () => {
                   ) : (
                     <Button onClick={() => approveContest({ contestID: c.id })}>Approve</Button>
                   )}
+                </Td>
+                <Td>
+                  <Button size="small" variant="secondary" onClick={() => window.open(`/dashboard/${c.dashboardID}`)}>
+                    <FaClipboardList />
+                  </Button>
                 </Td>
               </Tr>
             ))}

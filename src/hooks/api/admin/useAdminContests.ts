@@ -13,6 +13,7 @@ export type ContestsListItem = {
   initialPayment: boolean
   fullPayment: boolean
   adminApproved: boolean
+  dashboardID: string
 }
 
 type GetAdminContestsResponse = {
@@ -23,6 +24,7 @@ type GetAdminContestsResponse = {
   initial_payment_complete: boolean
   full_payment_complete: boolean
   admin_approved: boolean
+  dashboard_id: string
 }[]
 
 export const adminContestsQuery = () => "admin-contests"
@@ -38,5 +40,6 @@ export const useAdminContests = () =>
       initialPayment: d.initial_payment_complete,
       fullPayment: d.full_payment_complete,
       adminApproved: d.admin_approved,
+      dashboardID: d.dashboard_id,
     }))
   })
