@@ -1,18 +1,37 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { Outlet } from "react-router-dom"
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
 
 import styles from "./App.module.scss"
 import { adminRoutes } from "./utils/routes"
+import { useAdminProfile } from "./hooks/api/admin/useAdminProfile"
+import { Text } from "./components/Text"
+import { Button } from "./components/Button"
+import { Box } from "./components/Box"
+import { useAdminSignIn } from "./hooks/api/admin/useAdminSignIn"
+import { ErrorModal } from "./pages/ContestDetails/ErrorModal"
 
 const AppInternal = () => {
-  const navigationLinks: NavigationLink[] = [
-    {
-      title: "OVERVIEW",
-      route: adminRoutes.InternalOverview,
-    },
-  ]
+  const { data: adminAddress } = useAdminProfile()
+  const { signIn, error, reset } = useAdminSignIn()
+
+  const handleSignInAsAdmin = useCallback(() => {
+    signIn()
+  }, [signIn])
+
+  const handleErrorModalClose = useCallback(() => {
+    reset()
+  }, [reset])
+
+  const navigationLinks: NavigationLink[] = adminAddress
+    ? [
+        {
+          title: "OVERVIEW",
+          route: adminRoutes.InternalOverview,
+        },
+      ]
+    : []
 
   return (
     <div className={styles.app}>
@@ -20,7 +39,14 @@ const AppInternal = () => {
       <Header navigationLinks={navigationLinks} connectButton={false} />
       <div className={styles.contentContainer}>
         <div className={styles.content}>
-          <Outlet />
+          {adminAddress ? (
+            <Outlet />
+          ) : (
+            <Box shadow={false}>
+              <Button onClick={handleSignInAsAdmin}>Sign in as Admin</Button>
+            </Box>
+          )}
+          {error && <ErrorModal reason={error.fieldErrors} onClose={handleErrorModalClose} />}
         </div>
       </div>
       <Footer />

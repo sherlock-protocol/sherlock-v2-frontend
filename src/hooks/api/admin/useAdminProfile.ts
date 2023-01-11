@@ -7,8 +7,9 @@ type GetAdminProfileResponse = {
   admin: Address
 }
 
+export const adminProfileQuery = () => "isAdmin"
 export const useAdminProfile = () =>
-  useQuery("isAdmin", async () => {
+  useQuery(adminProfileQuery(), async () => {
     const { data } = await contestsAPI.get<GetAdminProfileResponse>(getAdminProfile())
 
     return data.admin
