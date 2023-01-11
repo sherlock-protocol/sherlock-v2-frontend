@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useEffect } from "react"
 import { Outlet } from "react-router-dom"
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
@@ -10,10 +10,20 @@ import { Button } from "./components/Button"
 import { Box } from "./components/Box"
 import { useAdminSignIn } from "./hooks/api/admin/useAdminSignIn"
 import { ErrorModal } from "./pages/ContestDetails/ErrorModal"
+import { useAccount } from "wagmi"
+import { contests as contestsAPI } from "./hooks/api/axios"
+import { adminSignOut as adminSignOutUrl } from "./hooks/api/urls"
 
 const AppInternal = () => {
   const { data: adminAddress } = useAdminProfile()
+  const { address: connectedAddress, isDisconnected } = useAccount()
   const { signIn, error, reset } = useAdminSignIn()
+
+  useEffect(() => {
+    if (adminAddress && !connectedAddress && isDisconnected) {
+      contestsAPI.get(adminSignOutUrl())
+    }
+  }, [connectedAddress, adminAddress, isDisconnected])
 
   const handleSignInAsAdmin = useCallback(() => {
     signIn()
