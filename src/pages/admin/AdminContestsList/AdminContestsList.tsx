@@ -5,16 +5,18 @@ import LoadingContainer from "../../../components/LoadingContainer/LoadingContai
 import { Table, THead, Tr, Th, TBody, Td } from "../../../components/Table/Table"
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
+import { useAdminApproveContest } from "../../../hooks/api/admin/useAdminApproveContest"
 import { useAdminContests } from "../../../hooks/api/admin/useAdminContests"
 
 import styles from "./AdminContestsList.module.scss"
 
 export const AdminContestsList = () => {
   const { data: contests, isLoading } = useAdminContests()
+  const { approve: approveContest, isLoading: isLoadingContestApproval } = useAdminApproveContest()
 
   return (
     <Box shadow={false} fullWidth>
-      <LoadingContainer loading={isLoading}>
+      <LoadingContainer loading={isLoading || isLoadingContestApproval}>
         <Title>CONTESTS</Title>
         <Table selectable={false}>
           <THead>
@@ -40,7 +42,15 @@ export const AdminContestsList = () => {
                     <Text>{c.title}</Text>
                   </Row>
                 </Td>
-                <Td>{!c.adminApproved && <Button>Approve</Button>}</Td>
+                <Td>
+                  {c.adminApproved ? (
+                    <Text variant="secondary" size="small" strong>
+                      Approved
+                    </Text>
+                  ) : (
+                    <Button onClick={() => approveContest({ contestID: c.id })}>Approve</Button>
+                  )}
+                </Td>
               </Tr>
             ))}
           </TBody>

@@ -41,3 +41,4 @@ export const adminSignIn = () => `/admin/signin`
 export const adminSignOut = () => `/admin/signout`
 export const getAdminNonce = () => `/admin/nonce`
 export const getAdminContests = () => `/admin/contests`
+export const adminApproveContest = () => `/admin/approve_contest`
