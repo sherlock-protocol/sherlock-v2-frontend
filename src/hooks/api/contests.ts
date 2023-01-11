@@ -101,28 +101,34 @@ type GetContestResponseData = {
 
 export const contestQueryKey = (id: number) => ["contest", id]
 export const useContest = (id: number) =>
-  useQuery<Contest, Error>(contestQueryKey(id), async () => {
-    const { data: response } = await contestsAPI.get<GetContestResponseData>(getContestUrl(id))
+  useQuery<Contest, Error>(
+    contestQueryKey(id),
+    async () => {
+      const { data: response } = await contestsAPI.get<GetContestResponseData>(getContestUrl(id))
 
-    return {
-      id: response.id,
-      title: response.title,
-      shortDescription: response.short_description,
-      logoURL: response.logo_url,
-      prizePool: response.prize_pool,
-      startDate: response.starts_at,
-      endDate: response.ends_at,
-      status: response.status,
-      description: response.description,
-      report: response.report,
-      leadSeniorAuditorFixedPay: response.lead_senior_auditor_fixed_pay,
-      leadSeniorAuditorHandle: response.lead_senior_auditor_handle,
-      private: response.private,
-      fullPayment: response.full_payment,
-      judgingPrizePool: response.judging_prize_pool ?? undefined,
-      jugdingEndDate: response.judging_ends_at,
+      return {
+        id: response.id,
+        title: response.title,
+        shortDescription: response.short_description,
+        logoURL: response.logo_url,
+        prizePool: response.prize_pool,
+        startDate: response.starts_at,
+        endDate: response.ends_at,
+        status: response.status,
+        description: response.description,
+        report: response.report,
+        leadSeniorAuditorFixedPay: response.lead_senior_auditor_fixed_pay,
+        leadSeniorAuditorHandle: response.lead_senior_auditor_handle,
+        private: response.private,
+        fullPayment: response.full_payment,
+        judgingPrizePool: response.judging_prize_pool ?? undefined,
+        jugdingEndDate: response.judging_ends_at,
+      }
+    },
+    {
+      refetchOnWindowFocus: false,
     }
-  })
+  )
 
 export const useOptInOut = (contestId: number, optIn: boolean, handle: string) => {
   const domain = {
