@@ -25,7 +25,6 @@ export const useAdminSignIn = () => {
   const { address: connectedAddress } = useAccount()
   const { chain } = useNetwork()
   const { signMessageAsync, reset: resetSignature, isLoading: signatureIsLoading } = useSignMessage()
-  // const { signTypedDataAsync, isLoading: signatureIsLoading, reset: resetSignature } = useSignSignUpMessage()
   const queryClient = useQueryClient()
 
   const { mutate, mutateAsync, ...mutation } = useMutation<Address, FormError, AdminSignInParams>(

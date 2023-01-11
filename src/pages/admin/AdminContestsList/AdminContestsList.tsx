@@ -1,5 +1,51 @@
+import { Box } from "../../../components/Box"
+import { Button } from "../../../components/Button"
+import { Row } from "../../../components/Layout"
+import LoadingContainer from "../../../components/LoadingContainer/LoadingContainer"
+import { Table, THead, Tr, Th, TBody, Td } from "../../../components/Table/Table"
+import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
+import { useAdminContests } from "../../../hooks/api/admin/useAdminContests"
+
+import styles from "./AdminContestsList.module.scss"
 
 export const AdminContestsList = () => {
-  return <Title>Contests</Title>
+  const { data: contests, isLoading } = useAdminContests()
+
+  return (
+    <Box shadow={false} fullWidth>
+      <LoadingContainer loading={isLoading}>
+        <Title>CONTESTS</Title>
+        <Table selectable={false}>
+          <THead>
+            <Tr>
+              <Th>
+                <Text>ID</Text>
+              </Th>
+              <Th className={styles.contestColumn}>
+                <Text>Contest</Text>
+              </Th>
+              <Th>
+                <Text>Actions</Text>
+              </Th>
+            </Tr>
+          </THead>
+          <TBody>
+            {contests?.map((c) => (
+              <Tr>
+                <Td>{c.id}</Td>
+                <Td>
+                  <Row spacing="l" alignment={["start", "center"]}>
+                    <img src={c.logoURL} className={styles.logo} alt={c.title} />
+                    <Text>{c.title}</Text>
+                  </Row>
+                </Td>
+                <Td>{!c.adminApproved && <Button>Approve</Button>}</Td>
+              </Tr>
+            ))}
+          </TBody>
+        </Table>
+      </LoadingContainer>
+    </Box>
+  )
 }

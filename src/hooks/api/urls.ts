@@ -40,3 +40,4 @@ export const getAdminProfile = () => `/admin/profile`
 export const adminSignIn = () => `/admin/signin`
 export const adminSignOut = () => `/admin/signout`
 export const getAdminNonce = () => `/admin/nonce`
+export const getAdminContests = () => `/admin/contests`
