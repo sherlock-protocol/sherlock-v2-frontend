@@ -66,6 +66,12 @@ export const AdminContestsList = () => {
             Approve Start
           </Button>
         )
+
+      return (
+        <Button variant="secondary" disabled fullWidth>
+          -
+        </Button>
+      )
     },
     [contests, handleActionClick]
   )
@@ -84,7 +90,7 @@ export const AdminContestsList = () => {
                 <Text>Contest</Text>
               </Th>
               <Th></Th>
-              <Th></Th>
+              <Th>Action</Th>
             </Tr>
           </THead>
           <TBody>
