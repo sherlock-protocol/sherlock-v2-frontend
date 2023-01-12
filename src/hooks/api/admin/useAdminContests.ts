@@ -15,6 +15,8 @@ export type ContestsListItem = {
   adminUpcomingApproved: boolean
   adminStartApproved: boolean
   dashboardID?: string
+  startDate: number
+  endDate: number
 }
 
 type GetAdminContestsResponse = {
@@ -27,6 +29,8 @@ type GetAdminContestsResponse = {
   admin_upcoming_approved: boolean
   admin_start_approved: boolean
   dashboard_id: string
+  starts_at: number
+  ends_at: number
 }[]
 
 export const adminContestsQuery = () => "admin-contests"
@@ -44,5 +48,7 @@ export const useAdminContests = () =>
       adminUpcomingApproved: d.admin_upcoming_approved,
       adminStartApproved: d.admin_start_approved,
       dashboardID: d.dashboard_id,
+      startDate: d.starts_at,
+      endDate: d.ends_at,
     }))
   })

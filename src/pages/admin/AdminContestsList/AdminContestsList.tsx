@@ -1,5 +1,6 @@
+import { DateTime } from "luxon"
 import { useCallback, useState } from "react"
-import { FaClipboardList } from "react-icons/fa"
+import { FaClipboardList, FaEye } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Row } from "../../../components/Layout"
@@ -76,6 +77,82 @@ export const AdminContestsList = () => {
     [contests, handleActionClick]
   )
 
+  const renderContestState = useCallback(
+    (contestIndex: number) => {
+      if (!contests) return null
+
+      const contest = contests[contestIndex]
+
+      if (contest.status === "CREATED" && !contest.initialPayment) {
+        return <Text variant="secondary">Waiting on initial payment</Text>
+      }
+
+      if (contest.status === "CREATED" && !contest.adminUpcomingApproved) {
+        return <Text variant="secondary">Ready to publish</Text>
+      }
+
+      if (contest.status === "CREATED" && !contest.fullPayment) {
+        return <Text variant="secondary">Waiting on full payment</Text>
+      }
+
+      if (contest.status === "CREATED" && !contest.adminStartApproved) {
+        return <Text variant="secondary">Ready to approve start</Text>
+      }
+
+      if (contest.status === "CREATED") {
+        return (
+          <Row spacing="xs">
+            <Text variant="secondary">Contest approved to start on </Text>
+            <Text variant="secondary" strong>
+              {DateTime.fromSeconds(contest.startDate).toLocaleString(DateTime.DATE_MED)}
+            </Text>
+          </Row>
+        )
+      }
+
+      if (contest.status === "RUNNING") {
+        return (
+          <Text variant="secondary" strong>
+            Running
+          </Text>
+        )
+      }
+
+      if (contest.status === "ESCALATING") {
+        return (
+          <Text variant="secondary" strong>
+            Escalations Open
+          </Text>
+        )
+      }
+
+      if (contest.status === "JUDGING") {
+        return (
+          <Text variant="secondary" strong>
+            Judging Contest
+          </Text>
+        )
+      }
+
+      if (contest.status === "SHERLOCK_JUDGING") {
+        return (
+          <Text variant="secondary" strong>
+            Sherlock Judging
+          </Text>
+        )
+      }
+
+      if (contest.status === "FINISHED") {
+        return (
+          <Text variant="secondary" strong>
+            Finished
+          </Text>
+        )
+      }
+    },
+    [contests]
+  )
+
   return (
     <Box shadow={false} fullWidth>
       <LoadingContainer loading={isLoading}>
@@ -90,6 +167,7 @@ export const AdminContestsList = () => {
                 <Text>Contest</Text>
               </Th>
               <Th></Th>
+              <Th>Status</Th>
               <Th>Action</Th>
             </Tr>
           </THead>
@@ -105,16 +183,26 @@ export const AdminContestsList = () => {
                     </Row>
                   </Td>
                   <Td>
-                    <Button
-                      size="small"
-                      variant="secondary"
-                      disabled={!c.dashboardID}
-                      onClick={() => window.open(`/dashboard/${c.dashboardID}`)}
-                    >
-                      <FaClipboardList />
-                      &nbsp;Dashboard
-                    </Button>
+                    <Row spacing="s">
+                      <Button
+                        size="small"
+                        variant="secondary"
+                        disabled={!c.dashboardID}
+                        onClick={() => window.open(`/dashboard/${c.dashboardID}`)}
+                      >
+                        <FaClipboardList />
+                      </Button>
+                      <Button
+                        size="small"
+                        variant="secondary"
+                        disabled={!c.adminUpcomingApproved}
+                        onClick={() => window.open(`/audits/contests/${c.id}`)}
+                      >
+                        <FaEye />
+                      </Button>
+                    </Row>
                   </Td>
+                  <Td>{renderContestState(index)}</Td>
                   <Td>{renderContestAction(index)}</Td>
                 </Tr>
               )
