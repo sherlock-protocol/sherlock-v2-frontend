@@ -1,4 +1,4 @@
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 import { FaClipboardList } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
@@ -12,8 +12,14 @@ import { useAdminApproveStart } from "../../../hooks/api/admin/useAdminApproveSt
 import { ContestsListItem, useAdminContests } from "../../../hooks/api/admin/useAdminContests"
 
 import styles from "./AdminContestsList.module.scss"
+import { ConfirmContestActionModal } from "./ConfirmContestActionModal"
 
-type ContestAction = "PUBLISH" | "APPROVE_START"
+export type ContestAction = "PUBLISH" | "APPROVE_START"
+
+type ConfirmationModal = {
+  contestIndex: number
+  action: ContestAction
+}
 
 const getContestAction = (contest: ContestsListItem): ContestAction | undefined => {
   if (contest.status === "CREATED" && contest.initialPayment && !contest.adminUpcomingApproved) {
@@ -27,28 +33,43 @@ const getContestAction = (contest: ContestsListItem): ContestAction | undefined 
 
 export const AdminContestsList = () => {
   const { data: contests, isLoading } = useAdminContests()
-  const { approve: approveContest, isLoading: isLoadingContestApproval } = useAdminApproveContest()
-  const { approve: approveStart, isLoading: isLoadingStartApproval } = useAdminApproveStart()
+  const [confirmationModal, setConfirmationModal] = useState<ConfirmationModal | undefined>()
+
+  const handleActionClick = useCallback(
+    (contestIndex: number, action: ContestAction) => {
+      setConfirmationModal({
+        contestIndex,
+        action,
+      })
+    },
+    [setConfirmationModal]
+  )
+
+  const handleConfirmationModalClose = useCallback(() => {
+    setConfirmationModal(undefined)
+  }, [setConfirmationModal])
 
   const renderContestAction = useCallback(
-    (contest: ContestsListItem) => {
+    (contestIndex: number) => {
+      if (!contests) return null
+
+      const contest = contests[contestIndex]
       const action = getContestAction(contest)
 
-      if (action === "PUBLISH")
-        return <Button onClick={() => approveContest({ contestID: contest.id })}>Publish</Button>
+      if (action === "PUBLISH") return <Button onClick={() => handleActionClick(contestIndex, action)}>Publish</Button>
       if (action === "APPROVE_START")
         return (
-          <Button size="normal" onClick={() => approveStart({ contestID: contest.id })}>
+          <Button size="normal" onClick={() => handleActionClick(contestIndex, action)}>
             Approve Start
           </Button>
         )
     },
-    [approveContest, approveStart]
+    [contests, handleActionClick]
   )
 
   return (
     <Box shadow={false} fullWidth>
-      <LoadingContainer loading={isLoading || isLoadingContestApproval || isLoadingStartApproval}>
+      <LoadingContainer loading={isLoading}>
         <Title>CONTESTS</Title>
         <Table selectable={false} className={styles.contestsTable}>
           <THead>
@@ -64,7 +85,7 @@ export const AdminContestsList = () => {
             </Tr>
           </THead>
           <TBody>
-            {contests?.map((c) => {
+            {contests?.map((c, index) => {
               return (
                 <Tr>
                   <Td>{c.id}</Td>
@@ -85,12 +106,19 @@ export const AdminContestsList = () => {
                       &nbsp;Dashboard
                     </Button>
                   </Td>
-                  <Td>{renderContestAction(c)}</Td>
+                  <Td>{renderContestAction(index)}</Td>
                 </Tr>
               )
             })}
           </TBody>
         </Table>
+        {confirmationModal && contests && (
+          <ConfirmContestActionModal
+            contest={contests[confirmationModal.contestIndex]}
+            action={confirmationModal.action}
+            onClose={handleConfirmationModalClose}
+          />
+        )}
       </LoadingContainer>
     </Box>
   )
