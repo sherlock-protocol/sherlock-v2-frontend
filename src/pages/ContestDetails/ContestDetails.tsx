@@ -374,7 +374,7 @@ export const ContestDetails = () => {
               {profile && (
                 <>
                   {contestant?.audit ? (
-                    <Column spacing="m" grow={1}>
+                    <Column spacing="m" grow={0}>
                       {contest.private ? (
                         contestant.audit.repo ? (
                           <>
