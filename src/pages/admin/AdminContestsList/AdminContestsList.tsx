@@ -7,8 +7,6 @@ import LoadingContainer from "../../../components/LoadingContainer/LoadingContai
 import { Table, THead, Tr, Th, TBody, Td } from "../../../components/Table/Table"
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
-import { useAdminApproveContest } from "../../../hooks/api/admin/useAdminApproveContest"
-import { useAdminApproveStart } from "../../../hooks/api/admin/useAdminApproveStart"
 import { ContestsListItem, useAdminContests } from "../../../hooks/api/admin/useAdminContests"
 
 import styles from "./AdminContestsList.module.scss"
@@ -56,10 +54,15 @@ export const AdminContestsList = () => {
       const contest = contests[contestIndex]
       const action = getContestAction(contest)
 
-      if (action === "PUBLISH") return <Button onClick={() => handleActionClick(contestIndex, action)}>Publish</Button>
+      if (action === "PUBLISH")
+        return (
+          <Button onClick={() => handleActionClick(contestIndex, action)} fullWidth>
+            Publish
+          </Button>
+        )
       if (action === "APPROVE_START")
         return (
-          <Button size="normal" onClick={() => handleActionClick(contestIndex, action)}>
+          <Button size="normal" onClick={() => handleActionClick(contestIndex, action)} fullWidth>
             Approve Start
           </Button>
         )
