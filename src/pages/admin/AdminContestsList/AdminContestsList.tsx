@@ -8,6 +8,7 @@ import { Table, THead, Tr, Th, TBody, Td } from "../../../components/Table/Table
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
 import { useAdminApproveContest } from "../../../hooks/api/admin/useAdminApproveContest"
+import { useAdminApproveStart } from "../../../hooks/api/admin/useAdminApproveStart"
 import { ContestsListItem, useAdminContests } from "../../../hooks/api/admin/useAdminContests"
 
 import styles from "./AdminContestsList.module.scss"
@@ -27,6 +28,7 @@ const getContestAction = (contest: ContestsListItem): ContestAction | undefined 
 export const AdminContestsList = () => {
   const { data: contests, isLoading } = useAdminContests()
   const { approve: approveContest, isLoading: isLoadingContestApproval } = useAdminApproveContest()
+  const { approve: approveStart, isLoading: isLoadingStartApproval } = useAdminApproveStart()
 
   const renderContestAction = useCallback(
     (contest: ContestsListItem) => {
@@ -36,17 +38,17 @@ export const AdminContestsList = () => {
         return <Button onClick={() => approveContest({ contestID: contest.id })}>Publish</Button>
       if (action === "APPROVE_START")
         return (
-          <Button size="normal" onClick={() => {}}>
+          <Button size="normal" onClick={() => approveStart({ contestID: contest.id })}>
             Approve Start
           </Button>
         )
     },
-    [approveContest]
+    [approveContest, approveStart]
   )
 
   return (
     <Box shadow={false} fullWidth>
-      <LoadingContainer loading={isLoading || isLoadingContestApproval}>
+      <LoadingContainer loading={isLoading || isLoadingContestApproval || isLoadingStartApproval}>
         <Title>CONTESTS</Title>
         <Table selectable={false} className={styles.contestsTable}>
           <THead>
