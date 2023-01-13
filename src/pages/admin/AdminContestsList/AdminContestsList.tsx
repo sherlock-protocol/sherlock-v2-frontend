@@ -95,6 +95,10 @@ export const AdminContestsList = () => {
         return <Text variant="secondary">Waiting on full payment</Text>
       }
 
+      if (contest.status === "CREATED" && !contest.submissionReady) {
+        return <Text variant="secondary">Waiting for protocol to finalize submission</Text>
+      }
+
       if (contest.status === "CREATED" && !contest.adminStartApproved) {
         return <Text variant="secondary">Ready to approve start</Text>
       }

@@ -17,6 +17,7 @@ export type ContestsListItem = {
   dashboardID?: string
   startDate: number
   endDate: number
+  submissionReady: boolean
 }
 
 type GetAdminContestsResponse = {
@@ -31,6 +32,7 @@ type GetAdminContestsResponse = {
   dashboard_id: string
   starts_at: number
   ends_at: number
+  protocol_submission_ready: boolean
 }[]
 
 export const adminContestsQuery = () => "admin-contests"
@@ -50,5 +52,6 @@ export const useAdminContests = () =>
       dashboardID: d.dashboard_id,
       startDate: d.starts_at,
       endDate: d.ends_at,
+      submissionReady: d.protocol_submission_ready,
     }))
   })
