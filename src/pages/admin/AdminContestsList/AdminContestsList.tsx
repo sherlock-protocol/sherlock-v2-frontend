@@ -25,7 +25,7 @@ const getContestAction = (contest: ContestsListItem): ContestAction | undefined 
     return "PUBLISH"
   }
 
-  if (contest.status === "CREATED" && contest.fullPayment && !contest.adminStartApproved) {
+  if (contest.status === "CREATED" && contest.fullPayment && contest.submissionReady && !contest.adminStartApproved) {
     return "APPROVE_START"
   }
 }
