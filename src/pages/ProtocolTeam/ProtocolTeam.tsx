@@ -18,17 +18,27 @@ import { useAddGithubHandle } from "../../hooks/api/protocols/useAddGithubHandle
 import { ErrorModal } from "../ContestDetails/ErrorModal"
 import { useDiscordHandles } from "../../hooks/api/protocols/useDiscordHandles"
 import { useAddDiscordHandle } from "../../hooks/api/protocols/useAddDiscordHandle"
+import { useValidateDiscordHandle } from "../../hooks/api/auditors/useValidateDiscordHandle"
 
 export const ProtocolTeam = () => {
   const { dashboardID } = useParams()
+
   const { data: githubMembers } = useGithubHandles(dashboardID)
-  const { data: discordHandles } = useDiscordHandles(dashboardID)
+  const { data: discordMembers } = useDiscordHandles(dashboardID)
 
   const [githubHandle, setGithubHandle] = useState("")
   const [debouncedGithubHandle] = useDebounce(githubHandle, 300)
   const [discordHandle, setDiscordHandle] = useState("")
+  const [debouncedDiscordHandle] = useDebounce(discordHandle, 300)
+
   const { data: githubHanldleIsValid, isLoading: isValidatingGithubHandle } =
     useValidateGithubHandle(debouncedGithubHandle)
+  const {
+    data: discordValidation,
+    isError: discordHandleValidationError,
+    isLoading: isValidatingDiscordHandle,
+  } = useValidateDiscordHandle(debouncedDiscordHandle)
+
   const {
     addGithubHandle,
     isLoading: addGithubHandleIsLoading,
@@ -113,7 +123,11 @@ export const ProtocolTeam = () => {
                 </Button>
               </Row>
               {isValidatingGithubHandle && <Text size="small">Validating Github handle...</Text>}
-              {githubHanldleIsValid === false && <Text variant="warning">Invalid Github handle</Text>}
+              {githubHanldleIsValid === false && (
+                <Text variant="warning" size="small">
+                  Invalid Github handle
+                </Text>
+              )}
               {githubHanldleIsValid && (
                 <Row
                   spacing="xs"
@@ -136,20 +150,40 @@ export const ProtocolTeam = () => {
               <FaDiscord />
               &nbsp; DISCORD HANDLES
             </Title>
-            {discordHandles?.map((handle) => (
-              <Row alignment={["space-between"]} className={styles.itemRow} key={`discord-handle-${handle}`}>
-                <Text>{`@${handle}`}</Text>
+            {discordMembers?.map((member) => (
+              <Row spacing="xs" className={styles.itemRow} key={`discord-handle-${member.handle}`}>
+                <Text>{`@ ${member.handle}`}</Text>
+                <Text variant="secondary">{`#${member.discriminator}`}</Text>
               </Row>
             ))}
-            <Text size="small" strong>
-              Add new Discord handle
-            </Text>
-            <Row spacing="m">
-              <Input value={discordHandle} onChange={setDiscordHandle} />
-              <Button disabled={discordHandle === ""} onClick={handleAddDiscordHandleClick}>
-                Add
-              </Button>
-            </Row>
+            <Column spacing="xs">
+              <Text size="small" strong>
+                Add new Discord handle
+              </Text>
+              <Row spacing="m">
+                <Input value={discordHandle} onChange={setDiscordHandle} />
+                <Button disabled={discordHandle === ""} onClick={handleAddDiscordHandleClick}>
+                  Add
+                </Button>
+              </Row>
+              {isValidatingDiscordHandle && <Text size="small">Validating ...</Text>}
+              {discordHandleValidationError && (
+                <Text variant="warning" size="small">
+                  Invalid Discord handle
+                </Text>
+              )}
+              {discordValidation && (
+                <Row
+                  spacing="xs"
+                  className={cx([styles.itemRow, styles.preview])}
+                  onClick={() => handleGithubHandleClick(debouncedGithubHandle)}
+                >
+                  <FaDiscord />
+                  <Text>{`@${discordValidation.handle}`}</Text>
+                  <Text variant="secondary">{`#${discordValidation.discriminator}`}</Text>
+                </Row>
+              )}
+            </Column>
           </Column>
         </Box>
       </Column>

@@ -15,6 +15,7 @@ import { UpcomingContests } from "./UpcomingContests"
 import { useIsAuditor } from "../../hooks/api/auditors"
 import { useAccount } from "wagmi"
 import ConnectGate from "../../components/ConnectGate/ConnectGate"
+import { JudgingContests } from "./JudgingContests"
 
 export const ContestsPage: React.FC<{}> = () => {
   const { address: connectedAddress } = useAccount()
@@ -48,6 +49,7 @@ export const ContestsPage: React.FC<{}> = () => {
       )}
 
       <ActiveContests contests={contests} onContestClick={handleContestClick} />
+      <JudgingContests contests={contests} onContestClick={handleContestClick} />
       <UpcomingContests contests={contests} onContestClick={handleContestClick} />
       <FinishedContests contests={contests} onContestClick={handleContestClick} />
       {signUpFormModalOpen && <AuditorSignUpModal closeable onClose={handleSignUpModalClose} />}

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react"
 import { useDebounce } from "use-debounce"
 import axios, { AxiosError } from "axios"
-import { FaGithub } from "react-icons/fa"
+import { FaDiscord, FaGithub } from "react-icons/fa"
 
 import { Button } from "../../components/Button"
 import { Input } from "../../components/Input"
@@ -9,11 +9,14 @@ import { Column, Row } from "../../components/Layout"
 import { Field } from "../../pages/Claim/Field"
 
 import { hasSpaces, onlyAscii } from "../../utils/strings"
+import { useValidateDiscordHandle } from "../../hooks/api/auditors/useValidateDiscordHandle"
+import { Text } from "../Text"
+import config from "../../config"
 
 export type AuditorFormValues = {
   handle: string
   githubHandle: string
-  discordHandle: string
+  discordHandle?: string
   twitterHandle?: string
   telegramHandle?: string
 }
@@ -48,8 +51,16 @@ export const AuditorForm: React.FC<Props> = ({
   const [githubVerificationError, setGithubVerificationError] = useState(false)
 
   const [discordHandle, setDiscordHandle] = useState(initialValues?.discordHandle ?? "")
+  const [debouncedDiscordHandle] = useDebounce(discordHandle, 300)
+
   const [twitterHandle, setTwitterHandle] = useState(initialValues?.twitterHandle ?? "")
   const [telegramHandle, setTelegramHandle] = useState(initialValues?.telegramHandle ?? "")
+
+  const {
+    data: discordValidation,
+    isError: discordHandleValidationError,
+    isLoading: isValidatingDiscordHandle,
+  } = useValidateDiscordHandle(debouncedDiscordHandle)
 
   /**
    * Verify Handle
@@ -139,10 +150,18 @@ export const AuditorForm: React.FC<Props> = ({
       !!verifiedGithubHandle &&
       !isVerifyingGithubHandle &&
       verifiedGithubHandle === githubHandle &&
-      !!discordHandle,
-    [handle, verifiedGithubHandle, githubHandle, isVerifyingGithubHandle, discordHandle, verifiedHandle, isDirty]
+      (discordHandle === "" || discordValidation),
+    [
+      handle,
+      verifiedGithubHandle,
+      githubHandle,
+      isVerifyingGithubHandle,
+      discordHandle,
+      verifiedHandle,
+      discordValidation,
+      isDirty,
+    ]
   )
-
   return (
     <Column spacing="l">
       <Row>
@@ -172,7 +191,36 @@ export const AuditorForm: React.FC<Props> = ({
         </Field>
       </Row>
       <Row>
-        <Field label="DISCORD *">
+        <Field
+          label="DISCORD (optional)"
+          error={discordHandleValidationError}
+          errorMessage={"Handle must join Sherlock's Discord server"}
+          detail={
+            <Row spacing="xs">
+              {isValidatingDiscordHandle && <Text>Validtating...</Text>}
+              {discordValidation && (
+                <>
+                  <FaDiscord />
+                  <Text>{discordValidation.handle}</Text>
+                  <Text variant="secondary">{`#${discordValidation.discriminator}`}</Text>
+                </>
+              )}
+              {!isValidatingDiscordHandle && !discordValidation && (
+                <Row spacing="xs" alignment={["start", "center"]}>
+                  <Text variant="secondary">You must join Sherlock's Discord server first.</Text>
+                  <Button
+                    size="small"
+                    variant="secondary"
+                    onClick={() => window.open(config.discordServerLink, "blank")}
+                  >
+                    <FaDiscord />
+                    &nbsp; Join Discord
+                  </Button>
+                </Row>
+              )}
+            </Row>
+          }
+        >
           <Input
             value={discordHandle}
             onChange={setDiscordHandle}
@@ -205,7 +253,7 @@ export const AuditorForm: React.FC<Props> = ({
             onSubmit({
               handle,
               githubHandle,
-              discordHandle,
+              discordHandle: discordValidation?.handle,
               telegramHandle,
               twitterHandle,
             })
