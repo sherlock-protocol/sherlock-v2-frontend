@@ -49,9 +49,16 @@ export const AdminContestsList = () => {
     [setConfirmationModal]
   )
 
-  const handleConfirmationModalClose = useCallback(() => {
-    setConfirmationModal(undefined)
-  }, [setConfirmationModal])
+  const handleConfirmationModalClose = useCallback(
+    (confirmed: boolean) => {
+      if (confirmed) {
+        setForceActionRowIndex(undefined)
+      }
+
+      setConfirmationModal(undefined)
+    },
+    [setConfirmationModal]
+  )
 
   const handleForceActionClick = useCallback((index: number) => {
     setForceActionRowIndex((i) => {
@@ -72,7 +79,7 @@ export const AdminContestsList = () => {
         return (
           <Button
             onClick={() => handleActionClick(contestIndex, action)}
-            variant={forceActionRowIndex === contestIndex ? "alternate" : "secondary"}
+            variant={forceActionRowIndex === contestIndex ? "alternate" : "primary"}
             fullWidth
           >
             Publish
@@ -82,7 +89,7 @@ export const AdminContestsList = () => {
         return (
           <Button
             size="normal"
-            variant={forceActionRowIndex === contestIndex ? "alternate" : "secondary"}
+            variant={forceActionRowIndex === contestIndex ? "alternate" : "primary"}
             onClick={() => handleActionClick(contestIndex, action)}
             fullWidth
           >
@@ -105,17 +112,39 @@ export const AdminContestsList = () => {
 
       const contest = contests[contestIndex]
 
-      if (contest.status === "CREATED" && !contest.initialPayment) {
-        return <Text variant="secondary">Waiting on initial payment</Text>
+      if (contest.status === "CREATED" && !contest.adminUpcomingApproved && !contest.initialPayment) {
+        return (
+          <Row spacing="s" alignment={["start", "center"]}>
+            <Text variant="secondary">Waiting on initial payment</Text>
+            <Button
+              size="small"
+              variant={forceActionRowIndex === contestIndex ? "alternate" : "secondary"}
+              onClick={() => handleForceActionClick(contestIndex)}
+            >
+              <FaFastForward />
+            </Button>
+          </Row>
+        )
       }
 
       if (contest.status === "CREATED" && !contest.adminUpcomingApproved) {
         return <Text variant="secondary">Ready to publish</Text>
       }
 
+      if (contest.status === "CREATED" && contest.adminStartApproved) {
+        return (
+          <Row spacing="xs">
+            <Text variant="secondary">Contest approved to start on </Text>
+            <Text variant="secondary" strong>
+              {DateTime.fromSeconds(contest.startDate).toLocaleString(DateTime.DATE_MED)}
+            </Text>
+          </Row>
+        )
+      }
+
       if (contest.status === "CREATED" && !contest.fullPayment) {
         return (
-          <Row spacing="s" alignment={["center", "center"]}>
+          <Row spacing="s" alignment={["start", "center"]}>
             <Text variant="secondary">Waiting on full payment</Text>
             <Button
               size="small"
@@ -145,17 +174,6 @@ export const AdminContestsList = () => {
 
       if (contest.status === "CREATED" && !contest.adminStartApproved) {
         return <Text variant="secondary">Ready to approve start</Text>
-      }
-
-      if (contest.status === "CREATED") {
-        return (
-          <Row spacing="xs">
-            <Text variant="secondary">Contest approved to start on </Text>
-            <Text variant="secondary" strong>
-              {DateTime.fromSeconds(contest.startDate).toLocaleString(DateTime.DATE_MED)}
-            </Text>
-          </Row>
-        )
       }
 
       if (contest.status === "RUNNING") {

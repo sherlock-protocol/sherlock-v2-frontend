@@ -12,10 +12,11 @@ import { ContestAction } from "./AdminContestsList"
 
 import styles from "./AdminContestsList.module.scss"
 
-type Props = ModalProps & {
+type Props = Omit<ModalProps, "onClose"> & {
   contest: ContestsListItem
   action: ContestAction
   force: boolean
+  onClose?: (confirmed: boolean) => void
 }
 
 const getActionTitle = (action: ContestAction): string => {
@@ -60,7 +61,7 @@ export const ConfirmContestActionModal: React.FC<Props> = ({ contest, action, on
 
   useEffect(() => {
     if (approveContestSuccess || approveStartSuccess) {
-      onClose && onClose()
+      onClose?.(true)
     }
   }, [approveContestSuccess, approveStartSuccess, onClose])
 
@@ -79,11 +80,11 @@ export const ConfirmContestActionModal: React.FC<Props> = ({ contest, action, on
   }, [approveStart, approveContest, contest, action, force])
 
   const handleCancelClick = useCallback(() => {
-    onClose && onClose()
+    onClose?.(false)
   }, [onClose])
 
   return (
-    <Modal closeable onClose={onClose}>
+    <Modal closeable onClose={() => onClose?.(false)}>
       <LoadingContainer loading={isLoadingContestApproval || isLoadingStartApproval}>
         <Column alignment={["center", "start"]} spacing="l">
           <Title>{getActionTitle(action)}</Title>
