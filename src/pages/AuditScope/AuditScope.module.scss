@@ -1,0 +1,21 @@
+@import "../../styles/variables";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  background-color: $background-color;
+  z-index: 100;
+  padding: 3rem;
+
+  & .content {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    z-index: 300;
+  }
+}

@@ -28,6 +28,7 @@ import { useAuthentication } from "./hooks/api/useAuthentication"
 import { AuditPayments } from "./pages/AuditPayments/AuditPayments"
 import { ProtocolTeam } from "./pages/ProtocolTeam/ProtocolTeam"
 import { AdminContestsList } from "./pages/admin/AdminContestsList/AdminContestsList"
+import { AuditScope } from "./pages/AuditScope/AuditScope"
 
 function App() {
   const { address: connectedAddress } = useAccount()
@@ -104,6 +105,8 @@ function App() {
 
           <Route path="*" element={<Navigate replace to={adminRoutes.InternalOverview} />} />
         </Route>
+
+        <Route path="/scope" element={<AuditScope />} />
 
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>
