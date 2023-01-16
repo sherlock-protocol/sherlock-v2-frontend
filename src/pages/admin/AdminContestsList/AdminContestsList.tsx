@@ -114,7 +114,18 @@ export const AdminContestsList = () => {
       }
 
       if (contest.status === "CREATED" && !contest.fullPayment) {
-        return <Text variant="secondary">Waiting on full payment</Text>
+        return (
+          <Row spacing="s" alignment={["center", "center"]}>
+            <Text variant="secondary">Waiting on full payment</Text>
+            <Button
+              size="small"
+              variant={forceActionRowIndex === contestIndex ? "alternate" : "secondary"}
+              onClick={() => handleForceActionClick(contestIndex)}
+            >
+              <FaFastForward />
+            </Button>
+          </Row>
+        )
       }
 
       if (contest.status === "CREATED" && !contest.submissionReady) {
