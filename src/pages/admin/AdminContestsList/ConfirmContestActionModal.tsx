@@ -15,6 +15,7 @@ import styles from "./AdminContestsList.module.scss"
 type Props = ModalProps & {
   contest: ContestsListItem
   action: ContestAction
+  force: boolean
 }
 
 const getActionTitle = (action: ContestAction): string => {
@@ -45,7 +46,7 @@ const renderDescription = (action: ContestAction) => {
   }
 }
 
-export const ConfirmContestActionModal: React.FC<Props> = ({ contest, action, onClose }) => {
+export const ConfirmContestActionModal: React.FC<Props> = ({ contest, action, onClose, force = false }) => {
   const {
     approve: approveContest,
     isLoading: isLoadingContestApproval,
@@ -67,13 +68,15 @@ export const ConfirmContestActionModal: React.FC<Props> = ({ contest, action, on
     if (action === "PUBLISH") {
       approveContest({
         contestID: contest.id,
+        force,
       })
     } else if (action === "APPROVE_START") {
       approveStart({
         contestID: contest.id,
+        force,
       })
     }
-  }, [approveStart, approveContest, contest, action])
+  }, [approveStart, approveContest, contest, action, force])
 
   const handleCancelClick = useCallback(() => {
     onClose && onClose()

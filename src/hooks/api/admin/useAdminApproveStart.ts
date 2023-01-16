@@ -5,6 +5,7 @@ import { adminContestsQuery } from "./useAdminContests"
 
 type AdminApproveStartParams = {
   contestID: number
+  force: boolean
 }
 
 export const useAdminApproveStart = () => {
@@ -13,6 +14,7 @@ export const useAdminApproveStart = () => {
     async (params) => {
       await contestsAPI.post(adminApproveStartUrl(), {
         contest_id: params.contestID,
+        force: params.force,
       })
     },
     {

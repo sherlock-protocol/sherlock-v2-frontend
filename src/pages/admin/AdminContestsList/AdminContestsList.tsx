@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
 import { useCallback, useState } from "react"
-import { FaClipboardList, FaEye } from "react-icons/fa"
+import { FaClipboardList, FaEye, FaFastForward } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Row } from "../../../components/Layout"
@@ -20,12 +20,16 @@ type ConfirmationModal = {
   action: ContestAction
 }
 
-const getContestAction = (contest: ContestsListItem): ContestAction | undefined => {
-  if (contest.status === "CREATED" && contest.initialPayment && !contest.adminUpcomingApproved) {
+const getContestAction = (contest: ContestsListItem, force: boolean): ContestAction | undefined => {
+  if (contest.status === "CREATED" && !contest.adminUpcomingApproved && (contest.initialPayment || force)) {
     return "PUBLISH"
   }
 
-  if (contest.status === "CREATED" && contest.fullPayment && contest.submissionReady && !contest.adminStartApproved) {
+  if (
+    contest.status === "CREATED" &&
+    !contest.adminStartApproved &&
+    ((contest.fullPayment && contest.submissionReady) || force)
+  ) {
     return "APPROVE_START"
   }
 }
@@ -33,6 +37,7 @@ const getContestAction = (contest: ContestsListItem): ContestAction | undefined 
 export const AdminContestsList = () => {
   const { data: contests, isLoading } = useAdminContests()
   const [confirmationModal, setConfirmationModal] = useState<ConfirmationModal | undefined>()
+  const [forceActionRowIndex, setForceActionRowIndex] = useState<number | undefined>()
 
   const handleActionClick = useCallback(
     (contestIndex: number, action: ContestAction) => {
@@ -48,22 +53,39 @@ export const AdminContestsList = () => {
     setConfirmationModal(undefined)
   }, [setConfirmationModal])
 
+  const handleForceActionClick = useCallback((index: number) => {
+    setForceActionRowIndex((i) => {
+      if (i === undefined) return index
+
+      return i === index ? undefined : index
+    })
+  }, [])
+
   const renderContestAction = useCallback(
     (contestIndex: number) => {
       if (!contests) return null
 
       const contest = contests[contestIndex]
-      const action = getContestAction(contest)
+      const action = getContestAction(contest, forceActionRowIndex === contestIndex)
 
       if (action === "PUBLISH")
         return (
-          <Button onClick={() => handleActionClick(contestIndex, action)} fullWidth>
+          <Button
+            onClick={() => handleActionClick(contestIndex, action)}
+            variant={forceActionRowIndex === contestIndex ? "alternate" : "secondary"}
+            fullWidth
+          >
             Publish
           </Button>
         )
       if (action === "APPROVE_START")
         return (
-          <Button size="normal" onClick={() => handleActionClick(contestIndex, action)} fullWidth>
+          <Button
+            size="normal"
+            variant={forceActionRowIndex === contestIndex ? "alternate" : "secondary"}
+            onClick={() => handleActionClick(contestIndex, action)}
+            fullWidth
+          >
             Approve Start
           </Button>
         )
@@ -74,7 +96,7 @@ export const AdminContestsList = () => {
         </Button>
       )
     },
-    [contests, handleActionClick]
+    [contests, handleActionClick, forceActionRowIndex]
   )
 
   const renderContestState = useCallback(
@@ -96,7 +118,18 @@ export const AdminContestsList = () => {
       }
 
       if (contest.status === "CREATED" && !contest.submissionReady) {
-        return <Text variant="secondary">Waiting for protocol to finalize submission</Text>
+        return (
+          <Row spacing="s" alignment={["center", "center"]}>
+            <Text variant="secondary">Waiting for protocol to finalize submission</Text>
+            <Button
+              size="small"
+              variant={forceActionRowIndex === contestIndex ? "alternate" : "secondary"}
+              onClick={() => handleForceActionClick(contestIndex)}
+            >
+              <FaFastForward />
+            </Button>
+          </Row>
+        )
       }
 
       if (contest.status === "CREATED" && !contest.adminStartApproved) {
@@ -154,7 +187,7 @@ export const AdminContestsList = () => {
         )
       }
     },
-    [contests]
+    [contests, forceActionRowIndex]
   )
 
   return (
@@ -218,6 +251,7 @@ export const AdminContestsList = () => {
             contest={contests[confirmationModal.contestIndex]}
             action={confirmationModal.action}
             onClose={handleConfirmationModalClose}
+            force={forceActionRowIndex === confirmationModal.contestIndex}
           />
         )}
       </LoadingContainer>
