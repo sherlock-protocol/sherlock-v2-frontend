@@ -6,7 +6,7 @@ export const routes = {
   Protocols: "protocols",
   AuditContests: "audits",
   ProtocolDashboard: "dashboard/:dashboardID",
-  Internal: "internal",
+  Admin: "admin",
   Overview: "overview",
   USForbidden: "us",
 } as const
@@ -23,8 +23,9 @@ export const contestsRoutes = {
   Profile: "profile",
 } as const
 
-export const internalRoutes = {
+export const adminRoutes = {
   InternalOverview: "overview",
+  Contests: "contests",
 } as const
 
 export const protocolDashboardRoutes = {
@@ -35,7 +36,7 @@ export const protocolDashboardRoutes = {
 type R = typeof routes &
   typeof protocolsRoutes &
   typeof contestsRoutes &
-  typeof internalRoutes &
+  typeof adminRoutes &
   typeof protocolDashboardRoutes
 
 type ValueOf<T> = T[keyof T]

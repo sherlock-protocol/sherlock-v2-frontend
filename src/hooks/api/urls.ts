@@ -36,3 +36,12 @@ export const getProtocolGithubHandles = (dashboardID: string) => `dashboard/${da
 export const addProtocolGithubHandle = (dashboardID: string) => `dashboard/${dashboardID}/github_handles`
 export const getProtocolDiscordHandles = (dashboardID: string) => `dashboard/${dashboardID}/discord_handles`
 export const addProtocolDiscordHandle = (dashboardID: string) => `dashboard/${dashboardID}/discord_handles`
+export const finalizeSubmission = (dashboardID: string) => `dashboard/${dashboardID}/finalize_submission`
+
+export const getAdminProfile = () => `/admin/profile`
+export const adminSignIn = () => `/admin/signin`
+export const adminSignOut = () => `/admin/signout`
+export const getAdminNonce = () => `/admin/nonce`
+export const getAdminContests = () => `/admin/contests`
+export const adminApproveContest = () => `/admin/approve_contest`
+export const adminApproveStart = () => `/admin/approve_start`

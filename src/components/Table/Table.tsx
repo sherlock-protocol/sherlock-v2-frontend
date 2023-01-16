@@ -9,8 +9,8 @@ export const Table: React.FC<
       selectable?: boolean
     }
   >
-> = ({ children, selectable = true, ...props }) => (
-  <table className={cx(styles.table, { [styles.selectable]: selectable })} {...props}>
+> = ({ children, selectable = true, className, ...props }) => (
+  <table className={cx(styles.table, className, { [styles.selectable]: selectable })} {...props}>
     {children}
   </table>
 )
