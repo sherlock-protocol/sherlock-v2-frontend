@@ -10,6 +10,7 @@ import { commify } from "../../utils/units"
 import { Table, TBody, Td, Th, THead, Tr } from "../../components/Table/Table"
 import { Contest } from "../../hooks/api/contests"
 import { FaLock } from "react-icons/fa"
+import { getTotalRewards } from "../../utils/contests"
 
 type Props = {
   contests?: Contest[]
@@ -73,7 +74,7 @@ export const UpcomingContests: React.FC<Props> = ({ contests, onContestClick }) 
                 </Td>
                 <Td>
                   <Text variant="mono" strong size="large" alignment="center">
-                    {commify(contest.prizePool + contest.leadSeniorAuditorFixedPay)} USDC
+                    {commify(getTotalRewards(contest))} USDC
                   </Text>
                 </Td>
                 <Td>

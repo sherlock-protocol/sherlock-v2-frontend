@@ -31,6 +31,7 @@ import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { ContestLeaderboardModal } from "./ContestLeaderboardModal"
 import { useContestant } from "../../hooks/api/contests/useContestant"
 import { useContestLeaderboard } from "../../hooks/api/contests/useContestLeaderboard"
+import { getTotalRewards } from "../../utils/contests"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -282,18 +283,30 @@ export const ContestDetails = () => {
                     <Column>
                       <Title variant="h3">TOTAL REWARDS</Title>
                       <Text size="extra-large" strong>
-                        {`${commify(contest.prizePool + contest.leadSeniorAuditorFixedPay)} USDC`}
+                        {`${commify(getTotalRewards(contest))} USDC`}
                       </Text>
                     </Column>
                   </Row>
-                  <Row spacing="l">
-                    <Column>
-                      <Title variant="h4">Contest Pool</Title>
-                      <Text strong>{`${commify(contest.prizePool)} USDC`}</Text>
+                  <Row spacing="m">
+                    <Column spacing="s">
+                      <Text variant="secondary" strong>
+                        Contest Pool
+                      </Text>
+                      <Text variant="secondary" strong>
+                        Lead Senior Watson
+                      </Text>
+                      {contest.judgingPrizePool ? (
+                        <Text variant="secondary" strong>
+                          Judging Pool
+                        </Text>
+                      ) : null}
                     </Column>
-                    <Column>
-                      <Title variant="h4">Lead Senior Watson</Title>
-                      <Text strong>{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
+                    <Column spacing="s">
+                      <Text variant="secondary" strong>{`${commify(contest.prizePool)} USDC`}</Text>
+                      <Text variant="secondary" strong>{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
+                      {contest.judgingPrizePool ? (
+                        <Text variant="secondary" strong>{`${commify(contest.judgingPrizePool)} USDC`}</Text>
+                      ) : null}
                     </Column>
                   </Row>
                 </Column>
