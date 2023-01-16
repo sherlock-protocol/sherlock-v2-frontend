@@ -104,7 +104,7 @@ const AppProtocolDashboard = () => {
                   <TBody>
                     <Tr>
                       <Td>
-                        <Text strong>Estimated Start Date</Text>
+                        <Text strong>{contest.startApproved ? "Start Date" : "Estimated Start Date"}</Text>
                       </Td>
                       <Td>
                         <Text alignment="right">{startDate.toLocaleString(DateTime.DATE_MED)}</Text>
@@ -178,7 +178,13 @@ const AppProtocolDashboard = () => {
                       <Text variant="secondary">
                         <FaCheck /> Submission ready
                       </Text>
-                      <Text variant="secondary">Sherlock team will review it and confirm the start date</Text>
+                      {contest.startApproved ? (
+                        <Text variant="secondary" strong>
+                          Contest start date approved
+                        </Text>
+                      ) : (
+                        <Text variant="secondary">Sherlock team will review it and confirm the start date</Text>
+                      )}
                     </Column>
                   )}
                 </Column>
