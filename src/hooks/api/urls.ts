@@ -22,6 +22,7 @@ export const getIsAuditor = (address: string) => `is_auditor/${address}`
 export const authenticateAuditor = (address: string) => `auditors/${address}`
 export const getNonce = () => `nonce`
 export const getAuditorProfile = () => "profile"
+export const validateDiscordHandle = (handle: string) => `validate_discord_handle?discord_handle=${handle}`
 
 export const updateProfile = () => "profile"
 export const signOut = () => "signout"

@@ -5,8 +5,8 @@ import { useAccount } from "wagmi"
 import { FormError } from "../../../utils/Error"
 
 import { contests as contestsAPI } from "../axios"
-import { contestantQueryKey } from "../contests"
 import { contestSignUp as contestSignUpUrl } from "../urls"
+import { contestantQueryKey } from "./useContestant"
 
 type SignUp = {
   repo: string

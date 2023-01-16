@@ -187,7 +187,7 @@ export const AdminContestsList = () => {
         )
       }
     },
-    [contests, forceActionRowIndex]
+    [contests, forceActionRowIndex, handleForceActionClick]
   )
 
   return (
