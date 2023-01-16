@@ -1,8 +1,11 @@
-import React from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { Outlet, useParams } from "react-router-dom"
+import { FaCheck, FaGithub } from "react-icons/fa"
+import { commify } from "ethers/lib/utils.js"
+import { DateTime } from "luxon"
+
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
-
 import styles from "./App.module.scss"
 import { protocolDashboardRoutes, routes } from "./utils/routes"
 import { useProtocolDashboard } from "./hooks/api/contests/useProtocolDashboard"
@@ -10,13 +13,57 @@ import { Column, Row } from "./components/Layout"
 import { Box } from "./components/Box"
 import { Title } from "./components/Title"
 import { Table, TBody, Td, Tr } from "./components/Table/Table"
-import { commify } from "ethers/lib/utils.js"
-import { DateTime } from "luxon"
 import { Text } from "./components/Text"
+import { Button } from "./components/Button"
+import Modal, { Props as ModalProps } from "./components/Modal/Modal"
+import { useFinalizeSubmission } from "./hooks/api/contests/useFinalizeSubmission"
+import LoadingContainer from "./components/LoadingContainer/LoadingContainer"
+
+type Props = ModalProps & {
+  dashboardID: string
+}
+
+const FinalizeSubmissionModal: React.FC<Props> = ({ onClose, dashboardID }) => {
+  const { finalizeSubmission, isLoading, isSuccess } = useFinalizeSubmission()
+
+  useEffect(() => {
+    if (isSuccess) {
+      onClose?.()
+    }
+  }, [isSuccess, onClose])
+
+  const handleCancelClick = useCallback(() => {
+    onClose?.()
+  }, [onClose])
+
+  const handleConfirmClick = useCallback(() => {
+    finalizeSubmission({ dashboardID })
+  }, [finalizeSubmission, dashboardID])
+
+  return (
+    <Modal closeable onClose={onClose}>
+      <LoadingContainer loading={isLoading}>
+        <Column spacing="xl">
+          <Title>Finalize submission</Title>
+          <Text>By confirming this action, the repo will become read-only.</Text>
+          <Text>Sherlock will review the details and confirm the start date soon.</Text>
+          <Text variant="secondary">This action cannot be undone.</Text>
+          <Row spacing="l" alignment={["center"]}>
+            <Button variant="secondary" onClick={handleCancelClick}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmClick}>Confirm</Button>
+          </Row>
+        </Column>
+      </LoadingContainer>
+    </Modal>
+  )
+}
 
 const AppProtocolDashboard = () => {
   const { dashboardID } = useParams()
   const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
+  const [finalizeSubmissionModalOpen, setFinalizeSubmissionModalOpen] = useState(false)
 
   if (!protocolDashboard) return null
 
@@ -31,10 +78,11 @@ const AppProtocolDashboard = () => {
     },
   ]
 
-  const contest = protocolDashboard.contest
+  const { contest, payments } = protocolDashboard
   const startDate = DateTime.fromSeconds(contest.startDate)
   const endDate = DateTime.fromSeconds(contest.endDate)
   const length = endDate.diff(startDate, "days").days
+  const fullyPaid = payments.totalPaid >= payments.totalAmount
 
   return (
     <div className={styles.app}>
@@ -56,7 +104,7 @@ const AppProtocolDashboard = () => {
                   <TBody>
                     <Tr>
                       <Td>
-                        <Text strong>Estimated Start Date</Text>
+                        <Text strong>{contest.startApproved ? "Start Date" : "Estimated Start Date"}</Text>
                       </Td>
                       <Td>
                         <Text alignment="right">{startDate.toLocaleString(DateTime.DATE_MED)}</Text>
@@ -106,6 +154,40 @@ const AppProtocolDashboard = () => {
                     )}
                   </TBody>
                 </Table>
+                <Column spacing="s" alignment={["center"]}>
+                  <Button variant="secondary" onClick={() => window.open(contest.repo, "blank")} fullWidth>
+                    <FaGithub />
+                    &nbsp;&nbsp;Audit repository
+                  </Button>
+                  {!contest.submissionReady && (
+                    <Button
+                      disabled={!fullyPaid || contest.submissionReady}
+                      fullWidth
+                      onClick={() => setFinalizeSubmissionModalOpen(true)}
+                    >
+                      Finalize submission
+                    </Button>
+                  )}
+                  {!fullyPaid && (
+                    <Text variant="secondary" size="small">
+                      You need to submit the full payment
+                    </Text>
+                  )}
+                  {contest.submissionReady && (
+                    <Column spacing="s" alignment={["center"]}>
+                      <Text variant="secondary">
+                        <FaCheck /> Submission ready
+                      </Text>
+                      {contest.startApproved ? (
+                        <Text variant="secondary" strong>
+                          Contest start date approved
+                        </Text>
+                      ) : (
+                        <Text variant="secondary">Sherlock team will review it and confirm the start date</Text>
+                      )}
+                    </Column>
+                  )}
+                </Column>
               </Box>
             </Column>
             <Column grow={1}>
@@ -115,6 +197,12 @@ const AppProtocolDashboard = () => {
         </div>
       </div>
       <Footer />
+      {finalizeSubmissionModalOpen && (
+        <FinalizeSubmissionModal
+          dashboardID={dashboardID ?? ""}
+          onClose={() => setFinalizeSubmissionModalOpen(false)}
+        />
+      )}
     </div>
   )
 }
