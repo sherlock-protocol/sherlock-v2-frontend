@@ -503,6 +503,15 @@ export const ContestDetails = () => {
                                 The judging contest starts as soon as the audit contest ends.
                               </Text>
                             )}
+                            {contest.status === "JUDGING" && !contestant?.audit && (
+                              <Button
+                                variant="secondary"
+                                onClick={() => window.open(`https://github.com/${contest.repo}`)}
+                              >
+                                <FaGithub />
+                                &nbsp;Audit repository
+                              </Button>
+                            )}
                             <Button variant="alternate" onClick={handleJoinJudgingContest}>
                               Judge Contest
                             </Button>
