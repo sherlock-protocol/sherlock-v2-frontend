@@ -6,6 +6,7 @@ import { getNonce as getNonceUrl } from "./api/urls"
 import { useMutation, useQueryClient } from "react-query"
 import { AuditorProfile } from "./api/auditors/index"
 import { GetAuditorProfile, profileQuery } from "./api/auditors/useProfile"
+import { ethers } from "ethers"
 
 type GetNonceResponseData = {
   nonce: string
@@ -69,7 +70,7 @@ export const useSignInWithEthereum = () => {
 
       const message = new SiweMessage({
         domain: "Sherlock",
-        address,
+        address: ethers.utils.getAddress(address),
         statement: "Sign in with Ethereum to Sherlock Audits",
         chainId: chain?.id,
         uri: "https://app.sherlock.xyz",

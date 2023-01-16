@@ -204,7 +204,7 @@ export const ContestDetails = () => {
   const timeLeft = endDate.diffNow(["day", "hour", "minute", "second"])
   const endingSoon = contest.status === "RUNNING" && timeLeft.days < 2
 
-  const profileIsComplete = profile && profile.githubHandle && profile.discordHandle
+  const profileIsComplete = profile && profile.githubHandle
 
   const hasEnoughAuditDays = profile && profile.auditDays >= 28
 
@@ -374,7 +374,7 @@ export const ContestDetails = () => {
               {profile && (
                 <>
                   {contestant?.audit ? (
-                    <Column spacing="m" grow={1}>
+                    <Column spacing="m" grow={0}>
                       {contest.private ? (
                         contestant.audit.repo ? (
                           <>
@@ -427,7 +427,7 @@ export const ContestDetails = () => {
                       )}
 
                       {!contest.private && (
-                        <>
+                        <Column>
                           <Text>
                             {contest.status === "CREATED" || contest.status === "RUNNING"
                               ? "You're competing for:"
@@ -445,7 +445,7 @@ export const ContestDetails = () => {
                             onChange={handleOptInChange}
                             disabled={!canOptinOut}
                           />
-                        </>
+                        </Column>
                       )}
                     </Column>
                   ) : joinContestEnabled ? (
