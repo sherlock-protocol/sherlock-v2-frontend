@@ -29,6 +29,7 @@ export type Contest = {
   fullPayment: number
   judgingPrizePool?: number
   jugdingEndDate?: number // Timestamp in seconds.
+  repo: string
 }
 
 export type Scoreboard = {
@@ -55,6 +56,7 @@ type GetContestsResponseData = {
   full_payment: number
   judging_ends_at?: number
   judging_prize_pool: number | null
+  template_repo_name: string
 }[]
 
 export const contestsQueryKey = "contests"
@@ -77,6 +79,7 @@ export const useContests = () =>
       fullPayment: d.full_payment,
       judgingPrizePool: d.judging_prize_pool ?? undefined,
       jugdingEndDate: d.judging_ends_at,
+      repo: d.template_repo_name,
     }))
   })
 
@@ -97,6 +100,7 @@ type GetContestResponseData = {
   full_payment: number
   judging_prize_pool: number | null
   judging_ends_at?: number
+  template_repo_name: string
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -121,6 +125,7 @@ export const useContest = (id: number) =>
       fullPayment: response.full_payment,
       judgingPrizePool: response.judging_prize_pool ?? undefined,
       jugdingEndDate: response.judging_ends_at,
+      repo: response.template_repo_name,
     }
   })
 
