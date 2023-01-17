@@ -56,6 +56,10 @@ export const ProtocolTeam = () => {
     window.open(`https://github.com/${handle}`, "blank")
   }, [])
 
+  const handleDiscordHandleClick = useCallback((discordID: number) => {
+    window.open(`https://discordapp.com/users/${discordID}`)
+  }, [])
+
   const handleAddGithubHandleClick = useCallback(() => {
     addGithubHandle({
       protocolDashboardID: dashboardID ?? "",
@@ -176,7 +180,7 @@ export const ProtocolTeam = () => {
                 <Row
                   spacing="xs"
                   className={cx([styles.itemRow, styles.preview])}
-                  onClick={() => handleGithubHandleClick(debouncedGithubHandle)}
+                  onClick={() => handleDiscordHandleClick(discordValidation.userID)}
                 >
                   <FaDiscord />
                   <Text>{`@${discordValidation.handle}`}</Text>
