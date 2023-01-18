@@ -74,7 +74,13 @@ export const AuditScope = () => {
                 <Column spacing="m">
                   <Text variant="secondary">We couldn't find the repo.</Text>
                   <Text variant="secondary">
-                    If it's private, make sure to invite <code>sherlock-admin</code> and try again.
+                    If it's private, make sure to invite{" "}
+                    <strong>
+                      <a href="https://github.com/sherlock-admin" target="_blank" rel="noreferrer">
+                        sherlock-admin
+                      </a>
+                    </strong>{" "}
+                    and try again.
                   </Text>
                 </Column>
               )}
