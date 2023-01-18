@@ -21,7 +21,7 @@ export const AuditScope = () => {
   const [repoName, setRepoName] = useState("")
   const [repositories, setRepositories] = useState<RepositoryState[]>([])
   const [selectedPaths, setSelectedPaths] = useState<Record<string, string[]>>({})
-  const { data: repo, refetch: validateRepo, isLoading } = useRepository(repoName)
+  const { data: repo, refetch: validateRepo, isLoading, isError } = useRepository(repoName)
 
   useEffect(() => {
     if (repo && !repositories.some((r) => r.name === repo.name)) {
@@ -70,6 +70,14 @@ export const AuditScope = () => {
               <Button disabled={isLoading || repoName === ""} onClick={() => validateRepo()}>
                 {isLoading ? "Validating repo ..." : "Add repo"}
               </Button>
+              {isError && (
+                <Column spacing="m">
+                  <Text variant="secondary">We couldn't find the repo.</Text>
+                  <Text variant="secondary">
+                    If it's private, make sure to invite <code>sherlock-admin</code> and try again.
+                  </Text>
+                </Column>
+              )}
             </Column>
           </Column>
         </Box>

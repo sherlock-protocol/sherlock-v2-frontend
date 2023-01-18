@@ -1,5 +1,5 @@
 import { useCallback } from "react"
-import { FaCheckCircle, FaCircle, FaFile, FaFolder, FaRegFile } from "react-icons/fa"
+import { FaCheckCircle, FaFile, FaFolder, FaRegFile } from "react-icons/fa"
 import cx from "classnames"
 import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components/Text"
