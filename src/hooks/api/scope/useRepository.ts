@@ -2,7 +2,7 @@ import { useQuery } from "react-query"
 import { contests as contestsAPI } from "../axios"
 import { getRepository } from "../urls"
 
-type Branch = {
+export type Branch = {
   name: string
   commit: string
 }

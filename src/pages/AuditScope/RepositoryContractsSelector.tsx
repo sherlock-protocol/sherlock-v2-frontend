@@ -87,6 +87,14 @@ export const RepositoryContractsSelector: React.FC<Props> = ({ repo, commit, sel
     )
   })
 
+  if (treeElements.length === 0) {
+    return (
+      <Row alignment="center">
+        <Text variant="secondary">No Solidity contracts found</Text>
+      </Row>
+    )
+  }
+
   return (
     <Column spacing="s" className={styles.tree}>
       <ul className={styles.directoryList}>{treeElements}</ul>
