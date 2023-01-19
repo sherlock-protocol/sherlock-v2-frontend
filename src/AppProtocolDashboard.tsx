@@ -76,6 +76,10 @@ const AppProtocolDashboard = () => {
       title: "PAYMENTS",
       route: protocolDashboardRoutes.Payments,
     },
+    {
+      title: "SCOPE",
+      route: protocolDashboardRoutes.Scope,
+    },
   ]
 
   const { contest, payments } = protocolDashboard

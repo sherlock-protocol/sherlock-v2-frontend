@@ -8,7 +8,6 @@ import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
 import { useRepository, Branch } from "../../hooks/api/scope/useRepository"
 import { shortenCommitHash } from "../../utils/repository"
-import styles from "./AuditScope.module.scss"
 import { BranchSelectionModal } from "./BranchSelectionModal"
 import { CommitSelectionModal } from "./CommitSelectionModal"
 import { RepositoryContractsSelector } from "./RepositoryContractsSelector"
@@ -101,94 +100,90 @@ export const AuditScope = () => {
   )
 
   return (
-    <Column className={styles.container}>
-      <div className={styles.noise} />
-      <Column className={styles.content} spacing="xl">
-        <Title>Audit Scope</Title>
+    <Column spacing="l">
+      <Box shadow={false} fullWidth>
+        <Column spacing="l">
+          <Title>Repositories</Title>
+          <Column spacing="s">
+            <Text>Copy & paste the Github repository link(s) you would like to audit</Text>
+            <Input value={repoName} onChange={setRepoName} />
+            <Button disabled={isLoading || repoName === ""} onClick={() => validateRepo()}>
+              {isLoading ? "Validating repo ..." : "Add repo"}
+            </Button>
+            {isError && (
+              <Column spacing="m">
+                <Text variant="secondary">We couldn't find the repo.</Text>
+                <Text variant="secondary">
+                  If it's private, make sure to invite{" "}
+                  <strong>
+                    <a href="https://github.com/sherlock-admin" target="_blank" rel="noreferrer">
+                      sherlock-admin
+                    </a>
+                  </strong>{" "}
+                  and try again.
+                </Text>
+              </Column>
+            )}
+          </Column>
+        </Column>
+      </Box>
+      {repositories.length > 0 ? (
         <Box shadow={false} fullWidth>
           <Column spacing="l">
-            <Title>Repositories</Title>
+            <Title>Branches & commits</Title>
             <Column spacing="s">
-              <Text>Copy & paste the Github repository link(s) you would like to audit</Text>
-              <Input value={repoName} onChange={setRepoName} />
-              <Button disabled={isLoading || repoName === ""} onClick={() => validateRepo()}>
-                {isLoading ? "Validating repo ..." : "Add repo"}
-              </Button>
-              {isError && (
-                <Column spacing="m">
-                  <Text variant="secondary">We couldn't find the repo.</Text>
-                  <Text variant="secondary">
-                    If it's private, make sure to invite{" "}
-                    <strong>
-                      <a href="https://github.com/sherlock-admin" target="_blank" rel="noreferrer">
-                        sherlock-admin
-                      </a>
-                    </strong>{" "}
-                    and try again.
+              <Text>Select branch and commit hash</Text>
+              <Row spacing="m">
+                <Column spacing="s" grow={1}>
+                  <Text size="small" strong>
+                    Repo
                   </Text>
+                  {repositories.map((r) => (
+                    <Input value={r.name} variant="small" disabled />
+                  ))}
                 </Column>
-              )}
+                <Column spacing="s">
+                  <Text size="small" strong>
+                    Branch
+                  </Text>
+                  {repositories.map((r) => (
+                    <Button variant="secondary" onClick={() => setBranchSelectionModalRepoName(r.name)}>
+                      {r.branch}
+                    </Button>
+                  ))}
+                </Column>
+                <Column spacing="s">
+                  <Text size="small" strong>
+                    Commit hash
+                  </Text>
+                  {repositories.map((r) => (
+                    <Button variant="secondary" onClick={() => setCommitSelectionModalRepoName(r.name)}>
+                      {shortenCommitHash(r.commit)}
+                    </Button>
+                  ))}
+                </Column>
+              </Row>
             </Column>
           </Column>
         </Box>
-        {repositories.length > 0 ? (
-          <Box shadow={false} fullWidth>
-            <Column spacing="l">
-              <Title>Branches & commits</Title>
-              <Column spacing="s">
-                <Text>Select branch and commit hash</Text>
-                <Row spacing="m">
-                  <Column spacing="s" grow={1}>
-                    <Text size="small" strong>
-                      Repo
-                    </Text>
-                    {repositories.map((r) => (
-                      <Input value={r.name} variant="small" disabled />
-                    ))}
-                  </Column>
-                  <Column spacing="s">
-                    <Text size="small" strong>
-                      Branch
-                    </Text>
-                    {repositories.map((r) => (
-                      <Button variant="secondary" onClick={() => setBranchSelectionModalRepoName(r.name)}>
-                        {r.branch}
-                      </Button>
-                    ))}
-                  </Column>
-                  <Column spacing="s">
-                    <Text size="small" strong>
-                      Commit hash
-                    </Text>
-                    {repositories.map((r) => (
-                      <Button variant="secondary" onClick={() => setCommitSelectionModalRepoName(r.name)}>
-                        {shortenCommitHash(r.commit)}
-                      </Button>
-                    ))}
-                  </Column>
-                </Row>
-              </Column>
-            </Column>
-          </Box>
-        ) : null}
-        {repositories.map((r) => (
-          <Box shadow={false} fullWidth>
-            <Column spacing="l">
-              <Title variant="h2">
-                <FaGithub />
-                &nbsp;
-                {r.name}
-              </Title>
-              <RepositoryContractsSelector
-                repo={r.name}
-                commit={r.commit}
-                onPathSelected={(path) => handlePathSelected(r.name, path)}
-                selectedPaths={selectedPaths[r.name]}
-              />
-            </Column>
-          </Box>
-        ))}
-      </Column>
+      ) : null}
+      {repositories.map((r) => (
+        <Box shadow={false} fullWidth>
+          <Column spacing="l">
+            <Title variant="h2">
+              <FaGithub />
+              &nbsp;
+              {r.name}
+            </Title>
+            <RepositoryContractsSelector
+              repo={r.name}
+              commit={r.commit}
+              onPathSelected={(path) => handlePathSelected(r.name, path)}
+              selectedPaths={selectedPaths[r.name]}
+            />
+          </Column>
+        </Box>
+      ))}
       {branchSelectionModalRepoName && (
         <BranchSelectionModal
           repoName={branchSelectionModalRepoName}
