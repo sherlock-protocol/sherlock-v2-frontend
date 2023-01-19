@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
-import { useNavigate, useParams } from "react-router-dom"
+import { Navigate, useNavigate, useParams } from "react-router-dom"
 import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy, FaLock } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
@@ -32,6 +32,7 @@ import { ContestLeaderboardModal } from "./ContestLeaderboardModal"
 import { useContestant } from "../../hooks/api/contests/useContestant"
 import { useContestLeaderboard } from "../../hooks/api/contests/useContestLeaderboard"
 import { getTotalRewards } from "../../utils/contests"
+import { contestsRoutes } from "../../utils/routes"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -57,7 +58,7 @@ export const ContestDetails = () => {
   const [signUpModalOpen, setSignUpModalOpen] = useState(false)
   const [leaderboardModalOpen, setLeaderboardModalOpen] = useState(false)
 
-  const { data: contest } = useContest(parseInt(contestId ?? ""))
+  const { data: contest, isError: isContestError } = useContest(parseInt(contestId ?? ""))
   const { data: contestant } = useContestant(address ?? "", parseInt(contestId ?? ""), {
     enabled: !!address,
     retry: false,
@@ -197,6 +198,7 @@ export const ContestDetails = () => {
     [contest?.status, contest?.private, contest?.judgingPrizePool]
   )
 
+  if (isContestError) return <Navigate replace to={contestsRoutes.Contests} />
   if (!contest) return null
 
   const startDate = DateTime.fromSeconds(contest.startDate)
