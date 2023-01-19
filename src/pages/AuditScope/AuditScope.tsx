@@ -61,6 +61,14 @@ export const AuditScope = () => {
     [selectedPaths, setSelectedPaths]
   )
 
+  const handlePathsLoad = useCallback((repoName: string, paths: string[]) => {
+    const defaultSelectedPaths = paths.filter((p) => !p.includes("lib/") && !p.includes("test/"))
+    setSelectedPaths((paths) => ({
+      ...paths,
+      [repoName]: defaultSelectedPaths,
+    }))
+  }, [])
+
   const handleSelectBranch = useCallback(
     (repoName: string, branchName: string) => {
       const repoIndex = repositories.findIndex((r) => r.name === repoName)
@@ -180,6 +188,7 @@ export const AuditScope = () => {
               commit={r.commit}
               onPathSelected={(path) => handlePathSelected(r.name, path)}
               selectedPaths={selectedPaths[r.name]}
+              onLoadPaths={(paths) => handlePathsLoad(r.name, paths)}
             />
           </Column>
         </Box>

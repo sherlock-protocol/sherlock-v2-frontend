@@ -1,4 +1,4 @@
-import { useCallback } from "react"
+import { useCallback, useEffect } from "react"
 import { FaCheckCircle, FaFile, FaFolder, FaRegFile } from "react-icons/fa"
 import cx from "classnames"
 import { Column, Row } from "../../components/Layout"
@@ -12,6 +12,7 @@ type Props = {
   commit: string
   selectedPaths: string[]
   onPathSelected: (path: string) => void
+  onLoadPaths: (paths: string[]) => void
 }
 
 type TreeEntryProps = {
@@ -76,12 +77,24 @@ const TreeEntry: React.FC<TreeEntryProps> = ({ name, tree, parentPath = "", onPa
   )
 }
 
-export const RepositoryContractsSelector: React.FC<Props> = ({ repo, commit, selectedPaths = [], onPathSelected }) => {
-  const { data: filesTree } = useRepositoryContracts(repo, commit)
+export const RepositoryContractsSelector: React.FC<Props> = ({
+  repo,
+  commit,
+  selectedPaths = [],
+  onPathSelected,
+  onLoadPaths,
+}) => {
+  const { data, isSuccess } = useRepositoryContracts(repo, commit)
+
+  useEffect(() => {
+    if (isSuccess) {
+      onLoadPaths(data.rawPaths)
+    }
+  }, [isSuccess, data, onLoadPaths])
 
   const treeElements: React.ReactNode[] = []
 
-  filesTree?.forEach((value, key) => {
+  data?.tree.forEach((value, key) => {
     treeElements.push(
       <TreeEntry name={key} tree={value} onPathSelected={onPathSelected} selectedPaths={selectedPaths} />
     )
