@@ -147,7 +147,7 @@ export const AuditScope = () => {
                     Repo
                   </Text>
                   {repositories.map((r) => (
-                    <Input value={r.name} variant="small" disabled />
+                    <Input value={r.name} key={r.name} variant="small" disabled />
                   ))}
                 </Column>
                 <Column spacing="s">
@@ -155,7 +155,7 @@ export const AuditScope = () => {
                     Branch
                   </Text>
                   {repositories.map((r) => (
-                    <Button variant="secondary" onClick={() => setBranchSelectionModalRepoName(r.name)}>
+                    <Button key={r.name} variant="secondary" onClick={() => setBranchSelectionModalRepoName(r.name)}>
                       {r.branch}
                     </Button>
                   ))}
@@ -165,7 +165,7 @@ export const AuditScope = () => {
                     Commit hash
                   </Text>
                   {repositories.map((r) => (
-                    <Button variant="secondary" onClick={() => setCommitSelectionModalRepoName(r.name)}>
+                    <Button key={r.name} variant="secondary" onClick={() => setCommitSelectionModalRepoName(r.name)}>
                       {shortenCommitHash(r.commit)}
                     </Button>
                   ))}
@@ -176,7 +176,7 @@ export const AuditScope = () => {
         </Box>
       ) : null}
       {repositories.map((r) => (
-        <Box shadow={false} fullWidth>
+        <Box shadow={false} fullWidth key={`contracts-${r.name}`}>
           <Column spacing="l">
             <Title variant="h2">
               <FaGithub />

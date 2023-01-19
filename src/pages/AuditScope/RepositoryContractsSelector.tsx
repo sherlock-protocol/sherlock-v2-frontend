@@ -55,6 +55,7 @@ const TreeEntry: React.FC<TreeEntryProps> = ({ name, tree, parentPath = "", onPa
   tree.forEach((value, key) => {
     entryElements.push(
       <TreeEntry
+        key={key}
         name={key}
         tree={value}
         onPathSelected={handleFileClick}
@@ -90,13 +91,13 @@ export const RepositoryContractsSelector: React.FC<Props> = ({
     if (isSuccess) {
       onLoadPaths(data.rawPaths)
     }
-  }, [isSuccess, data, onLoadPaths])
+  }, [isSuccess, data])
 
   const treeElements: React.ReactNode[] = []
 
   data?.tree.forEach((value, key) => {
     treeElements.push(
-      <TreeEntry name={key} tree={value} onPathSelected={onPathSelected} selectedPaths={selectedPaths} />
+      <TreeEntry key={key} name={key} tree={value} onPathSelected={onPathSelected} selectedPaths={selectedPaths} />
     )
   })
 
