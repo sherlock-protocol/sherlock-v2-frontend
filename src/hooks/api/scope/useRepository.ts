@@ -1,6 +1,6 @@
 import { useQuery } from "react-query"
 import { contests as contestsAPI } from "../axios"
-import { getRepository } from "../urls"
+import { getRepositoryBranches } from "../urls"
 
 export type Branch = {
   name: string
@@ -23,7 +23,7 @@ export const useRepository = (repo: string) =>
   useQuery<Repository, Error>(
     useRepositoryQueryKey(repo),
     async () => {
-      const { data } = await contestsAPI.get<GetRepositoryResponse>(getRepository(repo))
+      const { data } = await contestsAPI.get<GetRepositoryResponse>(getRepositoryBranches(repo))
 
       return {
         name: repo,

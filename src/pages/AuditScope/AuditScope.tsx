@@ -10,6 +10,7 @@ import { useRepository, Branch } from "../../hooks/api/scope/useRepository"
 import { shortenCommitHash } from "../../utils/repository"
 import styles from "./AuditScope.module.scss"
 import { BranchSelectionModal } from "./BranchSelectionModal"
+import { CommitSelectionModal } from "./CommitSelectionModal"
 import { RepositoryContractsSelector } from "./RepositoryContractsSelector"
 
 type RepositoryState = {
@@ -24,6 +25,7 @@ export const AuditScope = () => {
   const [repositories, setRepositories] = useState<RepositoryState[]>([])
   const [selectedPaths, setSelectedPaths] = useState<Record<string, string[]>>({})
   const [branchSelectionModalRepoName, setBranchSelectionModalRepoName] = useState<string>()
+  const [commitSelectionModalRepoName, setCommitSelectionModalRepoName] = useState<string>()
   const { data: repo, refetch: validateRepo, isLoading, isError } = useRepository(repoName)
 
   useEffect(() => {
@@ -79,6 +81,23 @@ export const AuditScope = () => {
       setBranchSelectionModalRepoName(undefined)
     },
     [setRepositories, repositories]
+  )
+
+  const handleSelectCommit = useCallback(
+    (repoName: string, commitHash: string) => {
+      const repoIndex = repositories.findIndex((r) => r.name === repoName)
+      if (repoIndex < 0) return
+
+      setRepositories((r) => {
+        r[repoIndex] = {
+          ...r[repoIndex],
+          commit: commitHash,
+        }
+        return r
+      })
+      setCommitSelectionModalRepoName(undefined)
+    },
+    [repositories]
   )
 
   return (
@@ -142,7 +161,9 @@ export const AuditScope = () => {
                       Commit hash
                     </Text>
                     {repositories.map((r) => (
-                      <Button variant="secondary">{shortenCommitHash(r.commit)}</Button>
+                      <Button variant="secondary" onClick={() => setCommitSelectionModalRepoName(r.name)}>
+                        {shortenCommitHash(r.commit)}
+                      </Button>
                     ))}
                   </Column>
                 </Row>
@@ -174,6 +195,15 @@ export const AuditScope = () => {
           selectedBranch={repositories.find((r) => r.name === branchSelectionModalRepoName)?.branch}
           onSelectBranch={(branch) => handleSelectBranch(branchSelectionModalRepoName, branch)}
           onClose={() => setBranchSelectionModalRepoName(undefined)}
+        />
+      )}
+      {commitSelectionModalRepoName && (
+        <CommitSelectionModal
+          repoName={commitSelectionModalRepoName}
+          branchName={repositories.find((r) => r.name === commitSelectionModalRepoName)?.branch ?? ""}
+          selectedCommit={repositories.find((r) => r.name === commitSelectionModalRepoName)?.commit}
+          onSelectCommit={(commit) => handleSelectCommit(commitSelectionModalRepoName, commit)}
+          onClose={() => setCommitSelectionModalRepoName(undefined)}
         />
       )}
     </Column>
