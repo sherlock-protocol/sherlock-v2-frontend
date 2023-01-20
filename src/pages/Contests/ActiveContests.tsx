@@ -93,7 +93,7 @@ export const ActiveContests: React.FC<Props> = ({ contests, onContestClick }) =>
                     </Text>
                     {contest.id === 38 && (
                       <Text variant="secondary" alignment="center" size="small">
-                        1/3 USDC and 2/3 OP tokens
+                        &#8531; USDC and &#8532; OP tokens
                       </Text>
                     )}
                   </Column>

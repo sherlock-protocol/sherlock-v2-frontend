@@ -311,6 +311,11 @@ export const ContestDetails = () => {
                       ) : null}
                     </Column>
                   </Row>
+                  {contest.id === 38 && (
+                    <Text variant="secondary" size="small">
+                      &#8531; USDC and &#8532; OP tokens
+                    </Text>
+                  )}
                 </Column>
               </Row>
               <hr />
