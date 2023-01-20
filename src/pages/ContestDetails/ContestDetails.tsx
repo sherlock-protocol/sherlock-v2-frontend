@@ -282,11 +282,20 @@ export const ContestDetails = () => {
               <Row>
                 <Column spacing="l">
                   <Row>
-                    <Column>
-                      <Title variant="h3">TOTAL REWARDS</Title>
-                      <Text size="extra-large" strong>
-                        {`${commify(getTotalRewards(contest))} USDC`}
-                      </Text>
+                    <Column spacing="s">
+                      <Column>
+                        <Title variant="h3">TOTAL REWARDS</Title>
+                        <Row spacing="xs" alignment={["start", "baseline"]}>
+                          <Text size="extra-large" strong>
+                            {contest.id === 38
+                              ? `$${commify(getTotalRewards(contest))}`
+                              : `${commify(getTotalRewards(contest))} USDC`}
+                          </Text>
+                          <Text variant="secondary" size="small">
+                            Maximum Payout
+                          </Text>
+                        </Row>
+                      </Column>
                     </Column>
                   </Row>
                   <Row spacing="m">
@@ -311,6 +320,11 @@ export const ContestDetails = () => {
                       ) : null}
                     </Column>
                   </Row>
+                  {contest.id === 38 && (
+                    <Text variant="secondary" size="small">
+                      &#8531; USDC and &#8532; OP tokens
+                    </Text>
+                  )}
                 </Column>
               </Row>
               <hr />
