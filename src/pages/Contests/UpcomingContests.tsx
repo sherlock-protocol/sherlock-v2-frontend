@@ -75,11 +75,13 @@ export const UpcomingContests: React.FC<Props> = ({ contests, onContestClick }) 
                 <Td>
                   <Column spacing="xs">
                     <Text variant="mono" strong size="large" alignment="center">
-                      {commify(getTotalRewards(contest))} USDC
+                      {contest.id === 38
+                        ? `$${commify(getTotalRewards(contest))}`
+                        : `${commify(getTotalRewards(contest))} USDC`}
                     </Text>
                     {contest.id === 38 && (
                       <Text variant="secondary" alignment="center" size="small">
-                        &#8531; USDC and &#8532; OP tokens
+                        Maximum Payout
                       </Text>
                     )}
                   </Column>

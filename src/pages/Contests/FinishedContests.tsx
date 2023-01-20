@@ -97,7 +97,7 @@ export const FinishedContests: React.FC<Props> = ({ contests, onContestClick }) 
                     </Text>
                     {contest.id === 38 && (
                       <Text variant="secondary" alignment="center" size="small">
-                        &#8531; USDC and &#8532; OP tokens
+                        Maximum Payout
                       </Text>
                     )}
                   </Column>
