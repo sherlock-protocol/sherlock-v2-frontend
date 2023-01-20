@@ -179,8 +179,8 @@ export const ContestDetails = () => {
   }, [setLeaderboardModalOpen])
 
   const canOptinOut = useMemo(
-    () => !contest?.private && (contest?.status === "CREATED" || contest?.status === "RUNNING"),
-    [contest?.status, contest?.private]
+    () => contest?.id !== 38 && !contest?.private && (contest?.status === "CREATED" || contest?.status === "RUNNING"),
+    [contest?.status, contest?.private, contest?.id]
   )
 
   const joinContestEnabled = useMemo(
@@ -291,9 +291,11 @@ export const ContestDetails = () => {
                               ? `$${commify(getTotalRewards(contest))}`
                               : `${commify(getTotalRewards(contest))} USDC`}
                           </Text>
-                          <Text variant="secondary" size="small">
-                            Maximum Payout
-                          </Text>
+                          {contest.id === 38 && (
+                            <Text variant="secondary" size="small">
+                              Maximum Payout
+                            </Text>
+                          )}
                         </Row>
                       </Column>
                     </Column>
@@ -313,16 +315,22 @@ export const ContestDetails = () => {
                       ) : null}
                     </Column>
                     <Column spacing="s">
-                      <Text variant="secondary" strong>{`${commify(contest.prizePool)} USDC`}</Text>
+                      <Text variant="secondary" strong>
+                        {`${contest.id === 38 ? "$" : ""}${commify(contest.prizePool)} ${
+                          contest.id !== 38 ? "USDC" : "(*)"
+                        }`}
+                      </Text>
                       <Text variant="secondary" strong>{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
                       {contest.judgingPrizePool ? (
-                        <Text variant="secondary" strong>{`${commify(contest.judgingPrizePool)} USDC`}</Text>
+                        <Text variant="secondary" strong>{`${contest.id === 38 ? "$" : ""}${commify(
+                          contest.judgingPrizePool
+                        )} ${contest.id !== 38 ? "USDC" : ""}`}</Text>
                       ) : null}
                     </Column>
                   </Row>
                   {contest.id === 38 && (
                     <Text variant="secondary" size="small">
-                      &#8531; USDC and &#8532; OP tokens
+                      (*) &#8531; USDC and &#8532; OP tokens
                     </Text>
                   )}
                 </Column>
@@ -330,7 +338,11 @@ export const ContestDetails = () => {
               <hr />
               <Row spacing="s" alignment={["start", "center"]}>
                 <FaCrown title="Lead Senior Watson" />
-                <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
+                {contest.id === 38 ? (
+                  <Text strong>obront + Trust</Text>
+                ) : (
+                  <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
+                )}
               </Row>
               <hr />
               <Row>
@@ -456,7 +468,7 @@ export const ContestDetails = () => {
                       )}
 
                       {!contest.private && (
-                        <Column>
+                        <Column spacing="xs">
                           <Text>
                             {contest.status === "CREATED" || contest.status === "RUNNING"
                               ? "You're competing for:"
