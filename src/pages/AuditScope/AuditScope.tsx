@@ -83,19 +83,14 @@ export const AuditScope = () => {
 
   const handleSelectCommit = useCallback(
     (repoName: string, commitHash: string) => {
-      const repoIndex = repositories.findIndex((r) => r.name === repoName)
-      if (repoIndex < 0) return
-
-      setRepositories((r) => {
-        r[repoIndex] = {
-          ...r[repoIndex],
-          commit: commitHash,
-        }
-        return r
+      updateScope({
+        protocolDashboardID: dashboardID ?? "",
+        repoName,
+        commitHash: commitHash,
       })
       setCommitSelectionModalRepoName(undefined)
     },
-    [repositories]
+    [updateScope, dashboardID]
   )
 
   const handleErrorModalClose = useCallback(() => {

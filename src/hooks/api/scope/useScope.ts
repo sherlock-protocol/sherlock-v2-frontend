@@ -18,10 +18,10 @@ export type GetScopeResponse = {
   }[]
 }
 
-export const useScopeQueryKey = (dashboardID?: string) => ["scope", dashboardID]
+export const scopeQueryKey = (dashboardID?: string) => ["scope", dashboardID]
 export const useScope = (dashboardID?: string) =>
   useQuery<Scope, Error>(
-    useScopeQueryKey(dashboardID),
+    scopeQueryKey(dashboardID),
     async () => {
       const { data } = await contestsAPI.get<GetScopeResponse>(getScopeUrl(dashboardID ?? ""))
 
