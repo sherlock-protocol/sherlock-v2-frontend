@@ -1,16 +1,21 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import { FaGithub } from "react-icons/fa"
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
 import { Input } from "../../components/Input"
 import { Column, Row } from "../../components/Layout"
+import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
-import { useRepository, Branch } from "../../hooks/api/scope/useRepository"
+import { Branch } from "../../hooks/api/scope/useRepository"
+import { useAddScope } from "../../hooks/api/scope/useAddScope"
 import { shortenCommitHash } from "../../utils/repository"
 import { BranchSelectionModal } from "./BranchSelectionModal"
 import { CommitSelectionModal } from "./CommitSelectionModal"
 import { RepositoryContractsSelector } from "./RepositoryContractsSelector"
+import { ErrorModal } from "../ContestDetails/ErrorModal"
+import { useParams } from "react-router-dom"
+import { useScope } from "../../hooks/api/scope/useScope"
 
 type RepositoryState = {
   name: string
@@ -20,27 +25,14 @@ type RepositoryState = {
 }
 
 export const AuditScope = () => {
+  const { dashboardID } = useParams()
   const [repoName, setRepoName] = useState("")
   const [repositories, setRepositories] = useState<RepositoryState[]>([])
   const [selectedPaths, setSelectedPaths] = useState<Record<string, string[]>>({})
   const [branchSelectionModalRepoName, setBranchSelectionModalRepoName] = useState<string>()
   const [commitSelectionModalRepoName, setCommitSelectionModalRepoName] = useState<string>()
-  const { data: repo, refetch: validateRepo, isLoading, isError } = useRepository(repoName)
-
-  useEffect(() => {
-    if (repo && !repositories.some((r) => r.name === repo.name)) {
-      setRepositories((r) => [
-        ...r,
-        {
-          name: repo.name,
-          branch: repo.mainBranch.name,
-          commit: repo.mainBranch.commit,
-          branches: repo.branches,
-        },
-      ])
-      setRepoName("")
-    }
-  }, [repo, repositories])
+  const { data: scope } = useScope(dashboardID)
+  const { addScope, isLoading: addScopeIsLoading, error: addScopeError, reset: addScopeReset } = useAddScope()
 
   const handlePathSelected = useCallback(
     (repo: string, path: string) => {
@@ -61,13 +53,16 @@ export const AuditScope = () => {
     [selectedPaths, setSelectedPaths]
   )
 
-  const handlePathsLoad = useCallback((repoName: string, paths: string[]) => {
-    const defaultSelectedPaths = paths.filter((p) => !p.includes("lib/") && !p.includes("test/"))
-    setSelectedPaths((paths) => ({
-      ...paths,
-      [repoName]: defaultSelectedPaths,
-    }))
-  }, [])
+  const handlePathsLoad = useCallback(
+    (repoName: string, paths: string[]) => {
+      const defaultSelectedPaths = paths.filter((p) => !p.includes("lib/") && !p.includes("test/"))
+      setSelectedPaths((paths) => ({
+        ...paths,
+        [repoName]: defaultSelectedPaths,
+      }))
+    },
+    [setSelectedPaths]
+  )
 
   const handleSelectBranch = useCallback(
     (repoName: string, branchName: string) => {
@@ -107,112 +102,127 @@ export const AuditScope = () => {
     [repositories]
   )
 
+  const handleErrorModalClose = useCallback(() => {
+    addScopeReset()
+  }, [addScopeReset])
+
   return (
-    <Column spacing="l">
-      <Box shadow={false} fullWidth>
-        <Column spacing="l">
-          <Title variant="h2">SCOPE</Title>
-          <Column spacing="s">
-            <Text>Copy & paste the Github repository link(s) you would like to audit</Text>
-            <Input value={repoName} onChange={setRepoName} />
-            <Button disabled={isLoading || repoName === ""} onClick={() => validateRepo()}>
-              {isLoading ? "Validating repo ..." : "Add repo"}
-            </Button>
-            {isError && (
-              <Column spacing="m">
-                <Text variant="secondary">We couldn't find the repo.</Text>
-                <Text variant="secondary">
-                  If it's private, make sure to invite{" "}
-                  <strong>
-                    <a href="https://github.com/sherlock-admin" target="_blank" rel="noreferrer">
-                      sherlock-admin
-                    </a>
-                  </strong>{" "}
-                  and try again.
-                </Text>
-              </Column>
-            )}
-          </Column>
-        </Column>
-      </Box>
-      {repositories.length > 0 ? (
+    <LoadingContainer loading={addScopeIsLoading} label="Loading ...">
+      <Column spacing="l">
         <Box shadow={false} fullWidth>
           <Column spacing="l">
-            <Title>Branches & commits</Title>
+            <Title variant="h2">SCOPE</Title>
             <Column spacing="s">
-              <Text>Select branch and commit hash</Text>
-              <Row spacing="m">
-                <Column spacing="s" grow={1}>
-                  <Text size="small" strong>
-                    Repo
+              <Text>Copy & paste the Github repository link(s) you would like to audit</Text>
+              <Input value={repoName} onChange={setRepoName} />
+              <Button
+                disabled={addScopeIsLoading || repoName === ""}
+                onClick={() => addScope({ repoName: repoName, protocolDashboardID: dashboardID ?? "" })}
+              >
+                {addScopeIsLoading ? "Adding repo ..." : "Add repo"}
+              </Button>
+              {addScopeError && (
+                <Column spacing="m">
+                  <Text variant="secondary">We couldn't find the repo.</Text>
+                  <Text variant="secondary">
+                    If it's private, make sure to invite{" "}
+                    <strong>
+                      <a href="https://github.com/sherlock-admin" target="_blank" rel="noreferrer">
+                        sherlock-admin
+                      </a>
+                    </strong>{" "}
+                    and try again.
                   </Text>
-                  {repositories.map((r) => (
-                    <Input value={r.name} key={r.name} variant="small" disabled />
-                  ))}
                 </Column>
-                <Column spacing="s">
-                  <Text size="small" strong>
-                    Branch
-                  </Text>
-                  {repositories.map((r) => (
-                    <Button key={r.name} variant="secondary" onClick={() => setBranchSelectionModalRepoName(r.name)}>
-                      {r.branch}
-                    </Button>
-                  ))}
-                </Column>
-                <Column spacing="s">
-                  <Text size="small" strong>
-                    Commit hash
-                  </Text>
-                  {repositories.map((r) => (
-                    <Button key={r.name} variant="secondary" onClick={() => setCommitSelectionModalRepoName(r.name)}>
-                      {shortenCommitHash(r.commit)}
-                    </Button>
-                  ))}
-                </Column>
-              </Row>
+              )}
             </Column>
           </Column>
         </Box>
-      ) : null}
-      {repositories.map((r) => (
-        <Box shadow={false} fullWidth key={`contracts-${r.name}`}>
-          <Column spacing="l">
-            <Title variant="h2">
-              <FaGithub />
-              &nbsp;
-              {r.name}
-            </Title>
-            <RepositoryContractsSelector
-              repo={r.name}
-              commit={r.commit}
-              onPathSelected={(path) => handlePathSelected(r.name, path)}
-              selectedPaths={selectedPaths[r.name]}
-              onLoadPaths={(paths) => handlePathsLoad(r.name, paths)}
-            />
-          </Column>
-        </Box>
-      ))}
-      <Box shadow={false}>
-        <Button>Save scope</Button>
-      </Box>
-      {branchSelectionModalRepoName && (
-        <BranchSelectionModal
-          repoName={branchSelectionModalRepoName}
-          selectedBranch={repositories.find((r) => r.name === branchSelectionModalRepoName)?.branch}
-          onSelectBranch={(branch) => handleSelectBranch(branchSelectionModalRepoName, branch)}
-          onClose={() => setBranchSelectionModalRepoName(undefined)}
-        />
-      )}
-      {commitSelectionModalRepoName && (
-        <CommitSelectionModal
-          repoName={commitSelectionModalRepoName}
-          branchName={repositories.find((r) => r.name === commitSelectionModalRepoName)?.branch ?? ""}
-          selectedCommit={repositories.find((r) => r.name === commitSelectionModalRepoName)?.commit}
-          onSelectCommit={(commit) => handleSelectCommit(commitSelectionModalRepoName, commit)}
-          onClose={() => setCommitSelectionModalRepoName(undefined)}
-        />
-      )}
-    </Column>
+        {scope && scope.length > 0 ? (
+          <Box shadow={false} fullWidth>
+            <Column spacing="l">
+              <Title>Branches & commits</Title>
+              <Column spacing="s">
+                <Text>Select branch and commit hash</Text>
+                <Row spacing="m">
+                  <Column spacing="s" grow={1}>
+                    <Text size="small" strong>
+                      Repo
+                    </Text>
+                    {scope?.map((s) => (
+                      <Input value={s.repoName} key={s.repoName} variant="small" disabled />
+                    ))}
+                  </Column>
+                  <Column spacing="s">
+                    <Text size="small" strong>
+                      Branch
+                    </Text>
+                    {scope?.map((s) => (
+                      <Button
+                        key={s.repoName}
+                        variant="secondary"
+                        onClick={() => setBranchSelectionModalRepoName(s.repoName)}
+                      >
+                        {s.branchName}
+                      </Button>
+                    ))}
+                  </Column>
+                  <Column spacing="s">
+                    <Text size="small" strong>
+                      Commit hash
+                    </Text>
+                    {scope?.map((s) => (
+                      <Button
+                        key={s.repoName}
+                        variant="secondary"
+                        onClick={() => setCommitSelectionModalRepoName(s.repoName)}
+                      >
+                        {shortenCommitHash(s.commitHash)}
+                      </Button>
+                    ))}
+                  </Column>
+                </Row>
+              </Column>
+            </Column>
+          </Box>
+        ) : null}
+        {scope?.map((s) => (
+          <Box shadow={false} fullWidth key={`contracts-${s.repoName}`}>
+            <Column spacing="l">
+              <Title variant="h2">
+                <FaGithub />
+                &nbsp;
+                {s.repoName}
+              </Title>
+              <RepositoryContractsSelector
+                repo={s.repoName}
+                commit={s.commitHash}
+                onPathSelected={(path) => handlePathSelected(s.repoName, path)}
+                selectedPaths={s.files}
+                onLoadPaths={(paths) => handlePathsLoad(s.repoName, paths)}
+              />
+            </Column>
+          </Box>
+        ))}
+        {branchSelectionModalRepoName && (
+          <BranchSelectionModal
+            repoName={branchSelectionModalRepoName}
+            selectedBranch={repositories.find((r) => r.name === branchSelectionModalRepoName)?.branch}
+            onSelectBranch={(branch) => handleSelectBranch(branchSelectionModalRepoName, branch)}
+            onClose={() => setBranchSelectionModalRepoName(undefined)}
+          />
+        )}
+        {commitSelectionModalRepoName && (
+          <CommitSelectionModal
+            repoName={commitSelectionModalRepoName}
+            branchName={repositories.find((r) => r.name === commitSelectionModalRepoName)?.branch ?? ""}
+            selectedCommit={repositories.find((r) => r.name === commitSelectionModalRepoName)?.commit}
+            onSelectCommit={(commit) => handleSelectCommit(commitSelectionModalRepoName, commit)}
+            onClose={() => setCommitSelectionModalRepoName(undefined)}
+          />
+        )}
+        {addScopeError && <ErrorModal reason={addScopeError.message} onClose={handleErrorModalClose} />}
+      </Column>
+    </LoadingContainer>
   )
 }
