@@ -102,7 +102,7 @@ const AppProtocolDashboard = () => {
         <div className={styles.content}>
           <Row spacing="xl" grow={1} className={styles.fullWidth}>
             <Column>
-              <Box shadow={false}>
+              <Box shadow={false} className={styles.sticky}>
                 <Title variant="h2">AUDIT DETAILS</Title>
                 <Table selectable={false}>
                   <TBody>
@@ -194,7 +194,7 @@ const AppProtocolDashboard = () => {
                 </Column>
               </Box>
             </Column>
-            <Column grow={1}>
+            <Column grow={1} className={styles.scrollable}>
               <Outlet />
             </Column>
           </Row>

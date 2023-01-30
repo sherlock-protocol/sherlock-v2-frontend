@@ -111,7 +111,7 @@ export const AuditScope = () => {
     <Column spacing="l">
       <Box shadow={false} fullWidth>
         <Column spacing="l">
-          <Title>Repositories</Title>
+          <Title variant="h2">SCOPE</Title>
           <Column spacing="s">
             <Text>Copy & paste the Github repository link(s) you would like to audit</Text>
             <Input value={repoName} onChange={setRepoName} />
@@ -193,6 +193,9 @@ export const AuditScope = () => {
           </Column>
         </Box>
       ))}
+      <Box shadow={false}>
+        <Button>Save scope</Button>
+      </Box>
       {branchSelectionModalRepoName && (
         <BranchSelectionModal
           repoName={branchSelectionModalRepoName}
