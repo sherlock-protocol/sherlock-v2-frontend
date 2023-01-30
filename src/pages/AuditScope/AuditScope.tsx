@@ -16,6 +16,7 @@ import { RepositoryContractsSelector } from "./RepositoryContractsSelector"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
 import { useParams } from "react-router-dom"
 import { useScope } from "../../hooks/api/scope/useScope"
+import { useUpdateScope } from "../../hooks/api/scope/useUpdateScope"
 
 type RepositoryState = {
   name: string
@@ -28,41 +29,36 @@ export const AuditScope = () => {
   const { dashboardID } = useParams()
   const [repoName, setRepoName] = useState("")
   const [repositories, setRepositories] = useState<RepositoryState[]>([])
-  const [selectedPaths, setSelectedPaths] = useState<Record<string, string[]>>({})
   const [branchSelectionModalRepoName, setBranchSelectionModalRepoName] = useState<string>()
   const [commitSelectionModalRepoName, setCommitSelectionModalRepoName] = useState<string>()
   const { data: scope } = useScope(dashboardID)
   const { addScope, isLoading: addScopeIsLoading, error: addScopeError, reset: addScopeReset } = useAddScope()
+  const { updateScope } = useUpdateScope()
 
   const handlePathSelected = useCallback(
     (repo: string, path: string) => {
-      let paths = selectedPaths[repo] ?? []
-      const currentIndex = paths.indexOf(path)
+      let selectedPaths = scope?.find((s) => s.repoName === repo)?.files
 
-      if (currentIndex >= 0) {
-        delete paths[currentIndex]
+      if (!selectedPaths) return
+
+      const pathIndex = selectedPaths.indexOf(path)
+
+      if (pathIndex >= 0) {
+        selectedPaths.splice(pathIndex, 1)
       } else {
-        paths = [...paths, path]
+        selectedPaths.push(path)
       }
 
-      setSelectedPaths((p) => ({
-        ...p,
-        [repo]: paths,
-      }))
+      updateScope({
+        protocolDashboardID: dashboardID ?? "",
+        repoName: repo,
+        files: selectedPaths,
+      })
     },
-    [selectedPaths, setSelectedPaths]
+    [updateScope, scope, dashboardID]
   )
 
-  const handlePathsLoad = useCallback(
-    (repoName: string, paths: string[]) => {
-      const defaultSelectedPaths = paths.filter((p) => !p.includes("lib/") && !p.includes("test/"))
-      setSelectedPaths((paths) => ({
-        ...paths,
-        [repoName]: defaultSelectedPaths,
-      }))
-    },
-    [setSelectedPaths]
-  )
+  const handlePathsLoad = useCallback((repoName: string, paths: string[]) => {}, [])
 
   const handleSelectBranch = useCallback(
     (repoName: string, branchName: string) => {
@@ -215,8 +211,8 @@ export const AuditScope = () => {
         {commitSelectionModalRepoName && (
           <CommitSelectionModal
             repoName={commitSelectionModalRepoName}
-            branchName={repositories.find((r) => r.name === commitSelectionModalRepoName)?.branch ?? ""}
-            selectedCommit={repositories.find((r) => r.name === commitSelectionModalRepoName)?.commit}
+            branchName={scope?.find((s) => s.repoName === commitSelectionModalRepoName)?.branchName ?? ""}
+            selectedCommit={scope?.find((s) => s.repoName === commitSelectionModalRepoName)?.commitHash ?? ""}
             onSelectCommit={(commit) => handleSelectCommit(commitSelectionModalRepoName, commit)}
             onClose={() => setCommitSelectionModalRepoName(undefined)}
           />

@@ -10,7 +10,7 @@ type UpdateScopeParams = {
   files?: string[]
 }
 
-export const useAddScope = () => {
+export const useUpdateScope = () => {
   const {
     mutate: updateScope,
     mutateAsync,
