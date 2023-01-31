@@ -31,7 +31,7 @@ const TreeEntry: React.FC<TreeEntryProps> = ({ name, tree, parentPath = "", onPa
   )
 
   if (typeof tree === "string") {
-    const selected = selectedPaths.includes(`${parentPath}/${tree}`)
+    const selected = selectedPaths.includes(parentPath !== "" ? `${parentPath}/${tree}` : tree)
     return (
       <li className={cx(styles.file, { [styles.selected]: selected })} onClick={() => handleFileClick(tree)}>
         <Row alignment="space-between">
