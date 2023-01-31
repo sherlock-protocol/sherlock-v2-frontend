@@ -18,14 +18,26 @@ type TreeEntryProps = {
   name: string
   parentPath?: string
   tree: TreeValue
-  selectedPaths: string[]
-  onPathSelected: (path: string) => void
-}
+} & (
+  | { selectedPaths: string[]; onPathSelected: (path: string) => void; readOnly?: false }
+  | {
+      selectedPaths?: never
+      onPathSelected?: never
+      readOnly: true
+    }
+)
 
-const TreeEntry: React.FC<TreeEntryProps> = ({ name, tree, parentPath = "", onPathSelected, selectedPaths = [] }) => {
+export const TreeEntry: React.FC<TreeEntryProps> = ({
+  name,
+  tree,
+  parentPath = "",
+  onPathSelected,
+  selectedPaths = [],
+  readOnly = false,
+}) => {
   const handleFileClick = useCallback(
     (path: string) => {
-      typeof tree === "string" ? onPathSelected(path) : onPathSelected(`${name}/${path}`)
+      typeof tree === "string" ? onPathSelected?.(path) : onPathSelected?.(`${name}/${path}`)
     },
     [name, onPathSelected, tree]
   )

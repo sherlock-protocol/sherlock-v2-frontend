@@ -17,6 +17,8 @@ import { useParams } from "react-router-dom"
 import { useScope } from "../../hooks/api/scope/useScope"
 import { useUpdateScope } from "../../hooks/api/scope/useUpdateScope"
 import { useDeleteScope } from "../../hooks/api/scope/useDeleteScope"
+import { useProtocolDashboard } from "../../hooks/api/contests/useProtocolDashboard"
+import { AuditScopeReadOnly } from "./AuditScopeReadOnly"
 
 export const AuditScope = () => {
   const { dashboardID } = useParams()
@@ -27,6 +29,7 @@ export const AuditScope = () => {
   const { addScope, isLoading: addScopeIsLoading, error: addScopeError, reset: addScopeReset } = useAddScope()
   const { updateScope, isLoading: updateScopeIsLoading, variables: updateParams } = useUpdateScope()
   const { deleteScope } = useDeleteScope()
+  const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
 
   const handlePathSelected = useCallback(
     (repo: string, path: string) => {
@@ -93,6 +96,8 @@ export const AuditScope = () => {
   const handleErrorModalClose = useCallback(() => {
     addScopeReset()
   }, [addScopeReset])
+
+  if (protocolDashboard?.contest.submissionReady) return <AuditScopeReadOnly />
 
   return (
     <LoadingContainer loading={addScopeIsLoading || (updateScopeIsLoading && !updateParams?.files)} label="Loading ...">

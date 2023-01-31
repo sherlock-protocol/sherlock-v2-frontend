@@ -16,7 +16,13 @@ export const useFinalizeSubmission = () => {
     ...mutation
   } = useMutation<void, Error, FinalizeSubmissionParams>(
     async (params) => {
-      await contestsAPI.post(finalizeSubmissionUrl(params.dashboardID))
+      await contestsAPI.post(
+        finalizeSubmissionUrl(params.dashboardID),
+        {},
+        {
+          timeout: 5 * 60 * 1000,
+        }
+      )
     },
     {
       onSuccess(data, params) {
