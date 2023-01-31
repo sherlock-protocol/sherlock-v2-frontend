@@ -45,7 +45,7 @@ const FinalizeSubmissionModal: React.FC<Props> = ({ onClose, dashboardID }) => {
       <LoadingContainer loading={isLoading}>
         <Column spacing="xl">
           <Title>Finalize submission</Title>
-          <Text>By confirming this action, the repo will become read-only.</Text>
+          <Text>The contents from your scope repositories will be copied over to the audit repo.</Text>
           <Text>Sherlock will review the details and confirm the start date soon.</Text>
           <Text variant="secondary">This action cannot be undone.</Text>
           <Row spacing="l" alignment={["center"]}>
