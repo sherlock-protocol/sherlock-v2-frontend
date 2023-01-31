@@ -1,12 +1,16 @@
 import { useMutation, useQueryClient } from "react-query"
 import { AxiosError } from "axios"
 import { contests as contestsAPI } from "../axios"
-import { scopeQueryKey } from "./useScope"
+import { Scope, scopeQueryKey } from "./useScope"
 import { deleteScope as deleteScopeUrl } from "../urls"
 
 type DeleteScopeParams = {
   protocolDashboardID: string
   repoName: string
+}
+
+type DeleteScopeContext = {
+  previousScope?: Scope
 }
 
 export const useDeleteScope = () => {
@@ -16,7 +20,7 @@ export const useDeleteScope = () => {
     mutate: deleteScope,
     mutateAsync,
     ...mutation
-  } = useMutation<void, Error, DeleteScopeParams>(
+  } = useMutation<void, Error, DeleteScopeParams, DeleteScopeContext>(
     async (params) => {
       try {
         await contestsAPI.delete(deleteScopeUrl(params.protocolDashboardID, params.repoName))
@@ -26,7 +30,21 @@ export const useDeleteScope = () => {
       }
     },
     {
-      onSuccess(data, params) {
+      onMutate: async (params) => {
+        await queryClient.invalidateQueries(scopeQueryKey(params.protocolDashboardID))
+
+        const previousScope = queryClient.getQueryData<Scope>(scopeQueryKey(params.protocolDashboardID))
+
+        queryClient.setQueryData<Scope | undefined>(scopeQueryKey(params.protocolDashboardID), (previous) =>
+          previous?.filter((s) => s.repoName !== params.repoName)
+        )
+
+        return { previousScope }
+      },
+      onError(err, params, context) {
+        queryClient.setQueryData(scopeQueryKey(params.protocolDashboardID), context?.previousScope)
+      },
+      onSettled(data, error, params) {
         queryClient.invalidateQueries(scopeQueryKey(params.protocolDashboardID))
       },
     }

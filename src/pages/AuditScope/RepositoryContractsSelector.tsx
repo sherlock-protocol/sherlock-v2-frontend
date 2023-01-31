@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react"
+import { useCallback } from "react"
 import { FaCheckCircle, FaFile, FaFolder, FaRegFile } from "react-icons/fa"
 import cx from "classnames"
 import { Column, Row } from "../../components/Layout"
@@ -12,7 +12,6 @@ type Props = {
   commit: string
   selectedPaths: string[]
   onPathSelected: (path: string) => void
-  onLoadPaths: (paths: string[]) => void
 }
 
 type TreeEntryProps = {
@@ -78,20 +77,8 @@ const TreeEntry: React.FC<TreeEntryProps> = ({ name, tree, parentPath = "", onPa
   )
 }
 
-export const RepositoryContractsSelector: React.FC<Props> = ({
-  repo,
-  commit,
-  selectedPaths = [],
-  onPathSelected,
-  onLoadPaths,
-}) => {
-  const { data, isSuccess } = useRepositoryContracts(repo, commit)
-
-  useEffect(() => {
-    if (isSuccess) {
-      onLoadPaths(data.rawPaths)
-    }
-  }, [isSuccess, data])
+export const RepositoryContractsSelector: React.FC<Props> = ({ repo, commit, selectedPaths = [], onPathSelected }) => {
+  const { data, isFetching } = useRepositoryContracts(repo, commit)
 
   const treeElements: React.ReactNode[] = []
 
@@ -101,16 +88,17 @@ export const RepositoryContractsSelector: React.FC<Props> = ({
     )
   })
 
-  if (treeElements.length === 0) {
-    return (
-      <Row alignment="center">
-        <Text variant="secondary">No Solidity contracts found</Text>
-      </Row>
-    )
-  }
+  // if (treeElements.length === 0) {
+  //   return (
+  //     <Row alignment="center">
+  //       <Text variant="secondary">No Solidity contracts found</Text>
+  //     </Row>
+  //   )
+  // }
 
   return (
     <Column spacing="s" className={styles.tree}>
+      {isFetching ? <Text variant="secondary">Loading ...</Text> : null}
       <ul className={styles.directoryList}>{treeElements}</ul>
     </Column>
   )

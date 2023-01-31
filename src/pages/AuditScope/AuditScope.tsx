@@ -51,8 +51,6 @@ export const AuditScope = () => {
     [updateScope, scope, dashboardID]
   )
 
-  const handlePathsLoad = useCallback((repoName: string, paths: string[]) => {}, [])
-
   const handleSelectBranch = useCallback(
     (repoName: string, branchName: string) => {
       updateScope({
@@ -77,6 +75,11 @@ export const AuditScope = () => {
     [updateScope, dashboardID]
   )
 
+  const handleAddScope = useCallback(() => {
+    addScope({ repoName: repoName, protocolDashboardID: dashboardID ?? "" })
+    setRepoName("")
+  }, [addScope, dashboardID, repoName])
+
   const handleDeleteScope = useCallback(
     (repo: string) => {
       deleteScope({
@@ -100,10 +103,7 @@ export const AuditScope = () => {
             <Column spacing="s">
               <Text>Copy & paste the Github repository link(s) you would like to audit</Text>
               <Input value={repoName} onChange={setRepoName} />
-              <Button
-                disabled={addScopeIsLoading || repoName === ""}
-                onClick={() => addScope({ repoName: repoName, protocolDashboardID: dashboardID ?? "" })}
-              >
+              <Button disabled={addScopeIsLoading || repoName === ""} onClick={handleAddScope}>
                 {addScopeIsLoading ? "Adding repo ..." : "Add repo"}
               </Button>
               {addScopeError && (
@@ -192,7 +192,6 @@ export const AuditScope = () => {
                 commit={s.commitHash}
                 onPathSelected={(path) => handlePathSelected(s.repoName, path)}
                 selectedPaths={s.files}
-                onLoadPaths={(paths) => handlePathsLoad(s.repoName, paths)}
               />
             </Column>
           </Box>
