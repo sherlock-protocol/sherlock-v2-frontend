@@ -3,6 +3,7 @@ import { AxiosError } from "axios"
 import { contests as contestsAPI } from "../axios"
 import { updateScope as updateScopeUrl } from "../urls"
 import { Scope, scopeQueryKey } from "./useScope"
+import { protocolDashboardQuery } from "../contests/useProtocolDashboard"
 
 type UpdateScopeParams = {
   protocolDashboardID: string
@@ -68,6 +69,7 @@ export const useUpdateScope = () => {
       },
       onSettled(data, error, params) {
         queryClient.invalidateQueries(scopeQueryKey(params.protocolDashboardID))
+        queryClient.invalidateQueries(protocolDashboardQuery(params.protocolDashboardID))
       },
     }
   )

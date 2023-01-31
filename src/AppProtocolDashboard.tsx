@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react"
 import { Outlet, useParams } from "react-router-dom"
-import { FaCheck, FaGithub } from "react-icons/fa"
+import { FaCheck, FaCheckCircle, FaGithub, FaRegCircle } from "react-icons/fa"
 import { commify } from "ethers/lib/utils.js"
 import { DateTime } from "luxon"
 
@@ -82,11 +82,13 @@ const AppProtocolDashboard = () => {
     },
   ]
 
-  const { contest, payments } = protocolDashboard
+  const { contest } = protocolDashboard
   const startDate = DateTime.fromSeconds(contest.startDate)
   const endDate = DateTime.fromSeconds(contest.endDate)
   const length = endDate.diff(startDate, "days").days
-  const fullyPaid = payments.totalPaid >= payments.totalAmount
+
+  const fullyPaid = contest.fullPaymentComplete
+  const canFinalizeSubmission = fullyPaid && protocolDashboard.scopeHasContracts
 
   return (
     <div className={styles.app}>
@@ -158,24 +160,39 @@ const AppProtocolDashboard = () => {
                     )}
                   </TBody>
                 </Table>
-                <Column spacing="s" alignment={["center"]}>
+                <Column spacing="s">
                   <Button variant="secondary" onClick={() => window.open(contest.repo, "blank")} fullWidth>
                     <FaGithub />
                     &nbsp;&nbsp;Audit repository
                   </Button>
                   {!contest.submissionReady && (
-                    <Button
-                      disabled={!fullyPaid || contest.submissionReady}
-                      fullWidth
-                      onClick={() => setFinalizeSubmissionModalOpen(true)}
-                    >
-                      Finalize submission
-                    </Button>
-                  )}
-                  {!fullyPaid && (
-                    <Text variant="secondary" size="small">
-                      You need to submit the full payment
-                    </Text>
+                    <>
+                      <Button
+                        disabled={!canFinalizeSubmission}
+                        fullWidth
+                        onClick={() => setFinalizeSubmissionModalOpen(true)}
+                      >
+                        Finalize submission
+                      </Button>
+                      {fullyPaid ? (
+                        <Row spacing="s" className={styles.stepCompleted}>
+                          <FaCheckCircle /> <Text variant="alternate">Payment completed</Text>
+                        </Row>
+                      ) : (
+                        <Row spacing="s" className={styles.stepIncomplete}>
+                          <FaRegCircle /> <Text variant="secondary">Missing payments</Text>
+                        </Row>
+                      )}
+                      {protocolDashboard.scopeHasContracts ? (
+                        <Row spacing="s" className={styles.stepCompleted}>
+                          <FaCheckCircle /> <Text variant="alternate">Scope defined</Text>
+                        </Row>
+                      ) : (
+                        <Row spacing="s" className={styles.stepIncomplete}>
+                          <FaRegCircle /> <Text variant="secondary">No contracts in scope</Text>
+                        </Row>
+                      )}
+                    </>
                   )}
                   {contest.submissionReady && (
                     <Column spacing="s" alignment={["center"]}>

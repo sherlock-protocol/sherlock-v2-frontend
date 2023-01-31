@@ -3,6 +3,7 @@ import { AxiosError } from "axios"
 import { contests as contestsAPI } from "../axios"
 import { Scope, scopeQueryKey } from "./useScope"
 import { deleteScope as deleteScopeUrl } from "../urls"
+import { protocolDashboardQuery } from "../contests/useProtocolDashboard"
 
 type DeleteScopeParams = {
   protocolDashboardID: string
@@ -46,6 +47,7 @@ export const useDeleteScope = () => {
       },
       onSettled(data, error, params) {
         queryClient.invalidateQueries(scopeQueryKey(params.protocolDashboardID))
+        queryClient.invalidateQueries(protocolDashboardQuery(params.protocolDashboardID))
       },
     }
   )

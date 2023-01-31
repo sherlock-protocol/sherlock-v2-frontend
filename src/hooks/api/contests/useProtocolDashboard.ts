@@ -20,6 +20,7 @@ export type ContestDetails = {
   repo: string
   submissionReady: boolean
   startApproved: boolean
+  fullPaymentComplete: boolean
 }
 
 type PaymentsDetails = {
@@ -32,6 +33,7 @@ type DashboardInfo = {
   contest: ContestDetails
   payments: PaymentsDetails
   paymentsRecipient: string
+  scopeHasContracts: boolean
 }
 
 type PaymentsResponse = {
@@ -48,12 +50,14 @@ type PaymentsResponse = {
     repo: string
     protocol_submission_ready: boolean
     admin_start_approved: boolean
+    full_payment_complete: boolean
   }
   payments: {
     tx_hash: string
     amount: number
   }[]
   payments_recipient: string
+  scope_has_contracts: boolean
 }
 
 export const protocolDashboardQuery = (id: string) => ["protocol-dashboard", id]
@@ -75,6 +79,7 @@ export const useProtocolDashboard = (dashboardID: string) =>
         repo: data.contest.repo,
         submissionReady: data.contest.protocol_submission_ready,
         startApproved: data.contest.admin_start_approved,
+        fullPaymentComplete: data.contest.full_payment_complete,
       },
       payments: {
         totalAmount: data.contest.full_payment,
@@ -85,5 +90,6 @@ export const useProtocolDashboard = (dashboardID: string) =>
         })),
       },
       paymentsRecipient: data.payments_recipient,
+      scopeHasContracts: data.scope_has_contracts,
     }
   })
