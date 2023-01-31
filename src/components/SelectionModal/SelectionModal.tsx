@@ -1,6 +1,7 @@
 import { Button } from "../Button"
 import { Column } from "../Layout"
 import Modal, { Props as ModalProps } from "../Modal/Modal"
+import { Text } from "../Text"
 import { Title } from "../Title"
 
 export type Props<T> = ModalProps & {
@@ -9,6 +10,8 @@ export type Props<T> = ModalProps & {
   options: T[]
   onChange: (option: T) => void
   selectedOption?: T
+  isLoading?: boolean
+  loadingLabel?: string
 }
 
 export const SelectionModal = <T extends React.ReactNode>({
@@ -18,15 +21,19 @@ export const SelectionModal = <T extends React.ReactNode>({
   onChange,
   selectedOption,
   onClose,
+  isLoading = false,
+  loadingLabel = "Loading ...",
 }: Props<T>) => {
   return (
     <Modal closeable onClose={onClose}>
       <Column spacing="m">
         <Title>{title}</Title>
         {description}
+        {isLoading && <Text variant="secondary">{loadingLabel}</Text>}
         <Column spacing="s">
-          {options.map((option) => (
+          {options.map((option, index) => (
             <Button
+              key={`option-${index}`}
               variant={option === selectedOption ? "alternate" : "secondary"}
               size="small"
               onClick={() => onChange(option)}

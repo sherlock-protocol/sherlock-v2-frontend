@@ -8,6 +8,7 @@ type UpdateScopeParams = {
   protocolDashboardID: string
   repoName: string
   commitHash?: string
+  branchName?: string
   files?: string[]
 }
 
@@ -22,6 +23,7 @@ export const useUpdateScope = () => {
       try {
         await contestsAPI.put(updateScopeUrl(params.protocolDashboardID, params.repoName), {
           commit_hash: params.commitHash,
+          branch_name: params.branchName,
           files: params.files,
         })
       } catch (error) {

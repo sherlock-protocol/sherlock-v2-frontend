@@ -7,7 +7,6 @@ import { Column, Row } from "../../components/Layout"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
-import { Branch } from "../../hooks/api/scope/useRepository"
 import { useAddScope } from "../../hooks/api/scope/useAddScope"
 import { shortenCommitHash } from "../../utils/repository"
 import { BranchSelectionModal } from "./BranchSelectionModal"
@@ -18,22 +17,14 @@ import { useParams } from "react-router-dom"
 import { useScope } from "../../hooks/api/scope/useScope"
 import { useUpdateScope } from "../../hooks/api/scope/useUpdateScope"
 
-type RepositoryState = {
-  name: string
-  branch: string
-  commit: string
-  branches: Branch[]
-}
-
 export const AuditScope = () => {
   const { dashboardID } = useParams()
   const [repoName, setRepoName] = useState("")
-  const [repositories, setRepositories] = useState<RepositoryState[]>([])
   const [branchSelectionModalRepoName, setBranchSelectionModalRepoName] = useState<string>()
   const [commitSelectionModalRepoName, setCommitSelectionModalRepoName] = useState<string>()
   const { data: scope } = useScope(dashboardID)
   const { addScope, isLoading: addScopeIsLoading, error: addScopeError, reset: addScopeReset } = useAddScope()
-  const { updateScope } = useUpdateScope()
+  const { updateScope, isLoading: updateScopeIsLoading } = useUpdateScope()
 
   const handlePathSelected = useCallback(
     (repo: string, path: string) => {
@@ -62,23 +53,14 @@ export const AuditScope = () => {
 
   const handleSelectBranch = useCallback(
     (repoName: string, branchName: string) => {
-      const repoIndex = repositories.findIndex((r) => r.name === repoName)
-      const branch = repositories[repoIndex].branches.find((b) => b.name === branchName)
-
-      if (repoIndex < 0) return
-      if (!branch) return
-
-      setRepositories((r) => {
-        r[repoIndex] = {
-          ...r[repoIndex],
-          branch: branchName,
-          commit: branch.commit,
-        }
-        return r
+      updateScope({
+        protocolDashboardID: dashboardID ?? "",
+        repoName,
+        branchName,
       })
       setBranchSelectionModalRepoName(undefined)
     },
-    [setRepositories, repositories]
+    [updateScope, dashboardID]
   )
 
   const handleSelectCommit = useCallback(
@@ -98,7 +80,7 @@ export const AuditScope = () => {
   }, [addScopeReset])
 
   return (
-    <LoadingContainer loading={addScopeIsLoading} label="Loading ...">
+    <LoadingContainer loading={addScopeIsLoading || updateScopeIsLoading} label="Loading ...">
       <Column spacing="l">
         <Box shadow={false} fullWidth>
           <Column spacing="l">
@@ -198,7 +180,7 @@ export const AuditScope = () => {
         {branchSelectionModalRepoName && (
           <BranchSelectionModal
             repoName={branchSelectionModalRepoName}
-            selectedBranch={repositories.find((r) => r.name === branchSelectionModalRepoName)?.branch}
+            selectedBranch={scope?.find((s) => s.repoName === branchSelectionModalRepoName)?.branchName}
             onSelectBranch={(branch) => handleSelectBranch(branchSelectionModalRepoName, branch)}
             onClose={() => setBranchSelectionModalRepoName(undefined)}
           />

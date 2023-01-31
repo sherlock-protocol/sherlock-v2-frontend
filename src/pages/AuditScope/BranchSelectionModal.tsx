@@ -12,7 +12,7 @@ export type Props = ModalProps & {
 }
 
 export const BranchSelectionModal: React.FC<Props> = ({ repoName, selectedBranch, onSelectBranch, onClose }) => {
-  const { data: repo } = useRepository(repoName)
+  const { data: repo, isLoading } = useRepository(repoName)
 
   return (
     <SelectionModal
@@ -27,6 +27,8 @@ export const BranchSelectionModal: React.FC<Props> = ({ repoName, selectedBranch
       options={repo?.branches.map((b) => b.name) ?? []}
       onChange={onSelectBranch}
       onClose={onClose}
+      isLoading={isLoading}
+      loadingLabel="Loading branches ..."
     />
   )
 }

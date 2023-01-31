@@ -19,7 +19,7 @@ export const CommitSelectionModal: React.FC<Props> = ({
   onSelectCommit,
   onClose,
 }) => {
-  const { data: commits } = useRepositoryCommits(repoName, branchName)
+  const { data: commits, isLoading } = useRepositoryCommits(repoName, branchName)
 
   return (
     <SelectionModal
@@ -34,6 +34,8 @@ export const CommitSelectionModal: React.FC<Props> = ({
       options={commits ?? []}
       onChange={onSelectCommit}
       onClose={onClose}
+      isLoading={isLoading}
+      loadingLabel="Loading commits ..."
     />
   )
 }
