@@ -88,13 +88,21 @@ export const RepositoryContractsSelector: React.FC<Props> = ({ repo, commit, sel
     )
   })
 
-  // if (treeElements.length === 0) {
-  //   return (
-  //     <Row alignment="center">
-  //       <Text variant="secondary">No Solidity contracts found</Text>
-  //     </Row>
-  //   )
-  // }
+  if (isFetching) {
+    return (
+      <Row alignment="center">
+        <Text variant="secondary">Loading contracts ...</Text>
+      </Row>
+    )
+  }
+
+  if (treeElements.length === 0 && !isFetching) {
+    return (
+      <Row alignment="center">
+        <Text variant="secondary">No Solidity contracts found</Text>
+      </Row>
+    )
+  }
 
   return (
     <Column spacing="s" className={styles.tree}>
