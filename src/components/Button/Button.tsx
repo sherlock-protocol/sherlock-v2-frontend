@@ -38,6 +38,11 @@ export type ButtonProps = {
    * Button grows to full possible width
    */
   fullWidth?: boolean
+
+  /**
+   * Icon button
+   */
+  icon?: boolean
 }
 
 export const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
@@ -48,11 +53,13 @@ export const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
   size = "normal",
   fullWidth = false,
   className,
+  icon = false,
 }) => {
   return (
     <button
       className={cx(styles.button, styles[variant], styles[size], className, {
         [styles.fullWidth]: fullWidth,
+        [styles.icon]: icon,
       })}
       onClick={onClick}
       disabled={disabled}

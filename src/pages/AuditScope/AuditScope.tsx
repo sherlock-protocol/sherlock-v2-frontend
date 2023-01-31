@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { FaGithub } from "react-icons/fa"
+import { FaGithub, FaTrashAlt } from "react-icons/fa"
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
 import { Input } from "../../components/Input"
@@ -16,6 +16,7 @@ import { ErrorModal } from "../ContestDetails/ErrorModal"
 import { useParams } from "react-router-dom"
 import { useScope } from "../../hooks/api/scope/useScope"
 import { useUpdateScope } from "../../hooks/api/scope/useUpdateScope"
+import { useDeleteScope } from "../../hooks/api/scope/useDeleteScope"
 
 export const AuditScope = () => {
   const { dashboardID } = useParams()
@@ -25,6 +26,7 @@ export const AuditScope = () => {
   const { data: scope } = useScope(dashboardID)
   const { addScope, isLoading: addScopeIsLoading, error: addScopeError, reset: addScopeReset } = useAddScope()
   const { updateScope, isLoading: updateScopeIsLoading } = useUpdateScope()
+  const { deleteScope } = useDeleteScope()
 
   const handlePathSelected = useCallback(
     (repo: string, path: string) => {
@@ -73,6 +75,16 @@ export const AuditScope = () => {
       setCommitSelectionModalRepoName(undefined)
     },
     [updateScope, dashboardID]
+  )
+
+  const handleDeleteScope = useCallback(
+    (repo: string) => {
+      deleteScope({
+        protocolDashboardID: dashboardID ?? "",
+        repoName: repo,
+      })
+    },
+    [deleteScope, dashboardID]
   )
 
   const handleErrorModalClose = useCallback(() => {
@@ -151,6 +163,14 @@ export const AuditScope = () => {
                         onClick={() => setCommitSelectionModalRepoName(s.repoName)}
                       >
                         {shortenCommitHash(s.commitHash)}
+                      </Button>
+                    ))}
+                  </Column>
+                  <Column spacing="s">
+                    <Text size="small">Remove</Text>
+                    {scope?.map((s) => (
+                      <Button key={s.repoName} variant="secondary" icon onClick={() => handleDeleteScope(s.repoName)}>
+                        <FaTrashAlt />
                       </Button>
                     ))}
                   </Column>
