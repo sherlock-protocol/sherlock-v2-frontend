@@ -98,7 +98,6 @@ export const RepositoryContractsSelector: React.FC<Props> = ({ repo, commit, sel
 
   return (
     <Column spacing="s" className={styles.tree}>
-      {isFetching ? <Text variant="secondary">Loading ...</Text> : null}
       <ul className={styles.directoryList}>{treeElements}</ul>
     </Column>
   )

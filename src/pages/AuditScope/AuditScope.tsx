@@ -25,7 +25,7 @@ export const AuditScope = () => {
   const [commitSelectionModalRepoName, setCommitSelectionModalRepoName] = useState<string>()
   const { data: scope } = useScope(dashboardID)
   const { addScope, isLoading: addScopeIsLoading, error: addScopeError, reset: addScopeReset } = useAddScope()
-  const { updateScope, isLoading: updateScopeIsLoading } = useUpdateScope()
+  const { updateScope, isLoading: updateScopeIsLoading, variables: updateParams } = useUpdateScope()
   const { deleteScope } = useDeleteScope()
 
   const handlePathSelected = useCallback(
@@ -95,7 +95,7 @@ export const AuditScope = () => {
   }, [addScopeReset])
 
   return (
-    <LoadingContainer loading={addScopeIsLoading} label="Loading ...">
+    <LoadingContainer loading={addScopeIsLoading || (updateScopeIsLoading && !updateParams?.files)} label="Loading ...">
       <Column spacing="l">
         <Box shadow={false} fullWidth>
           <Column spacing="l">
