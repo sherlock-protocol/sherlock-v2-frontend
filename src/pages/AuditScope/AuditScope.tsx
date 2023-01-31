@@ -95,7 +95,7 @@ export const AuditScope = () => {
   }, [addScopeReset])
 
   return (
-    <LoadingContainer loading={addScopeIsLoading || updateScopeIsLoading} label="Loading ...">
+    <LoadingContainer loading={addScopeIsLoading} label="Loading ...">
       <Column spacing="l">
         <Box shadow={false} fullWidth>
           <Column spacing="l">

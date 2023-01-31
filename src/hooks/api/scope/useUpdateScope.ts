@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "react-query"
 import { AxiosError } from "axios"
 import { contests as contestsAPI } from "../axios"
 import { updateScope as updateScopeUrl } from "../urls"
-import { scopeQueryKey } from "./useScope"
+import { Scope, scopeQueryKey } from "./useScope"
 
 type UpdateScopeParams = {
   protocolDashboardID: string
@@ -12,13 +12,17 @@ type UpdateScopeParams = {
   files?: string[]
 }
 
+type UpdateScopeContext = {
+  previousScope?: Scope
+}
+
 export const useUpdateScope = () => {
   const queryClient = useQueryClient()
   const {
     mutate: updateScope,
     mutateAsync,
     ...mutation
-  } = useMutation<void, Error, UpdateScopeParams>(
+  } = useMutation<void, Error, UpdateScopeParams, UpdateScopeContext>(
     async (params) => {
       try {
         await contestsAPI.put(updateScopeUrl(params.protocolDashboardID, params.repoName), {
@@ -32,7 +36,37 @@ export const useUpdateScope = () => {
       }
     },
     {
-      onSuccess(data, params) {
+      onMutate: async (params) => {
+        await queryClient.invalidateQueries(scopeQueryKey(params.protocolDashboardID))
+
+        const previousScope = queryClient.getQueryData<Scope>(scopeQueryKey(params.protocolDashboardID))
+
+        queryClient.setQueryData<Scope | undefined>(scopeQueryKey(params.protocolDashboardID), (previous) => {
+          if (!previous) return
+
+          const scopeIndex = previous.findIndex((s) => s.repoName === params.repoName)
+
+          if (scopeIndex >= 0) {
+            return [
+              ...previous.slice(0, scopeIndex),
+              {
+                repoName: previous[scopeIndex].repoName,
+                branchName: params.branchName ?? previous[scopeIndex].branchName,
+                commitHash: params.commitHash ?? previous[scopeIndex].commitHash,
+                files: params.files ?? previous[scopeIndex].files,
+              },
+              ...previous.slice(scopeIndex + 1),
+            ]
+          }
+        })
+
+        return { previousScope }
+      },
+      onError(err, params, context) {
+        console.log("ERROR!")
+        queryClient.setQueryData(scopeQueryKey(params.protocolDashboardID), context?.previousScope)
+      },
+      onSettled(data, error, params) {
         queryClient.invalidateQueries(scopeQueryKey(params.protocolDashboardID))
       },
     }
