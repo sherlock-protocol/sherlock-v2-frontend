@@ -92,10 +92,6 @@ export const AuditScope = () => {
     [deleteScope, dashboardID]
   )
 
-  const handleErrorModalClose = useCallback(() => {
-    addScopeReset()
-  }, [addScopeReset])
-
   const handleSelectAll = useCallback(
     (repoName: string, files: string[]) => {
       const repo = scope?.find((s) => s.repoName === repoName)
@@ -137,16 +133,22 @@ export const AuditScope = () => {
               </Button>
               {addScopeError && (
                 <Column spacing="m">
-                  <Text variant="secondary">We couldn't find the repo.</Text>
-                  <Text variant="secondary">
-                    If it's private, make sure to invite{" "}
-                    <strong>
-                      <a href="https://github.com/sherlock-admin" target="_blank" rel="noreferrer">
-                        sherlock-admin
-                      </a>
-                    </strong>{" "}
-                    and try again.
-                  </Text>
+                  {addScopeError.type === "repo_not_found" ? (
+                    <>
+                      <Text variant="secondary">We couldn't find the repo.</Text>
+                      <Text variant="secondary">
+                        If it's private, make sure to invite{" "}
+                        <strong>
+                          <a href="https://github.com/sherlock-admin" target="_blank" rel="noreferrer">
+                            sherlock-admin
+                          </a>
+                        </strong>{" "}
+                        and try again.
+                      </Text>
+                    </>
+                  ) : (
+                    <Text variant="secondary">This repo was already added.</Text>
+                  )}
                 </Column>
               )}
             </Column>

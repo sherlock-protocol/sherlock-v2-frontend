@@ -10,6 +10,17 @@ type AddScopeParams = {
   repoName: string
 }
 
+type AddScopeErrorType = "repo_not_found" | "repo_already_added"
+
+class AddScopeError extends Error {
+  type: AddScopeErrorType
+
+  constructor(type: AddScopeErrorType) {
+    super()
+    this.type = type
+  }
+}
+
 export const useAddScope = () => {
   const queryClient = useQueryClient()
 
@@ -17,7 +28,7 @@ export const useAddScope = () => {
     mutate: addScope,
     mutateAsync,
     ...mutation
-  } = useMutation<void, Error, AddScopeParams>(
+  } = useMutation<void, AddScopeError, AddScopeParams>(
     async (params) => {
       try {
         const repo_name = params.repoName.startsWith("https://github.com/")
@@ -28,7 +39,12 @@ export const useAddScope = () => {
         })
       } catch (error) {
         const axiosError = error as AxiosError
-        throw Error(axiosError.response?.data.error ?? "Something went wrong. Please, try again.")
+
+        if (axiosError.response?.status === 422) {
+          throw new AddScopeError("repo_already_added")
+        } else {
+          throw new AddScopeError("repo_not_found")
+        }
       }
     },
     {
