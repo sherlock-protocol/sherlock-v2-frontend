@@ -12,7 +12,6 @@ import { shortenCommitHash } from "../../utils/repository"
 import { BranchSelectionModal } from "./BranchSelectionModal"
 import { CommitSelectionModal } from "./CommitSelectionModal"
 import { RepositoryContractsSelector } from "./RepositoryContractsSelector"
-import { ErrorModal } from "../ContestDetails/ErrorModal"
 import { useParams } from "react-router-dom"
 import { useScope } from "../../hooks/api/scope/useScope"
 import { useUpdateScope } from "../../hooks/api/scope/useUpdateScope"
@@ -245,7 +244,6 @@ export const AuditScope = () => {
             onClose={() => setCommitSelectionModalRepoName(undefined)}
           />
         )}
-        {addScopeError && <ErrorModal reason={addScopeError.message} onClose={handleErrorModalClose} />}
       </Column>
     </LoadingContainer>
   )
