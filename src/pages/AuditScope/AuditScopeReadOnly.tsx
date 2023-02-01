@@ -9,9 +9,11 @@ import { TreeEntry } from "./RepositoryContractsSelector"
 
 import styles from "./AuditScope.module.scss"
 import { Text } from "../../components/Text"
+import { useProtocolDashboard } from "../../hooks/api/contests/useProtocolDashboard"
 
 export const AuditScopeReadOnly = () => {
   const { dashboardID } = useParams()
+  const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
   const { data: scope } = useScope(dashboardID)
 
   return (
@@ -22,6 +24,10 @@ export const AuditScopeReadOnly = () => {
           <Row spacing="xs">
             <Text>Contracts:</Text>
             <Text strong>{scope?.reduce((t, s) => t + s.files.length, 0)}</Text>
+          </Row>
+          <Row spacing="xs">
+            <Text>nSLOC:</Text>
+            <Text strong>{protocolDashboard?.contest.linesOfCode}</Text>
           </Row>
         </Column>
       </Box>
