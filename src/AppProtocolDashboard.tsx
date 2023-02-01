@@ -107,7 +107,9 @@ const AppProtocolDashboard = () => {
                         <Text strong>{contest.startApproved ? "Start Date" : "Estimated Start Date"}</Text>
                       </Td>
                       <Td>
-                        <Text alignment="right">{startDate.toLocaleString(DateTime.DATE_MED)}</Text>
+                        <Text alignment="right">
+                          {startDate.year === 2100 ? "TBD" : startDate.toLocaleString(DateTime.DATE_MED)}
+                        </Text>
                       </Td>
                     </Tr>
                     <Tr>
