@@ -117,7 +117,7 @@ const AppProtocolDashboard = () => {
                         <Text strong>Audit Length</Text>
                       </Td>
                       <Td>
-                        <Text alignment="right">{`${length} days`}</Text>
+                        <Text alignment="right">{`${+length.toFixed(2)} days`}</Text>
                       </Td>
                     </Tr>
                     <Tr>
