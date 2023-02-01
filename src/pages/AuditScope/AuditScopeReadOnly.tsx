@@ -46,6 +46,13 @@ export const AuditScopeReadOnly = () => {
                 <FaGithub />
                 &nbsp;{s.repoName}
               </Title>
+
+              <Column spacing="xs">
+                <Text variant="secondary" size="small">
+                  Commit hash
+                </Text>
+                <Text className={styles.commits}>{s.commitHash}</Text>
+              </Column>
               <Column spacing="s" className={styles.tree}>
                 <ul className={styles.directoryList}>{treeElements}</ul>
               </Column>
