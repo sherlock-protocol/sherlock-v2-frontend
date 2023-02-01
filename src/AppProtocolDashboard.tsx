@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react"
 import { Outlet, useParams } from "react-router-dom"
 import { FaCheck, FaGithub } from "react-icons/fa"
 import { commify } from "ethers/lib/utils.js"
-import { DateTime } from "luxon"
+import { DateTime, Interval } from "luxon"
 
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
@@ -81,7 +81,7 @@ const AppProtocolDashboard = () => {
   const { contest, payments } = protocolDashboard
   const startDate = DateTime.fromSeconds(contest.startDate)
   const endDate = DateTime.fromSeconds(contest.endDate)
-  const length = Math.floor(endDate.diff(startDate, "days").days)
+  const length = Interval.fromDateTimes(startDate, endDate).length("days")
   const fullyPaid = payments.totalPaid >= payments.totalAmount
 
   return (
