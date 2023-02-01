@@ -73,3 +73,9 @@
     }
   }
 }
+
+.commits {
+  & button {
+    font-family: monospace;
+  }
+}

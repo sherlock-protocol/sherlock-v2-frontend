@@ -12,6 +12,7 @@ export type Props<T> = ModalProps & {
   selectedOption?: T
   isLoading?: boolean
   loadingLabel?: string
+  className?: string
 }
 
 export const SelectionModal = <T extends React.ReactNode>({
@@ -23,10 +24,11 @@ export const SelectionModal = <T extends React.ReactNode>({
   onClose,
   isLoading = false,
   loadingLabel = "Loading ...",
+  className,
 }: Props<T>) => {
   return (
     <Modal closeable onClose={onClose}>
-      <Column spacing="m">
+      <Column spacing="m" className={className}>
         <Title>{title}</Title>
         {description}
         {isLoading && <Text variant="secondary">{loadingLabel}</Text>}

@@ -5,6 +5,8 @@ import { FaGithub } from "react-icons/fa"
 import { Row } from "../../components/Layout"
 import { useRepositoryCommits } from "../../hooks/api/scope/useRepositoryCommits"
 
+import styles from "./AuditScope.module.scss"
+
 export type Props = ModalProps & {
   repoName: string
   branchName: string
@@ -23,6 +25,7 @@ export const CommitSelectionModal: React.FC<Props> = ({
 
   return (
     <SelectionModal
+      className={styles.commits}
       title="Select commit hash"
       description={
         <Row spacing="xs">
