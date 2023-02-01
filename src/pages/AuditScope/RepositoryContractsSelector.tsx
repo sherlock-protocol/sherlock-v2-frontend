@@ -1,9 +1,9 @@
-import { useCallback, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { FaCaretDown, FaCaretRight, FaCheckCircle, FaFile, FaFolder, FaRegFile } from "react-icons/fa"
 import cx from "classnames"
 import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components/Text"
-import { TreeValue, useRepositoryContracts } from "../../hooks/api/scope/useRepositoryContracts"
+import { getAllTreePaths, TreeValue, useRepositoryContracts } from "../../hooks/api/scope/useRepositoryContracts"
 
 import styles from "./AuditScope.module.scss"
 import { Button } from "../../components/Button"
@@ -12,7 +12,7 @@ type Props = {
   repo: string
   commit: string
   selectedPaths: string[]
-  onPathSelected: (path: string) => void
+  onPathSelected: (paths: string[]) => void
   onClearSelection: () => void
   onSelectAll: (files: string[]) => void
 }
@@ -21,10 +21,10 @@ type TreeEntryProps = {
   name: string
   parentPath?: string
   tree: TreeValue
-  onToggleCollapse?: (path: string) => void
+  onToggleCollapse?: (paths: string) => void
   collapsedEntries?: string[]
 } & (
-  | { selectedPaths: string[]; onPathSelected: (path: string) => void; readOnly?: false }
+  | { selectedPaths: string[]; onPathSelected: (path: string[]) => void; readOnly?: false }
   | {
       selectedPaths?: never
       onPathSelected?: never
@@ -43,18 +43,24 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
   readOnly = false,
 }) => {
   const handleFileClick = useCallback(
-    (path: string) => {
-      typeof tree === "string" ? onPathSelected?.(path) : onPathSelected?.(`${name}/${path}`)
+    (paths: string[]) => {
+      typeof tree === "string" ? onPathSelected?.(paths.map((p) => `${parentPath}/${p}`)) : onPathSelected?.(paths)
     },
-    [name, onPathSelected, tree]
+    [parentPath, onPathSelected, tree]
   )
+
+  const allSubPaths = useMemo(
+    () => getAllTreePaths(`${parentPath}${parentPath && "/"}${name}`, tree),
+    [parentPath, tree, name]
+  )
+  const allSelected = useMemo(() => allSubPaths.every((p) => selectedPaths.includes(p)), [allSubPaths, selectedPaths])
 
   const isCollapsed = collapsedEntries.includes(`${parentPath}/${name}`)
 
   if (typeof tree === "string") {
     const selected = selectedPaths.includes(parentPath !== "" ? `${parentPath}/${tree}` : tree)
     return (
-      <li className={cx(styles.file, { [styles.selected]: selected })} onClick={() => handleFileClick(tree)}>
+      <li className={cx(styles.file, { [styles.selected]: selected })} onClick={() => handleFileClick([tree])}>
         <Row alignment="space-between">
           <Row spacing="xs">
             <Text className={styles.icon}>{selected ? <FaFile /> : <FaRegFile />}</Text>
@@ -88,10 +94,10 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
   })
 
   return (
-    <li className={styles.folder}>
+    <li className={cx(styles.folder, { [styles.selected]: allSelected })}>
       <Row spacing="xs">
         <Text>
-          <FaFolder />
+          <FaFolder className={styles.clickable} onClick={() => onPathSelected?.(allSubPaths)} />
         </Text>
         <Text variant="secondary">{name}</Text>
         {isCollapsed ? (
@@ -113,7 +119,7 @@ export const RepositoryContractsSelector: React.FC<Props> = ({
   onClearSelection,
   onSelectAll,
 }) => {
-  const { data, isFetching } = useRepositoryContracts(repo, commit)
+  const { data, isLoading } = useRepositoryContracts(repo, commit)
   const [collapsedEntries, setCollapsedEntries] = useState<string[]>([])
 
   const handleToggleCollapse = useCallback((path: string) => {
@@ -142,7 +148,7 @@ export const RepositoryContractsSelector: React.FC<Props> = ({
     )
   })
 
-  if (isFetching) {
+  if (isLoading) {
     return (
       <Row alignment="center">
         <Text variant="secondary">Loading contracts ...</Text>
@@ -150,7 +156,7 @@ export const RepositoryContractsSelector: React.FC<Props> = ({
     )
   }
 
-  if (treeElements.length === 0 && !isFetching) {
+  if (treeElements.length === 0 && !isLoading) {
     return (
       <Row alignment="center">
         <Text variant="secondary">No Solidity contracts found</Text>
@@ -160,7 +166,11 @@ export const RepositoryContractsSelector: React.FC<Props> = ({
 
   return (
     <Column spacing="s" className={styles.tree}>
-      <Row alignment="end" spacing="s">
+      <Row alignment={["end", "center"]} spacing="s">
+        <Text variant="secondary" size="small">
+          {selectedPaths.length > 0 ? selectedPaths.length : "No"}&nbsp;
+          {`contract${selectedPaths.length === 1 ? "" : "s"} selected`}
+        </Text>
         <Button
           variant={selectedPaths.length === data?.rawPaths.length ? "primary" : "secondary"}
           size="small"

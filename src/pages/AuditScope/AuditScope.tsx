@@ -31,17 +31,29 @@ export const AuditScope = () => {
   const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
 
   const handlePathSelected = useCallback(
-    (repo: string, path: string) => {
+    (repo: string, paths: string[]) => {
+      console.log(paths)
       let selectedPaths = scope?.find((s) => s.repoName === repo)?.files
 
       if (!selectedPaths) return
 
-      const pathIndex = selectedPaths.indexOf(path)
+      if (paths.length === 1) {
+        const path = paths[0]
+        const pathIndex = selectedPaths.indexOf(path)
 
-      if (pathIndex >= 0) {
-        selectedPaths.splice(pathIndex, 1)
+        if (pathIndex >= 0) {
+          selectedPaths.splice(pathIndex, 1)
+        } else {
+          selectedPaths.push(path)
+        }
       } else {
-        selectedPaths.push(path)
+        const addingPaths = paths.some((p) => !selectedPaths?.includes(p))
+
+        if (addingPaths) {
+          selectedPaths = [...selectedPaths, ...paths]
+        } else {
+          selectedPaths = selectedPaths.filter((p) => !paths.includes(p))
+        }
       }
 
       updateScope({
@@ -221,7 +233,7 @@ export const AuditScope = () => {
               <RepositoryContractsSelector
                 repo={s.repoName}
                 commit={s.commitHash}
-                onPathSelected={(path) => handlePathSelected(s.repoName, path)}
+                onPathSelected={(paths) => handlePathSelected(s.repoName, paths)}
                 selectedPaths={s.files}
                 onSelectAll={(files) => handleSelectAll(s.repoName, files)}
                 onClearSelection={() => handleClearSelection(s.repoName)}

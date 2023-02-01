@@ -7,6 +7,20 @@ type GetRepositoryContractsResponse = string[]
 export type TreeValue = Tree | string
 export interface Tree extends Map<string, TreeValue> {}
 
+export const getAllTreePaths = (parentPath: string, tree: TreeValue) => {
+  if (typeof tree === "string") {
+    return [`${parentPath}`]
+  }
+
+  let paths: string[] = []
+
+  tree.forEach((value, key) => {
+    paths = [...paths, ...getAllTreePaths(`${parentPath}/${key}`, value)]
+  })
+
+  return paths
+}
+
 type Files = {
   tree: Tree
   rawPaths: string[]

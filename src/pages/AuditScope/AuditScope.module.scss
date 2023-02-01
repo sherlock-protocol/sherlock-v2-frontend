@@ -48,6 +48,14 @@
           color: $text-color;
           opacity: 0.1;
         }
+
+        &.selected {
+          background-color: darken($color: $primary-purple, $amount: 30%);
+          & svg {
+            color: $primary-purple;
+            opacity: 1;
+          }
+        }
       }
 
       &.file {
