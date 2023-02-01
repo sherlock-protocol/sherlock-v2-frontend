@@ -1,5 +1,5 @@
-import { useCallback } from "react"
-import { FaCheckCircle, FaFile, FaFolder, FaRegFile } from "react-icons/fa"
+import { useCallback, useState } from "react"
+import { FaCaretDown, FaCaretRight, FaCheckCircle, FaFile, FaFolder, FaRegFile } from "react-icons/fa"
 import cx from "classnames"
 import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components/Text"
@@ -21,6 +21,8 @@ type TreeEntryProps = {
   name: string
   parentPath?: string
   tree: TreeValue
+  onToggleCollapse?: (path: string) => void
+  collapsedEntries?: string[]
 } & (
   | { selectedPaths: string[]; onPathSelected: (path: string) => void; readOnly?: false }
   | {
@@ -35,6 +37,8 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
   tree,
   parentPath = "",
   onPathSelected,
+  onToggleCollapse,
+  collapsedEntries = [],
   selectedPaths = [],
   readOnly = false,
 }) => {
@@ -44,6 +48,8 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
     },
     [name, onPathSelected, tree]
   )
+
+  const isCollapsed = collapsedEntries.includes(`${parentPath}/${name}`)
 
   if (typeof tree === "string") {
     const selected = selectedPaths.includes(parentPath !== "" ? `${parentPath}/${tree}` : tree)
@@ -75,6 +81,8 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
         onPathSelected={handleFileClick}
         parentPath={`${parentPath ? `${parentPath}/` : ""}${name}`}
         selectedPaths={selectedPaths}
+        onToggleCollapse={onToggleCollapse}
+        collapsedEntries={collapsedEntries}
       />
     )
   })
@@ -86,8 +94,13 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
           <FaFolder />
         </Text>
         <Text variant="secondary">{name}</Text>
+        {isCollapsed ? (
+          <FaCaretRight onClick={() => onToggleCollapse?.(`${parentPath}/${name}`)} className={styles.clickable} />
+        ) : (
+          <FaCaretDown onClick={() => onToggleCollapse?.(`${parentPath}/${name}`)} className={styles.clickable} />
+        )}
       </Row>
-      {entryElements.length > 0 ? <ul>{entryElements}</ul> : null}
+      {entryElements.length > 0 && !isCollapsed ? <ul>{entryElements}</ul> : null}
     </li>
   )
 }
@@ -101,12 +114,31 @@ export const RepositoryContractsSelector: React.FC<Props> = ({
   onSelectAll,
 }) => {
   const { data, isFetching } = useRepositoryContracts(repo, commit)
+  const [collapsedEntries, setCollapsedEntries] = useState<string[]>([])
+
+  const handleToggleCollapse = useCallback((path: string) => {
+    setCollapsedEntries((entries) => {
+      if (entries.includes(path)) {
+        return entries.filter((e) => e !== path)
+      } else {
+        return [...entries, path]
+      }
+    })
+  }, [])
 
   const treeElements: React.ReactNode[] = []
 
   data?.tree.forEach((value, key) => {
     treeElements.push(
-      <TreeEntry key={key} name={key} tree={value} onPathSelected={onPathSelected} selectedPaths={selectedPaths} />
+      <TreeEntry
+        key={key}
+        name={key}
+        tree={value}
+        onPathSelected={onPathSelected}
+        selectedPaths={selectedPaths}
+        onToggleCollapse={handleToggleCollapse}
+        collapsedEntries={collapsedEntries}
+      />
     )
   })
 
