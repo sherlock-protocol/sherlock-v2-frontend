@@ -81,7 +81,7 @@ const AppProtocolDashboard = () => {
   const { contest, payments } = protocolDashboard
   const startDate = DateTime.fromSeconds(contest.startDate)
   const endDate = DateTime.fromSeconds(contest.endDate)
-  const length = endDate.diff(startDate, "days").days
+  const length = Math.floor(endDate.diff(startDate, "days").days)
   const fullyPaid = payments.totalPaid >= payments.totalAmount
 
   return (
@@ -107,7 +107,9 @@ const AppProtocolDashboard = () => {
                         <Text strong>{contest.startApproved ? "Start Date" : "Estimated Start Date"}</Text>
                       </Td>
                       <Td>
-                        <Text alignment="right">{startDate.toLocaleString(DateTime.DATE_MED)}</Text>
+                        <Text alignment="right">
+                          {startDate.year === 2030 ? "TBD" : startDate.toLocaleString(DateTime.DATE_MED)}
+                        </Text>
                       </Td>
                     </Tr>
                     <Tr>
