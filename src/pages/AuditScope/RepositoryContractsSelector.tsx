@@ -6,12 +6,15 @@ import { Text } from "../../components/Text"
 import { TreeValue, useRepositoryContracts } from "../../hooks/api/scope/useRepositoryContracts"
 
 import styles from "./AuditScope.module.scss"
+import { Button } from "../../components/Button"
 
 type Props = {
   repo: string
   commit: string
   selectedPaths: string[]
   onPathSelected: (path: string) => void
+  onClearSelection: () => void
+  onSelectAll: (files: string[]) => void
 }
 
 type TreeEntryProps = {
@@ -89,7 +92,14 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
   )
 }
 
-export const RepositoryContractsSelector: React.FC<Props> = ({ repo, commit, selectedPaths = [], onPathSelected }) => {
+export const RepositoryContractsSelector: React.FC<Props> = ({
+  repo,
+  commit,
+  selectedPaths = [],
+  onPathSelected,
+  onClearSelection,
+  onSelectAll,
+}) => {
   const { data, isFetching } = useRepositoryContracts(repo, commit)
 
   const treeElements: React.ReactNode[] = []
@@ -118,6 +128,18 @@ export const RepositoryContractsSelector: React.FC<Props> = ({ repo, commit, sel
 
   return (
     <Column spacing="s" className={styles.tree}>
+      <Row alignment="end" spacing="s">
+        <Button
+          variant={selectedPaths.length === data?.rawPaths.length ? "primary" : "secondary"}
+          size="small"
+          onClick={() => onSelectAll(data?.rawPaths ?? [])}
+        >
+          Select all
+        </Button>
+        <Button variant="secondary" size="small" onClick={onClearSelection}>
+          Clear selection
+        </Button>
+      </Row>
       <ul className={styles.directoryList}>{treeElements}</ul>
     </Column>
   )

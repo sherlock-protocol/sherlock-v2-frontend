@@ -97,6 +97,31 @@ export const AuditScope = () => {
     addScopeReset()
   }, [addScopeReset])
 
+  const handleSelectAll = useCallback(
+    (repoName: string, files: string[]) => {
+      const repo = scope?.find((s) => s.repoName === repoName)
+      if (!repo) return
+
+      updateScope({
+        protocolDashboardID: dashboardID ?? "",
+        repoName,
+        files,
+      })
+    },
+    [updateScope, dashboardID, scope]
+  )
+
+  const handleClearSelection = useCallback(
+    (repoName: string) => {
+      updateScope({
+        protocolDashboardID: dashboardID ?? "",
+        repoName,
+        files: [],
+      })
+    },
+    [updateScope, dashboardID]
+  )
+
   if (protocolDashboard?.contest.submissionReady) return <AuditScopeReadOnly />
 
   return (
@@ -197,6 +222,8 @@ export const AuditScope = () => {
                 commit={s.commitHash}
                 onPathSelected={(path) => handlePathSelected(s.repoName, path)}
                 selectedPaths={s.files}
+                onSelectAll={(files) => handleSelectAll(s.repoName, files)}
+                onClearSelection={() => handleClearSelection(s.repoName)}
               />
             </Column>
           </Box>
