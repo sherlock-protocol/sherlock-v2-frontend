@@ -79,8 +79,8 @@ const AppProtocolDashboard = () => {
   ]
 
   const { contest, payments } = protocolDashboard
-  const startDate = DateTime.fromSeconds(contest.startDate)
-  const endDate = DateTime.fromSeconds(contest.endDate)
+  const startDate = DateTime.fromSeconds(contest.startDate, { zone: "utc" })
+  const endDate = DateTime.fromSeconds(contest.endDate, { zone: "utc" })
   const length = Interval.fromDateTimes(startDate, endDate).length("days")
   const fullyPaid = payments.totalPaid >= payments.totalAmount
 
