@@ -42,7 +42,7 @@ const FinalizeSubmissionModal: React.FC<Props> = ({ onClose, dashboardID }) => {
 
   return (
     <Modal closeable onClose={onClose}>
-      <LoadingContainer loading={isLoading}>
+      <LoadingContainer loading={isLoading} label="Setting up repo. This might take a few minutes.">
         <Column spacing="xl">
           <Title>Finalize submission</Title>
           <Text>The contents from your scope repositories will be copied over to the audit repo.</Text>
