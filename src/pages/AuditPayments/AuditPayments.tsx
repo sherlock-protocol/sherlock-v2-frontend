@@ -253,10 +253,14 @@ export const AuditPayments = () => {
                     </Row>
                     <Row spacing="s">
                       <Text>Contest starts:</Text>
-                      <Text strong>
-                        {startDate.toLocaleString(DateTime.DATE_MED)}{" "}
-                        {`${startDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${startDate.offsetNameShort}`}
-                      </Text>
+                      {startDate.year === 2030 ? (
+                        <Text strong>TBD</Text>
+                      ) : (
+                        <Text strong>
+                          {startDate.toLocaleString(DateTime.DATE_MED)}{" "}
+                          {`${startDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${startDate.offsetNameShort}`}
+                        </Text>
+                      )}
                     </Row>
                   </Column>
                 </Box>

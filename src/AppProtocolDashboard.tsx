@@ -130,7 +130,7 @@ const AppProtocolDashboard = () => {
                     </Tr>
                     <Tr>
                       <Td>
-                        <Text strong>Contest Pot</Text>
+                        <Text strong>Audit Contest Pot</Text>
                       </Td>
                       <Td>
                         <Text alignment="right">{`${commify(contest.prizePool)} USDC`}</Text>
@@ -144,10 +144,20 @@ const AppProtocolDashboard = () => {
                         <Text alignment="right">{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
                       </Td>
                     </Tr>
+                    {contest.judgingPrizePool > 0 && (
+                      <Tr>
+                        <Td>
+                          <Text strong>Judging Contest Pot</Text>
+                        </Td>
+                        <Td>
+                          <Text alignment="right">{`${commify(contest.judgingPrizePool)} USDC`}</Text>
+                        </Td>
+                      </Tr>
+                    )}
                     {contest.sherlockFee > 0 && (
                       <Tr>
                         <Td>
-                          <Text strong>Sherlock Judging</Text>
+                          <Text strong>Sherlock Admin</Text>
                         </Td>
                         <Td>
                           <Text alignment="right">{`${commify(contest.sherlockFee)} USDC`}</Text>
