@@ -19,7 +19,7 @@ type Props = {
 
 export const UpcomingContests: React.FC<Props> = ({ contests, onContestClick }) => {
   const upcomingContests = useMemo(
-    () => contests?.filter((c) => c.status === "CREATED").sort((a, b) => (b.id === 6 ? -1 : a.startDate - b.startDate)),
+    () => contests?.filter((c) => c.status === "CREATED").sort((a, b) => a.startDate - b.startDate),
     [contests]
   )
 
@@ -88,34 +88,18 @@ export const UpcomingContests: React.FC<Props> = ({ contests, onContestClick }) 
                 </Td>
                 <Td>
                   <Column spacing="xs" alignment="center">
-                    {contest.id !== 6 ? (
-                      <>
-                        <Text strong size="large">
-                          {startDate.toLocaleString(DateTime.DATE_MED)}
-                        </Text>
-                        <Text>{startDate.toLocaleString(DateTime.TIME_24_SIMPLE)}</Text>
-                      </>
-                    ) : (
-                      <Text strong size="large">
-                        TBD
-                      </Text>
-                    )}
+                    <Text strong size="large">
+                      {startDate.toLocaleString(DateTime.DATE_MED)}
+                    </Text>
+                    <Text>{startDate.toLocaleString(DateTime.TIME_24_SIMPLE)}</Text>
                   </Column>
                 </Td>
                 <Td>
                   <Column spacing="xs" alignment="center">
-                    {contest.id !== 6 ? (
-                      <>
-                        <Text strong size="large">
-                          {endDate.toLocaleString(DateTime.DATE_MED)}
-                        </Text>
-                        <Text>{endDate.toLocaleString(DateTime.TIME_24_SIMPLE)}</Text>
-                      </>
-                    ) : (
-                      <Text strong size="large">
-                        TBD
-                      </Text>
-                    )}
+                    <Text strong size="large">
+                      {endDate.toLocaleString(DateTime.DATE_MED)}
+                    </Text>
+                    <Text>{endDate.toLocaleString(DateTime.TIME_24_SIMPLE)}</Text>
                   </Column>
                 </Td>
               </Tr>
