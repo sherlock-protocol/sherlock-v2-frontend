@@ -7,6 +7,7 @@ export type Scope = {
   branchName: string
   commitHash: string
   files: string[]
+  solidityMetricsReport?: string
 }[]
 
 export type GetScopeResponse = {
