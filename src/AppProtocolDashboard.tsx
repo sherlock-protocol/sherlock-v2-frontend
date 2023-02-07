@@ -78,11 +78,10 @@ const AppProtocolDashboard = () => {
     },
   ]
 
-  const { contest, payments } = protocolDashboard
+  const { contest } = protocolDashboard
   const startDate = DateTime.fromSeconds(contest.startDate, { zone: "utc" })
   const endDate = DateTime.fromSeconds(contest.endDate, { zone: "utc" })
   const length = Interval.fromDateTimes(startDate, endDate).length("days")
-  const fullyPaid = payments.totalPaid >= payments.totalAmount
 
   return (
     <div className={styles.app}>
@@ -173,14 +172,14 @@ const AppProtocolDashboard = () => {
                   </Button>
                   {!contest.submissionReady && (
                     <Button
-                      disabled={!fullyPaid || contest.submissionReady}
+                      disabled={!contest.fullPaymentComplete || contest.submissionReady}
                       fullWidth
                       onClick={() => setFinalizeSubmissionModalOpen(true)}
                     >
                       Finalize submission
                     </Button>
                   )}
-                  {!fullyPaid && (
+                  {!contest.fullPaymentComplete && (
                     <Text variant="secondary" size="small">
                       You need to submit the full payment
                     </Text>
