@@ -38,7 +38,7 @@ const renderDescription = (contest: ContestsListItem, action: ContestAction) => 
           <Text>Announce new contest on Twitter & Discord</Text>
 
           <Title variant="h3">Tweet preview</Title>
-          <ContestAnnouncementTweetPreview contest={contest} />
+          <ContestAnnouncementTweetPreview contestID={contest.id} />
         </Column>
       )
     case "APPROVE_START":
