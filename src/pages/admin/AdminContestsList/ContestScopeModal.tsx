@@ -40,7 +40,7 @@ export const ContestScopeModal: React.FC<Props> = ({ onClose, contestID }) => {
                   <Td>
                     <Row spacing="s">
                       <Text strong>nLSOC:</Text>
-                      <Text>~1500</Text>
+                      <Text>{contest?.linesOfCode}</Text>
                     </Row>
                   </Td>
                 </Tr>
