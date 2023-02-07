@@ -21,6 +21,7 @@ export type ContestDetails = {
   repo: string
   submissionReady: boolean
   startApproved: boolean
+  fullPaymentComplete: boolean
 }
 
 type PaymentsDetails = {
@@ -51,6 +52,7 @@ type PaymentsResponse = {
     admin_start_approved: boolean
     judging_prize_pool: number
     rewards: number
+    full_payment_complete: boolean
   }
   payments: {
     tx_hash: string
@@ -79,6 +81,7 @@ export const useProtocolDashboard = (dashboardID: string) =>
         repo: data.contest.repo,
         submissionReady: data.contest.protocol_submission_ready,
         startApproved: data.contest.admin_start_approved,
+        fullPaymentComplete: data.contest.full_payment_complete,
       },
       payments: {
         totalAmount: data.contest.full_payment,
