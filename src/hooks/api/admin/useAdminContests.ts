@@ -18,6 +18,10 @@ export type ContestsListItem = {
   startDate: number
   endDate: number
   submissionReady: boolean
+  linesOfCode?: string
+  leadSeniorWatsonHandle?: string
+  rewards: number
+  twitterHandle?: string
 }
 
 type GetAdminContestsResponse = {
@@ -33,6 +37,10 @@ type GetAdminContestsResponse = {
   starts_at: number
   ends_at: number
   protocol_submission_ready: boolean
+  lines_of_code: string
+  lead_senior_watson_handle?: string
+  rewards: number
+  twitter_handle?: string
 }[]
 
 export const adminContestsQuery = () => "admin-contests"
@@ -53,5 +61,9 @@ export const useAdminContests = () =>
       startDate: d.starts_at,
       endDate: d.ends_at,
       submissionReady: d.protocol_submission_ready,
+      linesOfCode: d.lines_of_code,
+      leadSeniorWatsonHandle: d.lead_senior_watson_handle,
+      rewards: d.rewards,
+      twitterHandle: d.twitter_handle,
     }))
   })
