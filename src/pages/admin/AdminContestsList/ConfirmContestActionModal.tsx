@@ -37,7 +37,7 @@ const renderDescription = (contest: ContestsListItem, action: ContestAction) => 
           <Text>Make contest visible on the frontend</Text>
           <Text>Announce new contest on Twitter & Discord</Text>
 
-          <Title variant="h3">Announcements preview</Title>
+          <Title variant="h3">Tweet preview</Title>
           <ContestAnnouncementTweetPreview contest={contest} />
         </Column>
       )
