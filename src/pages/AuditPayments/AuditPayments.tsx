@@ -43,14 +43,8 @@ export const AuditPayments = () => {
   const contest = protocolDashboard?.contest
   const paymentsInfo = protocolDashboard?.payments
 
-  const initialPaymentDone = useMemo(
-    () => paymentsInfo && contest && paymentsInfo.totalPaid >= paymentsInfo.totalAmount * 0.25,
-    [paymentsInfo, contest]
-  )
-  const fullPaymentDone = useMemo(
-    () => paymentsInfo && contest && paymentsInfo.totalPaid >= paymentsInfo.totalAmount,
-    [paymentsInfo, contest]
-  )
+  const initialPaymentDone = contest?.initialPaymentComplete || contest?.fullPaymentComplete
+  const fullPaymentDone = contest?.fullPaymentComplete
 
   const [initialPayments, finalPayments] = useMemo(() => {
     if (!paymentsInfo?.payments) return []
@@ -209,7 +203,9 @@ export const AuditPayments = () => {
                     </Column>
                   )}
 
-                  <Text>Total paid: {commify(paymentsInfo.totalPaid)} USDC</Text>
+                  <Text>
+                    Total paid: {commify(fullPaymentDone ? paymentsInfo.totalAmount : paymentsInfo.totalPaid)} USDC
+                  </Text>
                   {!fullPaymentDone && (
                     <Text>Amount due: {commify(paymentsInfo.totalAmount - paymentsInfo.totalPaid)} USDC</Text>
                   )}
