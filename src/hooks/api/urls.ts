@@ -43,5 +43,7 @@ export const adminSignIn = () => `/admin/signin`
 export const adminSignOut = () => `/admin/signout`
 export const getAdminNonce = () => `/admin/nonce`
 export const getAdminContests = () => `/admin/contests`
+export const getAdminContestTweetPreview = (contestID: number) =>
+  `/admin/contests/${contestID}/announcement_tweet_preview`
 export const adminApproveContest = () => `/admin/approve_contest`
 export const adminApproveStart = () => `/admin/approve_start`
