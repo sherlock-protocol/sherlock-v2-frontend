@@ -14,6 +14,7 @@ export type ContestDetails = {
   startDate: number
   endDate: number
   prizePool: number
+  judgingPrizePool: number
   leadSeniorAuditorHandle: string
   leadSeniorAuditorFixedPay: number
   sherlockFee: number
@@ -48,6 +49,8 @@ type PaymentsResponse = {
     repo: string
     protocol_submission_ready: boolean
     admin_start_approved: boolean
+    judging_prize_pool: number
+    rewards: number
   }
   payments: {
     tx_hash: string
@@ -71,7 +74,8 @@ export const useProtocolDashboard = (dashboardID: string) =>
         prizePool: data.contest.prize_pool,
         leadSeniorAuditorHandle: data.contest.lead_senior_auditor_handle,
         leadSeniorAuditorFixedPay: data.contest.lead_senior_auditor_fixed_pay,
-        sherlockFee: data.contest.full_payment - data.contest.prize_pool - data.contest.lead_senior_auditor_fixed_pay,
+        judgingPrizePool: data.contest.judging_prize_pool,
+        sherlockFee: data.contest.full_payment - data.contest.rewards,
         repo: data.contest.repo,
         submissionReady: data.contest.protocol_submission_ready,
         startApproved: data.contest.admin_start_approved,
