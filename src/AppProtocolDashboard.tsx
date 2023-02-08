@@ -18,13 +18,14 @@ import { Button } from "./components/Button"
 import Modal, { Props as ModalProps } from "./components/Modal/Modal"
 import { useFinalizeSubmission } from "./hooks/api/contests/useFinalizeSubmission"
 import LoadingContainer from "./components/LoadingContainer/LoadingContainer"
+import { ErrorModal } from "./pages/ContestDetails/ErrorModal"
 
 type Props = ModalProps & {
   dashboardID: string
 }
 
 const FinalizeSubmissionModal: React.FC<Props> = ({ onClose, dashboardID }) => {
-  const { finalizeSubmission, isLoading, isSuccess } = useFinalizeSubmission()
+  const { finalizeSubmission, isLoading, isSuccess, error, reset } = useFinalizeSubmission()
 
   useEffect(() => {
     if (isSuccess) {
@@ -56,6 +57,7 @@ const FinalizeSubmissionModal: React.FC<Props> = ({ onClose, dashboardID }) => {
           </Row>
         </Column>
       </LoadingContainer>
+      {error && <ErrorModal reason={error?.message} onClose={() => reset()} />}
     </Modal>
   )
 }
