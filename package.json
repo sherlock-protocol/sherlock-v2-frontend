@@ -29,6 +29,7 @@
     "react-query": "^3.39.0",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
+    "react-tweet-card": "^0.2.3",
     "recharts": "^2.1.9",
     "showdown": "^2.1.0",
     "siwe": "^2.0.5",
