@@ -19,6 +19,7 @@ export type ContestDetails = {
   sherlockFee: number
   repo: string
   submissionReady: boolean
+  scopeReady: boolean
   startApproved: boolean
   fullPaymentComplete: boolean
   linesOfCode: string
@@ -50,6 +51,7 @@ type PaymentsResponse = {
     lead_senior_auditor_fixed_pay: number
     repo: string
     protocol_submission_ready: boolean
+    scope_ready: boolean
     admin_start_approved: boolean
     full_payment_complete: boolean
     lines_of_code: string
@@ -80,6 +82,7 @@ export const useProtocolDashboard = (dashboardID: string) =>
         sherlockFee: data.contest.full_payment - data.contest.prize_pool - data.contest.lead_senior_auditor_fixed_pay,
         repo: data.contest.repo,
         submissionReady: data.contest.protocol_submission_ready,
+        scopeReady: data.contest.scope_ready,
         startApproved: data.contest.admin_start_approved,
         fullPaymentComplete: data.contest.full_payment_complete,
         linesOfCode: data.contest.lines_of_code,

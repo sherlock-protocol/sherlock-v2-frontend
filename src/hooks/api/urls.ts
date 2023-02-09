@@ -37,6 +37,7 @@ export const addProtocolGithubHandle = (dashboardID: string) => `dashboard/${das
 export const getProtocolDiscordHandles = (dashboardID: string) => `dashboard/${dashboardID}/discord_handles`
 export const addProtocolDiscordHandle = (dashboardID: string) => `dashboard/${dashboardID}/discord_handles`
 export const finalizeSubmission = (dashboardID: string) => `dashboard/${dashboardID}/finalize_submission`
+export const submitScope = (dashboardID: string) => `dashboard/${dashboardID}/submit_scope`
 export const getScope = (dashboardID: string) => `dashboard/${dashboardID}/audit_scope`
 export const addScope = (dashboardID: string) => `dashboard/${dashboardID}/audit_scope`
 export const updateScope = (dashboardID: string, repoName: string) => `dashboard/${dashboardID}/audit_scope/${repoName}`

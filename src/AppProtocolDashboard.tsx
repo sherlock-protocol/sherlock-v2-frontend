@@ -16,17 +16,17 @@ import { Table, TBody, Td, Tr } from "./components/Table/Table"
 import { Text } from "./components/Text"
 import { Button } from "./components/Button"
 import Modal, { Props as ModalProps } from "./components/Modal/Modal"
-import { useFinalizeSubmission } from "./hooks/api/contests/useFinalizeSubmission"
+import { useSubmitScope } from "./hooks/api/contests/useSubmitScope"
 import LoadingContainer from "./components/LoadingContainer/LoadingContainer"
 import { ErrorModal } from "./pages/ContestDetails/ErrorModal"
+import { useFinalizeSubmission } from "./hooks/api/contests/useFinalizeSubmission"
 
 type Props = ModalProps & {
   dashboardID: string
 }
 
 const FinalizeSubmissionModal: React.FC<Props> = ({ onClose, dashboardID }) => {
-  const { finalizeSubmission, isLoading, isSuccess, error, reset } = useFinalizeSubmission()
-
+  const { finalizeSubmission, isSuccess, isLoading, error, reset } = useFinalizeSubmission()
   useEffect(() => {
     if (isSuccess) {
       onClose?.()
@@ -39,16 +39,53 @@ const FinalizeSubmissionModal: React.FC<Props> = ({ onClose, dashboardID }) => {
 
   const handleConfirmClick = useCallback(() => {
     finalizeSubmission({ dashboardID })
-  }, [finalizeSubmission, dashboardID])
+  }, [dashboardID, finalizeSubmission])
+
+  return (
+    <Modal closeable onClose={onClose}>
+      <LoadingContainer loading={isLoading} label="Loading ...">
+        <Column spacing="xl">
+          <Title>Finalize submission</Title>
+          <Text>Make sure you're done with the repo README</Text>
+          <Text>Once you confirm this action, the audit repo will become read-only</Text>
+          <Text variant="secondary">This action cannot be undone.</Text>
+          <Row spacing="l" alignment={["center"]}>
+            <Button variant="secondary" onClick={handleCancelClick}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmClick}>Confirm</Button>
+          </Row>
+        </Column>
+      </LoadingContainer>
+      {error && <ErrorModal reason={error?.message} onClose={() => reset()} />}
+    </Modal>
+  )
+}
+
+const SubmitScopeModal: React.FC<Props> = ({ onClose, dashboardID }) => {
+  const { submitScope, isLoading, isSuccess, error, reset } = useSubmitScope()
+
+  useEffect(() => {
+    if (isSuccess) {
+      onClose?.()
+    }
+  }, [isSuccess, onClose])
+
+  const handleCancelClick = useCallback(() => {
+    onClose?.()
+  }, [onClose])
+
+  const handleConfirmClick = useCallback(() => {
+    submitScope({ dashboardID })
+  }, [submitScope, dashboardID])
 
   return (
     <Modal closeable onClose={onClose}>
       <LoadingContainer loading={isLoading} label="Setting up repo. This might take a few minutes.">
         <Column spacing="xl">
-          <Title>Finalize submission</Title>
+          <Title>Submit scope</Title>
           <Text>The contents from your scope repositories will be copied over to the audit repo.</Text>
-          <Text>Sherlock will review the details and confirm the start date soon.</Text>
-          <Text variant="secondary">This action cannot be undone.</Text>
+          <Text>Once you confirm this action, the scope of the audit cannot be changed.</Text>
           <Row spacing="l" alignment={["center"]}>
             <Button variant="secondary" onClick={handleCancelClick}>
               Cancel
@@ -66,6 +103,7 @@ const AppProtocolDashboard = () => {
   const { dashboardID } = useParams()
   const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
   const [finalizeSubmissionModalOpen, setFinalizeSubmissionModalOpen] = useState(false)
+  const [submitScopeModalOpen, setSubmitScopeModalOpen] = useState(false)
 
   if (!protocolDashboard) return null
 
@@ -167,15 +205,19 @@ const AppProtocolDashboard = () => {
                     <FaGithub />
                     &nbsp;&nbsp;Audit repository
                   </Button>
-                  {!contest.submissionReady && (
+                  {(!contest.scopeReady || !contest.submissionReady) && (
+                    <Button
+                      disabled={!canFinalizeSubmission}
+                      fullWidth
+                      onClick={() =>
+                        contest.scopeReady ? setFinalizeSubmissionModalOpen(true) : setSubmitScopeModalOpen(true)
+                      }
+                    >
+                      {contest.scopeReady ? "Finalize submission" : "Submit scope"}
+                    </Button>
+                  )}
+                  {!contest.scopeReady && (
                     <>
-                      <Button
-                        disabled={!canFinalizeSubmission}
-                        fullWidth
-                        onClick={() => setFinalizeSubmissionModalOpen(true)}
-                      >
-                        Finalize submission
-                      </Button>
                       {fullyPaid ? (
                         <Row spacing="s" className={styles.stepCompleted}>
                           <FaCheckCircle /> <Text variant="alternate">Payment completed</Text>
@@ -225,6 +267,9 @@ const AppProtocolDashboard = () => {
           dashboardID={dashboardID ?? ""}
           onClose={() => setFinalizeSubmissionModalOpen(false)}
         />
+      )}
+      {submitScopeModalOpen && (
+        <SubmitScopeModal dashboardID={dashboardID ?? ""} onClose={() => setSubmitScopeModalOpen(false)} />
       )}
     </div>
   )
