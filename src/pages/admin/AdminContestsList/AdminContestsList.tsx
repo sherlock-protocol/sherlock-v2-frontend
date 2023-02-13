@@ -165,7 +165,7 @@ export const AdminContestsList = () => {
 
       if (contest.status === "CREATED" && !contest.submissionReady) {
         return (
-          <Row spacing="s" alignment={["center", "center"]}>
+          <Row spacing="s" alignment={["start", "center"]}>
             <Text variant="secondary">Waiting for protocol to finalize submission</Text>
             <Button
               size="small"

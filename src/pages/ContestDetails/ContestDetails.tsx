@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
-import { useNavigate, useParams } from "react-router-dom"
+import { Navigate, useNavigate, useParams } from "react-router-dom"
 import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy, FaLock } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
@@ -31,6 +31,8 @@ import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { ContestLeaderboardModal } from "./ContestLeaderboardModal"
 import { useContestant } from "../../hooks/api/contests/useContestant"
 import { useContestLeaderboard } from "../../hooks/api/contests/useContestLeaderboard"
+import { getTotalRewards } from "../../utils/contests"
+import { contestsRoutes } from "../../utils/routes"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -56,7 +58,7 @@ export const ContestDetails = () => {
   const [signUpModalOpen, setSignUpModalOpen] = useState(false)
   const [leaderboardModalOpen, setLeaderboardModalOpen] = useState(false)
 
-  const { data: contest } = useContest(parseInt(contestId ?? ""))
+  const { data: contest, isError: isContestError } = useContest(parseInt(contestId ?? ""))
   const { data: contestant } = useContestant(address ?? "", parseInt(contestId ?? ""), {
     enabled: !!address,
     retry: false,
@@ -177,8 +179,8 @@ export const ContestDetails = () => {
   }, [setLeaderboardModalOpen])
 
   const canOptinOut = useMemo(
-    () => !contest?.private && (contest?.status === "CREATED" || contest?.status === "RUNNING"),
-    [contest?.status, contest?.private]
+    () => contest?.id !== 38 && !contest?.private && (contest?.status === "CREATED" || contest?.status === "RUNNING"),
+    [contest?.status, contest?.private, contest?.id]
   )
 
   const joinContestEnabled = useMemo(
@@ -196,6 +198,7 @@ export const ContestDetails = () => {
     [contest?.status, contest?.private, contest?.judgingPrizePool]
   )
 
+  if (isContestError) return <Navigate replace to={contestsRoutes.Contests} />
   if (!contest) return null
 
   const startDate = DateTime.fromSeconds(contest.startDate)
@@ -204,7 +207,7 @@ export const ContestDetails = () => {
   const timeLeft = endDate.diffNow(["day", "hour", "minute", "second"])
   const endingSoon = contest.status === "RUNNING" && timeLeft.days < 2
 
-  const profileIsComplete = profile && profile.githubHandle && profile.discordHandle
+  const profileIsComplete = profile && profile.githubHandle
 
   const hasEnoughAuditDays = profile && profile.auditDays >= 28
 
@@ -279,49 +282,79 @@ export const ContestDetails = () => {
               <Row>
                 <Column spacing="l">
                   <Row>
-                    <Column>
-                      <Title variant="h3">TOTAL REWARDS</Title>
-                      <Text size="extra-large" strong>
-                        {`${commify(contest.prizePool + contest.leadSeniorAuditorFixedPay)} USDC`}
+                    <Column spacing="s">
+                      <Column>
+                        <Title variant="h3">TOTAL REWARDS</Title>
+                        <Row spacing="xs" alignment={["start", "baseline"]}>
+                          <Text size="extra-large" strong>
+                            {contest.id === 38
+                              ? `$${commify(getTotalRewards(contest))}`
+                              : `${commify(getTotalRewards(contest))} USDC`}
+                          </Text>
+                          {contest.id === 38 && (
+                            <Text variant="secondary" size="small">
+                              Maximum Payout
+                            </Text>
+                          )}
+                        </Row>
+                      </Column>
+                    </Column>
+                  </Row>
+                  <Row spacing="m">
+                    <Column spacing="s">
+                      <Text variant="secondary" strong>
+                        Contest Pool
                       </Text>
+                      <Text variant="secondary" strong>
+                        Lead Senior Watson
+                      </Text>
+                      {contest.judgingPrizePool ? (
+                        <Text variant="secondary" strong>
+                          Judging Pool
+                        </Text>
+                      ) : null}
+                    </Column>
+                    <Column spacing="s">
+                      <Text variant="secondary" strong>
+                        {`${contest.id === 38 ? "$" : ""}${commify(contest.prizePool)} ${
+                          contest.id !== 38 ? "USDC" : "(*)"
+                        }`}
+                      </Text>
+                      <Text variant="secondary" strong>{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
+                      {contest.judgingPrizePool ? (
+                        <Text variant="secondary" strong>{`${contest.id === 38 ? "$" : ""}${commify(
+                          contest.judgingPrizePool
+                        )} ${contest.id !== 38 ? "USDC" : ""}`}</Text>
+                      ) : null}
                     </Column>
                   </Row>
-                  <Row spacing="l">
-                    <Column>
-                      <Title variant="h4">Contest Pool</Title>
-                      <Text strong>{`${commify(contest.prizePool)} USDC`}</Text>
-                    </Column>
-                    <Column>
-                      <Title variant="h4">Lead Senior Watson</Title>
-                      <Text strong>{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
-                    </Column>
-                  </Row>
+                  {contest.id === 38 && (
+                    <Text variant="secondary" size="small">
+                      (*) &#8531; USDC and &#8532; OP tokens
+                    </Text>
+                  )}
                 </Column>
               </Row>
               <hr />
               <Row spacing="s" alignment={["start", "center"]}>
                 <FaCrown title="Lead Senior Watson" />
-                <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
+                {contest.id === 38 ? (
+                  <Text strong>obront + Trust</Text>
+                ) : (
+                  <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
+                )}
               </Row>
               <hr />
               <Row>
                 <Column>
                   <Title variant="h3">{contest.status === "CREATED" ? "STARTS" : "STARTED"}</Title>
                   <Row spacing="s">
-                    {contest.id !== 6 ? (
-                      <>
-                        <Text size="extra-large" strong>
-                          {startDate.toLocaleString(DateTime.DATE_MED)}
-                        </Text>
-                        <Text size="small">
-                          {`${startDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${endDate.offsetNameShort}`}
-                        </Text>
-                      </>
-                    ) : (
-                      <Text size="extra-large" strong>
-                        TBD
-                      </Text>
-                    )}
+                    <Text size="extra-large" strong>
+                      {startDate.toLocaleString(DateTime.DATE_MED)}
+                    </Text>
+                    <Text size="small">
+                      {`${startDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${endDate.offsetNameShort}`}
+                    </Text>
                   </Row>
                 </Column>
               </Row>
@@ -331,20 +364,12 @@ export const ContestDetails = () => {
                     {contest.status === "FINISHED" || contest.status === "JUDGING" ? "ENDED" : "ENDS"}
                   </Text>
                   <Row alignment={["center", "center"]} spacing="s">
-                    {contest.id !== 6 ? (
-                      <>
-                        <Text size="extra-large" strong variant={endingSoon ? "alternate" : "normal"}>
-                          {endDate.toLocaleString(DateTime.DATE_MED)}
-                        </Text>
-                        <Text size="small">
-                          {`${endDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${endDate.offsetNameShort}`}
-                        </Text>
-                      </>
-                    ) : (
-                      <Text size="extra-large" strong>
-                        TBD
-                      </Text>
-                    )}
+                    <Text size="extra-large" strong variant={endingSoon ? "alternate" : "normal"}>
+                      {endDate.toLocaleString(DateTime.DATE_MED)}
+                    </Text>
+                    <Text size="small">
+                      {`${endDate.toLocaleString(DateTime.TIME_24_SIMPLE)} ${endDate.offsetNameShort}`}
+                    </Text>
                   </Row>
                 </Column>
               </Row>
@@ -374,7 +399,7 @@ export const ContestDetails = () => {
               {profile && (
                 <>
                   {contestant?.audit ? (
-                    <Column spacing="m" grow={1}>
+                    <Column spacing="m" grow={0}>
                       {contest.private ? (
                         contestant.audit.repo ? (
                           <>
@@ -427,7 +452,7 @@ export const ContestDetails = () => {
                       )}
 
                       {!contest.private && (
-                        <>
+                        <Column spacing="xs">
                           <Text>
                             {contest.status === "CREATED" || contest.status === "RUNNING"
                               ? "You're competing for:"
@@ -445,7 +470,7 @@ export const ContestDetails = () => {
                             onChange={handleOptInChange}
                             disabled={!canOptinOut}
                           />
-                        </>
+                        </Column>
                       )}
                     </Column>
                   ) : joinContestEnabled ? (

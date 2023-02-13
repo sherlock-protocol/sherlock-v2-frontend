@@ -11,6 +11,7 @@ import { ContestsListItem } from "../../../hooks/api/admin/useAdminContests"
 import { ContestAction } from "./AdminContestsList"
 
 import styles from "./AdminContestsList.module.scss"
+import { ContestAnnouncementTweetPreview } from "./ContestAnnouncementTweetPreview"
 
 type Props = Omit<ModalProps, "onClose"> & {
   contest: ContestsListItem
@@ -28,13 +29,16 @@ const getActionTitle = (action: ContestAction): string => {
   }
 }
 
-const renderDescription = (action: ContestAction) => {
+const renderDescription = (contest: ContestsListItem, action: ContestAction) => {
   switch (action) {
     case "PUBLISH":
       return (
         <Column spacing="s" alignment={"center"}>
           <Text>Make contest visible on the frontend</Text>
           <Text>Announce new contest on Twitter & Discord</Text>
+
+          <Title variant="h3">Tweet preview</Title>
+          <ContestAnnouncementTweetPreview contestID={contest.id} />
         </Column>
       )
     case "APPROVE_START":
@@ -92,7 +96,7 @@ export const ConfirmContestActionModal: React.FC<Props> = ({ contest, action, on
             <img src={contest.logoURL} className={styles.logo} alt={contest.title} />
             <Text strong>{contest.title}</Text>
           </Row>
-          {renderDescription(action)}
+          {renderDescription(contest, action)}
           <Row spacing="l">
             <Button variant="secondary" onClick={handleCancelClick}>
               Cancel

@@ -22,7 +22,8 @@ export const getIsAuditor = (address: string) => `is_auditor/${address}`
 export const authenticateAuditor = (address: string) => `auditors/${address}`
 export const getNonce = () => `nonce`
 export const getAuditorProfile = () => "profile"
-export const validateDiscordHandle = (handle: string) => `validate_discord_handle?discord_handle=${handle}`
+export const validateDiscordHandle = (handle: string) =>
+  `validate_discord_handle?discord_handle=${encodeURIComponent(handle)}`
 
 export const updateProfile = () => "profile"
 export const signOut = () => "signout"
@@ -48,6 +49,8 @@ export const adminSignIn = () => `/admin/signin`
 export const adminSignOut = () => `/admin/signout`
 export const getAdminNonce = () => `/admin/nonce`
 export const getAdminContests = () => `/admin/contests`
+export const getAdminContestTweetPreview = (contestID: number) =>
+  `/admin/contests/${contestID}/announcement_tweet_preview`
 export const adminApproveContest = () => `/admin/approve_contest`
 export const adminApproveStart = () => `/admin/approve_start`
 export const getAdminContestScope = (contestID: number) => `/admin/contest/${contestID}/scope`

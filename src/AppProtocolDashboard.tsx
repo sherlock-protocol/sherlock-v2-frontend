@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react"
 import { Outlet, useParams } from "react-router-dom"
 import { FaCheck, FaCheckCircle, FaGithub, FaRegCircle } from "react-icons/fa"
 import { commify } from "ethers/lib/utils.js"
-import { DateTime } from "luxon"
+import { DateTime, Interval } from "luxon"
 
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
@@ -123,9 +123,9 @@ const AppProtocolDashboard = () => {
   ]
 
   const { contest } = protocolDashboard
-  const startDate = DateTime.fromSeconds(contest.startDate)
-  const endDate = DateTime.fromSeconds(contest.endDate)
-  const length = endDate.diff(startDate, "days").days
+  const startDate = DateTime.fromSeconds(contest.startDate, { zone: "utc" })
+  const endDate = DateTime.fromSeconds(contest.endDate, { zone: "utc" })
+  const length = Interval.fromDateTimes(startDate, endDate).length("days")
 
   const fullyPaid = contest.fullPaymentComplete
   const canFinalizeSubmission = fullyPaid && protocolDashboard.scopeHasContracts
@@ -153,7 +153,9 @@ const AppProtocolDashboard = () => {
                         <Text strong>{contest.startApproved ? "Start Date" : "Estimated Start Date"}</Text>
                       </Td>
                       <Td>
-                        <Text alignment="right">{startDate.toLocaleString(DateTime.DATE_MED)}</Text>
+                        <Text alignment="right">
+                          {startDate.year === 2030 ? "TBD" : startDate.toLocaleString(DateTime.DATE_MED)}
+                        </Text>
                       </Td>
                     </Tr>
                     <Tr>
@@ -161,7 +163,7 @@ const AppProtocolDashboard = () => {
                         <Text strong>Audit Length</Text>
                       </Td>
                       <Td>
-                        <Text alignment="right">{`${length} days`}</Text>
+                        <Text alignment="right">{`${+length.toFixed(2)} days`}</Text>
                       </Td>
                     </Tr>
                     <Tr>
@@ -174,7 +176,7 @@ const AppProtocolDashboard = () => {
                     </Tr>
                     <Tr>
                       <Td>
-                        <Text strong>Contest Pot</Text>
+                        <Text strong>Audit Contest Pot</Text>
                       </Td>
                       <Td>
                         <Text alignment="right">{`${commify(contest.prizePool)} USDC`}</Text>
@@ -188,10 +190,20 @@ const AppProtocolDashboard = () => {
                         <Text alignment="right">{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
                       </Td>
                     </Tr>
+                    {contest.judgingPrizePool > 0 && (
+                      <Tr>
+                        <Td>
+                          <Text strong>Judging Contest Pot</Text>
+                        </Td>
+                        <Td>
+                          <Text alignment="right">{`${commify(contest.judgingPrizePool)} USDC`}</Text>
+                        </Td>
+                      </Tr>
+                    )}
                     {contest.sherlockFee > 0 && (
                       <Tr>
                         <Td>
-                          <Text strong>Sherlock Judging</Text>
+                          <Text strong>Sherlock Admin</Text>
                         </Td>
                         <Td>
                           <Text alignment="right">{`${commify(contest.sherlockFee)} USDC`}</Text>

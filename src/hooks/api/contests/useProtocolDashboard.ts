@@ -14,6 +14,7 @@ export type ContestDetails = {
   startDate: number
   endDate: number
   prizePool: number
+  judgingPrizePool: number
   leadSeniorAuditorHandle: string
   leadSeniorAuditorFixedPay: number
   sherlockFee: number
@@ -21,8 +22,9 @@ export type ContestDetails = {
   submissionReady: boolean
   scopeReady: boolean
   startApproved: boolean
-  fullPaymentComplete: boolean
   linesOfCode: string
+  initialPaymentComplete: boolean
+  fullPaymentComplete: boolean
 }
 
 type PaymentsDetails = {
@@ -53,8 +55,11 @@ type PaymentsResponse = {
     protocol_submission_ready: boolean
     scope_ready: boolean
     admin_start_approved: boolean
-    full_payment_complete: boolean
     lines_of_code: string
+    judging_prize_pool: number
+    rewards: number
+    initial_payment_complete: boolean
+    full_payment_complete: boolean
   }
   payments: {
     tx_hash: string
@@ -79,13 +84,15 @@ export const useProtocolDashboard = (dashboardID: string) =>
         prizePool: data.contest.prize_pool,
         leadSeniorAuditorHandle: data.contest.lead_senior_auditor_handle,
         leadSeniorAuditorFixedPay: data.contest.lead_senior_auditor_fixed_pay,
-        sherlockFee: data.contest.full_payment - data.contest.prize_pool - data.contest.lead_senior_auditor_fixed_pay,
+        judgingPrizePool: data.contest.judging_prize_pool,
+        sherlockFee: data.contest.full_payment - data.contest.rewards,
         repo: data.contest.repo,
         submissionReady: data.contest.protocol_submission_ready,
         scopeReady: data.contest.scope_ready,
         startApproved: data.contest.admin_start_approved,
-        fullPaymentComplete: data.contest.full_payment_complete,
         linesOfCode: data.contest.lines_of_code,
+        initialPaymentComplete: data.contest.initial_payment_complete,
+        fullPaymentComplete: data.contest.full_payment_complete,
       },
       payments: {
         totalAmount: data.contest.full_payment,
