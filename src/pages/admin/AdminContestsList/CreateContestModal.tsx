@@ -1,5 +1,5 @@
 import { DateTime } from "luxon"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { FaChrome, FaTwitter } from "react-icons/fa"
 import { useDebounce } from "use-debounce"
 import { Input } from "../../../components/Input"
@@ -35,12 +35,36 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   const [contestJudgingPrizePool, setContestJudgingPrizePool] = useState("")
   const [contestTotalCost, setContestTotalCost] = useState("")
 
+  const [startDateIsInvalid, setStartDateIsInvalid] = useState(false)
+
   const displayProtocolInfo = !!protocol || protocolNotFound || protocolLoading
 
+  const updateDates = useCallback(() => {
+    if (contestStartDate !== "" && contestAuditLength !== "") {
+      const startDate = DateTime.fromFormat(contestStartDate, "yyyy-MM-dd HH:mm")
+      const endDate = startDate.plus({ hours: 24 * parseInt(contestAuditLength) })
+      const judgingEndDate = endDate.plus({ hours: 24 * 3 })
+
+      setContestJudgingContestEndDate(judgingEndDate.toFormat("yyyy-MM-dd HH:mm"))
+    }
+  }, [contestStartDate, contestAuditLength, setContestJudgingContestEndDate])
+
   useEffect(() => {
-    const startDate = DateTime.fromFormat(contestStartDate, "yyyy-MM-dd HH:mm")
-    console.log(startDate.toLocaleString(DateTime.DATETIME_FULL))
-  }, [contestStartDate])
+    if (contestStartDate === "") {
+      setStartDateIsInvalid(false)
+    } else {
+      const startDate = DateTime.fromFormat(contestStartDate, "yyyy-MM-dd HH:mm")
+
+      console.log(startDate.toLocaleString(DateTime.DATETIME_FULL))
+
+      if (!startDate.isValid) {
+        setStartDateIsInvalid(true)
+      } else {
+        setStartDateIsInvalid(false)
+        updateDates()
+      }
+    }
+  }, [contestStartDate, updateDates, contestAuditLength])
 
   return (
     <Modal closeable onClose={onClose}>
@@ -103,7 +127,11 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
           <Field label="Short Description">
             <Input value={contestShortDescription} onChange={setShortDescription} />
           </Field>
-          <Field label="Start Date">
+          <Field
+            label="Start Date"
+            error={startDateIsInvalid}
+            errorMessage="Invalid date. Must be format yyyy-MM-dd HH:mm"
+          >
             <Input value={contestStartDate} onChange={setContestStartDate} />
           </Field>
           <Field label="Audit Length">
