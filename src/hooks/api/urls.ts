@@ -49,6 +49,7 @@ export const getAdminNonce = () => `/admin/nonce`
 export const getAdminContests = () => `/admin/contests`
 export const adminApproveContest = () => `/admin/approve_contest`
 export const adminApproveStart = () => `/admin/approve_start`
+export const getAdminProtocol = (name: string) => `/admin/protocol/${name}`
 
 export const getRepositoryBranches = (repo: string) => `/audit_scope/${repo}/branches`
 export const getRepositoryCommits = (repo: string, branch: string) => `/audit_scope/${repo}/${branch}/commits`

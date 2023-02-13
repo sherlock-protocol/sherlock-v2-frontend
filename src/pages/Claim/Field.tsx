@@ -12,7 +12,7 @@ type ErrorStateProps =
     }
 
 type Props = {
-  label?: string
+  label?: React.ReactElement | string
   detail?: React.ReactElement | string
 } & ErrorStateProps
 

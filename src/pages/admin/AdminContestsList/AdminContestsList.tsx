@@ -12,6 +12,7 @@ import { ContestsListItem, useAdminContests } from "../../../hooks/api/admin/use
 
 import styles from "./AdminContestsList.module.scss"
 import { ConfirmContestActionModal } from "./ConfirmContestActionModal"
+import { CreateContestModal } from "./CreateContestModal"
 
 export type ContestAction = "PUBLISH" | "APPROVE_START"
 
@@ -37,6 +38,7 @@ const getContestAction = (contest: ContestsListItem, force: boolean): ContestAct
 export const AdminContestsList = () => {
   const { data: contests, isLoading } = useAdminContests()
   const [confirmationModal, setConfirmationModal] = useState<ConfirmationModal | undefined>()
+  const [createContestModalOpen, setCreateContestModalOpen] = useState(false)
   const [forceActionRowIndex, setForceActionRowIndex] = useState<number | undefined>()
 
   const handleActionClick = useCallback(
@@ -224,7 +226,7 @@ export const AdminContestsList = () => {
       <Column spacing="l">
         <Box shadow={false} fullWidth>
           <Row alignment="center">
-            <Button variant="alternate">
+            <Button variant="alternate" onClick={() => setCreateContestModalOpen(true)}>
               <FaPlus />
               &nbsp;Add contest
             </Button>
@@ -292,6 +294,7 @@ export const AdminContestsList = () => {
               force={forceActionRowIndex === confirmationModal.contestIndex}
             />
           )}
+          {createContestModalOpen && <CreateContestModal onClose={() => setCreateContestModalOpen(false)} />}
         </Box>
       </Column>
     </LoadingContainer>
