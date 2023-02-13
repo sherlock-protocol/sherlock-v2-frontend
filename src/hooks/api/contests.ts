@@ -30,6 +30,7 @@ export type Contest = {
   judgingPrizePool?: number
   jugdingEndDate?: number // Timestamp in seconds.
   repo: string
+  linesOfCode?: string
 }
 
 export type Scoreboard = {
@@ -101,6 +102,7 @@ type GetContestResponseData = {
   judging_prize_pool: number | null
   judging_ends_at?: number
   template_repo_name: string
+  lines_of_code: string
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -128,6 +130,7 @@ export const useContest = (id: number) =>
         judgingPrizePool: response.judging_prize_pool ?? undefined,
         jugdingEndDate: response.judging_ends_at,
         repo: response.template_repo_name,
+        linesOfCode: response.lines_of_code,
       }
     },
     {

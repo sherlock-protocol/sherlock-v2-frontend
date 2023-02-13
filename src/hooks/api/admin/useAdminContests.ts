@@ -18,6 +18,7 @@ export type ContestsListItem = {
   startDate: number
   endDate: number
   submissionReady: boolean
+  hasSolidityMetricsReport: boolean
 }
 
 type GetAdminContestsResponse = {
@@ -33,6 +34,7 @@ type GetAdminContestsResponse = {
   starts_at: number
   ends_at: number
   protocol_submission_ready: boolean
+  has_solidity_metrics_report: boolean
 }[]
 
 export const adminContestsQuery = () => "admin-contests"
@@ -53,5 +55,6 @@ export const useAdminContests = () =>
       startDate: d.starts_at,
       endDate: d.ends_at,
       submissionReady: d.protocol_submission_ready,
+      hasSolidityMetricsReport: d.has_solidity_metrics_report,
     }))
   })
