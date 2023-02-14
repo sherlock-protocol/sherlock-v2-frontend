@@ -1,18 +1,16 @@
-import { FaGithub } from "react-icons/fa"
-import { useParams } from "react-router-dom"
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
-import { convertToTree } from "../../hooks/api/scope/useRepositoryContracts"
 import { useScope } from "../../hooks/api/scope/useScope"
-import { TreeEntry } from "./RepositoryContractsSelector"
-
-import styles from "./AuditScope.module.scss"
 import { Text } from "../../components/Text"
 import { useProtocolDashboard } from "../../hooks/api/contests/useProtocolDashboard"
+import { ScopeList } from "./ScopeList"
 
-export const AuditScopeReadOnly = () => {
-  const { dashboardID } = useParams()
+type Props = {
+  dashboardID: string
+}
+
+export const AuditScopeReadOnly: React.FC<Props> = ({ dashboardID }) => {
   const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
   const { data: scope } = useScope(dashboardID)
 
@@ -31,35 +29,7 @@ export const AuditScopeReadOnly = () => {
           </Row>
         </Column>
       </Box>
-      {scope?.map((s) => {
-        const tree = convertToTree(s.files)
-        const treeElements: React.ReactNode[] = []
-
-        tree.forEach((value, key) => {
-          treeElements.push(<TreeEntry key={key} name={key} tree={value} readOnly />)
-        })
-
-        return (
-          <Box shadow={false} key={s.repoName}>
-            <Column spacing="m">
-              <Title variant="h2">
-                <FaGithub />
-                &nbsp;{s.repoName}
-              </Title>
-
-              <Column spacing="xs">
-                <Text variant="secondary" size="small">
-                  Commit hash
-                </Text>
-                <Text className={styles.commits}>{s.commitHash}</Text>
-              </Column>
-              <Column spacing="s" className={styles.tree}>
-                <ul className={styles.directoryList}>{treeElements}</ul>
-              </Column>
-            </Column>
-          </Box>
-        )
-      })}
+      {scope && <ScopeList scope={scope} />}
     </Column>
   )
 }

@@ -15,10 +15,10 @@
       width: 1rem;
     }
     &:nth-child(2) {
-      width: 40%;
+      width: 35%;
     }
     &:nth-child(3) {
-      width: 15%;
+      width: 20%;
     }
     &:nth-child(4) {
       width: 45%;
@@ -28,4 +28,8 @@
       text-align: center;
     }
   }
+}
+
+.mono {
+  font-family: monospace;
 }

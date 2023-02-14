@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react"
 import { Outlet, useParams } from "react-router-dom"
 import { FaCheck, FaCheckCircle, FaGithub, FaRegCircle } from "react-icons/fa"
 import { commify } from "ethers/lib/utils.js"
-import { DateTime } from "luxon"
+import { DateTime, Interval } from "luxon"
 
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
@@ -16,16 +16,17 @@ import { Table, TBody, Td, Tr } from "./components/Table/Table"
 import { Text } from "./components/Text"
 import { Button } from "./components/Button"
 import Modal, { Props as ModalProps } from "./components/Modal/Modal"
-import { useFinalizeSubmission } from "./hooks/api/contests/useFinalizeSubmission"
+import { useSubmitScope } from "./hooks/api/contests/useSubmitScope"
 import LoadingContainer from "./components/LoadingContainer/LoadingContainer"
+import { ErrorModal } from "./pages/ContestDetails/ErrorModal"
+import { useFinalizeSubmission } from "./hooks/api/contests/useFinalizeSubmission"
 
 type Props = ModalProps & {
   dashboardID: string
 }
 
 const FinalizeSubmissionModal: React.FC<Props> = ({ onClose, dashboardID }) => {
-  const { finalizeSubmission, isLoading, isSuccess } = useFinalizeSubmission()
-
+  const { finalizeSubmission, isSuccess, isLoading, error, reset } = useFinalizeSubmission()
   useEffect(() => {
     if (isSuccess) {
       onClose?.()
@@ -38,15 +39,15 @@ const FinalizeSubmissionModal: React.FC<Props> = ({ onClose, dashboardID }) => {
 
   const handleConfirmClick = useCallback(() => {
     finalizeSubmission({ dashboardID })
-  }, [finalizeSubmission, dashboardID])
+  }, [dashboardID, finalizeSubmission])
 
   return (
     <Modal closeable onClose={onClose}>
-      <LoadingContainer loading={isLoading} label="Setting up repo. This might take a few minutes.">
+      <LoadingContainer loading={isLoading} label="Loading ...">
         <Column spacing="xl">
           <Title>Finalize submission</Title>
-          <Text>The contents from your scope repositories will be copied over to the audit repo.</Text>
-          <Text>Sherlock will review the details and confirm the start date soon.</Text>
+          <Text>Make sure you're done with the repo README</Text>
+          <Text>Once you confirm this action, the audit repo will become read-only</Text>
           <Text variant="secondary">This action cannot be undone.</Text>
           <Row spacing="l" alignment={["center"]}>
             <Button variant="secondary" onClick={handleCancelClick}>
@@ -56,6 +57,44 @@ const FinalizeSubmissionModal: React.FC<Props> = ({ onClose, dashboardID }) => {
           </Row>
         </Column>
       </LoadingContainer>
+      {error && <ErrorModal reason={error?.message} onClose={() => reset()} />}
+    </Modal>
+  )
+}
+
+const SubmitScopeModal: React.FC<Props> = ({ onClose, dashboardID }) => {
+  const { submitScope, isLoading, isSuccess, error, reset } = useSubmitScope()
+
+  useEffect(() => {
+    if (isSuccess) {
+      onClose?.()
+    }
+  }, [isSuccess, onClose])
+
+  const handleCancelClick = useCallback(() => {
+    onClose?.()
+  }, [onClose])
+
+  const handleConfirmClick = useCallback(() => {
+    submitScope({ dashboardID })
+  }, [submitScope, dashboardID])
+
+  return (
+    <Modal closeable onClose={onClose}>
+      <LoadingContainer loading={isLoading} label="Setting up repo. This might take a few minutes.">
+        <Column spacing="xl">
+          <Title>Submit scope</Title>
+          <Text>The contents from your scope repositories will be copied over to the audit repo.</Text>
+          <Text>Once you confirm this action, the scope of the audit cannot be changed.</Text>
+          <Row spacing="l" alignment={["center"]}>
+            <Button variant="secondary" onClick={handleCancelClick}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmClick}>Confirm</Button>
+          </Row>
+        </Column>
+      </LoadingContainer>
+      {error && <ErrorModal reason={error?.message} onClose={() => reset()} />}
     </Modal>
   )
 }
@@ -64,6 +103,7 @@ const AppProtocolDashboard = () => {
   const { dashboardID } = useParams()
   const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
   const [finalizeSubmissionModalOpen, setFinalizeSubmissionModalOpen] = useState(false)
+  const [submitScopeModalOpen, setSubmitScopeModalOpen] = useState(false)
 
   if (!protocolDashboard) return null
 
@@ -83,9 +123,9 @@ const AppProtocolDashboard = () => {
   ]
 
   const { contest } = protocolDashboard
-  const startDate = DateTime.fromSeconds(contest.startDate)
-  const endDate = DateTime.fromSeconds(contest.endDate)
-  const length = endDate.diff(startDate, "days").days
+  const startDate = DateTime.fromSeconds(contest.startDate, { zone: "utc" })
+  const endDate = DateTime.fromSeconds(contest.endDate, { zone: "utc" })
+  const length = Interval.fromDateTimes(startDate, endDate).length("days")
 
   const fullyPaid = contest.fullPaymentComplete
   const canFinalizeSubmission = fullyPaid && protocolDashboard.scopeHasContracts
@@ -113,7 +153,9 @@ const AppProtocolDashboard = () => {
                         <Text strong>{contest.startApproved ? "Start Date" : "Estimated Start Date"}</Text>
                       </Td>
                       <Td>
-                        <Text alignment="right">{startDate.toLocaleString(DateTime.DATE_MED)}</Text>
+                        <Text alignment="right">
+                          {startDate.year === 2030 ? "TBD" : startDate.toLocaleString(DateTime.DATE_MED)}
+                        </Text>
                       </Td>
                     </Tr>
                     <Tr>
@@ -121,7 +163,7 @@ const AppProtocolDashboard = () => {
                         <Text strong>Audit Length</Text>
                       </Td>
                       <Td>
-                        <Text alignment="right">{`${length} days`}</Text>
+                        <Text alignment="right">{`${+length.toFixed(2)} days`}</Text>
                       </Td>
                     </Tr>
                     <Tr>
@@ -134,7 +176,7 @@ const AppProtocolDashboard = () => {
                     </Tr>
                     <Tr>
                       <Td>
-                        <Text strong>Contest Pot</Text>
+                        <Text strong>Audit Contest Pot</Text>
                       </Td>
                       <Td>
                         <Text alignment="right">{`${commify(contest.prizePool)} USDC`}</Text>
@@ -148,10 +190,20 @@ const AppProtocolDashboard = () => {
                         <Text alignment="right">{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
                       </Td>
                     </Tr>
+                    {contest.judgingPrizePool > 0 && (
+                      <Tr>
+                        <Td>
+                          <Text strong>Judging Contest Pot</Text>
+                        </Td>
+                        <Td>
+                          <Text alignment="right">{`${commify(contest.judgingPrizePool)} USDC`}</Text>
+                        </Td>
+                      </Tr>
+                    )}
                     {contest.sherlockFee > 0 && (
                       <Tr>
                         <Td>
-                          <Text strong>Sherlock Judging</Text>
+                          <Text strong>Sherlock Admin</Text>
                         </Td>
                         <Td>
                           <Text alignment="right">{`${commify(contest.sherlockFee)} USDC`}</Text>
@@ -165,15 +217,19 @@ const AppProtocolDashboard = () => {
                     <FaGithub />
                     &nbsp;&nbsp;Audit repository
                   </Button>
-                  {!contest.submissionReady && (
+                  {(!contest.scopeReady || !contest.submissionReady) && (
+                    <Button
+                      disabled={!canFinalizeSubmission}
+                      fullWidth
+                      onClick={() =>
+                        contest.scopeReady ? setFinalizeSubmissionModalOpen(true) : setSubmitScopeModalOpen(true)
+                      }
+                    >
+                      {contest.scopeReady ? "Finalize submission" : "Submit scope"}
+                    </Button>
+                  )}
+                  {!contest.scopeReady && (
                     <>
-                      <Button
-                        disabled={!canFinalizeSubmission}
-                        fullWidth
-                        onClick={() => setFinalizeSubmissionModalOpen(true)}
-                      >
-                        Finalize submission
-                      </Button>
                       {fullyPaid ? (
                         <Row spacing="s" className={styles.stepCompleted}>
                           <FaCheckCircle /> <Text variant="alternate">Payment completed</Text>
@@ -223,6 +279,9 @@ const AppProtocolDashboard = () => {
           dashboardID={dashboardID ?? ""}
           onClose={() => setFinalizeSubmissionModalOpen(false)}
         />
+      )}
+      {submitScopeModalOpen && (
+        <SubmitScopeModal dashboardID={dashboardID ?? ""} onClose={() => setSubmitScopeModalOpen(false)} />
       )}
     </div>
   )

@@ -11,6 +11,7 @@ import { commify } from "../../utils/units"
 import { Table, TBody, Td, Th, THead, Tr } from "../../components/Table/Table"
 import { Contest } from "../../hooks/api/contests"
 import { timeLeftString } from "../../utils/dates"
+import { getTotalRewards } from "../../utils/contests"
 
 type Props = {
   contests?: Contest[]
@@ -86,9 +87,16 @@ export const ActiveContests: React.FC<Props> = ({ contests, onContestClick }) =>
                   </Column>
                 </Td>
                 <Td>
-                  <Text variant="mono" strong size="large" alignment="center">
-                    {commify(contest.prizePool + contest.leadSeniorAuditorFixedPay)} USDC
-                  </Text>
+                  <Column spacing="xs">
+                    <Text variant="mono" strong size="large" alignment="center">
+                      {commify(getTotalRewards(contest))} USDC
+                    </Text>
+                    {contest.id === 38 && (
+                      <Text variant="secondary" alignment="center" size="small">
+                        Maximum Payout
+                      </Text>
+                    )}
+                  </Column>
                 </Td>
                 <Td>
                   <Column spacing="xs" alignment="center">

@@ -8,7 +8,7 @@ type ButtonSize = "small" | "normal"
 
 type ButtonVariant = "primary" | "secondary" | "alternate" | "cta"
 
-export type ButtonProps = {
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   /**
    * On Click event handler
    */
@@ -54,6 +54,7 @@ export const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
   fullWidth = false,
   className,
   icon = false,
+  ...props
 }) => {
   return (
     <button
@@ -63,6 +64,7 @@ export const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
       })}
       onClick={onClick}
       disabled={disabled}
+      {...props}
     >
       <Row className={styles.content} spacing="xs" alignment={["center", "center"]}>
         {children}

@@ -19,6 +19,7 @@ import { ErrorModal } from "../ContestDetails/ErrorModal"
 import { useDiscordHandles } from "../../hooks/api/protocols/useDiscordHandles"
 import { useAddDiscordHandle } from "../../hooks/api/protocols/useAddDiscordHandle"
 import { useValidateDiscordHandle } from "../../hooks/api/auditors/useValidateDiscordHandle"
+import config from "../../config"
 
 export const ProtocolTeam = () => {
   const { dashboardID } = useParams()
@@ -54,6 +55,10 @@ export const ProtocolTeam = () => {
 
   const handleGithubHandleClick = useCallback((handle: string) => {
     window.open(`https://github.com/${handle}`, "blank")
+  }, [])
+
+  const handleDiscordHandleClick = useCallback((discordID: number) => {
+    window.open(`https://discordapp.com/users/${discordID}`)
   }, [])
 
   const handleAddGithubHandleClick = useCallback(() => {
@@ -168,15 +173,23 @@ export const ProtocolTeam = () => {
               </Row>
               {isValidatingDiscordHandle && <Text size="small">Validating ...</Text>}
               {discordHandleValidationError && (
-                <Text variant="warning" size="small">
-                  Invalid Discord handle
-                </Text>
+                <Row spacing="xs" alignment={["start", "center"]}>
+                  <Text variant="secondary">You must join Sherlock's Discord server first.</Text>
+                  <Button
+                    size="small"
+                    variant="secondary"
+                    onClick={() => window.open(config.discordServerLink, "blank")}
+                  >
+                    <FaDiscord />
+                    &nbsp; Join Discord
+                  </Button>
+                </Row>
               )}
               {discordValidation && (
                 <Row
                   spacing="xs"
                   className={cx([styles.itemRow, styles.preview])}
-                  onClick={() => handleGithubHandleClick(debouncedGithubHandle)}
+                  onClick={() => handleDiscordHandleClick(discordValidation.userID)}
                 >
                   <FaDiscord />
                   <Text>{`@${discordValidation.handle}`}</Text>

@@ -129,7 +129,7 @@ export const AuditScope = () => {
     [updateScope, dashboardID]
   )
 
-  if (protocolDashboard?.contest.submissionReady) return <AuditScopeReadOnly />
+  if (protocolDashboard?.contest.scopeReady) return <AuditScopeReadOnly dashboardID={dashboardID ?? ""} />
 
   return (
     <LoadingContainer loading={addScopeIsLoading || (updateScopeIsLoading && !updateParams?.files)} label="Loading ...">

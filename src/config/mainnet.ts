@@ -22,5 +22,5 @@ export const config: Config = {
   nexusMutualStartTimestamp: 1666137600,
   airdropAdress: "0x731751e3C0B67014b560F98b26601A5587F954B0",
   airdropClaimableTimestamp: 1682848801,
-  discordServerLink: "discord.gg/MABEWyASkp",
+  discordServerLink: "https://discord.gg/MABEWyASkp",
 }

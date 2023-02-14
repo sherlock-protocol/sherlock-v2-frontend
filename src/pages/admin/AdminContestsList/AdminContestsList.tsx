@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
 import { useCallback, useState } from "react"
-import { FaClipboardList, FaEye, FaFastForward, FaPlus } from "react-icons/fa"
+import { FaClipboardList, FaEye, FaFastForward, FaPlus, FaBullseye } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -13,6 +13,7 @@ import { ContestsListItem, useAdminContests } from "../../../hooks/api/admin/use
 import styles from "./AdminContestsList.module.scss"
 import { ConfirmContestActionModal } from "./ConfirmContestActionModal"
 import { CreateContestModal } from "./CreateContestModal"
+import { ContestScopeModal } from "./ContestScopeModal"
 
 export type ContestAction = "PUBLISH" | "APPROVE_START"
 
@@ -39,6 +40,7 @@ export const AdminContestsList = () => {
   const { data: contests, isLoading } = useAdminContests()
   const [confirmationModal, setConfirmationModal] = useState<ConfirmationModal | undefined>()
   const [createContestModalOpen, setCreateContestModalOpen] = useState(false)
+  const [scopeModal, setScopeModal] = useState<number | undefined>()
   const [forceActionRowIndex, setForceActionRowIndex] = useState<number | undefined>()
 
   const handleActionClick = useCallback(
@@ -61,6 +63,10 @@ export const AdminContestsList = () => {
     },
     [setConfirmationModal]
   )
+
+  const handleScopeModalClose = useCallback(() => {
+    setScopeModal(undefined)
+  }, [setScopeModal])
 
   const handleForceActionClick = useCallback((index: number) => {
     setForceActionRowIndex((i) => {
@@ -161,7 +167,7 @@ export const AdminContestsList = () => {
 
       if (contest.status === "CREATED" && !contest.submissionReady) {
         return (
-          <Row spacing="s" alignment={["center", "center"]}>
+          <Row spacing="s" alignment={["start", "center"]}>
             <Text variant="secondary">Waiting for protocol to finalize submission</Text>
             <Button
               size="small"
@@ -295,6 +301,7 @@ export const AdminContestsList = () => {
             />
           )}
           {createContestModalOpen && <CreateContestModal onClose={() => setCreateContestModalOpen(false)} />}
+          {scopeModal && <ContestScopeModal contestID={scopeModal} onClose={handleScopeModalClose} />}
         </Box>
       </Column>
     </LoadingContainer>
