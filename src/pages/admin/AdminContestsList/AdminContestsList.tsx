@@ -283,6 +283,14 @@ export const AdminContestsList = () => {
                         >
                           <FaEye />
                         </Button>
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          disabled={!c.hasSolidityMetricsReport}
+                          onClick={() => setScopeModal(c.id)}
+                        >
+                          <FaBullseye />
+                        </Button>
                       </Row>
                     </Td>
                     <Td>{renderContestState(index)}</Td>
