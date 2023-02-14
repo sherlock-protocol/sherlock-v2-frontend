@@ -146,115 +146,120 @@ export const StakingPage: React.FC = () => {
     <Box className={styles.stakingContainer}>
       <USBlockContainer>
         <LoadingContainer loading={isLoadingRewards}>
-          <Column spacing="m">
-            <Title>Stake</Title>
-            <Row alignment="space-between">
-              <Column>
-                <Text>Total Value Locked</Text>
-              </Column>
-              <Column>
-                {tvl && (
-                  <Text strong variant="mono">
-                    ${formatAmount(formatUSDC(tvl))}
-                  </Text>
-                )}
-              </Column>
-            </Row>
-            {stakePositionsData && (
+          <Column spacing="xl">
+            <Column className={styles.infoBanner}>
+              <Title variant="h3">The Spring 2023 Staking Round is currently open!</Title>
+            </Column>
+            <Column spacing="m">
+              <Title>Stake</Title>
               <Row alignment="space-between">
                 <Column>
-                  <Text>USDC APY</Text>
+                  <Text>Total Value Locked</Text>
                 </Column>
                 <Column>
-                  <Text strong variant="mono">
-                    {formatAmount(stakePositionsData?.usdcAPY)}%
-                  </Text>
+                  {tvl && (
+                    <Text strong variant="mono">
+                      ${formatAmount(formatUSDC(tvl))}
+                    </Text>
+                  )}
                 </Column>
               </Row>
-            )}
-            {sherRewardsBasis && (
-              <Row alignment="space-between">
-                <Column>
-                  <Text>Reward per 100 USDC</Text>
-                </Column>
-                <Column>
-                  <Text strong variant="mono">
-                    {formatAmount(formatSHER(sherRewardsBasis))} SHER
-                  </Text>
-                </Column>
-              </Row>
-            )}
-            {stakingDisabled && (
-              <Row>
-                <Warning
-                  message={`The pool is currently at max capacity. Staking will be re-enabled when the pool drops below ${format(
-                    STAKING_HARDCAP,
-                    6
-                  )} USDC`}
-                />
-              </Row>
-            )}
-            <Row className={styles.rewardsContainer}>
-              <Column grow={1} spacing="l">
-                <TokenInput
-                  onChange={setAmount}
-                  token="USDC"
-                  placeholder="Choose amount"
-                  balance={usdcBalance}
-                  disabled={stakingDisabled}
-                />
-                <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
-                {sherRewards && (
-                  <>
-                    <Row>
-                      <hr />
-                    </Row>
-                    <Row alignment="space-between">
-                      <Column>
-                        <Text>SHER Reward</Text>
-                      </Column>
-                      <Column>
-                        <Text strong variant="mono">
-                          {formatAmount(formatSHER(sherRewards))} SHER
-                        </Text>
-                      </Column>
-                    </Row>
-                    {stakePositionsData && (
+              {stakePositionsData && (
+                <Row alignment="space-between">
+                  <Column>
+                    <Text>USDC APY</Text>
+                  </Column>
+                  <Column>
+                    <Text strong variant="mono">
+                      {formatAmount(stakePositionsData?.usdcAPY)}%
+                    </Text>
+                  </Column>
+                </Row>
+              )}
+              {sherRewardsBasis && (
+                <Row alignment="space-between">
+                  <Column>
+                    <Text>Reward per 100 USDC</Text>
+                  </Column>
+                  <Column>
+                    <Text strong variant="mono">
+                      {formatAmount(formatSHER(sherRewardsBasis))} SHER
+                    </Text>
+                  </Column>
+                </Row>
+              )}
+              {stakingDisabled && (
+                <Row>
+                  <Warning
+                    message={`The pool is currently at max capacity. Staking will be re-enabled when the pool drops below ${format(
+                      STAKING_HARDCAP,
+                      6
+                    )} USDC`}
+                  />
+                </Row>
+              )}
+              <Row className={styles.rewardsContainer}>
+                <Column grow={1} spacing="l">
+                  <TokenInput
+                    onChange={setAmount}
+                    token="USDC"
+                    placeholder="Choose amount"
+                    balance={usdcBalance}
+                    disabled={stakingDisabled}
+                  />
+                  <Options options={STAKING_PERIOD_OPTIONS} value={stakingPeriod} onChange={setStakingPeriod} />
+                  {sherRewards && (
+                    <>
+                      <Row>
+                        <hr />
+                      </Row>
                       <Row alignment="space-between">
                         <Column>
-                          <Text>USDC APY</Text>
+                          <Text>SHER Reward</Text>
                         </Column>
                         <Column>
                           <Text strong variant="mono">
-                            {formatAmount(stakePositionsData?.usdcAPY)}%
+                            {formatAmount(formatSHER(sherRewards))} SHER
                           </Text>
                         </Column>
                       </Row>
-                    )}
-                  </>
-                )}
+                      {stakePositionsData && (
+                        <Row alignment="space-between">
+                          <Column>
+                            <Text>USDC APY</Text>
+                          </Column>
+                          <Column>
+                            <Text strong variant="mono">
+                              {formatAmount(stakePositionsData?.usdcAPY)}%
+                            </Text>
+                          </Column>
+                        </Row>
+                      )}
+                    </>
+                  )}
 
-                {amount && stakingPeriod && sherRewards && !stakingDisabled && (
-                  <Row alignment="center">
-                    <ConnectGate>
-                      <AllowanceGate
-                        amount={amount}
-                        spender={address}
-                        actionName="Stake"
-                        action={handleOnStake}
-                        onSuccess={refreshTvl}
-                      ></AllowanceGate>
-                    </ConnectGate>
-                  </Row>
-                )}
-              </Column>
-            </Row>
-            <Text size="small" className={styles.v1}>
-              For the Sherlock V1, please see{" "}
-              <a href="https://v1.sherlock.xyz" rel="noreferrer" target="_blank">
-                https://v1.sherlock.xyz
-              </a>
-            </Text>
+                  {amount && stakingPeriod && sherRewards && !stakingDisabled && (
+                    <Row alignment="center">
+                      <ConnectGate>
+                        <AllowanceGate
+                          amount={amount}
+                          spender={address}
+                          actionName="Stake"
+                          action={handleOnStake}
+                          onSuccess={refreshTvl}
+                        ></AllowanceGate>
+                      </ConnectGate>
+                    </Row>
+                  )}
+                </Column>
+              </Row>
+              <Text size="small" className={styles.v1}>
+                For the Sherlock V1, please see{" "}
+                <a href="https://v1.sherlock.xyz" rel="noreferrer" target="_blank">
+                  https://v1.sherlock.xyz
+                </a>
+              </Text>
+            </Column>
           </Column>
         </LoadingContainer>
       </USBlockContainer>
