@@ -1,5 +1,6 @@
+import { BigNumber, ethers } from "ethers"
 import { DateTime } from "luxon"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { FaChrome, FaTwitter } from "react-icons/fa"
 import { useDebounce } from "use-debounce"
 import { Input } from "../../../components/Input"
@@ -7,7 +8,9 @@ import { Column, Row } from "../../../components/Layout"
 import Modal, { Props as ModalProps } from "../../../components/Modal/Modal"
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
+import TokenInput from "../../../components/TokenInput/TokenInput"
 import { useAdminProtocol } from "../../../hooks/api/admin/useAdminProtocol"
+import { commify } from "../../../utils/units"
 import { Field } from "../../Claim/Field"
 
 type Props = ModalProps & {}
@@ -30,10 +33,17 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   const [contestStartDate, setContestStartDate] = useState("")
   const [contestAuditLength, setContestAuditLength] = useState("")
   const [contestJudgingContestEndDate, setContestJudgingContestEndDate] = useState("")
-  const [contestAuditPrizePool, setContestAuditPrizePool] = useState("")
-  const [contestLeadSeniorWatsonFixedPay, setContestLeadSeniorWatsonFixedPay] = useState("")
-  const [contestJudgingPrizePool, setContestJudgingPrizePool] = useState("")
-  const [contestTotalCost, setContestTotalCost] = useState("")
+  const [contestAuditPrizePool, setContestAuditPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
+  const [contestLeadSeniorWatsonFixedPay, setContestLeadSeniorWatsonFixedPay] = useState<BigNumber | undefined>(
+    BigNumber.from(0)
+  )
+  const [contestJudgingPrizePool, setContestJudgingPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
+  const [contestTotalCost, setContestTotalCost] = useState<BigNumber | undefined>(BigNumber.from(0))
+  const [initialLeadSeniorWatsonFixedPay, setInitialLeadSeniorWatsonFixedPay] = useState<BigNumber | undefined>(
+    BigNumber.from(0)
+  )
+  const [initialJudgingPrizePool, setInitialJudgingPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
+  const [initialTotalCost, setInitialTotalCost] = useState<BigNumber | undefined>(BigNumber.from(0))
 
   const [startDateIsInvalid, setStartDateIsInvalid] = useState(false)
 
@@ -65,6 +75,34 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
       }
     }
   }, [contestStartDate, updateDates, contestAuditLength])
+
+  useEffect(() => {
+    if (!contestAuditPrizePool) return
+
+    const fixedPay = contestAuditPrizePool.div(10).mul(4)
+    const judgingPool = contestAuditPrizePool.div(100).mul(5)
+    const totalCost = contestAuditPrizePool.mul(3).div(2)
+
+    setInitialLeadSeniorWatsonFixedPay(fixedPay)
+    setInitialJudgingPrizePool(judgingPool)
+  }, [contestAuditPrizePool, setInitialLeadSeniorWatsonFixedPay, setInitialJudgingPrizePool, setInitialTotalCost])
+
+  useEffect(() => {
+    const total = contestAuditPrizePool
+      ?.add(contestLeadSeniorWatsonFixedPay ?? 0)
+      .add(contestJudgingPrizePool ?? 0)
+      .add(contestAuditPrizePool.div(100).mul(5))
+    setInitialTotalCost(total)
+  }, [contestAuditPrizePool, contestLeadSeniorWatsonFixedPay, contestJudgingPrizePool])
+
+  const sherlockFee = useMemo(() => {
+    const fee = contestTotalCost
+      ?.sub(contestAuditPrizePool ?? 0)
+      .sub(contestLeadSeniorWatsonFixedPay ?? 0)
+      .sub(contestJudgingPrizePool ?? 0)
+
+    return commify(parseInt(ethers.utils.formatUnits(fee ?? 0, 6)))
+  }, [contestAuditPrizePool, contestLeadSeniorWatsonFixedPay, contestJudgingPrizePool, contestTotalCost])
 
   return (
     <Modal closeable onClose={onClose}>
@@ -141,16 +179,20 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
             <Input value={contestJudgingContestEndDate} onChange={setContestJudgingContestEndDate} />
           </Field>
           <Field label="Audit Contest Prize Pool">
-            <Input value={contestAuditPrizePool} onChange={setContestAuditPrizePool} />
+            <TokenInput token="USDC" onChange={setContestAuditPrizePool} />
           </Field>
           <Field label="Lead Senior Watson Fixed Pay">
-            <Input value={contestLeadSeniorWatsonFixedPay} onChange={setContestLeadSeniorWatsonFixedPay} />
+            <TokenInput
+              token="USDC"
+              initialValue={initialLeadSeniorWatsonFixedPay}
+              onChange={setContestLeadSeniorWatsonFixedPay}
+            />
           </Field>
           <Field label="Judging Contest Prize Pool">
-            <Input value={contestJudgingPrizePool} onChange={setContestJudgingPrizePool} />
+            <TokenInput token="USDC" initialValue={initialJudgingPrizePool} onChange={setContestJudgingPrizePool} />
           </Field>
-          <Field label="Total Cost">
-            <Input value={contestTotalCost} onChange={setContestTotalCost} />
+          <Field label="Total Cost" detail={`Sherlock fee will be ${sherlockFee} USDC`}>
+            <TokenInput token="USDC" initialValue={initialTotalCost} onChange={setContestTotalCost} />
           </Field>
         </Column>
       </Column>
