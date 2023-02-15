@@ -43,6 +43,10 @@ const AppInternal = () => {
           title: "CONTESTS",
           route: adminRoutes.Contests,
         },
+        {
+          title: "SCOPE",
+          route: adminRoutes.Scope,
+        },
       ]
     : []
 

@@ -26,6 +26,7 @@ export const contestsRoutes = {
 export const adminRoutes = {
   InternalOverview: "overview",
   Contests: "contests",
+  Scope: "scope",
 } as const
 
 export const protocolDashboardRoutes = {
