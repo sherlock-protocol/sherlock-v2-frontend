@@ -22,7 +22,7 @@ type Props = ModalProps & {}
 const DATE_FORMAT = "yyyy-MM-dd HH:mm"
 
 export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
-  const [protocolName, setProtocolName] = useState("optimism")
+  const [protocolName, setProtocolName] = useState("")
   const [debouncedProtocolName] = useDebounce(protocolName, 300)
   const {
     data: protocol,
@@ -31,18 +31,14 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   } = useAdminProtocol(debouncedProtocolName)
   const { createContest, isLoading, isSuccess, error, reset } = useAdminCreateContest()
 
-  const [protocolTwitter, setProtocolTwitter] = useState(protocol?.twitter ?? "optimismFND")
-  const [protocolWebsite, setProtocolWebsite] = useState(protocol?.website ?? "https://www.optimism.io/")
-  const [protocolLogoURL, setProtocolLogoURL] = useState(
-    protocol?.logoURL ?? "https://pbs.twimg.com/profile_images/1510410375140945927/JtpX95Rt_400x400.jpg"
-  )
+  const [protocolTwitter, setProtocolTwitter] = useState(protocol?.twitter ?? "")
+  const [protocolWebsite, setProtocolWebsite] = useState(protocol?.website ?? "")
+  const [protocolLogoURL, setProtocolLogoURL] = useState(protocol?.logoURL ?? "")
 
-  const [contestTitle, setContestTitle] = useState("Optimism")
-  const [contestShortDescription, setShortDescription] = useState(
-    "Anyone can say it, only Optimism can back it up. Bedrock is the culmination of countless hours of research and development with the goal of building the best rollup architecture yet."
-  )
-  const [contestStartDate, setContestStartDate] = useState("2023-02-20 15:00")
-  const [contestAuditLength, setContestAuditLength] = useState("14")
+  const [contestTitle, setContestTitle] = useState("")
+  const [contestShortDescription, setShortDescription] = useState("")
+  const [contestStartDate, setContestStartDate] = useState("")
+  const [contestAuditLength, setContestAuditLength] = useState("")
   const [contestJudgingContestEndDate, setContestJudgingContestEndDate] = useState("")
   const [contestAuditPrizePool, setContestAuditPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestLeadSeniorWatsonFixedPay, setContestLeadSeniorWatsonFixedPay] = useState<BigNumber | undefined>(
