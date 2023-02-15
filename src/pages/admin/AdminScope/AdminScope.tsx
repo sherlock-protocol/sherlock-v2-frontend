@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react"
-import { FaGithub } from "react-icons/fa"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { FaDownload, FaGithub } from "react-icons/fa"
 import { useDebounce } from "use-debounce"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
@@ -8,6 +8,7 @@ import { Column, Row } from "../../../components/Layout"
 import LoadingContainer from "../../../components/LoadingContainer/LoadingContainer"
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
+import { useAdminSubmitScope } from "../../../hooks/api/admin/useAdminSubmitScope"
 import { useRepository } from "../../../hooks/api/scope/useRepository"
 import { shortenCommitHash } from "../../../utils/repository"
 import { BranchSelectionModal } from "../../AuditScope/BranchSelectionModal"
@@ -25,6 +26,7 @@ export const AdminScope = () => {
   const [commitSelectionModalOpen, setCommitSelectionModalOpen] = useState(false)
 
   const { data: repo } = useRepository(debouncedRepoName)
+  const { submitScope, isLoading, data: report } = useAdminSubmitScope()
 
   useEffect(() => {
     if (repo) {
@@ -72,70 +74,116 @@ export const AdminScope = () => {
     setFiles([])
   }, [setFiles])
 
+  const canGenerateReport = useMemo(() => {
+    return repo?.name && branchName && commitHash && files.length > 0
+  }, [branchName, commitHash, files.length, repo?.name])
+
+  const handleGenerateReport = useCallback(() => {
+    if (!canGenerateReport) return
+
+    submitScope({
+      projectName: repo!.name.split("/").pop() ?? "",
+      repoName: repo!.name,
+      branchName: branchName!,
+      commitHash: commitHash!,
+      files,
+    })
+  }, [canGenerateReport, submitScope, repo, branchName, commitHash, files])
+
+  const handleDownloadReport = useCallback(() => {
+    if (report?.url) {
+      window.open(report.url, "blank")
+    }
+  }, [report])
+
   return (
-    <LoadingContainer loading={false} label="Loading ...">
-      <Column spacing="l">
-        <Box shadow={false} fullWidth>
-          <Column spacing="l">
-            <Title variant="h2">SCOPE</Title>
-            <Column spacing="s">
-              <Text>Copy & paste the Github repository link(s) you would like to audit</Text>
-              <Input value={repoName} onChange={setRepoName} />
-            </Column>
-          </Column>
-        </Box>
-        {branchName && commitHash && (
-          <Box shadow={false}>
-            <Column spacing="m">
-              <Title variant="h2">Branch & commit</Title>
-              <Row alignment="start" spacing="l">
-                <Button variant="secondary" onClick={() => setBranchSelectionModalOpen(true)}>
-                  {branchName}
-                </Button>
-                <Button variant="secondary" onClick={() => setCommitSelectionModalOpen(true)}>
-                  {shortenCommitHash(commitHash)}
-                </Button>
-              </Row>
-            </Column>
-          </Box>
-        )}
-        {repo?.name && commitHash && (
+    <LoadingContainer loading={isLoading} label="Generating report ...">
+      <Row spacing="l">
+        <Column spacing="l">
           <Box shadow={false} fullWidth>
             <Column spacing="l">
-              <Title variant="h2">
-                <FaGithub />
-                &nbsp;
-                {repo.name}
-              </Title>
-              <RepositoryContractsSelector
-                repo={repo?.name}
-                commit={commitHash}
-                onPathSelected={handlePathSelected}
-                selectedPaths={files}
-                onSelectAll={handleSelectAll}
-                onClearSelection={handleClearSelection}
-              />
+              <Title variant="h2">SCOPE</Title>
+              <Column spacing="s">
+                <Text>Copy & paste the Github repository link(s) you would like to audit</Text>
+                <Input value={repoName} onChange={setRepoName} />
+              </Column>
             </Column>
           </Box>
-        )}
-        {branchSelectionModalOpen && (
-          <BranchSelectionModal
-            repoName={repo?.name ?? ""}
-            selectedBranch={branchName}
-            onSelectBranch={handleSelectBranch}
-            onClose={() => setBranchSelectionModalOpen(false)}
-          />
-        )}
-        {commitSelectionModalOpen && (
-          <CommitSelectionModal
-            repoName={repo?.name ?? ""}
-            branchName={branchName ?? ""}
-            selectedCommit={commitHash}
-            onSelectCommit={handleSelectCommit}
-            onClose={() => setCommitSelectionModalOpen(false)}
-          />
-        )}
-      </Column>
+          {branchName && commitHash && (
+            <Box shadow={false}>
+              <Column spacing="m">
+                <Title variant="h2">Branch & commit</Title>
+                <Row alignment="start" spacing="l">
+                  <Button variant="secondary" onClick={() => setBranchSelectionModalOpen(true)}>
+                    {branchName}
+                  </Button>
+                  <Button variant="secondary" onClick={() => setCommitSelectionModalOpen(true)}>
+                    {shortenCommitHash(commitHash)}
+                  </Button>
+                </Row>
+              </Column>
+            </Box>
+          )}
+          {repo && (
+            <Box shadow={false}>
+              {report ? (
+                <Column spacing="m">
+                  <Row spacing="s">
+                    <Text strong>nSLOC:</Text>
+                    <Text>{report.nSLOC}</Text>
+                  </Row>
+                  <Button onClick={handleDownloadReport}>
+                    <FaDownload />
+                    &nbsp;Download report
+                  </Button>
+                </Column>
+              ) : (
+                <Button onClick={handleGenerateReport} disabled={!canGenerateReport}>
+                  Generate report
+                </Button>
+              )}
+            </Box>
+          )}
+        </Column>
+        <Column spacing="l">
+          {repo?.name && commitHash && (
+            <Box shadow={false} fullWidth>
+              <Column spacing="l">
+                <Title variant="h2">
+                  <FaGithub />
+                  &nbsp;
+                  {repo.name}
+                </Title>
+                <RepositoryContractsSelector
+                  repo={repo?.name}
+                  commit={commitHash}
+                  onPathSelected={handlePathSelected}
+                  selectedPaths={files}
+                  onSelectAll={handleSelectAll}
+                  onClearSelection={handleClearSelection}
+                />
+              </Column>
+            </Box>
+          )}
+          {branchSelectionModalOpen && (
+            <BranchSelectionModal
+              repoName={repo?.name ?? ""}
+              selectedBranch={branchName}
+              onSelectBranch={handleSelectBranch}
+              onClose={() => setBranchSelectionModalOpen(false)}
+            />
+          )}
+          {commitSelectionModalOpen && (
+            <CommitSelectionModal
+              repoName={repo?.name ?? ""}
+              branchName={branchName ?? ""}
+              selectedCommit={commitHash}
+              onSelectCommit={handleSelectCommit}
+              onClose={() => setCommitSelectionModalOpen(false)}
+            />
+          )}
+        </Column>
+      </Row>
     </LoadingContainer>
   )
 }

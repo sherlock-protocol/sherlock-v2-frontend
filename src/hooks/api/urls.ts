@@ -54,6 +54,7 @@ export const getAdminContestTweetPreview = (contestID: number) =>
 export const adminApproveContest = () => `/admin/approve_contest`
 export const adminApproveStart = () => `/admin/approve_start`
 export const getAdminContestScope = (contestID: number) => `/admin/contest/${contestID}/scope`
+export const adminSubmitScope = () => `/admin/scope`
 
 export const getRepositoryBranches = (repo: string) => `/audit_scope/${repo}/branches`
 export const getRepositoryCommits = (repo: string, branch: string) => `/audit_scope/${repo}/${branch}/commits`
