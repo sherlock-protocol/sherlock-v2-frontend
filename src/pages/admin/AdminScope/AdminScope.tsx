@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { FaDownload, FaGithub } from "react-icons/fa"
+import { FaClipboard, FaCopy, FaDownload, FaGithub, FaLink } from "react-icons/fa"
 import { useDebounce } from "use-debounce"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
@@ -96,6 +96,10 @@ export const AdminScope = () => {
     }
   }, [report])
 
+  const handleCopyLink = useCallback(async () => {
+    await navigator.clipboard.writeText(report?.url ?? "")
+  }, [report?.url])
+
   return (
     <LoadingContainer loading={isLoading} label="Generating report ...">
       <Row spacing="l">
@@ -132,10 +136,17 @@ export const AdminScope = () => {
                     <Text strong>nSLOC:</Text>
                     <Text>{report.nSLOC}</Text>
                   </Row>
-                  <Button onClick={handleDownloadReport}>
-                    <FaDownload />
-                    &nbsp;Download report
-                  </Button>
+                  <Row spacing="s">
+                    <Column grow={1}>
+                      <Button onClick={handleDownloadReport}>
+                        <FaDownload />
+                        &nbsp;Download report
+                      </Button>
+                    </Column>
+                    <Button variant="secondary" onClick={handleCopyLink}>
+                      <FaCopy />
+                    </Button>
+                  </Row>
                 </Column>
               ) : (
                 <Button onClick={handleGenerateReport} disabled={!canGenerateReport}>
