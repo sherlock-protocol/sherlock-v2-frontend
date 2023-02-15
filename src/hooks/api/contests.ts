@@ -30,6 +30,7 @@ export type Contest = {
   judgingPrizePool?: number
   jugdingEndDate?: number // Timestamp in seconds.
   repo: string
+  linesOfCode?: string
 }
 
 export type Scoreboard = {
@@ -101,33 +102,41 @@ type GetContestResponseData = {
   judging_prize_pool: number | null
   judging_ends_at?: number
   template_repo_name: string
+  lines_of_code: string
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
 export const useContest = (id: number) =>
-  useQuery<Contest, Error>(contestQueryKey(id), async () => {
-    const { data: response } = await contestsAPI.get<GetContestResponseData>(getContestUrl(id))
+  useQuery<Contest, Error>(
+    contestQueryKey(id),
+    async () => {
+      const { data: response } = await contestsAPI.get<GetContestResponseData>(getContestUrl(id))
 
-    return {
-      id: response.id,
-      title: response.title,
-      shortDescription: response.short_description,
-      logoURL: response.logo_url,
-      prizePool: response.prize_pool,
-      startDate: response.starts_at,
-      endDate: response.ends_at,
-      status: response.status,
-      description: response.description,
-      report: response.report,
-      leadSeniorAuditorFixedPay: response.lead_senior_auditor_fixed_pay,
-      leadSeniorAuditorHandle: response.lead_senior_auditor_handle,
-      private: response.private,
-      fullPayment: response.full_payment,
-      judgingPrizePool: response.judging_prize_pool ?? undefined,
-      jugdingEndDate: response.judging_ends_at,
-      repo: response.template_repo_name,
+      return {
+        id: response.id,
+        title: response.title,
+        shortDescription: response.short_description,
+        logoURL: response.logo_url,
+        prizePool: response.prize_pool,
+        startDate: response.starts_at,
+        endDate: response.ends_at,
+        status: response.status,
+        description: response.description,
+        report: response.report,
+        leadSeniorAuditorFixedPay: response.lead_senior_auditor_fixed_pay,
+        leadSeniorAuditorHandle: response.lead_senior_auditor_handle,
+        private: response.private,
+        fullPayment: response.full_payment,
+        judgingPrizePool: response.judging_prize_pool ?? undefined,
+        jugdingEndDate: response.judging_ends_at,
+        repo: response.template_repo_name,
+        linesOfCode: response.lines_of_code,
+      }
+    },
+    {
+      refetchOnWindowFocus: false,
     }
-  })
+  )
 
 export const useOptInOut = (contestId: number, optIn: boolean, handle: string) => {
   const domain = {

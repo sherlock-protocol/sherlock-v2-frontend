@@ -1,0 +1,95 @@
+@import "../../styles/variables";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: $background-color;
+  z-index: 100;
+
+  min-height: 100vh;
+
+  & .content {
+    width: 100%;
+    padding: 3rem;
+    max-width: 860px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    z-index: 300;
+  }
+}
+
+.noise {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-image: url("../../assets/images/noise.png");
+  background-repeat: repeat;
+  opacity: 0.4;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.tree {
+  & .directoryList {
+    & ul {
+      margin-left: 10px;
+      padding-left: 20px;
+      border-left: 1px dashed transparentize($color: $text-color, $amount: 0.9);
+    }
+
+    & li {
+      &.folder {
+        & svg {
+          color: $text-color;
+          opacity: 0.1;
+        }
+
+        &.selected {
+          background-color: darken($color: $primary-purple, $amount: 30%);
+          & svg {
+            color: $primary-purple;
+            opacity: 1;
+          }
+        }
+      }
+
+      &.file {
+        padding: 5px;
+
+        & svg {
+          color: $primary-purple;
+          opacity: 0.4;
+        }
+
+        &:hover {
+          background-color: darken($color: $primary-purple, $amount: 35%);
+          cursor: pointer;
+        }
+
+        &.selected {
+          background-color: darken($color: $primary-purple, $amount: 30%);
+          & svg {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+.commits {
+  font-family: monospace;
+
+  & button {
+    font-family: monospace;
+  }
+}
+
+.clickable {
+  cursor: pointer;
+}

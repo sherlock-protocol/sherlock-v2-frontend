@@ -8,7 +8,7 @@ type ButtonSize = "small" | "normal"
 
 type ButtonVariant = "primary" | "secondary" | "alternate" | "cta"
 
-export type ButtonProps = {
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   /**
    * On Click event handler
    */
@@ -38,6 +38,11 @@ export type ButtonProps = {
    * Button grows to full possible width
    */
   fullWidth?: boolean
+
+  /**
+   * Icon button
+   */
+  icon?: boolean
 }
 
 export const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
@@ -48,14 +53,18 @@ export const Button: React.FC<PropsWithChildren<ButtonProps>> = ({
   size = "normal",
   fullWidth = false,
   className,
+  icon = false,
+  ...props
 }) => {
   return (
     <button
       className={cx(styles.button, styles[variant], styles[size], className, {
         [styles.fullWidth]: fullWidth,
+        [styles.icon]: icon,
       })}
       onClick={onClick}
       disabled={disabled}
+      {...props}
     >
       <Row className={styles.content} spacing="xs" alignment={["center", "center"]}>
         {children}

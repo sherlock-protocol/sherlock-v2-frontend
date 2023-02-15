@@ -46,6 +46,20 @@
   pointer-events: none;
 }
 
+.sticky {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: -2rem;
+}
+
+.stepCompleted {
+  color: $alternate-pink;
+}
+
+.stepIncomplete {
+  color: transparentize($color: $text-color, $amount: 0.5);
+}
+
 @media only screen and (max-width: 820px) {
   .app {
     display: none;

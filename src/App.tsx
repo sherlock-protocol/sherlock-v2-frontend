@@ -29,6 +29,7 @@ import { AuditPayments } from "./pages/AuditPayments/AuditPayments"
 import { ProtocolTeam } from "./pages/ProtocolTeam/ProtocolTeam"
 import { AdminContestsList } from "./pages/admin/AdminContestsList/AdminContestsList"
 import { AdminScope } from "./pages/admin/AdminScope/AdminScope"
+import { AuditScope } from "./pages/AuditScope/AuditScope"
 
 function App() {
   const { address: connectedAddress } = useAccount()
@@ -71,6 +72,7 @@ function App() {
         <Route path={`${routes.ProtocolDashboard}/*`} element={<AppProtocolDashboard />}>
           <Route path={protocolDashboardRoutes.Team} element={<ProtocolTeam />} />
           <Route path={protocolDashboardRoutes.Payments} element={<AuditPayments />} />
+          <Route path={protocolDashboardRoutes.Scope} element={<AuditScope />} />
 
           <Route path="*" element={<Navigate replace to={protocolDashboardRoutes.Payments} />} />
         </Route>
@@ -106,6 +108,8 @@ function App() {
 
           <Route path="*" element={<Navigate replace to={adminRoutes.InternalOverview} />} />
         </Route>
+
+        <Route path="/scope" element={<AuditScope />} />
 
         <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>

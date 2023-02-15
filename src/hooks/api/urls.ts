@@ -22,7 +22,8 @@ export const getIsAuditor = (address: string) => `is_auditor/${address}`
 export const authenticateAuditor = (address: string) => `auditors/${address}`
 export const getNonce = () => `nonce`
 export const getAuditorProfile = () => "profile"
-export const validateDiscordHandle = (handle: string) => `validate_discord_handle?discord_handle=${handle}`
+export const validateDiscordHandle = (handle: string) =>
+  `validate_discord_handle?discord_handle=${encodeURIComponent(handle)}`
 
 export const updateProfile = () => "profile"
 export const signOut = () => "signout"
@@ -37,6 +38,11 @@ export const addProtocolGithubHandle = (dashboardID: string) => `dashboard/${das
 export const getProtocolDiscordHandles = (dashboardID: string) => `dashboard/${dashboardID}/discord_handles`
 export const addProtocolDiscordHandle = (dashboardID: string) => `dashboard/${dashboardID}/discord_handles`
 export const finalizeSubmission = (dashboardID: string) => `dashboard/${dashboardID}/finalize_submission`
+export const submitScope = (dashboardID: string) => `dashboard/${dashboardID}/submit_scope`
+export const getScope = (dashboardID: string) => `dashboard/${dashboardID}/audit_scope`
+export const addScope = (dashboardID: string) => `dashboard/${dashboardID}/audit_scope`
+export const updateScope = (dashboardID: string, repoName: string) => `dashboard/${dashboardID}/audit_scope/${repoName}`
+export const deleteScope = (dashboardID: string, repoName: string) => `dashboard/${dashboardID}/audit_scope/${repoName}`
 
 export const getAdminProfile = () => `/admin/profile`
 export const adminSignIn = () => `/admin/signin`
@@ -47,3 +53,8 @@ export const getAdminContestTweetPreview = (contestID: number) =>
   `/admin/contests/${contestID}/announcement_tweet_preview`
 export const adminApproveContest = () => `/admin/approve_contest`
 export const adminApproveStart = () => `/admin/approve_start`
+export const getAdminContestScope = (contestID: number) => `/admin/contest/${contestID}/scope`
+
+export const getRepositoryBranches = (repo: string) => `/audit_scope/${repo}/branches`
+export const getRepositoryCommits = (repo: string, branch: string) => `/audit_scope/${repo}/${branch}/commits`
+export const getRepositoryContracts = (repo: string, commit: string) => `/audit_scope/${repo}/${commit}/contracts`
