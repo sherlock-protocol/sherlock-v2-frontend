@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { FaTrashAlt, FaGithub } from "react-icons/fa"
+import { FaGithub } from "react-icons/fa"
 import { useDebounce } from "use-debounce"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
@@ -9,7 +9,6 @@ import LoadingContainer from "../../../components/LoadingContainer/LoadingContai
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
 import { useRepository } from "../../../hooks/api/scope/useRepository"
-import { useRepositoryContracts } from "../../../hooks/api/scope/useRepositoryContracts"
 import { shortenCommitHash } from "../../../utils/repository"
 import { BranchSelectionModal } from "../../AuditScope/BranchSelectionModal"
 import { CommitSelectionModal } from "../../AuditScope/CommitSelectionModal"
@@ -50,12 +49,14 @@ export const AdminScope = () => {
   const handleSelectBranch = useCallback(
     (branch: string) => {
       setBranchName(branch)
+      setBranchSelectionModalOpen(false)
     },
     [setBranchName]
   )
   const handleSelectCommit = useCallback(
     (commit: string) => {
       setCommitHash(commit)
+      setCommitSelectionModalOpen(false)
     },
     [setCommitHash]
   )
@@ -87,80 +88,24 @@ export const AdminScope = () => {
           <Box shadow={false}>
             <Column spacing="m">
               <Title variant="h2">Branch & commit</Title>
-              <Row alignment="space-between">
+              <Row alignment="start" spacing="l">
                 <Button variant="secondary" onClick={() => setBranchSelectionModalOpen(true)}>
                   {branchName}
                 </Button>
                 <Button variant="secondary" onClick={() => setCommitSelectionModalOpen(true)}>
-                  {commitHash}
+                  {shortenCommitHash(commitHash)}
                 </Button>
               </Row>
             </Column>
           </Box>
         )}
-        {/* {scope && scope.length > 0 ? (
-            <Box shadow={false} fullWidth>
-              <Column spacing="l">
-                <Title>Branches & commits</Title>
-                <Column spacing="s">
-                  <Text>Select branch and commit hash</Text>
-                  <Row spacing="m">
-                    <Column spacing="s" grow={1}>
-                      <Text size="small" strong>
-                        Repo
-                      </Text>
-                      {scope?.map((s) => (
-                        <Input value={s.repoName} key={s.repoName} variant="small" disabled />
-                      ))}
-                    </Column>
-                    <Column spacing="s">
-                      <Text size="small" strong>
-                        Branch
-                      </Text>
-                      {scope?.map((s) => (
-                        <Button
-                          key={s.repoName}
-                          variant="secondary"
-                          onClick={() => setBranchSelectionModalRepoName(s.repoName)}
-                        >
-                          {s.branchName}
-                        </Button>
-                      ))}
-                    </Column>
-                    <Column spacing="s">
-                      <Text size="small" strong>
-                        Commit hash
-                      </Text>
-                      {scope?.map((s) => (
-                        <Button
-                          key={s.repoName}
-                          variant="secondary"
-                          onClick={() => setCommitSelectionModalRepoName(s.repoName)}
-                        >
-                          {shortenCommitHash(s.commitHash)}
-                        </Button>
-                      ))}
-                    </Column>
-                    <Column spacing="s">
-                      <Text size="small">Remove</Text>
-                      {scope?.map((s) => (
-                        <Button key={s.repoName} variant="secondary" icon onClick={() => handleDeleteScope(s.repoName)}>
-                          <FaTrashAlt />
-                        </Button>
-                      ))}
-                    </Column>
-                  </Row>
-                </Column>
-              </Column>
-            </Box>
-          ) : null} */}
         {repo?.name && commitHash && (
           <Box shadow={false} fullWidth>
             <Column spacing="l">
               <Title variant="h2">
                 <FaGithub />
                 &nbsp;
-                {repoName}
+                {repo.name}
               </Title>
               <RepositoryContractsSelector
                 repo={repo?.name}
