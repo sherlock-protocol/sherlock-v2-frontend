@@ -234,7 +234,7 @@ export const AdminContestsList = () => {
           <Row alignment="center">
             <Button variant="alternate" onClick={() => setCreateContestModalOpen(true)}>
               <FaPlus />
-              &nbsp;Add contest
+              &nbsp;Create contest
             </Button>
           </Row>
         </Box>

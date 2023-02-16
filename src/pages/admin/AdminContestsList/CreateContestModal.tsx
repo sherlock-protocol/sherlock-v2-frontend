@@ -271,7 +271,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
       )}
       <LoadingContainer loading={isLoading} label={`Creating ${contestTitle} contest`}>
         <Column spacing="xl">
-          <Title>Create new contest</Title>
+          <Title>New contest</Title>
           <Column spacing="m">
             <Title variant="h3">PROTOCOL</Title>
             <Field label="Name" detail={protocolNotFound ? "Protocol not found. A new protocol will be created." : ""}>
