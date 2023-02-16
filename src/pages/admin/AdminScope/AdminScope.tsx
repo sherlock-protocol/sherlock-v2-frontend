@@ -25,7 +25,7 @@ export const AdminScope = () => {
   const [branchSelectionModalOpen, setBranchSelectionModalOpen] = useState(false)
   const [commitSelectionModalOpen, setCommitSelectionModalOpen] = useState(false)
 
-  const { data: repo } = useRepository(debouncedRepoName)
+  const { data: repo, isLoading: repoIsLoading } = useRepository(debouncedRepoName)
   const { submitScope, isLoading, data: report } = useAdminSubmitScope()
 
   useEffect(() => {
@@ -102,7 +102,7 @@ export const AdminScope = () => {
   }, [report?.url])
 
   return (
-    <LoadingContainer loading={isLoading} label="Generating report ...">
+    <LoadingContainer loading={isLoading || repoIsLoading} label={repoIsLoading ? "" : "Generating report ..."}>
       <Row spacing="l">
         <Column spacing="l">
           <Box shadow={false} fullWidth>
