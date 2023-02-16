@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { FaClipboard, FaCopy, FaDownload, FaGithub, FaLink } from "react-icons/fa"
+import { FaCopy, FaDownload, FaGithub } from "react-icons/fa"
 import { useDebounce } from "use-debounce"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
