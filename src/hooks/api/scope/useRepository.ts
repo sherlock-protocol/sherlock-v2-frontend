@@ -21,10 +21,11 @@ type GetRepositoryResponse = {
 export const useRepositoryQueryKey = (repo: string) => ["repository", repo]
 export const useRepository = (repo: string) => {
   return useQuery<Repository, Error>(useRepositoryQueryKey(repo), async () => {
-    const { data } = await contestsAPI.get<GetRepositoryResponse>(getRepositoryBranches(repo))
+    const repoName = repo.startsWith("https://github.com/") ? repo.replace("https://github.com/", "") : repo
+    const { data } = await contestsAPI.get<GetRepositoryResponse>(getRepositoryBranches(repoName))
 
     return {
-      name: repo,
+      name: repoName,
       // first branch is the main one
       mainBranch: {
         name: data[0].branch,

@@ -28,6 +28,7 @@ import { useAuthentication } from "./hooks/api/useAuthentication"
 import { AuditPayments } from "./pages/AuditPayments/AuditPayments"
 import { ProtocolTeam } from "./pages/ProtocolTeam/ProtocolTeam"
 import { AdminContestsList } from "./pages/admin/AdminContestsList/AdminContestsList"
+import { AdminScope } from "./pages/admin/AdminScope/AdminScope"
 import { AuditScope } from "./pages/AuditScope/AuditScope"
 
 function App() {
@@ -103,6 +104,7 @@ function App() {
         <Route path={`${routes.Admin}/*`} element={<AppAdmin />}>
           <Route path={adminRoutes.InternalOverview} element={<InternalOverviewPage />} />
           <Route path={adminRoutes.Contests} element={<AdminContestsList />} />
+          <Route path={adminRoutes.Scope} element={<AdminScope />} />
 
           <Route path="*" element={<Navigate replace to={adminRoutes.InternalOverview} />} />
         </Route>
