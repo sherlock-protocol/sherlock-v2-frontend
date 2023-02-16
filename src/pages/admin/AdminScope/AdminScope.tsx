@@ -49,8 +49,9 @@ export const AdminScope = () => {
   )
 
   const handleSelectBranch = useCallback(
-    (branch: string) => {
+    (branch: string, commit: string) => {
       setBranchName(branch)
+      setCommitHash(commit)
       setBranchSelectionModalOpen(false)
     },
     [setBranchName]
