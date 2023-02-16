@@ -54,6 +54,8 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
 
   const [startDateError, setStartDateError] = useState<string>()
 
+  const [displayModalCloseConfirm, setDisplayModalFormConfirm] = useState(false)
+
   const displayProtocolInfo = !!protocol || protocolNotFound || protocolLoading
 
   const updateDates = useCallback(() => {
@@ -206,8 +208,67 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     protocolWebsite,
   ])
 
+  const formIsDirty = useMemo(
+    () =>
+      protocolName !== "" ||
+      contestTitle !== "" ||
+      contestShortDescription !== "" ||
+      contestStartDate !== "" ||
+      contestAuditLength !== "" ||
+      contestJudgingContestEndDate !== "" ||
+      contestAuditPrizePool?.gt(BigNumber.from(0)) ||
+      contestLeadSeniorWatsonFixedPay?.gt(BigNumber.from(0)) ||
+      contestJudgingPrizePool?.gt(BigNumber.from(0)) ||
+      contestTotalCost?.gt(BigNumber.from(0)),
+    [
+      contestAuditLength,
+      contestAuditPrizePool,
+      contestJudgingContestEndDate,
+      contestJudgingPrizePool,
+      contestLeadSeniorWatsonFixedPay,
+      contestShortDescription,
+      contestStartDate,
+      contestTitle,
+      contestTotalCost,
+      protocolName,
+    ]
+  )
+
+  const handleModalClose = useCallback(() => {
+    if (formIsDirty) {
+      setDisplayModalFormConfirm(true)
+    } else {
+      onClose && onClose()
+    }
+  }, [setDisplayModalFormConfirm, onClose, formIsDirty])
+
+  const handleModalCloseConfirm = useCallback(() => {
+    onClose && onClose()
+  }, [onClose])
+
+  const handleModalCloseCancel = useCallback(() => {
+    setDisplayModalFormConfirm(false)
+  }, [])
+
   return (
-    <Modal closeable onClose={onClose}>
+    <Modal closeable onClose={handleModalClose}>
+      {displayModalCloseConfirm && (
+        <Modal>
+          <Column spacing="xl">
+            <Title>Unsaved contest</Title>
+            <Text>
+              Are you sure you want to close this form? All unsaved changes will be lost and you will need to start
+              over.
+            </Text>
+            <Row spacing="m" alignment="end">
+              <Button variant="secondary" onClick={handleModalCloseCancel}>
+                No, continue.
+              </Button>
+              <Button onClick={handleModalCloseConfirm}>Yes, close.</Button>
+            </Row>
+          </Column>
+        </Modal>
+      )}
       <LoadingContainer loading={isLoading} label={`Creating ${contestTitle} contest`}>
         <Column spacing="xl">
           <Title>Create new contest</Title>
