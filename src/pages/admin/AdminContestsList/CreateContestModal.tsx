@@ -19,7 +19,7 @@ import { ErrorModal } from "../../../pages/ContestDetails/ErrorModal"
 
 type Props = ModalProps & {}
 
-const DATE_FORMAT = "yyyy-MM-dd HH:mm"
+const DATE_FORMAT = "yyyy-MM-dd"
 
 export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   const [protocolName, setProtocolName] = useState("")
@@ -79,7 +79,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     const startDate = DateTime.fromFormat(contestStartDate, DATE_FORMAT)
 
     if (!startDate.isValid) {
-      setStartDateError("Invalid date. Must be format yyyy-MM-dd HH:mm")
+      setStartDateError(`Invalid date. Must be format ${DATE_FORMAT}`)
       return
     }
 
