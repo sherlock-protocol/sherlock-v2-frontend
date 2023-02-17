@@ -53,6 +53,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   const [initialTotalCost, setInitialTotalCost] = useState<BigNumber | undefined>(BigNumber.from(0))
 
   const [startDateError, setStartDateError] = useState<string>()
+  const [shortDescriptionError, setShortDescriptionError] = useState<string>()
 
   const [displayModalCloseConfirm, setDisplayModalFormConfirm] = useState(false)
 
@@ -129,7 +130,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     if (protocolTwitter === "" && !protocol?.twitter) return false
 
     if (contestTitle === "") return false
-    if (contestShortDescription === "") return false
+    if (contestShortDescription.length < 100 || contestShortDescription.length > 200) return false
 
     if (contestAuditLength === "") return false
 
@@ -164,6 +165,20 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     protocolTwitter,
     protocolWebsite,
   ])
+
+  const handleUpdateShortDescription = useCallback((value: string) => {
+    setShortDescription(value)
+
+    if (value === "") {
+      setShortDescriptionError(undefined)
+    } else if (value.length < 100) {
+      setShortDescriptionError("Too short. Must be between 100 and 200 characters.")
+    } else if (value.length > 200) {
+      setShortDescriptionError("Too long. Must be between 100 and 200 characters.")
+    } else {
+      setShortDescriptionError(undefined)
+    }
+  }, [])
 
   const handleCreateContest = useCallback(() => {
     const startDate = DateTime.fromFormat(contestStartDate, DATE_FORMAT)
@@ -334,8 +349,8 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
             <Field label="Title">
               <Input value={contestTitle} onChange={setContestTitle} />
             </Field>
-            <Field label="Short Description">
-              <Input value={contestShortDescription} onChange={setShortDescription} />
+            <Field label="Short Description" error={!!shortDescriptionError} errorMessage={shortDescriptionError ?? ""}>
+              <Input value={contestShortDescription} onChange={handleUpdateShortDescription} />
             </Field>
             <Field label="Start Date" error={!!startDateError} errorMessage={startDateError ?? ""}>
               <Input value={contestStartDate} onChange={setContestStartDate} />
