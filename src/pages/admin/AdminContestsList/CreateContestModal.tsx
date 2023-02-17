@@ -16,6 +16,7 @@ import { useAdminProtocol } from "../../../hooks/api/admin/useAdminProtocol"
 import { commify } from "../../../utils/units"
 import { Field } from "../../Claim/Field"
 import { ErrorModal } from "../../../pages/ContestDetails/ErrorModal"
+import { useAdminTwitterAccount } from "../../../hooks/api/admin/useTwitterAccount"
 
 type Props = ModalProps & {}
 
@@ -34,6 +35,9 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   const [protocolTwitter, setProtocolTwitter] = useState(protocol?.twitter ?? "")
   const [protocolWebsite, setProtocolWebsite] = useState(protocol?.website ?? "")
   const [protocolLogoURL, setProtocolLogoURL] = useState(protocol?.logoURL ?? "")
+
+  const [debouncedProtocolTwitter] = useDebounce(protocolTwitter, 300)
+  const { data: twitterAccount } = useAdminTwitterAccount(debouncedProtocolTwitter)
 
   const [contestTitle, setContestTitle] = useState("")
   const [contestShortDescription, setShortDescription] = useState("")
@@ -72,6 +76,14 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   useEffect(() => {
     if (isSuccess) onClose?.()
   }, [isSuccess, onClose])
+
+  useEffect(() => {
+    if (twitterAccount?.profilePictureUrl) {
+      setProtocolLogoURL(twitterAccount.profilePictureUrl)
+    } else {
+      setProtocolLogoURL("")
+    }
+  }, [twitterAccount])
 
   useEffect(() => {
     if (contestStartDate === "") {
