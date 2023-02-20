@@ -57,6 +57,7 @@ export const getAdminProtocol = (name: string) => `/admin/protocol/${name}`
 export const getAdminContestScope = (contestID: number) => `/admin/contest/${contestID}/scope`
 export const adminCreateContest = () => `/admin/contests`
 export const getAdminTwitterAccount = (handle: string) => `/admin/twitter_account/${handle}`
+export const adminSubmitScope = () => `/admin/scope`
 
 export const getRepositoryBranches = (repo: string) => `/audit_scope/${repo}/branches`
 export const getRepositoryCommits = (repo: string, branch: string) => `/audit_scope/${repo}/${branch}/commits`
