@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "react-query"
+import { adminProfileQuery } from "../admin/useAdminProfile"
 import { profileQuery } from "../auditors/useProfile"
 import { contests as contestsAPI } from "../axios"
 import { signOut as signOutUrl } from "../urls"
@@ -16,6 +17,7 @@ export const useSignOut = () => {
     {
       onSuccess() {
         queryClient.setQueryData(profileQuery(), undefined)
+        queryClient.setQueryData(adminProfileQuery(), undefined)
       },
     }
   )

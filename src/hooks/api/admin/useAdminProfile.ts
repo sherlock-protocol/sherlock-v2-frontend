@@ -10,7 +10,10 @@ type GetAdminProfileResponse = {
 export const adminProfileQuery = () => "isAdmin"
 export const useAdminProfile = () =>
   useQuery(adminProfileQuery(), async () => {
-    const { data } = await contestsAPI.get<GetAdminProfileResponse>(getAdminProfile())
-
-    return data.admin
+    try {
+      const { data } = await contestsAPI.get<GetAdminProfileResponse>(getAdminProfile())
+      return data.admin
+    } catch (error) {
+      return undefined
+    }
   })
