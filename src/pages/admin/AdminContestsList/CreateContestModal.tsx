@@ -148,7 +148,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
 
     const startDate = DateTime.fromFormat(contestStartDate, DATE_FORMAT)
     const endDate = startDate.plus({ hours: 24 * parseInt(contestAuditLength) })
-    const judgingEndDate = endDate.plus({ hours: 24 * 3 })
+    const judgingEndDate = DateTime.fromFormat(contestJudgingContestEndDate, DATE_FORMAT)
 
     if (!startDate.isValid) return false
     if (startDate < DateTime.now()) return false
@@ -164,8 +164,9 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   }, [
     contestAuditLength,
     contestAuditPrizePool,
+    contestJudgingContestEndDate,
     contestLeadSeniorWatsonFixedPay,
-    contestShortDescription,
+    contestShortDescription.length,
     contestStartDate,
     contestTitle,
     contestTotalCost,
