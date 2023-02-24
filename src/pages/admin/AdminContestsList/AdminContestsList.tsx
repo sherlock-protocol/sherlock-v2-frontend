@@ -1,9 +1,9 @@
 import { DateTime } from "luxon"
 import { useCallback, useState } from "react"
-import { FaBullseye, FaClipboardList, FaEye, FaFastForward } from "react-icons/fa"
+import { FaClipboardList, FaEye, FaFastForward, FaPlus, FaBullseye } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
-import { Row } from "../../../components/Layout"
+import { Column, Row } from "../../../components/Layout"
 import LoadingContainer from "../../../components/LoadingContainer/LoadingContainer"
 import { Table, THead, Tr, Th, TBody, Td } from "../../../components/Table/Table"
 import { Text } from "../../../components/Text"
@@ -12,6 +12,7 @@ import { ContestsListItem, useAdminContests } from "../../../hooks/api/admin/use
 
 import styles from "./AdminContestsList.module.scss"
 import { ConfirmContestActionModal } from "./ConfirmContestActionModal"
+import { CreateContestModal } from "./CreateContestModal"
 import { ContestScopeModal } from "./ContestScopeModal"
 
 export type ContestAction = "PUBLISH" | "APPROVE_START"
@@ -38,6 +39,7 @@ const getContestAction = (contest: ContestsListItem, force: boolean): ContestAct
 export const AdminContestsList = () => {
   const { data: contests, isLoading } = useAdminContests()
   const [confirmationModal, setConfirmationModal] = useState<ConfirmationModal | undefined>()
+  const [createContestModalOpen, setCreateContestModalOpen] = useState(false)
   const [scopeModal, setScopeModal] = useState<number | undefined>()
   const [forceActionRowIndex, setForceActionRowIndex] = useState<number | undefined>()
 
@@ -226,82 +228,90 @@ export const AdminContestsList = () => {
   )
 
   return (
-    <Box shadow={false} fullWidth>
-      <LoadingContainer loading={isLoading}>
-        <Title>CONTESTS</Title>
-        <Table selectable={false} className={styles.contestsTable}>
-          <THead>
-            <Tr>
-              <Th>
-                <Text>ID</Text>
-              </Th>
-              <Th>
-                <Text>Contest</Text>
-              </Th>
-              <Th></Th>
-              <Th>Status</Th>
-              <Th>Action</Th>
-            </Tr>
-          </THead>
-          <TBody>
-            {contests?.map((c, index) => {
-              return (
-                <Tr>
-                  <Td>{c.id}</Td>
-                  <Td>
-                    <Row spacing="l" alignment={["start", "center"]}>
-                      <img src={c.logoURL} className={styles.logo} alt={c.title} />
-                      <Text>{c.title}</Text>
-                    </Row>
-                  </Td>
-                  <Td>
-                    <Row spacing="s">
-                      <Button
-                        size="small"
-                        variant="secondary"
-                        disabled={!c.dashboardID}
-                        onClick={() => window.open(`/dashboard/${c.dashboardID}`)}
-                        title="Protocol dashboard"
-                      >
-                        <FaClipboardList />
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="secondary"
-                        disabled={!c.adminUpcomingApproved}
-                        onClick={() => window.open(`/audits/contests/${c.id}`)}
-                        title="View contest"
-                      >
-                        <FaEye />
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="secondary"
-                        disabled={!c.hasSolidityMetricsReport}
-                        onClick={() => setScopeModal(c.id)}
-                        title="Scope"
-                      >
-                        <FaBullseye />
-                      </Button>
-                    </Row>
-                  </Td>
-                  <Td>{renderContestState(index)}</Td>
-                  <Td>{renderContestAction(index)}</Td>
-                </Tr>
-              )
-            })}
-          </TBody>
-        </Table>
-        {confirmationModal && contests && (
-          <ConfirmContestActionModal
-            contest={contests[confirmationModal.contestIndex]}
-            action={confirmationModal.action}
-            onClose={handleConfirmationModalClose}
-            force={forceActionRowIndex === confirmationModal.contestIndex}
-          />
-        )}
-        {scopeModal && <ContestScopeModal contestID={scopeModal} onClose={handleScopeModalClose} />}
-      </LoadingContainer>
-    </Box>
+    <LoadingContainer loading={isLoading}>
+      <Column spacing="l">
+        <Box shadow={false} fullWidth>
+          <Row alignment="center">
+            <Button variant="alternate" onClick={() => setCreateContestModalOpen(true)}>
+              <FaPlus />
+              &nbsp;Create contest
+            </Button>
+          </Row>
+        </Box>
+        <Box shadow={false} fullWidth>
+          <Title>CONTESTS</Title>
+          <Table selectable={false} className={styles.contestsTable}>
+            <THead>
+              <Tr>
+                <Th>
+                  <Text>ID</Text>
+                </Th>
+                <Th>
+                  <Text>Contest</Text>
+                </Th>
+                <Th></Th>
+                <Th>Status</Th>
+                <Th>Action</Th>
+              </Tr>
+            </THead>
+            <TBody>
+              {contests?.map((c, index) => {
+                return (
+                  <Tr>
+                    <Td>{c.id}</Td>
+                    <Td>
+                      <Row spacing="l" alignment={["start", "center"]}>
+                        <img src={c.logoURL} className={styles.logo} alt={c.title} />
+                        <Text>{c.title}</Text>
+                      </Row>
+                    </Td>
+                    <Td>
+                      <Row spacing="s">
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          disabled={!c.dashboardID}
+                          onClick={() => window.open(`/dashboard/${c.dashboardID}`)}
+                        >
+                          <FaClipboardList />
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          disabled={!c.adminUpcomingApproved}
+                          onClick={() => window.open(`/audits/contests/${c.id}`)}
+                        >
+                          <FaEye />
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          disabled={!c.hasSolidityMetricsReport}
+                          onClick={() => setScopeModal(c.id)}
+                        >
+                          <FaBullseye />
+                        </Button>
+                      </Row>
+                    </Td>
+                    <Td>{renderContestState(index)}</Td>
+                    <Td>{renderContestAction(index)}</Td>
+                  </Tr>
+                )
+              })}
+            </TBody>
+          </Table>
+          {confirmationModal && contests && (
+            <ConfirmContestActionModal
+              contest={contests[confirmationModal.contestIndex]}
+              action={confirmationModal.action}
+              onClose={handleConfirmationModalClose}
+              force={forceActionRowIndex === confirmationModal.contestIndex}
+            />
+          )}
+          {createContestModalOpen && <CreateContestModal onClose={() => setCreateContestModalOpen(false)} />}
+          {scopeModal && <ContestScopeModal contestID={scopeModal} onClose={handleScopeModalClose} />}
+        </Box>
+      </Column>
+    </LoadingContainer>
   )
 }

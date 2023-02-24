@@ -53,7 +53,10 @@ export const getAdminContestTweetPreview = (contestID: number) =>
   `/admin/contests/${contestID}/announcement_tweet_preview`
 export const adminApproveContest = () => `/admin/approve_contest`
 export const adminApproveStart = () => `/admin/approve_start`
+export const getAdminProtocol = (name: string) => `/admin/protocol/${name}`
 export const getAdminContestScope = (contestID: number) => `/admin/contest/${contestID}/scope`
+export const adminCreateContest = () => `/admin/contests`
+export const getAdminTwitterAccount = (handle: string) => `/admin/twitter_account/${handle}`
 export const adminSubmitScope = () => `/admin/scope`
 
 export const getRepositoryBranches = (repo: string) => `/audit_scope/${repo}/branches`
