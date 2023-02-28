@@ -217,15 +217,18 @@ const AppProtocolDashboard = () => {
                     <FaGithub />
                     &nbsp;&nbsp;Audit repository
                   </Button>
-                  {(!contest.scopeReady || !contest.submissionReady) && (
+                  {!contest.scopeReady && (
+                    <Button fullWidth onClick={() => setSubmitScopeModalOpen(true)}>
+                      Submit scope
+                    </Button>
+                  )}
+                  {!contest.submissionReady && contest.scopeReady && (
                     <Button
                       disabled={!canFinalizeSubmission}
                       fullWidth
-                      onClick={() =>
-                        contest.scopeReady ? setFinalizeSubmissionModalOpen(true) : setSubmitScopeModalOpen(true)
-                      }
+                      onClick={() => setFinalizeSubmissionModalOpen(true)}
                     >
-                      {contest.scopeReady ? "Finalize submission" : "Submit scope"}
+                      Finalize submission
                     </Button>
                   )}
                   {!contest.scopeReady && (
