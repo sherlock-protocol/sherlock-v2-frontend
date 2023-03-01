@@ -20,6 +20,7 @@ import { useSubmitScope } from "./hooks/api/contests/useSubmitScope"
 import LoadingContainer from "./components/LoadingContainer/LoadingContainer"
 import { ErrorModal } from "./pages/ContestDetails/ErrorModal"
 import { useFinalizeSubmission } from "./hooks/api/contests/useFinalizeSubmission"
+import { ProtocolDashboardSideBar } from "./pages/protocol_dashboard/ProtocolDashboardSideBar/ProtocolDashboardSideBar"
 
 type Props = ModalProps & {
   dashboardID: string
@@ -130,6 +131,8 @@ const AppProtocolDashboard = () => {
   const fullyPaid = contest.fullPaymentComplete
   const canFinalizeSubmission = fullyPaid && protocolDashboard.scopeHasContracts
 
+  if (!dashboardID) return null
+
   return (
     <div className={styles.app}>
       <div className={styles.noise} />
@@ -144,7 +147,8 @@ const AppProtocolDashboard = () => {
         <div className={styles.content}>
           <Row spacing="xl" grow={1} className={styles.fullWidth}>
             <Column>
-              <Box shadow={false} className={styles.sticky}>
+              <ProtocolDashboardSideBar dashboardID={dashboardID} />
+              {/* <Box shadow={false} className={styles.sticky}>
                 <Title variant="h2">AUDIT DETAILS</Title>
                 <Table selectable={false}>
                   <TBody>
@@ -268,7 +272,7 @@ const AppProtocolDashboard = () => {
                     </Column>
                   )}
                 </Column>
-              </Box>
+              </Box> */}
             </Column>
             <Column grow={1} className={styles.scrollable}>
               <Outlet />
