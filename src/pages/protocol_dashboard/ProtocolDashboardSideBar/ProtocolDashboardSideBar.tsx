@@ -1,13 +1,14 @@
 import cx from "classnames"
 import { DateTime } from "luxon"
 import { FaCheckCircle, FaRegCircle } from "react-icons/fa"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { Box } from "../../../components/Box"
 import { Row } from "../../../components/Layout"
 import { Table, TBody, Td, Th, THead, Tr } from "../../../components/Table/Table"
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
 import { useProtocolDashboard } from "../../../hooks/api/contests/useProtocolDashboard"
+import { getCurrentStep } from "../../../utils/protocolDashboard"
 import { protocolDashboardRoutes } from "../../../utils/routes"
 
 import styles from "./ProtocolDashboardSideBar.module.scss"
@@ -19,15 +20,17 @@ type TaskProps = {
   dueDate?: string
   completed?: boolean
   route: TaskRoute
+  active?: boolean
 }
 
-const Task: React.FC<TaskProps> = ({ title, dueDate, completed = false, route }) => {
+const Task: React.FC<TaskProps> = ({ title, dueDate, completed = false, route, active = false }) => {
   const navigate = useNavigate()
 
   return (
     <Tr
       className={cx({
         [styles.completed]: completed,
+        [styles.active]: active,
       })}
       onClick={() => navigate(route)}
     >
@@ -52,11 +55,13 @@ type Props = {
 
 export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
   const { data: dashboard } = useProtocolDashboard(dashboardID)
+  const location = useLocation()
 
   if (!dashboard) return null
 
   const { contest } = dashboard
 
+  const currentRoute = location.pathname.split("/").pop()
   const initialPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 3 })
   const finalPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 1 })
 
@@ -80,14 +85,25 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
             completed={contest.initialPaymentComplete}
             dueDate={initialPaymentDueDate.toFormat("LLL dd")}
             route={protocolDashboardRoutes.Payments}
+            active={currentRoute === protocolDashboardRoutes.Payments}
           />
-          <Task title="Define Audit Scope" completed={contest.scopeReady} route={protocolDashboardRoutes.Scope} />
-          <Task title="Add Team Members" route={protocolDashboardRoutes.Team} />
+          <Task
+            title="Define Audit Scope"
+            completed={contest.scopeReady}
+            route={protocolDashboardRoutes.Scope}
+            active={currentRoute === protocolDashboardRoutes.Scope}
+          />
+          <Task
+            title="Add Team Members"
+            route={protocolDashboardRoutes.Team}
+            active={currentRoute === protocolDashboardRoutes.Team}
+          />
           <Task
             title="Submit Final Payment"
             completed={contest.fullPaymentComplete}
             dueDate={finalPaymentDueDate.toFormat("LLL dd")}
             route={protocolDashboardRoutes.Payments}
+            active={currentRoute === "FINAL_PAYMENT"}
           />
         </TBody>
       </Table>

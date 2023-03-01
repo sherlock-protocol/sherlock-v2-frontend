@@ -1,6 +1,11 @@
 @import "../../../styles/variables";
 
-.completed {
-  color: $alternate-pink;
-  opacity: 0.5;
+tr {
+  &.completed {
+    color: $alternate-pink;
+  }
+
+  &:not(.active) {
+    opacity: 0.5;
+  }
 }
