@@ -73,8 +73,6 @@ function App() {
           <Route path={protocolDashboardRoutes.Team} element={<ProtocolTeam />} />
           <Route path={protocolDashboardRoutes.Payments} element={<AuditPayments />} />
           <Route path={protocolDashboardRoutes.Scope} element={<AuditScope />} />
-
-          <Route path="*" element={<Navigate replace to={protocolDashboardRoutes.Payments} />} />
         </Route>
 
         {/** Audit Contests section routes */}
