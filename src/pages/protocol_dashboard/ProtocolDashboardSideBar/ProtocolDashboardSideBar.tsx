@@ -96,6 +96,7 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
             title="Add Team Members"
             route={protocolDashboardRoutes.Team}
             active={currentRoute === protocolDashboardRoutes.Team}
+            completed={contest.teamHandlesAdded}
           />
           <Task
             title="Submit Final Payment"

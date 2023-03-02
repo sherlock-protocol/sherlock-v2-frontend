@@ -12,12 +12,15 @@ import { Title } from "./components/Title"
 import { Text } from "./components/Text"
 import { Button } from "./components/Button"
 import Modal, { Props as ModalProps } from "./components/Modal/Modal"
-import { useSubmitScope } from "./hooks/api/contests/useSubmitScope"
 import LoadingContainer from "./components/LoadingContainer/LoadingContainer"
 import { ErrorModal } from "./pages/ContestDetails/ErrorModal"
 import { useFinalizeSubmission } from "./hooks/api/contests/useFinalizeSubmission"
 import { ProtocolDashboardSideBar } from "./pages/protocol_dashboard/ProtocolDashboardSideBar/ProtocolDashboardSideBar"
 import { getCurrentStep } from "./utils/protocolDashboard"
+import { commify } from "ethers/lib/utils.js"
+import { FaGithub, FaCheckCircle, FaRegCircle, FaCheck } from "react-icons/fa"
+import { Box } from "./components/Box"
+import { Table, TBody, Tr, Td } from "./components/Table/Table"
 
 type Props = ModalProps & {
   dashboardID: string
@@ -60,49 +63,11 @@ const FinalizeSubmissionModal: React.FC<Props> = ({ onClose, dashboardID }) => {
   )
 }
 
-const SubmitScopeModal: React.FC<Props> = ({ onClose, dashboardID }) => {
-  const { submitScope, isLoading, isSuccess, error, reset } = useSubmitScope()
-
-  useEffect(() => {
-    if (isSuccess) {
-      onClose?.()
-    }
-  }, [isSuccess, onClose])
-
-  const handleCancelClick = useCallback(() => {
-    onClose?.()
-  }, [onClose])
-
-  const handleConfirmClick = useCallback(() => {
-    submitScope({ dashboardID })
-  }, [submitScope, dashboardID])
-
-  return (
-    <Modal closeable onClose={onClose}>
-      <LoadingContainer loading={isLoading} label="Setting up repo. This might take a few minutes.">
-        <Column spacing="xl">
-          <Title>Submit scope</Title>
-          <Text>The contents from your scope repositories will be copied over to the audit repo.</Text>
-          <Text>Once you confirm this action, the scope of the audit cannot be changed.</Text>
-          <Row spacing="l" alignment={["center"]}>
-            <Button variant="secondary" onClick={handleCancelClick}>
-              Cancel
-            </Button>
-            <Button onClick={handleConfirmClick}>Confirm</Button>
-          </Row>
-        </Column>
-      </LoadingContainer>
-      {error && <ErrorModal reason={error?.message} onClose={() => reset()} />}
-    </Modal>
-  )
-}
-
 const AppProtocolDashboard = () => {
   const { dashboardID } = useParams()
   const childRoute = useOutlet()
   const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
   const [finalizeSubmissionModalOpen, setFinalizeSubmissionModalOpen] = useState(false)
-  const [submitScopeModalOpen, setSubmitScopeModalOpen] = useState(false)
 
   const renderChildRoute = useCallback(() => {
     if (childRoute) return <Outlet />
@@ -159,7 +124,7 @@ const AppProtocolDashboard = () => {
           <Row spacing="xl" grow={1} className={styles.fullWidth}>
             <Column>
               <ProtocolDashboardSideBar dashboardID={dashboardID} />
-              {/* <Box shadow={false} className={styles.sticky}>
+              <Box shadow={false} className={styles.sticky}>
                 <Title variant="h2">AUDIT DETAILS</Title>
                 <Table selectable={false}>
                   <TBody>
@@ -232,58 +197,8 @@ const AppProtocolDashboard = () => {
                     <FaGithub />
                     &nbsp;&nbsp;Audit repository
                   </Button>
-                  {!contest.scopeReady && (
-                    <Button fullWidth onClick={() => setSubmitScopeModalOpen(true)}>
-                      Submit scope
-                    </Button>
-                  )}
-                  {!contest.submissionReady && contest.scopeReady && (
-                    <Button
-                      disabled={!canFinalizeSubmission}
-                      fullWidth
-                      onClick={() => setFinalizeSubmissionModalOpen(true)}
-                    >
-                      Finalize submission
-                    </Button>
-                  )}
-                  {!contest.scopeReady && (
-                    <>
-                      {fullyPaid ? (
-                        <Row spacing="s" className={styles.stepCompleted}>
-                          <FaCheckCircle /> <Text variant="alternate">Payment completed</Text>
-                        </Row>
-                      ) : (
-                        <Row spacing="s" className={styles.stepIncomplete}>
-                          <FaRegCircle /> <Text variant="secondary">Missing payments</Text>
-                        </Row>
-                      )}
-                      {protocolDashboard.scopeHasContracts ? (
-                        <Row spacing="s" className={styles.stepCompleted}>
-                          <FaCheckCircle /> <Text variant="alternate">Scope defined</Text>
-                        </Row>
-                      ) : (
-                        <Row spacing="s" className={styles.stepIncomplete}>
-                          <FaRegCircle /> <Text variant="secondary">No contracts in scope</Text>
-                        </Row>
-                      )}
-                    </>
-                  )}
-                  {contest.submissionReady && (
-                    <Column spacing="s" alignment={["center"]}>
-                      <Text variant="secondary">
-                        <FaCheck /> Submission ready
-                      </Text>
-                      {contest.startApproved ? (
-                        <Text variant="secondary" strong>
-                          Contest start date approved
-                        </Text>
-                      ) : (
-                        <Text variant="secondary">Sherlock team will review it and confirm the start date</Text>
-                      )}
-                    </Column>
-                  )}
                 </Column>
-              </Box> */}
+              </Box>
             </Column>
             <Column grow={1} className={styles.scrollable}>
               {renderChildRoute()}
@@ -297,9 +212,6 @@ const AppProtocolDashboard = () => {
           dashboardID={dashboardID ?? ""}
           onClose={() => setFinalizeSubmissionModalOpen(false)}
         />
-      )}
-      {submitScopeModalOpen && (
-        <SubmitScopeModal dashboardID={dashboardID ?? ""} onClose={() => setSubmitScopeModalOpen(false)} />
       )}
     </div>
   )

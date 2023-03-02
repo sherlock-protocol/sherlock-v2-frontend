@@ -6,6 +6,9 @@ import { Text } from "../../components/Text"
 import { useProtocolDashboard } from "../../hooks/api/contests/useProtocolDashboard"
 import { ScopeList } from "./ScopeList"
 
+import styles from "./AuditScope.module.scss"
+import { FaCheckCircle } from "react-icons/fa"
+
 type Props = {
   dashboardID: string
 }
@@ -15,10 +18,15 @@ export const AuditScopeReadOnly: React.FC<Props> = ({ dashboardID }) => {
   const { data: scope } = useScope(dashboardID)
 
   return (
-    <Column spacing="l">
+    <Column spacing="l" className={styles.auditScope}>
       <Box shadow={false}>
         <Column spacing="s">
-          <Title variant="h2">SCOPE</Title>
+          <Row spacing="xs" className={styles.completed} alignment={["start", "center"]}>
+            <Title variant="h2">SCOPE</Title>
+            <Text variant="alternate">
+              <FaCheckCircle />
+            </Text>
+          </Row>
           <Row spacing="xs">
             <Text>Contracts:</Text>
             <Text strong>{scope?.reduce((t, s) => t + s.files.length, 0)}</Text>

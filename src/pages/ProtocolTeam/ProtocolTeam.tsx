@@ -13,7 +13,7 @@ import { useDebounce } from "use-debounce"
 
 import styles from "./ProtocolTeam.module.scss"
 import { useValidateGithubHandle } from "../../hooks/useValidateGithubHandle"
-import { FaDiscord, FaGithub } from "react-icons/fa"
+import { FaCheckCircle, FaDiscord, FaGithub } from "react-icons/fa"
 import { useAddGithubHandle } from "../../hooks/api/protocols/useAddGithubHandle"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
 import { useDiscordHandles } from "../../hooks/api/protocols/useDiscordHandles"
@@ -82,12 +82,21 @@ export const ProtocolTeam = () => {
     resetAddDiscordHandle()
   }, [resetAddGithubHandle, resetAddDiscordHandle])
 
+  const teamHasMembers = githubMembers?.length && discordMembers?.length
+
   return (
     <LoadingContainer loading={addGithubHandleIsLoading || addDiscordHandleIsLoading}>
-      <Column spacing="xl">
+      <Column spacing="xl" className={styles.protocolTeam}>
         <Box shadow={false}>
           <Column spacing="m">
-            <Title variant="h2">TEAM</Title>
+            <Row spacing="xs" className={cx({ [styles.completed]: teamHasMembers })} alignment={["start", "center"]}>
+              <Title variant="h2">TEAM</Title>
+              {teamHasMembers && (
+                <Text variant="alternate">
+                  <FaCheckCircle />
+                </Text>
+              )}
+            </Row>
             <Text>Add your team's Github and Discord handles.</Text>
           </Column>
         </Box>

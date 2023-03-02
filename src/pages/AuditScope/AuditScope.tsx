@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { FaGithub, FaTrashAlt } from "react-icons/fa"
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
@@ -18,12 +18,56 @@ import { useUpdateScope } from "../../hooks/api/scope/useUpdateScope"
 import { useDeleteScope } from "../../hooks/api/scope/useDeleteScope"
 import { useProtocolDashboard } from "../../hooks/api/contests/useProtocolDashboard"
 import { AuditScopeReadOnly } from "./AuditScopeReadOnly"
+import Modal, { Props as ModalProps } from "../../components/Modal/Modal"
+import { useSubmitScope } from "../../hooks/api/contests/useSubmitScope"
+import { ErrorModal } from "../ContestDetails/ErrorModal"
 
+type Props = ModalProps & {
+  dashboardID: string
+}
+
+const SubmitScopeModal: React.FC<Props> = ({ onClose, dashboardID }) => {
+  const { submitScope, isLoading, isSuccess, error, reset } = useSubmitScope()
+
+  useEffect(() => {
+    if (isSuccess) {
+      onClose?.()
+    }
+  }, [isSuccess, onClose])
+
+  const handleCancelClick = useCallback(() => {
+    onClose?.()
+  }, [onClose])
+
+  const handleConfirmClick = useCallback(() => {
+    submitScope({ dashboardID })
+  }, [submitScope, dashboardID])
+
+  return (
+    <Modal closeable onClose={onClose}>
+      <LoadingContainer loading={isLoading} label="Setting up repo. This might take a few minutes.">
+        <Column spacing="xl">
+          <Title>Submit scope</Title>
+          <Text>The contents from your scope repositories will be copied over to the audit repo.</Text>
+          <Text>Once you confirm this action, the scope of the audit cannot be changed.</Text>
+          <Row spacing="l" alignment={["center"]}>
+            <Button variant="secondary" onClick={handleCancelClick}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmClick}>Confirm</Button>
+          </Row>
+        </Column>
+      </LoadingContainer>
+      {error && <ErrorModal reason={error?.message} onClose={() => reset()} />}
+    </Modal>
+  )
+}
 export const AuditScope = () => {
   const { dashboardID } = useParams()
   const [repoName, setRepoName] = useState("")
   const [branchSelectionModalRepoName, setBranchSelectionModalRepoName] = useState<string>()
   const [commitSelectionModalRepoName, setCommitSelectionModalRepoName] = useState<string>()
+  const [submitScopeModalOpen, setSubmitScopeModalOpen] = useState(false)
   const { data: scope } = useScope(dashboardID)
   const { addScope, isLoading: addScopeIsLoading, error: addScopeError } = useAddScope()
   const { updateScope, isLoading: updateScopeIsLoading, variables: updateParams } = useUpdateScope()
@@ -128,6 +172,10 @@ export const AuditScope = () => {
     },
     [updateScope, dashboardID]
   )
+
+  const selectedFiles = useMemo(() => {
+    return scope && scope.every((s) => s.files.length > 0)
+  }, [scope])
 
   if (protocolDashboard?.contest.scopeReady) return <AuditScopeReadOnly dashboardID={dashboardID ?? ""} />
 
@@ -241,6 +289,11 @@ export const AuditScope = () => {
             </Column>
           </Box>
         ))}
+        <Box shadow={false}>
+          <Button onClick={() => setSubmitScopeModalOpen(true)} disabled={!selectedFiles}>
+            Submit scope
+          </Button>
+        </Box>
         {branchSelectionModalRepoName && (
           <BranchSelectionModal
             repoName={branchSelectionModalRepoName}
@@ -257,6 +310,9 @@ export const AuditScope = () => {
             onSelectCommit={(commit) => handleSelectCommit(commitSelectionModalRepoName, commit)}
             onClose={() => setCommitSelectionModalRepoName(undefined)}
           />
+        )}
+        {submitScopeModalOpen && (
+          <SubmitScopeModal dashboardID={dashboardID ?? ""} onClose={() => setSubmitScopeModalOpen(false)} />
         )}
       </Column>
     </LoadingContainer>
