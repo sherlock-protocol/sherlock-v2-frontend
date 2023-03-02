@@ -1,0 +1,19 @@
+@import "../../../styles/variables";
+
+.initialPayment {
+  & .completed {
+    & h1,
+    & h2,
+    & h3,
+    &h4 {
+      color: $alternate-pink;
+    }
+  }
+}
+
+.transactionHash {
+  font-family: $font-family-mono;
+  font-variant-numeric: tabular-nums;
+  color: $primary-purple;
+  text-decoration: none;
+}

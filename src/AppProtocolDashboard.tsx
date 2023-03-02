@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react"
 import { Navigate, Outlet, useOutlet, useParams } from "react-router-dom"
-import { FaCheck, FaCheckCircle, FaGithub, FaRegCircle } from "react-icons/fa"
-import { commify } from "ethers/lib/utils.js"
 import { DateTime, Interval } from "luxon"
 
 import { Footer } from "./components/Footer"
@@ -10,9 +8,7 @@ import styles from "./App.module.scss"
 import { protocolDashboardRoutes, routes } from "./utils/routes"
 import { useProtocolDashboard } from "./hooks/api/contests/useProtocolDashboard"
 import { Column, Row } from "./components/Layout"
-import { Box } from "./components/Box"
 import { Title } from "./components/Title"
-import { Table, TBody, Td, Tr } from "./components/Table/Table"
 import { Text } from "./components/Text"
 import { Button } from "./components/Button"
 import Modal, { Props as ModalProps } from "./components/Modal/Modal"
@@ -22,9 +18,6 @@ import { ErrorModal } from "./pages/ContestDetails/ErrorModal"
 import { useFinalizeSubmission } from "./hooks/api/contests/useFinalizeSubmission"
 import { ProtocolDashboardSideBar } from "./pages/protocol_dashboard/ProtocolDashboardSideBar/ProtocolDashboardSideBar"
 import { getCurrentStep } from "./utils/protocolDashboard"
-import { AuditPayments } from "./pages/AuditPayments/AuditPayments"
-import { AuditScope } from "./pages/AuditScope/AuditScope"
-import { ProtocolTeam } from "./pages/ProtocolTeam/ProtocolTeam"
 
 type Props = ModalProps & {
   dashboardID: string
@@ -118,7 +111,7 @@ const AppProtocolDashboard = () => {
 
     const currentStep = getCurrentStep(protocolDashboard?.contest)
 
-    if (currentStep === "INITIAL_PAYMENT") return <Navigate replace to={protocolDashboardRoutes.Payments} />
+    if (currentStep === "INITIAL_PAYMENT") return <Navigate replace to={protocolDashboardRoutes.InitialPayment} />
     if (currentStep === "SCOPE") return <Navigate replace to={protocolDashboardRoutes.Scope} />
     if (currentStep === "TEAM") return <Navigate replace to={protocolDashboardRoutes.Team} />
     if (currentStep === "FINAL_PAYMENT") return <Navigate replace to={protocolDashboardRoutes.Payments} />

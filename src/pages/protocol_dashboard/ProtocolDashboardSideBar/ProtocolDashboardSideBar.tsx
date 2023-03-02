@@ -8,7 +8,6 @@ import { Table, TBody, Td, Th, THead, Tr } from "../../../components/Table/Table
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
 import { useProtocolDashboard } from "../../../hooks/api/contests/useProtocolDashboard"
-import { getCurrentStep } from "../../../utils/protocolDashboard"
 import { protocolDashboardRoutes } from "../../../utils/routes"
 
 import styles from "./ProtocolDashboardSideBar.module.scss"
@@ -66,7 +65,7 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
   const finalPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 1 })
 
   return (
-    <Box shadow={false}>
+    <Box shadow={false} className={styles.tasks}>
       <Title variant="h2">TASKS</Title>
       <Table>
         <THead>
@@ -84,8 +83,8 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
             title="Submit Initial Payment"
             completed={contest.initialPaymentComplete}
             dueDate={initialPaymentDueDate.toFormat("LLL dd")}
-            route={protocolDashboardRoutes.Payments}
-            active={currentRoute === protocolDashboardRoutes.Payments}
+            route={protocolDashboardRoutes.InitialPayment}
+            active={currentRoute === protocolDashboardRoutes.InitialPayment}
           />
           <Task
             title="Define Audit Scope"

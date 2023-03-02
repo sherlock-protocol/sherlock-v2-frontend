@@ -1,11 +1,13 @@
 @import "../../../styles/variables";
 
-tr {
-  &.completed {
-    color: $alternate-pink;
-  }
+.tasks {
+  & tbody tr {
+    &.completed {
+      color: $alternate-pink;
+    }
 
-  &:not(.active) {
-    opacity: 0.5;
+    &:not(.active) {
+      opacity: 0.5;
+    }
   }
 }

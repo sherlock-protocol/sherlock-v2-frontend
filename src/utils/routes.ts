@@ -31,6 +31,7 @@ export const adminRoutes = {
 
 export const protocolDashboardRoutes = {
   Payments: "payments",
+  InitialPayment: "initial_payment",
   Team: "team",
   Scope: "scope",
 } as const

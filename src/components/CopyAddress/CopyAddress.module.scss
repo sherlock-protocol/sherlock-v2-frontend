@@ -1,0 +1,18 @@
+@import "../../styles//variables";
+
+.mainAddress {
+  font-family: $font-family-mono;
+  font-variant-numeric: tabular-nums;
+  background-color: transparentize($color: $primary-purple, $amount: 0.8);
+  padding: 0.8rem;
+  height: 1.5rem;
+  transition: background-color 0.3s;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &.copied {
+    background-color: $primary-purple;
+  }
+}

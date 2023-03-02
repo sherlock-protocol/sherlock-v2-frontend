@@ -30,6 +30,7 @@ import { ProtocolTeam } from "./pages/ProtocolTeam/ProtocolTeam"
 import { AdminContestsList } from "./pages/admin/AdminContestsList/AdminContestsList"
 import { AdminScope } from "./pages/admin/AdminScope/AdminScope"
 import { AuditScope } from "./pages/AuditScope/AuditScope"
+import { InitialPayment } from "./pages/protocol_dashboard/InitialPayment/InitialPayment"
 
 function App() {
   const { address: connectedAddress } = useAccount()
@@ -70,6 +71,7 @@ function App() {
 
         {/** Protocol Dashboard section routes */}
         <Route path={`${routes.ProtocolDashboard}/*`} element={<AppProtocolDashboard />}>
+          <Route path={protocolDashboardRoutes.InitialPayment} element={<InitialPayment />} />
           <Route path={protocolDashboardRoutes.Team} element={<ProtocolTeam />} />
           <Route path={protocolDashboardRoutes.Payments} element={<AuditPayments />} />
           <Route path={protocolDashboardRoutes.Scope} element={<AuditScope />} />
