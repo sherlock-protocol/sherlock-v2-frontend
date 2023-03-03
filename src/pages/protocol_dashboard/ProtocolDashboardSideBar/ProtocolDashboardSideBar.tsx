@@ -1,14 +1,20 @@
 import cx from "classnames"
 import { DateTime } from "luxon"
+import { useCallback, useEffect, useState } from "react"
 import { FaCheckCircle, FaRegCircle } from "react-icons/fa"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Box } from "../../../components/Box"
-import { Row } from "../../../components/Layout"
+import { Button } from "../../../components/Button"
+import { Column, Row } from "../../../components/Layout"
+import LoadingContainer from "../../../components/LoadingContainer/LoadingContainer"
 import { Table, TBody, Td, Th, THead, Tr } from "../../../components/Table/Table"
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
+import { useFinalizeSubmission } from "../../../hooks/api/contests/useFinalizeSubmission"
 import { useProtocolDashboard } from "../../../hooks/api/contests/useProtocolDashboard"
 import { protocolDashboardRoutes } from "../../../utils/routes"
+import { ErrorModal } from "../../ContestDetails/ErrorModal"
+import Modal, { Props as ModalProps } from "../../../components/Modal/Modal"
 
 import styles from "./ProtocolDashboardSideBar.module.scss"
 
@@ -52,9 +58,47 @@ type Props = {
   dashboardID: string
 }
 
+const FinalizeSubmissionModal: React.FC<ModalProps & Props> = ({ onClose, dashboardID }) => {
+  const { finalizeSubmission, isSuccess, isLoading, error, reset } = useFinalizeSubmission()
+  useEffect(() => {
+    if (isSuccess) {
+      onClose?.()
+    }
+  }, [isSuccess, onClose])
+
+  const handleCancelClick = useCallback(() => {
+    onClose?.()
+  }, [onClose])
+
+  const handleConfirmClick = useCallback(() => {
+    finalizeSubmission({ dashboardID })
+  }, [dashboardID, finalizeSubmission])
+
+  return (
+    <Modal closeable onClose={onClose}>
+      <LoadingContainer loading={isLoading} label="Loading ...">
+        <Column spacing="xl">
+          <Title>Finalize submission</Title>
+          <Text>Make sure you're done with the repo README</Text>
+          <Text>Once you confirm this action, the audit repo will become read-only</Text>
+          <Text variant="secondary">This action cannot be undone.</Text>
+          <Row spacing="l" alignment={["center"]}>
+            <Button variant="secondary" onClick={handleCancelClick}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmClick}>Confirm</Button>
+          </Row>
+        </Column>
+      </LoadingContainer>
+      {error && <ErrorModal reason={error?.message} onClose={() => reset()} />}
+    </Modal>
+  )
+}
+
 export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
   const { data: dashboard } = useProtocolDashboard(dashboardID)
   const location = useLocation()
+  const [finalizeSubmissionModalOpen, setFinalizeSubmissionModalOpen] = useState(false)
 
   if (!dashboard) return null
 
@@ -64,50 +108,66 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
   const initialPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 3 })
   const finalPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 1 })
 
+  const canFinalizeSubmission =
+    dashboard.contest.fullPaymentComplete && dashboard.contest.scopeReady && dashboard.contest.teamHandlesAdded
+
   return (
     <Box shadow={false} className={styles.tasks}>
-      <Table>
-        <THead>
-          <Tr>
-            <Th>
-              <Title variant="h2">TASKS</Title>
-            </Th>
-            <Th>
-              <Row alignment="end">
-                <Text strong>DUE DATE</Text>
-              </Row>
-            </Th>
-          </Tr>
-        </THead>
-        <TBody>
-          <Task
-            title="Submit Initial Payment"
-            completed={contest.initialPaymentComplete}
-            dueDate={initialPaymentDueDate.toFormat("LLL dd")}
-            route={protocolDashboardRoutes.InitialPayment}
-            active={currentRoute === protocolDashboardRoutes.InitialPayment}
+      <Column spacing="m">
+        <Table>
+          <THead>
+            <Tr>
+              <Th>
+                <Title variant="h2">TASKS</Title>
+              </Th>
+              <Th>
+                <Row alignment="end">
+                  <Text strong>DUE DATE</Text>
+                </Row>
+              </Th>
+            </Tr>
+          </THead>
+          <TBody>
+            <Task
+              title="Submit Initial Payment"
+              completed={contest.initialPaymentComplete}
+              dueDate={initialPaymentDueDate.toFormat("LLL dd")}
+              route={protocolDashboardRoutes.InitialPayment}
+              active={currentRoute === protocolDashboardRoutes.InitialPayment}
+            />
+            <Task
+              title="Define Audit Scope"
+              completed={contest.scopeReady}
+              route={protocolDashboardRoutes.Scope}
+              active={currentRoute === protocolDashboardRoutes.Scope}
+            />
+            <Task
+              title="Add Team Members"
+              route={protocolDashboardRoutes.Team}
+              active={currentRoute === protocolDashboardRoutes.Team}
+              completed={contest.teamHandlesAdded}
+            />
+            <Task
+              title="Submit Final Payment"
+              completed={contest.fullPaymentComplete}
+              dueDate={finalPaymentDueDate.toFormat("LLL dd")}
+              route={protocolDashboardRoutes.Payments}
+              active={currentRoute === protocolDashboardRoutes.FinalPayment}
+            />
+          </TBody>
+        </Table>
+        {canFinalizeSubmission && (
+          <Button variant="alternate" onClick={() => setFinalizeSubmissionModalOpen(true)}>
+            Finalize Submission
+          </Button>
+        )}
+        {finalizeSubmissionModalOpen && (
+          <FinalizeSubmissionModal
+            dashboardID={dashboardID ?? ""}
+            onClose={() => setFinalizeSubmissionModalOpen(false)}
           />
-          <Task
-            title="Define Audit Scope"
-            completed={contest.scopeReady}
-            route={protocolDashboardRoutes.Scope}
-            active={currentRoute === protocolDashboardRoutes.Scope}
-          />
-          <Task
-            title="Add Team Members"
-            route={protocolDashboardRoutes.Team}
-            active={currentRoute === protocolDashboardRoutes.Team}
-            completed={contest.teamHandlesAdded}
-          />
-          <Task
-            title="Submit Final Payment"
-            completed={contest.fullPaymentComplete}
-            dueDate={finalPaymentDueDate.toFormat("LLL dd")}
-            route={protocolDashboardRoutes.Payments}
-            active={currentRoute === protocolDashboardRoutes.FinalPayment}
-          />
-        </TBody>
-      </Table>
+        )}
+      </Column>
     </Box>
   )
 }
