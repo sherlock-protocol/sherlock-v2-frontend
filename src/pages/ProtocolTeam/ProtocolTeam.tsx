@@ -82,7 +82,7 @@ export const ProtocolTeam = () => {
     resetAddDiscordHandle()
   }, [resetAddGithubHandle, resetAddDiscordHandle])
 
-  const teamHasMembers = githubMembers?.length && discordMembers?.length
+  const teamHasMembers = !!(githubMembers?.length && discordMembers?.length)
 
   return (
     <LoadingContainer loading={addGithubHandleIsLoading || addDiscordHandleIsLoading}>
