@@ -156,10 +156,21 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
             />
           </TBody>
         </Table>
-        {canFinalizeSubmission && (
+        {canFinalizeSubmission && !dashboard.contest.submissionReady && (
           <Button variant="alternate" onClick={() => setFinalizeSubmissionModalOpen(true)}>
             Finalize Submission
           </Button>
+        )}
+        {dashboard.contest.submissionReady && (
+          <Column spacing="s" alignment="center">
+            <Text variant="alternate" size="large" alignment="center" strong>
+              ALL SET!
+            </Text>
+            <Text>The audit is scheduled to start on</Text>
+            <Text strong size="large">{`${DateTime.fromSeconds(dashboard.contest.startDate).toLocaleString(
+              DateTime.DATETIME_MED
+            )}`}</Text>
+          </Column>
         )}
         {finalizeSubmissionModalOpen && (
           <FinalizeSubmissionModal
