@@ -1,9 +1,9 @@
-import React, { useCallback } from "react"
+import { useCallback } from "react"
 import { Navigate, Outlet, useOutlet, useParams } from "react-router-dom"
 import { DateTime, Interval } from "luxon"
 
 import { Footer } from "./components/Footer"
-import { Header, NavigationLink } from "./components/Header"
+import { Header } from "./components/Header"
 import styles from "./App.module.scss"
 import { protocolDashboardRoutes, routes } from "./utils/routes"
 import { useProtocolDashboard } from "./hooks/api/contests/useProtocolDashboard"
@@ -37,21 +37,6 @@ const AppProtocolDashboard = () => {
 
   if (!protocolDashboard) return null
 
-  const navigationLinks: NavigationLink[] = [
-    {
-      title: "TEAM",
-      route: protocolDashboardRoutes.Team,
-    },
-    {
-      title: "PAYMENTS",
-      route: protocolDashboardRoutes.Payments,
-    },
-    {
-      title: "SCOPE",
-      route: protocolDashboardRoutes.Scope,
-    },
-  ]
-
   const { contest } = protocolDashboard
   const startDate = DateTime.fromSeconds(contest.startDate, { zone: "utc" })
   const endDate = DateTime.fromSeconds(contest.endDate, { zone: "utc" })
@@ -63,7 +48,7 @@ const AppProtocolDashboard = () => {
     <div className={styles.app}>
       <div className={styles.noise} />
       <Header
-        navigationLinks={navigationLinks}
+        navigationLinks={[]}
         homeRoute={routes.ProtocolDashboard}
         connectButton={false}
         title={protocolDashboard.contest.title}
