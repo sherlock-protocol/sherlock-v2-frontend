@@ -262,7 +262,12 @@ export const AdminContestsList = () => {
                     <Td>
                       <Row spacing="l" alignment={["start", "center"]}>
                         <img src={c.logoURL} className={styles.logo} alt={c.title} />
-                        <Text>{c.title}</Text>
+                        <Column spacing="xs">
+                          <Text strong>{c.title}</Text>
+                          <Text size="small" variant="secondary">
+                            {DateTime.fromSeconds(c.startDate).toFormat("LLLL d - t")}
+                          </Text>
+                        </Column>
                       </Row>
                     </Td>
                     <Td>
