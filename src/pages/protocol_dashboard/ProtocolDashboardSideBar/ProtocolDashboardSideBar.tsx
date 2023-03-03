@@ -66,11 +66,12 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
 
   return (
     <Box shadow={false} className={styles.tasks}>
-      <Title variant="h2">TASKS</Title>
       <Table>
         <THead>
           <Tr>
-            <Th></Th>
+            <Th>
+              <Title variant="h2">TASKS</Title>
+            </Th>
             <Th>
               <Row alignment="end">
                 <Text strong>DUE DATE</Text>
@@ -103,7 +104,7 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
             completed={contest.fullPaymentComplete}
             dueDate={finalPaymentDueDate.toFormat("LLL dd")}
             route={protocolDashboardRoutes.Payments}
-            active={currentRoute === "FINAL_PAYMENT"}
+            active={currentRoute === protocolDashboardRoutes.FinalPayment}
           />
         </TBody>
       </Table>

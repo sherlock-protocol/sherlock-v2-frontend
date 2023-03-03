@@ -17,8 +17,7 @@ import { ErrorModal } from "./pages/ContestDetails/ErrorModal"
 import { useFinalizeSubmission } from "./hooks/api/contests/useFinalizeSubmission"
 import { ProtocolDashboardSideBar } from "./pages/protocol_dashboard/ProtocolDashboardSideBar/ProtocolDashboardSideBar"
 import { getCurrentStep } from "./utils/protocolDashboard"
-import { commify } from "ethers/lib/utils.js"
-import { FaGithub, FaCheckCircle, FaRegCircle, FaCheck } from "react-icons/fa"
+import { FaGithub } from "react-icons/fa"
 import { Box } from "./components/Box"
 import { Table, TBody, Tr, Td } from "./components/Table/Table"
 
@@ -79,7 +78,7 @@ const AppProtocolDashboard = () => {
     if (currentStep === "INITIAL_PAYMENT") return <Navigate replace to={protocolDashboardRoutes.InitialPayment} />
     if (currentStep === "SCOPE") return <Navigate replace to={protocolDashboardRoutes.Scope} />
     if (currentStep === "TEAM") return <Navigate replace to={protocolDashboardRoutes.Team} />
-    if (currentStep === "FINAL_PAYMENT") return <Navigate replace to={protocolDashboardRoutes.Payments} />
+    if (currentStep === "FINAL_PAYMENT") return <Navigate replace to={protocolDashboardRoutes.FinalPayment} />
   }, [childRoute, protocolDashboard?.contest])
 
   if (!protocolDashboard) return null
@@ -104,8 +103,7 @@ const AppProtocolDashboard = () => {
   const endDate = DateTime.fromSeconds(contest.endDate, { zone: "utc" })
   const length = Interval.fromDateTimes(startDate, endDate).length("days")
 
-  const fullyPaid = contest.fullPaymentComplete
-  const canFinalizeSubmission = fullyPaid && protocolDashboard.scopeHasContracts
+  const canFinalizeSubmission = contest.fullPaymentComplete && protocolDashboard.scopeHasContracts
 
   if (!dashboardID) return null
 
@@ -122,7 +120,7 @@ const AppProtocolDashboard = () => {
       <div className={styles.contentContainer}>
         <div className={styles.content}>
           <Row spacing="xl" grow={1} className={styles.fullWidth}>
-            <Column>
+            <Column spacing="xl">
               <ProtocolDashboardSideBar dashboardID={dashboardID} />
               <Box shadow={false} className={styles.sticky}>
                 <Title variant="h2">AUDIT DETAILS</Title>
@@ -151,45 +149,9 @@ const AppProtocolDashboard = () => {
                         <Text strong>Lead Senior Watson</Text>
                       </Td>
                       <Td>
-                        <Text alignment="right">{contest.leadSeniorAuditorHandle}</Text>
+                        <Text alignment="right">{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
                       </Td>
                     </Tr>
-                    <Tr>
-                      <Td>
-                        <Text strong>Audit Contest Pot</Text>
-                      </Td>
-                      <Td>
-                        <Text alignment="right">{`${commify(contest.prizePool)} USDC`}</Text>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Text strong>Lead Senior Watson Fixed Pay</Text>
-                      </Td>
-                      <Td>
-                        <Text alignment="right">{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
-                      </Td>
-                    </Tr>
-                    {contest.judgingPrizePool > 0 && (
-                      <Tr>
-                        <Td>
-                          <Text strong>Judging Contest Pot</Text>
-                        </Td>
-                        <Td>
-                          <Text alignment="right">{`${commify(contest.judgingPrizePool)} USDC`}</Text>
-                        </Td>
-                      </Tr>
-                    )}
-                    {contest.sherlockFee > 0 && (
-                      <Tr>
-                        <Td>
-                          <Text strong>Sherlock Admin</Text>
-                        </Td>
-                        <Td>
-                          <Text alignment="right">{`${commify(contest.sherlockFee)} USDC`}</Text>
-                        </Td>
-                      </Tr>
-                    )}
                   </TBody>
                 </Table>
                 <Column spacing="s">
