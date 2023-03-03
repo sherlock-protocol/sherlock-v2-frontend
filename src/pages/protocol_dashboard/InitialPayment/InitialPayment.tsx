@@ -123,29 +123,31 @@ export const InitialPayment = () => {
             </Column>
           </Box>
         )}
-        <Box shadow={false}>
-          <Column spacing="xl">
-            <Row alignment="space-between">
-              <Title variant="h2">TRANSACTIONS</Title>
-              <Text>
-                Total amount paid: <strong>{`${commify(protocolDashboard.payments.totalPaid)} USDC`}</strong>
-              </Text>
-            </Row>
-            <Column spacing="xs">
-              {protocolDashboard.payments.payments.map((p) => (
-                <Row spacing="s">
-                  <Text strong>{`${commify(p.amount)} USDC`}</Text>
-                  <a
-                    href={getTxUrl(p.txHash)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={styles.transactionHash}
-                  >{`${p.txHash.slice(0, 24)}...`}</a>
-                </Row>
-              ))}
+        {protocolDashboard.payments.payments.length > 0 && (
+          <Box shadow={false}>
+            <Column spacing="xl">
+              <Row alignment="space-between">
+                <Title variant="h2">TRANSACTIONS</Title>
+                <Text>
+                  Total amount paid: <strong>{`${commify(protocolDashboard.payments.totalPaid)} USDC`}</strong>
+                </Text>
+              </Row>
+              <Column spacing="xs">
+                {protocolDashboard.payments.payments.map((p) => (
+                  <Row spacing="s">
+                    <Text strong>{`${commify(p.amount)} USDC`}</Text>
+                    <a
+                      href={getTxUrl(p.txHash)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={styles.transactionHash}
+                    >{`${p.txHash.slice(0, 24)}...`}</a>
+                  </Row>
+                ))}
+              </Column>
             </Column>
-          </Column>
-        </Box>
+          </Box>
+        )}
       </Column>
       {submitPaymentError && <ErrorModal reason={submitPaymentError.message} onClose={handleErrorModalClose} />}
     </LoadingContainer>

@@ -72,47 +72,49 @@ const AppProtocolDashboard = () => {
       <div className={styles.contentContainer}>
         <div className={styles.content}>
           <Row spacing="xl" grow={1} className={styles.fullWidth}>
-            <Column spacing="xl">
-              <ProtocolDashboardSideBar dashboardID={dashboardID} />
-              <Box shadow={false} className={styles.sticky}>
-                <Title variant="h2">AUDIT DETAILS</Title>
-                <Table selectable={false}>
-                  <TBody>
-                    <Tr>
-                      <Td>
-                        <Text strong>{contest.startApproved ? "Start Date" : "Estimated Start Date"}</Text>
-                      </Td>
-                      <Td>
-                        <Text alignment="right">
-                          {startDate.year === 2030 ? "TBD" : startDate.toLocaleString(DateTime.DATE_MED)}
-                        </Text>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Text strong>Audit Length</Text>
-                      </Td>
-                      <Td>
-                        <Text alignment="right">{`${+length.toFixed(2)} days`}</Text>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Text strong>Lead Senior Watson</Text>
-                      </Td>
-                      <Td>
-                        <Text alignment="right">{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
-                      </Td>
-                    </Tr>
-                  </TBody>
-                </Table>
-                <Column spacing="s">
-                  <Button variant="secondary" onClick={() => window.open(contest.repo, "blank")} fullWidth>
-                    <FaGithub />
-                    &nbsp;&nbsp;Audit repository
-                  </Button>
-                </Column>
-              </Box>
+            <Column>
+              <Column className={styles.sticky} spacing="xl">
+                <ProtocolDashboardSideBar dashboardID={dashboardID} />
+                <Box shadow={false}>
+                  <Title variant="h2">AUDIT DETAILS</Title>
+                  <Table selectable={false}>
+                    <TBody>
+                      <Tr>
+                        <Td>
+                          <Text strong>{contest.startApproved ? "Start Date" : "Estimated Start Date"}</Text>
+                        </Td>
+                        <Td>
+                          <Text alignment="right">
+                            {startDate.year === 2030 ? "TBD" : startDate.toLocaleString(DateTime.DATE_MED)}
+                          </Text>
+                        </Td>
+                      </Tr>
+                      <Tr>
+                        <Td>
+                          <Text strong>Audit Length</Text>
+                        </Td>
+                        <Td>
+                          <Text alignment="right">{`${+length.toFixed(2)} days`}</Text>
+                        </Td>
+                      </Tr>
+                      <Tr>
+                        <Td>
+                          <Text strong>Lead Senior Watson</Text>
+                        </Td>
+                        <Td>
+                          <Text alignment="right">{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
+                        </Td>
+                      </Tr>
+                    </TBody>
+                  </Table>
+                  <Column spacing="s">
+                    <Button variant="secondary" onClick={() => window.open(contest.repo, "blank")} fullWidth>
+                      <FaGithub />
+                      &nbsp;&nbsp;Audit repository
+                    </Button>
+                  </Column>
+                </Box>
+              </Column>
             </Column>
             <Column grow={1} className={styles.scrollable}>
               {renderChildRoute()}
