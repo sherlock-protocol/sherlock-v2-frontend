@@ -194,9 +194,21 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   }, [])
 
   const handleCreateContest = useCallback(() => {
-    const startDate = DateTime.fromFormat(contestStartDate, DATE_FORMAT)
-    const endDate = startDate.plus({ hours: 24 * parseInt(contestAuditLength) })
-    const judgingEndDate = DateTime.fromFormat(contestJudgingContestEndDate, DATE_FORMAT)
+    const startDate = DateTime.fromFormat(contestStartDate, DATE_FORMAT, { zone: "utc" }).set({
+      hour: 15,
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+    })
+    const endDate = startDate
+      .plus({ hours: 24 * parseInt(contestAuditLength) })
+      .set({ hour: 15, minute: 0, second: 0, millisecond: 0 })
+    const judgingEndDate = DateTime.fromFormat(contestJudgingContestEndDate, DATE_FORMAT, { zone: "utc" }).set({
+      hour: 15,
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+    })
 
     createContest({
       protocol: {
