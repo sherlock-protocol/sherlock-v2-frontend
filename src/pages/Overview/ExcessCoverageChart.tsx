@@ -21,18 +21,16 @@ export const ExcessCoverageChart = () => {
 
   const chartData = useMemo(
     () =>
-      tvcData?.reduce<{ name: string; value: number }[]>((dataPoints, item) => {
+      tvcData?.reduce<{ name: number; value: number }[]>((dataPoints, item) => {
         const date = DateTime.fromSeconds(item.timestamp)
 
         if (nexusStartDate.diff(date, "days").days < 5) {
-          const formattedDate = date.toLocaleString({ month: "2-digit", day: "2-digit" })
-
-          if (dataPoints.length > 0 && dataPoints[dataPoints.length - 1].name === formattedDate) {
+          if (dataPoints.length > 0 && dataPoints[dataPoints.length - 1].name === item.timestamp) {
             dataPoints.pop()
           }
 
           dataPoints.push({
-            name: date.toLocaleString({ month: "2-digit", day: "2-digit" }),
+            name: item.timestamp,
             value: date > nexusStartDate ? Number(utils.formatUnits(item.value.mul(25).div(100), 6)) : 0,
           })
         }
@@ -63,6 +61,7 @@ export const ExcessCoverageChart = () => {
             height={200}
             data={chartData}
             tooltipProps={{
+              labelFormatter: (v: number) => DateTime.fromSeconds(v).toLocaleString(DateTime.DATE_MED),
               formatter: (v: number, name: string) => [`$${formatAmount(v, 0)}`, tooltipTitles[name]],
             }}
           />

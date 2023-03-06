@@ -13,6 +13,7 @@ import {
 import { Tooltip as CustomTooltip } from "./Tooltip"
 
 import { shortenNumber } from "../../utils/units"
+import { DateTime } from "luxon"
 
 const STROKES = ["#8716e8", "#fe6e99", ""]
 const TOOLTIP_COLORS = ["#8716e8", "#fe6e99", "#00FEB3"]
@@ -73,6 +74,7 @@ export const Chart: React.FC<Props> = ({
           tick={{ fill: "white", fontSize: "12px" }}
           tickMargin={5}
           allowDuplicatedCategory={false}
+          tickFormatter={(v) => DateTime.fromSeconds(v).toLocaleString({ month: "2-digit", day: "2-digit" })}
           {...xAxisProps}
         />
         <Tooltip {...tooltipProps} content={<CustomTooltip colors={TOOLTIP_COLORS} />} />

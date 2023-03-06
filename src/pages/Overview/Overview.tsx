@@ -18,7 +18,7 @@ import { ExcessCoverageChart } from "./ExcessCoverageChart"
 import { Text } from "../../components/Text"
 
 type ChartDataPoint = {
-  name: string
+  name: number
   value: number
 }
 
@@ -34,8 +34,8 @@ export const OverviewPage: React.FC = () => {
     const capitalEfficiencyChartData: ChartDataPoint[] = []
 
     for (let i = 0, j = 0; i < tvlData.length && j < tvcData.length; ) {
-      const tvcDataPointDate = DateTime.fromMillis(tvcData[i].timestamp * 1000)
-      const tvlDataPointDate = DateTime.fromMillis(tvlData[j].timestamp * 1000)
+      const tvcDataPointDate = DateTime.fromSeconds(tvcData[i].timestamp)
+      const tvlDataPointDate = DateTime.fromSeconds(tvlData[j].timestamp)
 
       let tvc = tvcData[i]
       let tvl = tvlData[j]
@@ -54,15 +54,14 @@ export const OverviewPage: React.FC = () => {
       }
 
       const timestamp = Math.min(tvc.timestamp, tvl.timestamp)
-      const formattedDate = DateTime.fromSeconds(timestamp).toLocaleString({ month: "2-digit", day: "2-digit" })
 
       const tvcDataPoint = {
-        name: DateTime.fromMillis(timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
+        name: timestamp,
         value: Number(utils.formatUnits(tvc.value, 6)),
       }
 
       const tvlDataPoint = {
-        name: DateTime.fromMillis(timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
+        name: timestamp,
         value: Number(utils.formatUnits(tvl.value, 6)),
       }
 
@@ -71,11 +70,11 @@ export const OverviewPage: React.FC = () => {
       const sherlockTVC = timestamp > config.nexusMutualStartTimestamp ? tvc.value.mul(75).div(100) : tvc.value
 
       const capitalEfficiencyDataPoint = {
-        name: DateTime.fromMillis(timestamp * 1000).toLocaleString({ month: "2-digit", day: "2-digit" }),
+        name: timestamp,
         value: Number(utils.formatUnits(sherlockTVC, 6)) / Number(utils.formatUnits(tvl.value, 6)),
       }
 
-      if (tvcChartData.length > 0 && tvcChartData[tvcChartData.length - 1].name === formattedDate) {
+      if (tvcChartData.length > 0 && tvcChartData[tvcChartData.length - 1].name === timestamp) {
         tvcChartData.pop()
         tvlChartData.pop()
         capitalEfficiencyChartData.pop()
@@ -111,7 +110,10 @@ export const OverviewPage: React.FC = () => {
               <Chart
                 height={200}
                 data={chartsData?.tvcChartData}
-                tooltipProps={{ formatter: (v: number, name: string) => [`$${formatAmount(v, 0)}`, "TVC"] }}
+                tooltipProps={{
+                  formatter: (v: number, name: string) => [`$${formatAmount(v, 0)}`, "TVC"],
+                  labelFormatter: (v: number) => DateTime.fromSeconds(v).toLocaleString(DateTime.DATE_MED),
+                }}
               />
             </Row>
           </Column>
@@ -133,7 +135,10 @@ export const OverviewPage: React.FC = () => {
               <Chart
                 height={200}
                 data={chartsData?.tvlChartData}
-                tooltipProps={{ formatter: (v: number, name: string) => [`$${formatAmount(v, 0)}`, "TVL"] }}
+                tooltipProps={{
+                  formatter: (v: number, name: string) => [`$${formatAmount(v, 0)}`, "TVL"],
+                  labelFormatter: (v: number) => DateTime.fromSeconds(v).toLocaleString(DateTime.DATE_MED),
+                }}
               />
             </Row>
           </Column>
@@ -161,7 +166,10 @@ export const OverviewPage: React.FC = () => {
               <Chart
                 height={200}
                 data={chartsData?.capitalEfficiencyChartData}
-                tooltipProps={{ formatter: (v: number, name: string) => [v.toFixed(2), "Capital efficiency"] }}
+                tooltipProps={{
+                  formatter: (v: number, name: string) => [v.toFixed(2), "Capital efficiency"],
+                  labelFormatter: (v: number) => DateTime.fromSeconds(v).toLocaleString(DateTime.DATE_MED),
+                }}
                 yTickFormatter={(v) => v.toFixed(2)}
               />
             </Row>
