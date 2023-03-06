@@ -7,7 +7,7 @@ import { Title } from "../Title"
 import { DateTime } from "luxon"
 
 type DataPoint = {
-  name: string
+  name: number
   premiumsAPY: number
   strategiesAPY: number
   incentivesAPY: number
@@ -29,17 +29,14 @@ const APYChart: React.FC = () => {
 
   const chartData = useMemo(() => {
     const apyChartData = apyData?.reduce<DataPoint[]>((dataPoints, item) => {
-      const date = DateTime.fromSeconds(item.timestamp)
-      const formattedDate = date.toLocaleString({ month: "2-digit", day: "2-digit" })
-
-      if (dataPoints.length > 0 && dataPoints[dataPoints.length - 1].name === formattedDate) {
+      if (dataPoints.length > 0 && dataPoints[dataPoints.length - 1].name === item.timestamp) {
         dataPoints.pop()
       }
 
       const strategiesAPY = item.totalAPY - item.premiumsAPY - item.incentivesAPY
 
       dataPoints.push({
-        name: formattedDate,
+        name: item.timestamp,
         strategiesAPY: Math.max(0, strategiesAPY),
         premiumsAPY: item.premiumsAPY,
         incentivesAPY: item.incentivesAPY,
@@ -67,6 +64,7 @@ const APYChart: React.FC = () => {
             data={chartData}
             dataKeys={["premiumsAPY", "strategiesAPY", "incentivesAPY"]}
             tooltipProps={{
+              labelFormatter: (v: number) => DateTime.fromSeconds(v).toLocaleString(DateTime.DATE_MED),
               formatter: (v: number, name: string) => [`${v.toFixed(2)}%`, tooltipTitles[name]],
             }}
             yTickFormatter={(v) => `${v}%`}
