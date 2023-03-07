@@ -93,3 +93,14 @@
 .clickable {
   cursor: pointer;
 }
+
+.auditScope {
+  & .completed {
+    & h1,
+    & h2,
+    & h3,
+    &h4 {
+      color: $alternate-pink;
+    }
+  }
+}

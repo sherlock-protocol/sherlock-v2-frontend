@@ -1,6 +1,7 @@
 import { AxiosError } from "axios"
 import { useMutation, useQueryClient } from "react-query"
 import { contests as contestsAPI } from "../axios"
+import { protocolDashboardQuery } from "../contests/useProtocolDashboard"
 import { addProtocolDiscordHandle as addProtocolDiscordHandleUrl } from "../urls"
 import { protocolDiscordHandlesQuery } from "./useDiscordHandles"
 
@@ -28,6 +29,7 @@ export const useAddDiscordHandle = () => {
     {
       async onSuccess(data, params) {
         await queryClient.invalidateQueries(protocolDiscordHandlesQuery(params.protocolDashboardID))
+        await queryClient.invalidateQueries(protocolDashboardQuery(params.protocolDashboardID))
       },
     }
   )

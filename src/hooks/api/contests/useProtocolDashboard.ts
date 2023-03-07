@@ -25,6 +25,7 @@ export type ContestDetails = {
   linesOfCode: string
   initialPaymentComplete: boolean
   fullPaymentComplete: boolean
+  teamHandlesAdded: boolean
 }
 
 type PaymentsDetails = {
@@ -60,6 +61,7 @@ type PaymentsResponse = {
     rewards: number
     initial_payment_complete: boolean
     full_payment_complete: boolean
+    team_handles_added: boolean
   }
   payments: {
     tx_hash: string
@@ -93,6 +95,7 @@ export const useProtocolDashboard = (dashboardID: string) =>
         linesOfCode: data.contest.lines_of_code,
         initialPaymentComplete: data.contest.initial_payment_complete,
         fullPaymentComplete: data.contest.full_payment_complete,
+        teamHandlesAdded: data.contest.team_handles_added,
       },
       payments: {
         totalAmount: data.contest.full_payment,
