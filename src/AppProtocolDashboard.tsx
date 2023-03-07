@@ -5,7 +5,7 @@ import { DateTime, Interval } from "luxon"
 import { Footer } from "./components/Footer"
 import { Header } from "./components/Header"
 import styles from "./App.module.scss"
-import { protocolDashboardRoutes, routes } from "./utils/routes"
+import { protocolDashboardRoutes } from "./utils/routes"
 import { useProtocolDashboard } from "./hooks/api/contests/useProtocolDashboard"
 import { Column, Row } from "./components/Layout"
 import { Title } from "./components/Title"
@@ -50,7 +50,6 @@ const AppProtocolDashboard = () => {
       <div className={styles.noise} />
       <Header
         navigationLinks={[]}
-        homeRoute={routes.ProtocolDashboard}
         connectButton={false}
         title={protocolDashboard.contest.title}
         logoURL={protocolDashboard.contest.logoURL}

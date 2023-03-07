@@ -151,7 +151,7 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
               title="Submit Final Payment"
               completed={contest.fullPaymentComplete}
               dueDate={finalPaymentDueDate.toFormat("LLL dd")}
-              route={protocolDashboardRoutes.Payments}
+              route={protocolDashboardRoutes.FinalPayment}
               active={currentRoute === protocolDashboardRoutes.FinalPayment}
             />
           </TBody>

@@ -118,7 +118,7 @@ export const FinalPayment = () => {
                     Submit
                   </Button>
                 </Row>
-                <Text size="small">{`${transactionLoading ? "- Validating..." : ""}`}</Text>
+                <Text size="small">{`${transactionLoading ? "Validating..." : ""}`}</Text>
                 {transactionError && (
                   <Text variant="warning" size="small">
                     Invalid transaction hash
