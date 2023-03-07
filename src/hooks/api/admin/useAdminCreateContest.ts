@@ -16,6 +16,7 @@ type AdminCreateContestParams = {
   contest: {
     title: string
     shortDescription: string
+    nSLOC: string
     startDate: DateTime
     endDate: DateTime
     judgingEndDate: DateTime
@@ -41,6 +42,7 @@ export const useAdminCreateContest = () => {
           },
           title: params.contest.title,
           short_description: params.contest.shortDescription,
+          lines_of_code: params.contest.nSLOC,
           starts_at: params.contest.startDate.toSeconds(),
           ends_at: params.contest.endDate.toSeconds(),
           judging_ends_at: params.contest.judgingEndDate.toSeconds(),
