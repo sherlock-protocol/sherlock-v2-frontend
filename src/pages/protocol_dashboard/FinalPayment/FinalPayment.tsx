@@ -19,7 +19,6 @@ import { ErrorModal } from "../../ContestDetails/ErrorModal"
 
 import styles from "../InitialPayment/InitialPayment.module.scss"
 import { useValidateTransaction } from "../../../hooks/useValidateTransaction"
-import { AuditsCostTable } from "../components/AuditCostsTable"
 
 export const FinalPayment = () => {
   const { dashboardID } = useParams()
@@ -90,7 +89,6 @@ export const FinalPayment = () => {
                 >{`${commify(amountDue)} USDC`}</Text>
               </Row>
             </Column>
-            <AuditsCostTable auditCosts={protocolDashboard.contest} />
           </Column>
         </Box>
         {protocolDashboard.contest.fullPaymentComplete ? (

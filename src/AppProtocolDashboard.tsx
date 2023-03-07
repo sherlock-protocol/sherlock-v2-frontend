@@ -16,6 +16,7 @@ import { getCurrentStep } from "./utils/protocolDashboard"
 import { FaGithub } from "react-icons/fa"
 import { Box } from "./components/Box"
 import { Table, TBody, Tr, Td } from "./components/Table/Table"
+import { commify } from "./utils/units"
 
 const AppProtocolDashboard = () => {
   const { dashboardID } = useParams()
@@ -88,6 +89,40 @@ const AppProtocolDashboard = () => {
                         </Td>
                         <Td>
                           <Text alignment="right">{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
+                        </Td>
+                      </Tr>
+                      <Tr>
+                        <Td>
+                          <Text strong>Contest Prize Pool</Text>
+                        </Td>
+                        <Td>
+                          <Text alignment="right">{`${commify(protocolDashboard.contest.prizePool)} USDC`}</Text>
+                        </Td>
+                      </Tr>
+                      <Tr>
+                        <Td>
+                          <Text strong>Lead Senior Watson Fixed Pay</Text>
+                        </Td>
+                        <Td>
+                          <Text alignment="right">{`${commify(
+                            protocolDashboard.contest.leadSeniorAuditorFixedPay
+                          )} USDC`}</Text>
+                        </Td>
+                      </Tr>
+                      <Tr>
+                        <Td>
+                          <Text strong>Judging Prize Pool</Text>
+                        </Td>
+                        <Td>
+                          <Text alignment="right">{`${commify(protocolDashboard.contest.judgingPrizePool)} USDC`}</Text>
+                        </Td>
+                      </Tr>
+                      <Tr>
+                        <Td>
+                          <Text strong>Sherlock Admin Fee</Text>
+                        </Td>
+                        <Td>
+                          <Text alignment="right">{`${commify(protocolDashboard.contest.sherlockFee)} USDC`}</Text>
                         </Td>
                       </Tr>
                     </TBody>

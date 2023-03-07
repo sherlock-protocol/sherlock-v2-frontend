@@ -19,7 +19,6 @@ import { ErrorModal } from "../../ContestDetails/ErrorModal"
 
 import styles from "./InitialPayment.module.scss"
 import { getTxUrl } from "../../../utils/explorer"
-import { AuditsCostTable } from "../components/AuditCostsTable"
 
 export const InitialPayment = () => {
   const { dashboardID } = useParams()
@@ -80,7 +79,6 @@ export const InitialPayment = () => {
                 <Text strong>{`${commify(protocolDashboard.payments.totalAmount * 0.25)} USDC`}</Text>
               </Row>
             </Column>
-            <AuditsCostTable auditCosts={protocolDashboard.contest} />
             <Text variant="secondary">
               Feel free to send more than the initial payment. You can even pay the full amount now. The full payment
               will be required at least 24 hours before the contest start date to avoid any delays.
