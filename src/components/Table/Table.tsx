@@ -3,14 +3,20 @@ import cx from "classnames"
 
 import styles from "./Table.module.scss"
 
+type TableSize = "small" | "regular"
+
 export const Table: React.FC<
   PropsWithChildren<
     React.TableHTMLAttributes<HTMLTableElement> & {
       selectable?: boolean
+      size?: TableSize
     }
   >
-> = ({ children, selectable = true, className, ...props }) => (
-  <table className={cx(styles.table, className, { [styles.selectable]: selectable })} {...props}>
+> = ({ children, selectable = true, size = "regular", className, ...props }) => (
+  <table
+    className={cx(styles.table, className, { [styles.selectable]: selectable, [styles.small]: size === "small" })}
+    {...props}
+  >
     {children}
   </table>
 )
