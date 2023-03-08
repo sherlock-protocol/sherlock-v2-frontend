@@ -41,6 +41,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
 
   const [contestTitle, setContestTitle] = useState("")
   const [contestShortDescription, setShortDescription] = useState("")
+  const [contestNSLOC, setContestNSLOC] = useState("")
   const [contestStartDate, setContestStartDate] = useState("")
   const [contestAuditLength, setContestAuditLength] = useState("")
   const [contestJudgingContestEndDate, setContestJudgingContestEndDate] = useState("")
@@ -221,6 +222,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
       contest: {
         title: contestTitle,
         shortDescription: contestShortDescription,
+        nSLOC: contestNSLOC,
         startDate,
         endDate,
         judgingEndDate,
@@ -236,6 +238,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     contestJudgingContestEndDate,
     contestJudgingPrizePool,
     contestLeadSeniorWatsonFixedPay,
+    contestNSLOC,
     contestShortDescription,
     contestStartDate,
     contestTitle,
@@ -253,6 +256,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
       protocolName !== "" ||
       contestTitle !== "" ||
       contestShortDescription !== "" ||
+      contestNSLOC !== "" ||
       contestStartDate !== "" ||
       contestAuditLength !== "" ||
       contestJudgingContestEndDate !== "" ||
@@ -266,6 +270,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
       contestJudgingContestEndDate,
       contestJudgingPrizePool,
       contestLeadSeniorWatsonFixedPay,
+      contestNSLOC,
       contestShortDescription,
       contestStartDate,
       contestTitle,
@@ -376,6 +381,9 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
             </Field>
             <Field label="Short Description" error={!!shortDescriptionError} errorMessage={shortDescriptionError ?? ""}>
               <Input value={contestShortDescription} onChange={handleUpdateShortDescription} />
+            </Field>
+            <Field label="nSLOC">
+              <Input value={contestNSLOC} onChange={setContestNSLOC} />
             </Field>
             <Field label="Start Date" error={!!startDateError} errorMessage={startDateError ?? ""}>
               <Input value={contestStartDate} onChange={setContestStartDate} />
