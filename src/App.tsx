@@ -31,6 +31,7 @@ import { AdminScope } from "./pages/admin/AdminScope/AdminScope"
 import { AuditScope } from "./pages/AuditScope/AuditScope"
 import { InitialPayment } from "./pages/protocol_dashboard/InitialPayment/InitialPayment"
 import { FinalPayment } from "./pages/protocol_dashboard/FinalPayment/FinalPayment"
+import { ContextQuestions } from "./pages/protocol_dashboard/ContextQuestions/ContextQuestions"
 
 function App() {
   const { address: connectedAddress } = useAccount()
@@ -75,6 +76,7 @@ function App() {
           <Route path={protocolDashboardRoutes.Team} element={<ProtocolTeam />} />
           <Route path={protocolDashboardRoutes.FinalPayment} element={<FinalPayment />} />
           <Route path={protocolDashboardRoutes.Scope} element={<AuditScope />} />
+          <Route path={protocolDashboardRoutes.Context} element={<ContextQuestions />} />
         </Route>
 
         {/** Audit Contests section routes */}

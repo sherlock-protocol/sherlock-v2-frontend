@@ -148,6 +148,12 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
               completed={contest.teamHandlesAdded}
             />
             <Task
+              title="Provide Context Details"
+              route={protocolDashboardRoutes.Context}
+              active={currentRoute === protocolDashboardRoutes.Context}
+              completed={contest.contextComplete}
+            />
+            <Task
               title="Submit Final Payment"
               completed={contest.fullPaymentComplete}
               dueDate={finalPaymentDueDate.toFormat("LLL dd")}

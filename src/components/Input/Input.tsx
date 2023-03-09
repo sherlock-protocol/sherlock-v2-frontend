@@ -42,6 +42,11 @@ export type InputProps<T extends string | number> = {
    * Disable input
    */
   disabled?: boolean
+
+  /**
+   * Multiline or single line
+   */
+  multiline?: boolean
 }
 
 export const Input = <T extends string | number>({
@@ -52,6 +57,7 @@ export const Input = <T extends string | number>({
   variant = "regular",
   textVariant = "normal",
   disabled = false,
+  multiline = false,
 }: InputProps<T>) => {
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
@@ -61,16 +67,20 @@ export const Input = <T extends string | number>({
   )
 
   return (
-    <div className={classNames([styles.inputContainer, styles[variant]])}>
+    <div className={classNames([styles.inputContainer, styles[variant]], { [styles.multiline]: multiline })}>
       {placeholder && <span className={styles.placeholder}>{placeholder}</span>}
-      <input
-        className={classNames([styles.input, styles[variant], styles[textVariant]])}
-        value={value}
-        onChange={handleChange}
-        disabled={disabled}
-        type={type}
-        spellCheck={false}
-      />
+      {multiline ? (
+        <textarea className={classNames([styles.textarea, styles[variant], styles[textVariant]])}></textarea>
+      ) : (
+        <input
+          className={classNames([styles.input, styles[variant], styles[textVariant]])}
+          value={value}
+          onChange={handleChange}
+          disabled={disabled}
+          type={type}
+          spellCheck={false}
+        />
+      )}
     </div>
   )
 }

@@ -33,6 +33,7 @@ const AppProtocolDashboard = () => {
     if (currentStep === "INITIAL_PAYMENT") return <Navigate replace to={protocolDashboardRoutes.InitialPayment} />
     if (currentStep === "SCOPE") return <Navigate replace to={protocolDashboardRoutes.Scope} />
     if (currentStep === "TEAM") return <Navigate replace to={protocolDashboardRoutes.Team} />
+    if (currentStep === "CONTEXT") return <Navigate replace to={protocolDashboardRoutes.Context} />
     if (currentStep === "FINAL_PAYMENT") return <Navigate replace to={protocolDashboardRoutes.FinalPayment} />
   }, [childRoute, protocolDashboard?.contest])
 
