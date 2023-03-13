@@ -13,12 +13,13 @@ import { useDebounce } from "use-debounce"
 
 import styles from "./ProtocolTeam.module.scss"
 import { useValidateGithubHandle } from "../../hooks/useValidateGithubHandle"
-import { FaDiscord, FaGithub } from "react-icons/fa"
+import { FaCheckCircle, FaDiscord, FaGithub } from "react-icons/fa"
 import { useAddGithubHandle } from "../../hooks/api/protocols/useAddGithubHandle"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
 import { useDiscordHandles } from "../../hooks/api/protocols/useDiscordHandles"
 import { useAddDiscordHandle } from "../../hooks/api/protocols/useAddDiscordHandle"
 import { useValidateDiscordHandle } from "../../hooks/api/auditors/useValidateDiscordHandle"
+import config from "../../config"
 
 export const ProtocolTeam = () => {
   const { dashboardID } = useParams()
@@ -56,6 +57,10 @@ export const ProtocolTeam = () => {
     window.open(`https://github.com/${handle}`, "blank")
   }, [])
 
+  const handleDiscordHandleClick = useCallback((discordID: number) => {
+    window.open(`https://discordapp.com/users/${discordID}`)
+  }, [])
+
   const handleAddGithubHandleClick = useCallback(() => {
     addGithubHandle({
       protocolDashboardID: dashboardID ?? "",
@@ -77,12 +82,21 @@ export const ProtocolTeam = () => {
     resetAddDiscordHandle()
   }, [resetAddGithubHandle, resetAddDiscordHandle])
 
+  const teamHasMembers = !!(githubMembers?.length && discordMembers?.length)
+
   return (
     <LoadingContainer loading={addGithubHandleIsLoading || addDiscordHandleIsLoading}>
-      <Column spacing="xl">
+      <Column spacing="xl" className={styles.protocolTeam}>
         <Box shadow={false}>
           <Column spacing="m">
-            <Title variant="h2">TEAM</Title>
+            <Row spacing="xs" className={cx({ [styles.completed]: teamHasMembers })} alignment={["start", "center"]}>
+              <Title variant="h2">TEAM</Title>
+              {teamHasMembers && (
+                <Text variant="alternate">
+                  <FaCheckCircle />
+                </Text>
+              )}
+            </Row>
             <Text>Add your team's Github and Discord handles.</Text>
           </Column>
         </Box>
@@ -168,15 +182,23 @@ export const ProtocolTeam = () => {
               </Row>
               {isValidatingDiscordHandle && <Text size="small">Validating ...</Text>}
               {discordHandleValidationError && (
-                <Text variant="warning" size="small">
-                  Invalid Discord handle
-                </Text>
+                <Row spacing="xs" alignment={["start", "center"]}>
+                  <Text variant="secondary">You must join Sherlock's Discord server first.</Text>
+                  <Button
+                    size="small"
+                    variant="secondary"
+                    onClick={() => window.open(config.discordServerLink, "blank")}
+                  >
+                    <FaDiscord />
+                    &nbsp; Join Discord
+                  </Button>
+                </Row>
               )}
               {discordValidation && (
                 <Row
                   spacing="xs"
                   className={cx([styles.itemRow, styles.preview])}
-                  onClick={() => handleGithubHandleClick(debouncedGithubHandle)}
+                  onClick={() => handleDiscordHandleClick(discordValidation.userID)}
                 >
                   <FaDiscord />
                   <Text>{`@${discordValidation.handle}`}</Text>

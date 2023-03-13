@@ -26,11 +26,15 @@ export const contestsRoutes = {
 export const adminRoutes = {
   InternalOverview: "overview",
   Contests: "contests",
+  Scope: "scope",
 } as const
 
 export const protocolDashboardRoutes = {
   Payments: "payments",
+  InitialPayment: "initial_payment",
+  FinalPayment: "final_payment",
   Team: "team",
+  Scope: "scope",
 } as const
 
 type R = typeof routes &

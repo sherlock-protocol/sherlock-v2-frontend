@@ -1,6 +1,7 @@
 import { AxiosError } from "axios"
 import { useMutation, useQueryClient } from "react-query"
 import { contests as contestsAPI } from "../axios"
+import { protocolDashboardQuery } from "../contests/useProtocolDashboard"
 import { addProtocolGithubHandle as addProtocolGithubHandleUrl } from "../urls"
 import { protocolGithubHandlesQuery } from "./useGithubHandles"
 
@@ -28,6 +29,7 @@ export const useAddGithubHandle = () => {
     {
       async onSuccess(data, params) {
         await queryClient.invalidateQueries(protocolGithubHandlesQuery(params.protocolDashboardID))
+        await queryClient.invalidateQueries(protocolDashboardQuery(params.protocolDashboardID))
       },
     }
   )

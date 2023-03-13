@@ -1,3 +1,4 @@
+import { AxiosError } from "axios"
 import { useMutation, useQueryClient } from "react-query"
 import { contests as contestsAPI } from "../axios"
 import { finalizeSubmission as finalizeSubmissionUrl } from "../urls"
@@ -16,7 +17,12 @@ export const useFinalizeSubmission = () => {
     ...mutation
   } = useMutation<void, Error, FinalizeSubmissionParams>(
     async (params) => {
-      await contestsAPI.post(finalizeSubmissionUrl(params.dashboardID))
+      try {
+        await contestsAPI.post(finalizeSubmissionUrl(params.dashboardID), {})
+      } catch (error) {
+        const axiosError = error as AxiosError
+        throw Error(axiosError.response?.data.error ?? "Something went wrong. Please, try again.")
+      }
     },
     {
       onSuccess(data, params) {

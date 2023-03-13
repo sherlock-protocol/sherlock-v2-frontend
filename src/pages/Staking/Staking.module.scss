@@ -36,3 +36,9 @@
   border: 1px solid red;
   padding: 1rem;
 }
+
+.infoBanner {
+  background-color: transparentize($color: $primary-purple, $amount: 0.7);
+  border: 1px solid $alternate-pink;
+  padding: 1em;
+}

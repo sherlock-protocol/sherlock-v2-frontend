@@ -4,6 +4,15 @@
   border-collapse: separate;
   border-spacing: 0 1em;
 
+  &.small {
+    border-spacing: 0 0.5em;
+    font-size: 0.9em;
+
+    & .td {
+      padding: 0.5em;
+    }
+  }
+
   & .thead {
     color: white;
     font-weight: bold;

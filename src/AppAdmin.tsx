@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback, useEffect, useMemo } from "react"
 import { Outlet } from "react-router-dom"
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
@@ -33,7 +33,12 @@ const AppInternal = () => {
     reset()
   }, [reset])
 
-  const navigationLinks: NavigationLink[] = adminAddress
+  const validAdmin = useMemo(
+    () => adminAddress && connectedAddress && adminAddress === connectedAddress,
+    [adminAddress, connectedAddress]
+  )
+
+  const navigationLinks: NavigationLink[] = validAdmin
     ? [
         {
           title: "OVERVIEW",
@@ -42,6 +47,10 @@ const AppInternal = () => {
         {
           title: "CONTESTS",
           route: adminRoutes.Contests,
+        },
+        {
+          title: "SCOPE",
+          route: adminRoutes.Scope,
         },
       ]
     : []
@@ -52,7 +61,7 @@ const AppInternal = () => {
       <Header navigationLinks={navigationLinks} />
       <div className={styles.contentContainer}>
         <div className={styles.content}>
-          {adminAddress ? (
+          {validAdmin ? (
             <Outlet />
           ) : (
             <Box shadow={false}>

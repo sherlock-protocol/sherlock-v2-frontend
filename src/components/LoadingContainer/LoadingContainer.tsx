@@ -24,7 +24,9 @@ const LoadingContainer: React.FC<PropsWithChildren<Props>> = ({ children, loadin
       {children}
       {debouncedLoading && (
         <div className={styles.loadingContainer}>
-          <Loading variant="Scan" label={label} />
+          <div className={styles.loadingIcon}>
+            <Loading variant="Scan" label={label} />
+          </div>
         </div>
       )}
     </div>

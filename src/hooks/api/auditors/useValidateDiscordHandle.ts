@@ -5,11 +5,13 @@ import { validateDiscordHandle as validateDiscordHandleUrl } from "../urls"
 type ValidateDiscordHandleResponse = {
   handle: string
   discriminator: number
+  user_id: number
 }
 
 type DiscordHandleValidation = {
   handle: string
   discriminator: number
+  userID: number
 }
 
 export const validateDiscordHandleKey = (handle: string) => ["validate-discord", handle]
@@ -22,6 +24,7 @@ export const useValidateDiscordHandle = (handle?: string) =>
       return {
         handle: data.handle,
         discriminator: data.discriminator,
+        userID: data.user_id,
       }
     },
     {
