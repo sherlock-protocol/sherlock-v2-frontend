@@ -12,7 +12,8 @@ const CLAIMS = [
     id: 1,
     protocol: "Euler",
     date: "March 13, 2023",
-    coverageAgreementUrl: "https://v1.sherlock.xyz/static/pdf/Euler%20Statement%20of%20Coverage%2012.14.21.pdf",
+    coverageAgreementUrl:
+      "https://github.com/sherlock-protocol/sherlock-reports/blob/588192a19aef3180fa302e9ae10e8c29d7c7f044/coverage-agreements/Euler%20Coverage%20Agreement%20(Revised%202022.10.19).pdf",
     evidenceUrl:
       "https://sherlock-files.ams3.digitaloceanspaces.com/claims/Euler_0x3019e52a670390f24e4b9b58af62a7367658e457bbb07f86b19b213ec74b5be7_16817996.pdf?hash=d6c8e864a5312384143a21f542e998f6e83357f5b8e3e34ccdcb551404d25c09",
     amount: 4_529_285,
