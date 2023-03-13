@@ -2,6 +2,7 @@
   "name": "sherlock-v2-frontend",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@sentry/react": "^6.19.7",
     "@sentry/tracing": "^6.19.7",
