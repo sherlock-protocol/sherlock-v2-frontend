@@ -16,6 +16,7 @@ import StrategiesList from "../../components/StrategiesList/StrategiesList"
 import config from "../../config"
 import { ExcessCoverageChart } from "./ExcessCoverageChart"
 import { Text } from "../../components/Text"
+import ClaimsList from "../../components/ClaimsList/ClaimsList"
 
 type ChartDataPoint = {
   name: number
@@ -190,18 +191,8 @@ export const OverviewPage: React.FC = () => {
         </Column>
       </Row>
       <Row spacing="m">
-        <Column grow={1} spacing="m">
-          <Box shadow={false}>
-            <Row grow={1}>
-              <Column spacing="l" grow={1}>
-                <Title variant="h3">CLAIMS</Title>
-                <Title>0</Title>
-                <Row alignment={["center", "center"]}>
-                  <Text>Sherlock has not experienced any claims or payouts in its history.</Text>
-                </Row>
-              </Column>
-            </Row>
-          </Box>
+        <Column grow={1}>
+          <ClaimsList />
         </Column>
       </Row>
     </Column>
