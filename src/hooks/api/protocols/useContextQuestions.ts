@@ -6,6 +6,7 @@ export type ContextQuestion = {
   id: number
   question: string
   description: string
+  answer: string
 }
 
 type GetContextQuestionsResponse = {
@@ -13,6 +14,7 @@ type GetContextQuestionsResponse = {
     id: number
     question: string
     description: string
+    answer: string
   }[]
 }
 
@@ -27,6 +29,7 @@ export const useContextQuestions = (dashboardID?: string) =>
         id: q.id,
         question: q.question,
         description: q.description,
+        answer: q.answer,
       }))
     },
     {
