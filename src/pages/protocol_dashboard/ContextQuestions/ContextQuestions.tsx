@@ -15,6 +15,7 @@ import Modal, { Props as ModalProps } from "../../../components/Modal/Modal"
 
 import styles from "./ContextQuestions.module.scss"
 import { ErrorModal } from "../../ContestDetails/ErrorModal"
+import { useProtocolDashboard } from "../../../hooks/api/contests/useProtocolDashboard"
 
 type Answer = {
   questionID: number
@@ -66,6 +67,7 @@ const SubmitQuestionsModal: React.FC<Props> = ({ onClose, dashboardID, answers }
 
 export const ContextQuestions = () => {
   const { dashboardID } = useParams()
+  const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
   const { data: contextQuestions } = useContextQuestions(dashboardID)
   const { updateContextQuestionAnswers } = useUpdateContextQuestionAnswers(dashboardID ?? "")
 
@@ -134,17 +136,20 @@ export const ContextQuestions = () => {
                     multiline={true}
                     value={answer?.answer ?? ""}
                     onChange={(value) => handleAnswerChange(q.id, value)}
+                    disabled={protocolDashboard?.contest.contextQuestionsReady}
                   />
                 </Column>
               )
             })}
           </Column>
         </Box>
-        <Box shadow={false}>
-          <Button disabled={!canSubmit} onClick={() => setSubmitQuestionsModalOpen(true)}>
-            Submit answers
-          </Button>
-        </Box>
+        {!protocolDashboard?.contest.contextQuestionsReady && (
+          <Box shadow={false}>
+            <Button disabled={!canSubmit} onClick={() => setSubmitQuestionsModalOpen(true)}>
+              Submit answers
+            </Button>
+          </Box>
+        )}
       </Column>
       {submitQuestionsModalOpen && (
         <SubmitQuestionsModal
