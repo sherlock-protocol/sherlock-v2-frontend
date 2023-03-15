@@ -109,7 +109,10 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
   const finalPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 1 })
 
   const canFinalizeSubmission =
-    dashboard.contest.fullPaymentComplete && dashboard.contest.scopeReady && dashboard.contest.teamHandlesAdded
+    dashboard.contest.fullPaymentComplete &&
+    dashboard.contest.scopeReady &&
+    dashboard.contest.teamHandlesAdded &&
+    dashboard.contest.contextQuestionsReady
 
   return (
     <Box shadow={false} className={styles.tasks}>
