@@ -68,7 +68,6 @@ export const ContextQuestions = () => {
   const { dashboardID } = useParams()
   const { data: contextQuestions } = useContextQuestions(dashboardID)
   const { updateContextQuestionAnswers } = useUpdateContextQuestionAnswers(dashboardID ?? "")
-  const { submitContextQuestionsAnswers, isLoading } = useSubmitContextQuestionsAnswers(dashboardID ?? "")
 
   const [answers, setAnswers] = useState<Answer[]>([])
   const [debouncedAnswers] = useDebounce(answers, 300)
@@ -106,14 +105,10 @@ export const ContextQuestions = () => {
     })
   }, [])
 
-  const handleSubmitAnswers = useCallback(() => {
-    submitContextQuestionsAnswers(debouncedAnswers)
-  }, [submitContextQuestionsAnswers, debouncedAnswers])
-
   const canSubmit = contextQuestions?.every((q) => q.answer && q.answer !== "") ?? false
 
   return (
-    <LoadingContainer loading={isLoading}>
+    <LoadingContainer>
       <Column spacing="m">
         <Box shadow={false}>
           <Column spacing="m">
