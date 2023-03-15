@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "react-query"
 import { contests as contestsAPI } from "../axios"
-import { submitContextQuestionAnswer as submitContextQuestionAnswerUrl } from "../urls"
+import { updateContextQuestionAnswers as updateContextQuestionAnswersUrl } from "../urls"
 import { ContextQuestion, contextQuestionsQuery } from "./useContextQuestions"
 
 export type SubmitContextQuestionAnswerParams = {
@@ -12,16 +12,16 @@ type SubmitContextQuestionAnswerContext = {
   previousQuestions?: ContextQuestion[]
 }
 
-export const useSubmitContextQuestionAnswer = (dashboardID: string) => {
+export const useUpdateContextQuestionAnswers = (dashboardID: string) => {
   const queryClient = useQueryClient()
 
   const {
-    mutate: submitContextQuestionAnswer,
+    mutate: updateContextQuestionAnswers,
     mutateAsync,
     ...mutation
   } = useMutation<null, Error, SubmitContextQuestionAnswerParams, SubmitContextQuestionAnswerContext>(
     async (params) => {
-      await contestsAPI.post(submitContextQuestionAnswerUrl(dashboardID), {
+      await contestsAPI.post(updateContextQuestionAnswersUrl(dashboardID), {
         answers: params.map((p) => ({
           question_id: p.questionID,
           answer: p.answer ?? "",
@@ -58,7 +58,7 @@ export const useSubmitContextQuestionAnswer = (dashboardID: string) => {
   )
 
   return {
-    submitContextQuestionAnswer,
+    updateContextQuestionAnswers,
     ...mutation,
   }
 }

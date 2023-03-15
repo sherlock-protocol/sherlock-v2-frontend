@@ -2,13 +2,15 @@ import { useCallback, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { useDebounce } from "use-debounce"
 import { Box } from "../../../components/Box"
+import { Button } from "../../../components/Button"
 import { Input } from "../../../components/Input"
 import { Column } from "../../../components/Layout"
 import LoadingContainer from "../../../components/LoadingContainer/LoadingContainer"
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
 import { useContextQuestions } from "../../../hooks/api/protocols/useContextQuestions"
-import { useSubmitContextQuestionAnswer } from "../../../hooks/api/protocols/useSubmitContextQuestionAnswer"
+import { useSubmitContextQuestionsAnswers } from "../../../hooks/api/protocols/useSubmitContextQuestionsAnswers"
+import { useUpdateContextQuestionAnswers } from "../../../hooks/api/protocols/useUpdateContextQuestionAnswers"
 
 import styles from "./ContextQuestions.module.scss"
 
@@ -20,14 +22,15 @@ type Answer = {
 export const ContextQuestions = () => {
   const { dashboardID } = useParams()
   const { data: contextQuestions } = useContextQuestions(dashboardID)
-  const { submitContextQuestionAnswer } = useSubmitContextQuestionAnswer(dashboardID ?? "")
+  const { updateContextQuestionAnswers } = useUpdateContextQuestionAnswers(dashboardID ?? "")
+  const { submitContextQuestionsAnswers, isLoading } = useSubmitContextQuestionsAnswers(dashboardID ?? "")
 
   const [answers, setAnswers] = useState<Answer[]>([])
   const [debouncedAnswers] = useDebounce(answers, 300)
 
   useEffect(() => {
-    submitContextQuestionAnswer(debouncedAnswers)
-  }, [debouncedAnswers, submitContextQuestionAnswer])
+    updateContextQuestionAnswers(debouncedAnswers)
+  }, [debouncedAnswers, updateContextQuestionAnswers])
 
   useEffect(() => {
     setAnswers(
@@ -56,8 +59,14 @@ export const ContextQuestions = () => {
     })
   }, [])
 
+  const handleSubmitAnswers = useCallback(() => {
+    submitContextQuestionsAnswers(debouncedAnswers)
+  }, [submitContextQuestionsAnswers, debouncedAnswers])
+
+  const canSubmit = contextQuestions?.every((q) => q.answer && q.answer !== "") ?? false
+
   return (
-    <LoadingContainer>
+    <LoadingContainer loading={isLoading}>
       <Column spacing="m">
         <Box shadow={false}>
           <Column spacing="m">
@@ -88,6 +97,11 @@ export const ContextQuestions = () => {
               )
             })}
           </Column>
+        </Box>
+        <Box shadow={false}>
+          <Button disabled={!canSubmit} onClick={handleSubmitAnswers}>
+            Submit answers
+          </Button>
         </Box>
       </Column>
     </LoadingContainer>
