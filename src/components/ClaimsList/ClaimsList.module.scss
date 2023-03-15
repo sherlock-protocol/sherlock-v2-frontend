@@ -1,0 +1,50 @@
+@import "../../styles/variables";
+
+.listContainer {
+  max-height: 24rem;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.listColumn {
+  flex: 1;
+  padding: $spacing-xs $spacing-m;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+
+  &:first-of-type {
+    text-align: left;
+  }
+
+  &:last-of-type {
+    flex: 0;
+    min-width: 5rem;
+    text-align: right;
+  }
+
+  &.entry {
+    background-color: darken($color: $primary-purple, $amount: 35%);
+    padding: $spacing-m;
+
+    a {
+      text-decoration: none;
+    }
+  }
+
+  &.link {
+    font-weight: bold;
+  }
+
+  .protocolName {
+    color: $primary-purple;
+  }
+}
+
+.header {
+  color: darken($color: white, $amount: 15%);
+}
