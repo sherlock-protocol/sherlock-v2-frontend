@@ -4,19 +4,64 @@ import { useDebounce } from "use-debounce"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Input } from "../../../components/Input"
-import { Column } from "../../../components/Layout"
+import { Column, Row } from "../../../components/Layout"
 import LoadingContainer from "../../../components/LoadingContainer/LoadingContainer"
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
 import { useContextQuestions } from "../../../hooks/api/protocols/useContextQuestions"
 import { useSubmitContextQuestionsAnswers } from "../../../hooks/api/protocols/useSubmitContextQuestionsAnswers"
 import { useUpdateContextQuestionAnswers } from "../../../hooks/api/protocols/useUpdateContextQuestionAnswers"
+import Modal, { Props as ModalProps } from "../../../components/Modal/Modal"
 
 import styles from "./ContextQuestions.module.scss"
+import { ErrorModal } from "../../ContestDetails/ErrorModal"
 
 type Answer = {
   questionID: number
   answer: string
+}
+
+type Props = ModalProps & {
+  dashboardID: string
+  answers: Answer[]
+}
+
+const SubmitQuestionsModal: React.FC<Props> = ({ onClose, dashboardID, answers }) => {
+  const { submitContextQuestionsAnswers, isLoading, isSuccess, error, reset } =
+    useSubmitContextQuestionsAnswers(dashboardID)
+
+  useEffect(() => {
+    if (isSuccess) {
+      onClose?.()
+    }
+  }, [isSuccess, onClose])
+
+  const handleCancelClick = useCallback(() => {
+    onClose?.()
+  }, [onClose])
+
+  const handleConfirmClick = useCallback(() => {
+    submitContextQuestionsAnswers(answers)
+  }, [answers, submitContextQuestionsAnswers])
+
+  return (
+    <Modal closeable onClose={onClose}>
+      <LoadingContainer loading={isLoading} label="Updating audit contest repo README ...">
+        <Column spacing="xl">
+          <Title>Submit Context Answers</Title>
+          <Text>Your answers to these questions will be included in the audit repo's README</Text>
+          <Text>Once you confirm this action, the answers cannot be changed.</Text>
+          <Row spacing="l" alignment={["center"]}>
+            <Button variant="secondary" onClick={handleCancelClick}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmClick}>Confirm</Button>
+          </Row>
+        </Column>
+      </LoadingContainer>
+      {error && <ErrorModal reason={error?.message} onClose={() => reset()} />}
+    </Modal>
+  )
 }
 
 export const ContextQuestions = () => {
@@ -27,6 +72,8 @@ export const ContextQuestions = () => {
 
   const [answers, setAnswers] = useState<Answer[]>([])
   const [debouncedAnswers] = useDebounce(answers, 300)
+
+  const [submitQuestionsModalOpen, setSubmitQuestionsModalOpen] = useState(false)
 
   useEffect(() => {
     updateContextQuestionAnswers(debouncedAnswers)
@@ -99,11 +146,18 @@ export const ContextQuestions = () => {
           </Column>
         </Box>
         <Box shadow={false}>
-          <Button disabled={!canSubmit} onClick={handleSubmitAnswers}>
+          <Button disabled={!canSubmit} onClick={() => setSubmitQuestionsModalOpen(true)}>
             Submit answers
           </Button>
         </Box>
       </Column>
+      {submitQuestionsModalOpen && (
+        <SubmitQuestionsModal
+          onClose={() => setSubmitQuestionsModalOpen(false)}
+          answers={debouncedAnswers}
+          dashboardID={dashboardID ?? ""}
+        />
+      )}
     </LoadingContainer>
   )
 }

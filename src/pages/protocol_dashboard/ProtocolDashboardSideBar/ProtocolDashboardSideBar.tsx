@@ -151,7 +151,7 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
               title="Provide Context Details"
               route={protocolDashboardRoutes.Context}
               active={currentRoute === protocolDashboardRoutes.Context}
-              completed={contest.contextComplete}
+              completed={contest.contextQuestionsReady}
             />
             <Task
               title="Submit Final Payment"

@@ -6,7 +6,7 @@ export const getCurrentStep = (contest: ContestDetails): ProtocolDashboardStep =
   if (!contest.initialPaymentComplete) return "INITIAL_PAYMENT"
   if (!contest.scopeReady) return "SCOPE"
   if (!contest.teamHandlesAdded) return "TEAM"
-  if (!contest.contextComplete) return "CONTEXT"
+  if (!contest.contextQuestionsReady) return "CONTEXT"
 
   return "FINAL_PAYMENT"
 }
