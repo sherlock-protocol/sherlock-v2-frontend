@@ -108,11 +108,12 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
   const initialPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 3 })
   const finalPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 1 })
 
+  const questionnaireReady = dashboard.contest.contextQuestionsReady || !dashboard.contest.contextQuestionsActive
   const canFinalizeSubmission =
     dashboard.contest.fullPaymentComplete &&
     dashboard.contest.scopeReady &&
     dashboard.contest.teamHandlesAdded &&
-    dashboard.contest.contextQuestionsReady
+    questionnaireReady
 
   return (
     <Box shadow={false} className={styles.tasks}>
@@ -150,12 +151,14 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
               active={currentRoute === protocolDashboardRoutes.Team}
               completed={contest.teamHandlesAdded}
             />
-            <Task
-              title="Provide Context Details"
-              route={protocolDashboardRoutes.Context}
-              active={currentRoute === protocolDashboardRoutes.Context}
-              completed={contest.contextQuestionsReady}
-            />
+            {contest.contextQuestionsActive && (
+              <Task
+                title="Provide Context Details"
+                route={protocolDashboardRoutes.Context}
+                active={currentRoute === protocolDashboardRoutes.Context}
+                completed={contest.contextQuestionsReady}
+              />
+            )}
             <Task
               title="Submit Final Payment"
               completed={contest.fullPaymentComplete}

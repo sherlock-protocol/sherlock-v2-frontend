@@ -27,6 +27,7 @@ export type ContestDetails = {
   fullPaymentComplete: boolean
   teamHandlesAdded: boolean
   contextQuestionsReady: boolean
+  contextQuestionsActive: boolean
 }
 
 type PaymentsDetails = {
@@ -64,6 +65,7 @@ type PaymentsResponse = {
     full_payment_complete: boolean
     team_handles_added: boolean
     context_questions_ready: boolean
+    context_questions_active: boolean
   }
   payments: {
     tx_hash: string
@@ -99,6 +101,7 @@ export const useProtocolDashboard = (dashboardID: string) =>
         fullPaymentComplete: data.contest.full_payment_complete,
         teamHandlesAdded: data.contest.team_handles_added,
         contextQuestionsReady: data.contest.context_questions_ready,
+        contextQuestionsActive: data.contest.context_questions_active,
       },
       payments: {
         totalAmount: data.contest.full_payment,
