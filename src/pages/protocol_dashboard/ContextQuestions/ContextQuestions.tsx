@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
+import cx from "classnames"
 import { useParams } from "react-router-dom"
 import { useDebounce } from "use-debounce"
 import { Box } from "../../../components/Box"
@@ -16,6 +17,7 @@ import Modal, { Props as ModalProps } from "../../../components/Modal/Modal"
 import styles from "./ContextQuestions.module.scss"
 import { ErrorModal } from "../../ContestDetails/ErrorModal"
 import { useProtocolDashboard } from "../../../hooks/api/contests/useProtocolDashboard"
+import { FaCheckCircle } from "react-icons/fa"
 
 type Answer = {
   questionID: number
@@ -111,36 +113,53 @@ export const ContextQuestions = () => {
 
   return (
     <LoadingContainer>
-      <Column spacing="m">
+      <Column spacing="m" className={styles.questions}>
         <Box shadow={false}>
           <Column spacing="m">
-            <Title variant="h2">CONTEXT Q&A</Title>
+            <Row
+              spacing="xs"
+              className={cx({ [styles.completed]: protocolDashboard?.contest.contextQuestionsReady })}
+              alignment={["start", "center"]}
+            >
+              <Title variant="h2">CONTEXT Q&A</Title>
+              {protocolDashboard?.contest.contextQuestionsReady && (
+                <Text variant="alternate">
+                  <FaCheckCircle />
+                </Text>
+              )}
+            </Row>
             <Text variant="secondary">
               Please answer the following questions to provide more context on the protocol.
             </Text>
             <Text variant="secondary">The answers will be visible to all Watsons in the audit contest repo.</Text>
           </Column>
         </Box>
-        <Box shadow={false} className={styles.questions}>
+        <Box shadow={false}>
           <Column spacing="xl">
-            {contextQuestions?.map((q) => {
-              const answer = answers.find((a) => a.questionID === q.id)
-              return (
-                <Column key={`question-${q.id}`} spacing="xs">
-                  <Text strong>{q.question}</Text>
-                  <Text variant="secondary" size="small">
-                    {q.description}
-                  </Text>
-                  <Input
-                    variant="small"
-                    multiline={true}
-                    value={answer?.answer ?? ""}
-                    onChange={(value) => handleAnswerChange(q.id, value)}
-                    disabled={protocolDashboard?.contest.contextQuestionsReady}
-                  />
-                </Column>
-              )
-            })}
+            {contextQuestions && contextQuestions.length > 0 ? (
+              contextQuestions?.map((q) => {
+                const answer = answers.find((a) => a.questionID === q.id)
+                return (
+                  <Column key={`question-${q.id}`} spacing="xs">
+                    <Text strong>{q.question}</Text>
+                    <Text variant="secondary" size="small">
+                      {q.description}
+                    </Text>
+                    <Input
+                      variant="small"
+                      multiline={true}
+                      value={answer?.answer ?? ""}
+                      onChange={(value) => handleAnswerChange(q.id, value)}
+                      disabled={protocolDashboard?.contest.contextQuestionsReady}
+                    />
+                  </Column>
+                )
+              })
+            ) : (
+              <Text variant="secondary" alignment="center">
+                There're no questions for you to answer. You're all good.
+              </Text>
+            )}
           </Column>
         </Box>
         {!protocolDashboard?.contest.contextQuestionsReady && (
