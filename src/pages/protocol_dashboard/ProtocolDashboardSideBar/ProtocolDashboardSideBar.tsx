@@ -106,7 +106,7 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
   const { contest } = dashboard
 
   const currentRoute = location.pathname.split("/").pop()
-  const initialPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 3 })
+  const initialPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 5 })
   const scopeDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 2 })
   const teamDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 2 })
   const finalPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 1 })
