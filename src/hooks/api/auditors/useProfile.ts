@@ -10,6 +10,8 @@ type AuditorResponseData = {
   github_handle: string
   twitter_handle?: string
   telegram_handle?: string
+  frozen: boolean
+  unfreeze_deposit: number
   addresses: {
     id: number
     address: string
@@ -50,6 +52,8 @@ export const useProfile = () =>
         })),
         payoutAddress: data.profile.payout_address_mainnet,
         auditDays: data.profile.days,
+        frozen: data.profile.frozen,
+        unfreezeDeposit: data.profile.unfreeze_deposit,
       }
     },
     {

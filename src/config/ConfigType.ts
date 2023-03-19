@@ -128,4 +128,9 @@ export type Config = {
    * Link to Sherlock's Discord server
    */
   discordServerLink: string
+
+  /**
+   * USDC transfers recipient for frozen accounts
+   */
+  usdcRecipient: Address
 }

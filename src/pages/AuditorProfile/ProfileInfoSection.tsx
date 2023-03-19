@@ -8,7 +8,11 @@ import { useProfile } from "../../hooks/api/auditors/useProfile"
 import { useUpdateProfile } from "../../hooks/api/auditors/useUpdateProfile"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
 
-export const ProfileInfoSection = () => {
+type Props = {
+  disabled?: boolean
+}
+
+export const ProfileInfoSection: React.FC<Props> = ({ disabled }) => {
   const { data: profile } = useProfile()
   const { update, isLoading, isSuccess, isError, error, reset } = useUpdateProfile()
 
@@ -19,7 +23,7 @@ export const ProfileInfoSection = () => {
   if (!profile) return null
 
   return (
-    <Box shadow={false}>
+    <Box shadow={false} disabled={disabled}>
       <Column spacing="l">
         <Row alignment={["start", "baseline"]} spacing="m">
           <Title variant="h2">Profile</Title>

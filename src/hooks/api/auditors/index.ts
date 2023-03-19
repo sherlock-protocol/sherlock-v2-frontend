@@ -18,4 +18,6 @@ export type AuditorProfile = {
   }[]
   payoutAddress: string
   auditDays: number
+  frozen: boolean
+  unfreezeDeposit: number
 }

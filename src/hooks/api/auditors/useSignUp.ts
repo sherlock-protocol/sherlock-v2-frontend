@@ -28,6 +28,8 @@ type SignUpResponseData = {
     }[]
     payout_address_mainnet: string
     days: number
+    frozen: boolean
+    unfreeze_deposit: number
   }
 }
 
@@ -71,6 +73,8 @@ export const useSignUp = () => {
           payoutAddress: data.auditor.payout_address_mainnet,
           managedTeams: data.auditor.managed_teams.map((t) => ({ id: t.id, handle: t.handle })),
           auditDays: data.auditor.days,
+          frozen: data.auditor.frozen,
+          unfreezeDeposit: data.auditor.unfreeze_deposit,
         }
       } catch (error) {
         const axiosError = error as AxiosError

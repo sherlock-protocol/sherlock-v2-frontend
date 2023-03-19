@@ -23,6 +23,8 @@ type UpdateProfileResponseData = {
     }[]
     payout_address_mainnet: string
     days: number
+    frozen: boolean
+    unfreeze_deposit: number
   }
 }
 
@@ -65,6 +67,8 @@ export const useUpdateProfile = () => {
           payoutAddress: data.profile.payout_address_mainnet,
           managedTeams: data.profile.managed_teams.map((t) => ({ id: t.id, handle: t.handle })),
           auditDays: data.profile.days,
+          frozen: data.profile.frozen,
+          unfreezeDeposit: data.profile.unfreeze_deposit,
         }
       } catch (error) {
         const axiosError = error as AxiosError

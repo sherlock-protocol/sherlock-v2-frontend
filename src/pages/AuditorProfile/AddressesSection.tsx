@@ -17,7 +17,11 @@ import { ErrorModal } from "../ContestDetails/ErrorModal"
 
 import styles from "./AuditorProfile.module.scss"
 
-export const AddressesSection = () => {
+type Props = {
+  disabled?: boolean
+}
+
+export const AddressesSection: React.FC<Props> = ({ disabled }) => {
   const { address: connectedAddress } = useAccount()
   const { data: profile } = useProfile()
   const { update, isLoading, isSuccess, isError, error, reset } = useUpdateProfile()
@@ -67,7 +71,7 @@ export const AddressesSection = () => {
   if (!profile) return null
 
   return (
-    <Box shadow={false}>
+    <Box shadow={false} disabled={disabled}>
       <Row alignment={["start", "baseline"]} spacing="m">
         <Title variant="h2">Authentication addresses</Title>
         {isLoading && (

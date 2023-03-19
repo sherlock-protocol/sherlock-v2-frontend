@@ -16,7 +16,11 @@ import { Field } from "../Claim/Field"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
 import styles from "./AuditorProfile.module.scss"
 
-export const PayoutAddressSection = () => {
+type Props = {
+  disabled?: boolean
+}
+
+export const PayoutAddressSection: React.FC<Props> = ({ disabled }) => {
   const { data: profile } = useProfile()
   const { update, isLoading, isSuccess, isError, error, reset } = useUpdateProfile()
   const [payoutAddress, setPayoutAddress] = useState<string>(profile?.payoutAddress ?? "")
@@ -53,7 +57,7 @@ export const PayoutAddressSection = () => {
   const addressIsValid = ethers.utils.isAddress(payoutAddress) && payoutAddress !== ethers.constants.AddressZero
 
   return (
-    <Box shadow={false} fullWidth>
+    <Box shadow={false} fullWidth disabled={disabled}>
       <Column spacing="xs">
         <Row alignment={["start", "baseline"]} spacing="m">
           <Title variant="h2">Payout address</Title>
