@@ -69,7 +69,7 @@ export const useSignInWithEthereum = () => {
       const nonce = nonceResponse.nonce
 
       const message = new SiweMessage({
-        domain: "Sherlock",
+        domain: "app.sherlock.xyz",
         address: ethers.utils.getAddress(address),
         statement: "Sign in with Ethereum to Sherlock Audits",
         chainId: chain?.id,
