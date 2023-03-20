@@ -27,5 +27,5 @@ export const config: Config = {
   airdropAdress: process.env.REACT_APP_AIRDROP_ADDRESS as string,
   airdropClaimableTimestamp: parseInt(process.env.REACT_APP_AIRDROP_CLAIMABLE_TIMESTAMP as string),
   discordServerLink: process.env.REACT_APP_DISCORD_SERVER_LINK as string,
-  usdcRecipient: process.env.REACT_APP_USDC_RECIPIENT as Address,
+  usdcAuditorDepositsRecipient: process.env.REACT_APP_USDC_AUDITOR_DEPOSITS_RECIPIENT as Address,
 }

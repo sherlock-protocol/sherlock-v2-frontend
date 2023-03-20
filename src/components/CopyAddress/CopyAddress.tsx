@@ -1,4 +1,3 @@
-import cx from "classnames"
 import { useCallback, useState } from "react"
 import { FaCopy } from "react-icons/fa"
 import { Button } from "../Button"
@@ -26,21 +25,20 @@ export const CopyAddress: React.FC<Props> = ({ address }) => {
   }, [address])
 
   return (
-    <Row
-      spacing="m"
-      className={cx({
-        [styles.mainAddress]: true,
-        [styles.copied]: displayCopiedMessage,
-      })}
-      alignment={[displayCopiedMessage ? "center" : "space-between", "center"]}
-      onClick={handleRecipientAddressCopy}
-    >
-      <Text size="large">{displayCopiedMessage ? "Copied!" : address}</Text>
-      {!displayCopiedMessage && (
+    <div className={styles.container}>
+      <Row
+        spacing="m"
+        className={styles.mainAddress}
+        alignment={["space-between", "center"]}
+        onClick={handleRecipientAddressCopy}
+        grow={1}
+      >
+        <Text size="large">{address}</Text>
         <Button variant="secondary" size="small" onClick={handleRecipientAddressCopy}>
           <FaCopy />
         </Button>
-      )}
-    </Row>
+      </Row>
+      {displayCopiedMessage && <div className={styles.copied}>Copied!</div>}
+    </div>
   )
 }

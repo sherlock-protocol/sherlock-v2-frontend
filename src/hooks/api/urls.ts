@@ -24,6 +24,7 @@ export const getNonce = () => `nonce`
 export const getAuditorProfile = () => "profile"
 export const validateDiscordHandle = (handle: string) =>
   `validate_discord_handle?discord_handle=${encodeURIComponent(handle)}`
+export const submitDepositTransaction = () => "/deposit_transaction"
 
 export const updateProfile = () => "profile"
 export const signOut = () => "signout"

@@ -23,5 +23,5 @@ export const config: Config = {
   airdropAdress: "0x731751e3C0B67014b560F98b26601A5587F954B0",
   airdropClaimableTimestamp: 1682848801,
   discordServerLink: "https://discord.gg/MABEWyASkp",
-  usdcRecipient: "0xDA3ec2E372c4DcbDB07c3157Bae438BcC11de25D",
+  usdcAuditorDepositsRecipient: "0x3ccbc14905DdDfFd9Da173dc0513202F3C646416",
 }

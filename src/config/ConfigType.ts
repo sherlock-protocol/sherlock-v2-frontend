@@ -132,5 +132,5 @@ export type Config = {
   /**
    * USDC transfers recipient for frozen accounts
    */
-  usdcRecipient: Address
+  usdcAuditorDepositsRecipient: Address
 }
