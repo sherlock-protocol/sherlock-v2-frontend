@@ -10,6 +10,7 @@ type SubmitDepositTransactionResponseData = {
 
 type SubmitDepositTransactionParams = {
   transactionHash: string
+  chainId: number
 }
 
 export const useSubmitDepositTransaction = () => {
@@ -23,6 +24,7 @@ export const useSubmitDepositTransaction = () => {
     async (params) => {
       const { data } = await contestsAPI.post<SubmitDepositTransactionResponseData>(submitDepositTransactionUrl(), {
         transaction_hash: params.transactionHash,
+        chain_id: params.chainId,
       })
 
       return parseAuditorResponse(data.auditor)

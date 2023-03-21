@@ -39,13 +39,13 @@ export const AccountFrozenBanner = () => {
         })
 
         if (result?.blockNumber) {
-          submitDepositTransaction({ transactionHash: result.transactionHash })
+          submitDepositTransaction({ transactionHash: result.transactionHash, chainId: chain?.id ?? 1 })
         }
       }
     } catch (e) {
       console.error(e)
     }
-  }, [waitForTx, writeAsync, submitDepositTransaction])
+  }, [waitForTx, writeAsync, submitDepositTransaction, chain])
 
   const handleErrorModalClose = useCallback(() => {
     reset()
