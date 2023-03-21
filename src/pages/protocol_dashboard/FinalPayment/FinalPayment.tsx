@@ -19,8 +19,10 @@ import { ErrorModal } from "../../ContestDetails/ErrorModal"
 
 import styles from "../InitialPayment/InitialPayment.module.scss"
 import { useValidateTransaction } from "../../../hooks/useValidateTransaction"
+import { useNetwork } from "wagmi"
 
 export const FinalPayment = () => {
+  const { chain } = useNetwork()
   const { dashboardID } = useParams()
   const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
 
@@ -141,7 +143,7 @@ export const FinalPayment = () => {
                 <Row spacing="s">
                   <Text strong>{`${commify(p.amount)} USDC`}</Text>
                   <a
-                    href={getTxUrl(p.txHash)}
+                    href={getTxUrl(chain?.id ?? 0, p.txHash)}
                     target="_blank"
                     rel="noreferrer"
                     className={styles.transactionHash}

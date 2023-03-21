@@ -1,6 +1,7 @@
 import { ethers } from "ethers"
 import React, { useCallback, useEffect, useState } from "react"
 import { FaTimes, FaCheck, FaExternalLinkAlt } from "react-icons/fa"
+import { useNetwork } from "wagmi"
 
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
@@ -21,6 +22,7 @@ type Props = {
 }
 
 export const PayoutAddressSection: React.FC<Props> = ({ disabled }) => {
+  const { chain } = useNetwork()
   const { data: profile } = useProfile()
   const { update, isLoading, isSuccess, isError, error, reset } = useUpdateProfile()
   const [payoutAddress, setPayoutAddress] = useState<string>(profile?.payoutAddress ?? "")
@@ -47,8 +49,8 @@ export const PayoutAddressSection: React.FC<Props> = ({ disabled }) => {
   }, [reset])
 
   const handleExplorerClick = useCallback(() => {
-    window.open(getAddressUrl(payoutAddress), "__blank")
-  }, [payoutAddress])
+    chain && window.open(getAddressUrl(chain.id, payoutAddress), "__blank")
+  }, [payoutAddress, chain])
 
   if (!profile) return null
 

@@ -1,7 +1,7 @@
 import { ethers } from "ethers"
 import { commify } from "ethers/lib/utils.js"
 import { useCallback } from "react"
-import { erc20ABI, useContractWrite, usePrepareContractWrite } from "wagmi"
+import { erc20ABI, useContractWrite, useNetwork, usePrepareContractWrite } from "wagmi"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { CopyAddress } from "../../../components/CopyAddress/CopyAddress"
@@ -19,8 +19,10 @@ import { ErrorModal } from "../../ContestDetails/ErrorModal"
 export const AccountFrozenBanner = () => {
   const { waitForTx } = useWaitTx()
   const { data: profile } = useProfile()
+  const { chain } = useNetwork()
   const { config: transferConfig } = usePrepareContractWrite({
-    address: config.usdcAddress,
+    chainId: chain?.id,
+    address: config.usdcAddress(chain?.id ?? 1),
     abi: erc20ABI,
     functionName: "transfer",
     args: [config.usdcAuditorDepositsRecipient, ethers.utils.parseUnits(`${profile?.unfreezeDeposit}`, 6)],
@@ -72,7 +74,7 @@ export const AccountFrozenBanner = () => {
               )} USDC`}</Button>
             </Row>
             <Text strong variant="secondary">
-              Supported networks are: Ethereum mainnet, Optimism and Arbitrum
+              Supported networks are: Ethereum mainnet, Optimism and Arbitrum One
             </Text>
           </Column>
         </Row>

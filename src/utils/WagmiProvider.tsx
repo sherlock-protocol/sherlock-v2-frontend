@@ -1,6 +1,16 @@
 import React, { PropsWithChildren } from "react"
 import { WagmiConfig, configureChains, createClient } from "wagmi"
-import { mainnet, goerli, hardhat, localhost } from "wagmi/chains"
+import {
+  mainnet,
+  goerli,
+  arbitrum,
+  optimism,
+  arbitrumGoerli,
+  optimismGoerli,
+  hardhat,
+  localhost,
+  Chain,
+} from "wagmi/chains"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { publicProvider } from "wagmi/providers/public"
 import { alchemyProvider } from "wagmi/providers/alchemy"
@@ -14,7 +24,9 @@ const alchemyApiUrlHttp = alchemyApiUrl.replace("ws", "http")
 const alchemyApiKey = alchemyApiUrl?.split("/").slice(-1)[0] as string
 
 // Chains for connectors to support
-const chains = [mainnet, goerli]
+const chains: Chain[] = [mainnet, goerli, arbitrum, optimism, arbitrumGoerli, optimismGoerli]
+
+console.log(chains)
 
 // Add local node support if developing
 if (process.env.NODE_ENV === "development") {
@@ -26,8 +38,11 @@ const { provider, webSocketProvider } = configureChains(chains, [
   alchemyProvider({ apiKey: alchemyApiKey }),
   publicProvider(),
   jsonRpcProvider({
-    rpc: () => ({
-      http: "http://127.0.0.1:8545",
+    rpc: (chain) => ({
+      http:
+        chain.id === localhost.id
+          ? "http://127.0.0.1:8545"
+          : "https://arb-goerli.g.alchemy.com/v2/dHNN7qPjIuJUwo2oq-tGQ1uudUAHw1oL",
     }),
   }),
 ])

@@ -1,6 +1,6 @@
 import React from "react"
 import ERC20ABI from "../abi/ERC20"
-import { Address, useAccount, useContract, useProvider, useSigner } from "wagmi"
+import { Address, useAccount, useContract, useNetwork, useProvider, useSigner } from "wagmi"
 import { BigNumber, ethers } from "ethers"
 import config from "../config"
 
@@ -15,7 +15,7 @@ const TokenData = {
     decimals: 6,
   },
   SHER: {
-    contract: config.sherAddress,
+    contract: (chainId: number) => config.sherAddress,
     decimals: 18,
   },
 }
@@ -28,7 +28,8 @@ type AvailableERC20Tokens = keyof typeof TokenData
  * @param contractAddress Contract address for an ERC20 token
  */
 const useERC20 = (token: AvailableERC20Tokens) => {
-  const address = TokenData[token].contract
+  const { chain } = useNetwork()
+  const address = TokenData[token].contract(chain?.id ?? 1)
   if (!address) {
     throw Error("Address or token name required")
   }

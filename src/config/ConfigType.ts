@@ -3,9 +3,9 @@ import { Address } from "wagmi"
 
 export type Config = {
   /**
-   * Running network ID
+   * Supported networks
    */
-  networkId: number
+  networks: number[]
 
   /**
    * Local network ID (when running a local node)
@@ -96,7 +96,7 @@ export type Config = {
    *
    * See: https://docs.openzeppelin.com/contracts/2.x/api/token/erc20
    */
-  usdcAddress: Address
+  usdcAddress: (chainId: number) => Address
 
   /**
    * Bytes identifier used as a fake protocol to add incentives APY

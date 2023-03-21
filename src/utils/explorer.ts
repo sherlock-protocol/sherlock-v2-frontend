@@ -1,12 +1,10 @@
-import config from "../config"
-
 /**
  *
  * @param hash Transaction hash
  * @returns Transaction explorer URL if using a supported chain, undefined otherwise.
  */
-export const getTxUrl = (hash: string) => {
-  switch (config.networkId) {
+export const getTxUrl = (networkID: number, hash: string) => {
+  switch (networkID) {
     case 1:
       // Mainnet
       return `https://etherscan.io/tx/${hash}`
@@ -18,8 +16,8 @@ export const getTxUrl = (hash: string) => {
   }
 }
 
-export const getAddressUrl = (address: string) => {
-  switch (config.networkId) {
+export const getAddressUrl = (networkID: number, address: string) => {
+  switch (networkID) {
     case 1:
       // Mainnet
       return `https://etherscan.io/address/${address}`

@@ -30,17 +30,17 @@ const ConnectButton: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
   }, [connectedAddress])
 
   /**
-   * Check if network is the right one
+   * Check if network is supported
    */
   useEffect(() => {
-    setIsCorrectNetwork(chain?.id === config.networkId)
+    setIsCorrectNetwork(config.networks.includes(chain?.id ?? 0))
   }, [chain?.id])
 
   /**
-   * Triggers a network switch to the correct network
+   * Triggers a network switch to the first supported network
    */
   const handleSwitchToCorrectNetwork = useCallback(() => {
-    switchNetwork?.(config.networkId)
+    switchNetwork?.(config.networks[0])
   }, [switchNetwork])
 
   /**

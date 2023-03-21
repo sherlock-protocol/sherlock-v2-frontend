@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import cx from "classnames"
 import { Title } from "../../components/Title"
 import styles from "./AuditPayments.module.scss"
@@ -18,8 +18,10 @@ import { useDebounce } from "use-debounce"
 import { useValidateTransaction } from "../../hooks/useValidateTransaction"
 import { getTxUrl } from "../../utils/explorer"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
+import { useNetwork } from "wagmi"
 
 export const AuditPayments = () => {
+  const { chain } = useNetwork()
   const { dashboardID } = useParams()
   const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
   const { submitPayment, isLoading, error: submitPaymentError, reset: resetSubmitPayment } = useSubmitPayment()
@@ -154,7 +156,7 @@ export const AuditPayments = () => {
                               <Row spacing="m">
                                 <Column>
                                   <a
-                                    href={getTxUrl(p.txHash)}
+                                    href={getTxUrl(chain?.id ?? 0, p.txHash)}
                                     target="_blank"
                                     rel="noreferrer"
                                     className={styles.transactionHash}
@@ -219,7 +221,7 @@ export const AuditPayments = () => {
                             <Row spacing="m">
                               <Column>
                                 <a
-                                  href={getTxUrl(p.txHash)}
+                                  href={getTxUrl(chain?.id ?? 0, p.txHash)}
                                   target="_blank"
                                   rel="noreferrer"
                                   className={styles.transactionHash}

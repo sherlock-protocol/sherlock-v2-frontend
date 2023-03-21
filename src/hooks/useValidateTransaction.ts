@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
-import { useProvider } from "wagmi"
-import config from "../config"
+import { useNetwork, useProvider } from "wagmi"
 
 type Status = {
   isValid: boolean
@@ -9,7 +8,8 @@ type Status = {
 }
 
 export const useValidateTransaction = (txHash: string) => {
-  const provider = useProvider({ chainId: config.networkId })
+  const { chain } = useNetwork()
+  const provider = useProvider({ chainId: chain?.id })
 
   const [status, setStatus] = useState<Status>({
     isValid: false,
