@@ -184,8 +184,8 @@ export const ContestDetails = () => {
   )
 
   const joinContestEnabled = useMemo(
-    () => contest?.status === "CREATED" || (contest?.status === "RUNNING" && !contest.private),
-    [contest?.status, contest?.private]
+    () => contest?.status === "CREATED" || (contest?.status === "RUNNING" && !contest.private && !profile?.frozen),
+    [contest?.status, contest?.private, profile?.frozen]
   )
   const canJoinJudging = useMemo(
     () =>
@@ -477,13 +477,22 @@ export const ContestDetails = () => {
                     profileIsComplete ? (
                       <Column spacing="m">
                         <ConnectGate>
-                          <Button onClick={handleJoinContest} disabled={contest.private && !hasEnoughAuditDays}>
+                          <Button
+                            onClick={handleJoinContest}
+                            disabled={(contest.private && !hasEnoughAuditDays) || profile.frozen}
+                          >
                             Join Audit Contest
                           </Button>
                         </ConnectGate>
                         {contest.private && !hasEnoughAuditDays && (
                           <Text variant="secondary" size="small">
                             You need to reach at least 28 contest days to compete in this contest.
+                          </Text>
+                        )}
+                        {profile.frozen && (
+                          <Text variant="secondary" size="small">
+                            Your account is currently frozen. Go to your profile and make the deposit in order to be
+                            able to join audit contests.
                           </Text>
                         )}
                       </Column>
