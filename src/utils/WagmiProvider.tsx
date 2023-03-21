@@ -26,8 +26,6 @@ const alchemyApiKey = alchemyApiUrl?.split("/").slice(-1)[0] as string
 // Chains for connectors to support
 const chains: Chain[] = [mainnet, goerli, arbitrum, optimism, arbitrumGoerli, optimismGoerli]
 
-console.log(chains)
-
 // Add local node support if developing
 if (process.env.NODE_ENV === "development") {
   chains.push(hardhat)
