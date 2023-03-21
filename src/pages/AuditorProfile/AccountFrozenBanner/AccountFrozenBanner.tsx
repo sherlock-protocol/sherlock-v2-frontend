@@ -1,7 +1,7 @@
-import { ethers } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import { commify } from "ethers/lib/utils.js"
-import { useCallback } from "react"
-import { erc20ABI, useContractWrite, useNetwork, usePrepareContractWrite } from "wagmi"
+import { useCallback, useEffect, useState } from "react"
+import { erc20ABI, useAccount, useBalance, useContractWrite, useNetwork, usePrepareContractWrite } from "wagmi"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { CopyAddress } from "../../../components/CopyAddress/CopyAddress"
@@ -18,8 +18,13 @@ import { ErrorModal } from "../../ContestDetails/ErrorModal"
 
 export const AccountFrozenBanner = () => {
   const { waitForTx } = useWaitTx()
+  const { address } = useAccount()
   const { data: profile } = useProfile()
   const { chain } = useNetwork()
+  const { data: usdcBalanceData } = useBalance({
+    token: config.usdcAddress(chain?.id ?? 1),
+    address,
+  })
   const { config: transferConfig } = usePrepareContractWrite({
     chainId: chain?.id,
     address: config.usdcAddress(chain?.id ?? 1),
@@ -28,8 +33,8 @@ export const AccountFrozenBanner = () => {
     args: [config.usdcAuditorDepositsRecipient, ethers.utils.parseUnits(`${profile?.unfreezeDeposit}`, 6)],
   })
   const { writeAsync } = useContractWrite(transferConfig)
-
   const { submitDepositTransaction, isLoading, error, reset } = useSubmitDepositTransaction()
+  const [insufficientBalance, setInsufficientBalance] = useState(false)
 
   const handleTransfer = useCallback(async () => {
     try {
@@ -51,6 +56,12 @@ export const AccountFrozenBanner = () => {
     reset()
   }, [reset])
 
+  useEffect(() => {
+    if (usdcBalanceData && usdcBalanceData.value.lt(ethers.utils.parseUnits(`${profile?.unfreezeDeposit ?? 0}`, 6))) {
+      setInsufficientBalance(true)
+    }
+  }, [setInsufficientBalance, profile, usdcBalanceData])
+
   if (!profile) return null
 
   return (
@@ -65,13 +76,18 @@ export const AccountFrozenBanner = () => {
             <Text variant="secondary">{`Please, send ${commify(
               profile.unfreezeDeposit
             )} USDC to the address below, or click the button on the right.`}</Text>
-            <Row spacing="m">
+            <Row spacing="m" alignment={["start", "center"]}>
               <Column grow={0}>
                 <CopyAddress address={config.usdcAuditorDepositsRecipient} />
               </Column>
               <Button variant="alternate" disabled={!writeAsync} onClick={handleTransfer}>{`Transfer ${commify(
                 profile.unfreezeDeposit
               )} USDC`}</Button>
+              {insufficientBalance && (
+                <Text variant="warning" size="small">
+                  Insufficient USDC balance
+                </Text>
+              )}
             </Row>
             <Text strong variant="secondary">
               Supported networks are: Ethereum mainnet, Optimism and Arbitrum One
