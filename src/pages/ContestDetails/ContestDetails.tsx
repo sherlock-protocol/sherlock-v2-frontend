@@ -179,7 +179,7 @@ export const ContestDetails = () => {
   }, [setLeaderboardModalOpen])
 
   const canOptinOut = useMemo(
-    () => contest?.id !== 38 && !contest?.private && (contest?.status === "CREATED" || contest?.status === "RUNNING"),
+    () => contest?.id !== 63 && !contest?.private && (contest?.status === "CREATED" || contest?.status === "RUNNING"),
     [contest?.status, contest?.private, contest?.id]
   )
 
@@ -287,15 +287,10 @@ export const ContestDetails = () => {
                         <Title variant="h3">TOTAL REWARDS</Title>
                         <Row spacing="xs" alignment={["start", "baseline"]}>
                           <Text size="extra-large" strong>
-                            {contest.id === 38
+                            {contest.id === 38 || contest.id === 63
                               ? `$${commify(getTotalRewards(contest))}`
                               : `${commify(getTotalRewards(contest))} USDC`}
                           </Text>
-                          {contest.id === 38 && (
-                            <Text variant="secondary" size="small">
-                              Maximum Payout
-                            </Text>
-                          )}
                         </Row>
                       </Column>
                     </Column>
@@ -316,15 +311,17 @@ export const ContestDetails = () => {
                     </Column>
                     <Column spacing="s">
                       <Text variant="secondary" strong>
-                        {`${contest.id === 38 ? "$" : ""}${commify(contest.prizePool)} ${
-                          contest.id !== 38 ? "USDC" : "(*)"
+                        {`${contest.id === 38 || contest.id === 63 ? "$" : ""}${commify(contest.prizePool)} ${
+                          contest.id !== 38 && contest.id !== 63 ? "USDC" : "(*)"
                         }`}
                       </Text>
                       <Text variant="secondary" strong>{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
                       {contest.judgingPrizePool ? (
-                        <Text variant="secondary" strong>{`${contest.id === 38 ? "$" : ""}${commify(
-                          contest.judgingPrizePool
-                        )} ${contest.id !== 38 ? "USDC" : ""}`}</Text>
+                        <Text variant="secondary" strong>{`${
+                          contest.id === 38 || contest.id === 63 ? "$" : ""
+                        }${commify(contest.judgingPrizePool)} ${
+                          contest.id !== 38 && contest.id !== 63 ? "USDC" : ""
+                        }`}</Text>
                       ) : null}
                     </Column>
                   </Row>
@@ -333,12 +330,17 @@ export const ContestDetails = () => {
                       (*) &#8531; USDC and &#8532; OP tokens
                     </Text>
                   )}
+                  {contest.id === 63 && (
+                    <Text variant="secondary" size="small">
+                      (*) $70k paid in OP tokens, $50k in USDC
+                    </Text>
+                  )}
                 </Column>
               </Row>
               <hr />
               <Row spacing="s" alignment={["start", "center"]}>
                 <FaCrown title="Lead Senior Watson" />
-                {contest.id === 38 ? (
+                {contest.id === 38 || contest.id === 63 ? (
                   <Text strong>obront + Trust</Text>
                 ) : (
                   <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
