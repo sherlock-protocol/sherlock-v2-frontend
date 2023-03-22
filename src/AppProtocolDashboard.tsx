@@ -58,7 +58,7 @@ const AppProtocolDashboard = () => {
       <div className={styles.contentContainer}>
         <div className={styles.content}>
           <Row spacing="xl" grow={1} className={styles.fullWidth}>
-            <Column className={styles.forefront}>
+            <Column shrink={0} grow={0} className={styles.forefront}>
               <Column className={styles.sticky} spacing="xl">
                 <ProtocolDashboardSideBar dashboardID={dashboardID} />
                 <Box shadow={false}>
