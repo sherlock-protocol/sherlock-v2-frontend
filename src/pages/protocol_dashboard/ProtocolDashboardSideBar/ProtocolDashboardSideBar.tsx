@@ -17,6 +17,7 @@ import { ErrorModal } from "../../ContestDetails/ErrorModal"
 import Modal, { Props as ModalProps } from "../../../components/Modal/Modal"
 
 import styles from "./ProtocolDashboardSideBar.module.scss"
+import { startDateIsTBD } from "../../../utils/contests"
 
 type TaskRoute = typeof protocolDashboardRoutes[keyof typeof protocolDashboardRoutes]
 
@@ -105,8 +106,11 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
   const { contest } = dashboard
 
   const currentRoute = location.pathname.split("/").pop()
-  const initialPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 3 })
+  const initialPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 5 })
+  const scopeDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 2 })
+  const teamDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 2 })
   const finalPaymentDueDate = DateTime.fromSeconds(contest.startDate).minus({ hours: 24 * 1 })
+  const startDateTBD = startDateIsTBD(contest)
 
   const questionnaireReady = dashboard.contest.contextQuestionsReady || !dashboard.contest.contextQuestionsActive
   const canFinalizeSubmission =
@@ -125,9 +129,7 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
                 <Title variant="h2">TASKS</Title>
               </Th>
               <Th>
-                <Row alignment="end">
-                  <Text strong>DUE DATE</Text>
-                </Row>
+                <Row alignment="end">{!startDateIsTBD(contest) && <Text strong>DUE DATE</Text>}</Row>
               </Th>
             </Tr>
           </THead>
@@ -135,19 +137,21 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
             <Task
               title="Submit Initial Payment"
               completed={contest.initialPaymentComplete}
-              dueDate={initialPaymentDueDate.toFormat("LLL dd")}
+              dueDate={startDateTBD ? "" : initialPaymentDueDate.toFormat("LLL dd")}
               route={protocolDashboardRoutes.InitialPayment}
               active={currentRoute === protocolDashboardRoutes.InitialPayment}
             />
             <Task
               title="Define Audit Scope"
               completed={contest.scopeReady}
+              dueDate={startDateTBD ? "" : scopeDueDate.toFormat("LLL dd")}
               route={protocolDashboardRoutes.Scope}
               active={currentRoute === protocolDashboardRoutes.Scope}
             />
             <Task
               title="Add Team Members"
               route={protocolDashboardRoutes.Team}
+              dueDate={startDateTBD ? "" : teamDueDate.toFormat("LLL dd")}
               active={currentRoute === protocolDashboardRoutes.Team}
               completed={contest.teamHandlesAdded}
             />
@@ -162,7 +166,7 @@ export const ProtocolDashboardSideBar: React.FC<Props> = ({ dashboardID }) => {
             <Task
               title="Submit Final Payment"
               completed={contest.fullPaymentComplete}
-              dueDate={finalPaymentDueDate.toFormat("LLL dd")}
+              dueDate={startDateTBD ? "" : finalPaymentDueDate.toFormat("LLL dd")}
               route={protocolDashboardRoutes.FinalPayment}
               active={currentRoute === protocolDashboardRoutes.FinalPayment}
             />
