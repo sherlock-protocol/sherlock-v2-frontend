@@ -72,42 +72,36 @@ export const AccountFrozenBanner = () => {
   return (
     <LoadingContainer loading={isLoading} label="Processing transaction ...">
       <Box shadow={false}>
-        <Row alignment="space-between">
-          <Column spacing="m" alignment={["start", "center"]}>
-            <Title variant="h2">ACCOUNT IS FROZEN</Title>
-            <Text>{`In order to unfreeze your account and being able to join audit contests, a deposit of ${commify(
-              profile.unfreezeDeposit
-            )} USDC is required.`}</Text>
-            <Text variant="secondary">{`Please, send ${commify(
-              profile.unfreezeDeposit
-            )} USDC to the address below, or click the button on the right.`}</Text>
-            <Row spacing="m" alignment={["start", "center"]}>
-              <Column grow={0}>
-                <CopyAddress address={config.usdcAuditorDepositsRecipient} />
-              </Column>
+        <Column spacing="m">
+          <Title variant="h2">ACCOUNT IS FROZEN</Title>
+          <Row alignment={["space-between", "center"]} spacing="s">
+            <Column spacing="s">
+              <Text>{`In order to unfreeze your account and being able to join audit contests, a deposit of ${commify(
+                profile.unfreezeDeposit
+              )} USDC is required.`}</Text>
+              <Text strong variant="secondary">
+                Supported networks are: Ethereum mainnet, Optimism and Arbitrum One
+              </Text>
+            </Column>
+            <Column spacing="s">
               <Button
                 variant="alternate"
                 disabled={!writeAsync || !!transferConfigError || wrongNetwork}
                 onClick={handleTransfer}
               >{`Transfer ${commify(profile.unfreezeDeposit)} USDC`}</Button>
-              <Column spacing="s">
-                {insufficientBalance && (
-                  <Text variant="warning" size="small">
-                    Insufficient USDC balance
-                  </Text>
-                )}
-                {wrongNetwork && (
-                  <Text variant="warning" size="small">
-                    You're connected to the wrong network
-                  </Text>
-                )}
-              </Column>
-            </Row>
-            <Text strong variant="secondary">
-              Supported networks are: Ethereum mainnet, Optimism and Arbitrum One
-            </Text>
-          </Column>
-        </Row>
+              {insufficientBalance && (
+                <Text variant="warning" size="small">
+                  Insufficient USDC balance
+                </Text>
+              )}
+              {wrongNetwork && (
+                <Text variant="warning" size="small">
+                  You're connected to the wrong network
+                </Text>
+              )}
+            </Column>
+          </Row>
+        </Column>
       </Box>
       {error && <ErrorModal reason={error.message} onClose={handleErrorModalClose} />}
     </LoadingContainer>
