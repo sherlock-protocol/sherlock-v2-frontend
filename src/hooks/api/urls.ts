@@ -43,6 +43,9 @@ export const getScope = (dashboardID: string) => `dashboard/${dashboardID}/audit
 export const addScope = (dashboardID: string) => `dashboard/${dashboardID}/audit_scope`
 export const updateScope = (dashboardID: string, repoName: string) => `dashboard/${dashboardID}/audit_scope/${repoName}`
 export const deleteScope = (dashboardID: string, repoName: string) => `dashboard/${dashboardID}/audit_scope/${repoName}`
+export const getContextQuestions = (dashboardID: string) => `dashboard/${dashboardID}/context_questions`
+export const updateContextQuestionAnswers = (dashboardID: string) => `dashboard/${dashboardID}/context_questions`
+export const submitContextQuestionAnswers = (dashboardID: string) => `dashboard/${dashboardID}/submit_answers`
 
 export const getAdminProfile = () => `/admin/profile`
 export const adminSignIn = () => `/admin/signin`

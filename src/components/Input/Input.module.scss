@@ -5,6 +5,10 @@
   width: 100%;
   height: 3.315rem;
 
+  &.multiline {
+    height: 10rem;
+  }
+
   & .placeholder {
     position: absolute;
     top: 50%;
@@ -44,6 +48,39 @@
   &.small {
     font-size: 0.95rem;
     font-weight: 400;
+  }
+
+  &.secondary {
+    background-color: transparent;
+    border: none;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.25rem;
+  }
+
+  &.mono {
+    font-family: $font-family-mono;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.textarea {
+  width: 100%;
+  height: 100%;
+  background-color: $primary-purple;
+  border: 3px solid #000;
+  box-sizing: border-box;
+
+  font-family: $font-family;
+  font-size: 0.95rem;
+  padding: 0.5rem;
+  color: #fff;
+  max-lines: 3;
+
+  resize: none;
+
+  &[disabled] {
+    opacity: 0.5;
   }
 
   &.secondary {
