@@ -119,6 +119,16 @@ const AppProtocolDashboard = () => {
                       </Tr>
                       <Tr>
                         <Td>
+                          <Text strong>Lead Judge Fixed Pay</Text>
+                        </Td>
+                        <Td>
+                          <Text alignment="right">{`${commify(
+                            protocolDashboard.contest.leadJudgeFixedPay
+                          )} USDC`}</Text>
+                        </Td>
+                      </Tr>
+                      <Tr>
+                        <Td>
                           <Text strong>Sherlock Admin Fee</Text>
                         </Td>
                         <Td>
