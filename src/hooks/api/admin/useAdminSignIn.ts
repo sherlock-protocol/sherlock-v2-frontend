@@ -59,7 +59,7 @@ export const useAdminSignIn = () => {
       const nonce = nonceResponse.nonce
 
       const message = new SiweMessage({
-        domain: "Sherlock",
+        domain: "app.sherlock.xyz",
         address: connectedAddress,
         statement: "Sign in with Ethereum to Sherlock Audits",
         chainId: chain?.id,
