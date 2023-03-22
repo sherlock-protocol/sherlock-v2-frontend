@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
-import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy, FaLock } from "react-icons/fa"
+import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy, FaLock, FaGavel } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -307,8 +307,13 @@ export const ContestDetails = () => {
                           Judging Pool
                         </Text>
                       ) : null}
+                      {contest.leadJudgeFixedPay ? (
+                        <Text variant="secondary" strong>
+                          Lead Judge
+                        </Text>
+                      ) : null}
                     </Column>
-                    <Column spacing="s">
+                    <Column spacing="s" alignment="end">
                       <Text variant="secondary" strong>
                         {`${contest.id === 38 || contest.id === 63 ? "$" : ""}${commify(contest.prizePool)} ${
                           contest.id !== 38 && contest.id !== 63 ? "USDC" : "(*)"
@@ -321,6 +326,9 @@ export const ContestDetails = () => {
                         }${commify(contest.judgingPrizePool)} ${
                           contest.id !== 38 && contest.id !== 63 ? "USDC" : ""
                         }`}</Text>
+                      ) : null}
+                      {contest.leadJudgeFixedPay ? (
+                        <Text variant="secondary" strong>{`${commify(contest.leadJudgeFixedPay)} USDC`}</Text>
                       ) : null}
                     </Column>
                   </Row>
@@ -337,14 +345,32 @@ export const ContestDetails = () => {
                 </Column>
               </Row>
               <hr />
-              <Row spacing="s" alignment={["start", "center"]}>
-                <FaCrown title="Lead Senior Watson" />
-                {contest.id === 38 || contest.id === 63 ? (
-                  <Text strong>obront + Trust</Text>
-                ) : (
-                  <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
-                )}
-              </Row>
+              <Column spacing="m">
+                <Column spacing="xs">
+                  <Text variant="alternate" size="small" strong>
+                    LEAD SENIOR WATSON
+                  </Text>
+                  <Row spacing="s" alignment={["start", "center"]}>
+                    <FaCrown title="Lead Senior Watson" />
+                    {contest.id === 38 || contest.id === 63 ? (
+                      <Text strong>obront + Trust</Text>
+                    ) : (
+                      <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
+                    )}
+                  </Row>
+                </Column>
+                <Column spacing="xs">
+                  <Text variant="alternate" size="small" strong>
+                    LEAD JUDGE
+                  </Text>
+                  {contest.leadJudgeHandle ? (
+                    <Row spacing="s" alignment={["start", "center"]}>
+                      <FaGavel title="Lead Judge" />
+                      <Text strong>{contest.leadJudgeHandle}</Text>
+                    </Row>
+                  ) : null}
+                </Column>
+              </Column>
               <hr />
               <Row>
                 <Column>
