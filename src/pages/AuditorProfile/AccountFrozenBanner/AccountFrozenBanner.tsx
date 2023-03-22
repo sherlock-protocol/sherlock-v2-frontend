@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers"
+import { ethers } from "ethers"
 import { commify } from "ethers/lib/utils.js"
 import { useCallback, useEffect, useState } from "react"
 import { erc20ABI, useAccount, useBalance, useContractWrite, useNetwork, usePrepareContractWrite } from "wagmi"
@@ -25,7 +25,7 @@ export const AccountFrozenBanner = () => {
     token: config.usdcAddress(chain?.id ?? 1),
     address,
   })
-  const { config: transferConfig } = usePrepareContractWrite({
+  const { config: transferConfig, error: transferConfigError } = usePrepareContractWrite({
     chainId: chain?.id,
     address: config.usdcAddress(chain?.id ?? 1),
     abi: erc20ABI,
@@ -80,9 +80,11 @@ export const AccountFrozenBanner = () => {
               <Column grow={0}>
                 <CopyAddress address={config.usdcAuditorDepositsRecipient} />
               </Column>
-              <Button variant="alternate" disabled={!writeAsync} onClick={handleTransfer}>{`Transfer ${commify(
-                profile.unfreezeDeposit
-              )} USDC`}</Button>
+              <Button
+                variant="alternate"
+                disabled={!writeAsync || !!transferConfigError}
+                onClick={handleTransfer}
+              >{`Transfer ${commify(profile.unfreezeDeposit)} USDC`}</Button>
               {insufficientBalance && (
                 <Text variant="warning" size="small">
                   Insufficient USDC balance
