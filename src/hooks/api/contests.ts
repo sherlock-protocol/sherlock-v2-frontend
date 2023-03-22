@@ -65,7 +65,7 @@ type GetContestsResponseData = {
   judging_prize_pool: number | null
   template_repo_name: string
   rewards: number
-  judging_repo: string
+  judging_repo_name: string
 }[]
 
 export const contestsQueryKey = "contests"
@@ -92,7 +92,7 @@ export const useContests = () =>
       rewards: d.rewards,
       leadJudgeHandle: d.lead_judge_handle,
       leadJudgeFixedPay: d.lead_judge_fixed_pay,
-      judgingRepo: d.judging_repo,
+      judgingRepo: d.judging_repo_name,
     }))
   })
 
@@ -118,7 +118,7 @@ type GetContestResponseData = {
   lead_judge_handle: string
   lead_judge_fixed_pay: number
   rewards: number
-  judging_repo: string
+  judging_repo_name: string
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -150,7 +150,7 @@ export const useContest = (id: number) =>
         rewards: response.rewards,
         leadJudgeHandle: response.lead_judge_handle,
         leadJudgeFixedPay: response.lead_judge_fixed_pay,
-        judgingRepo: response.judging_repo,
+        judgingRepo: response.judging_repo_name,
       }
     },
     {
