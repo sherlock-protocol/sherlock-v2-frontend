@@ -156,6 +156,10 @@ export const ContestDetails = () => {
     setReportModalOpen(true)
   }, [setReportModalOpen])
 
+  const handleJudgingRepoClick = useCallback(() => {
+    contest?.judgingRepo && window.open(`https://github.com/${contest.judgingRepo}`, "__blank")
+  }, [contest])
+
   const handleLeaderboardClick = useCallback(() => {
     setLeaderboardModalOpen(true)
   }, [setLeaderboardModalOpen])
@@ -266,6 +270,11 @@ export const ContestDetails = () => {
                   </Text>
                   <Text variant="alternate" strong>{`Time left: ${timeLeftString(timeLeft)}`}</Text>
                 </Row>
+              )}
+              {["JUDGING", "SHERLOCK_JUDGING", "ESCALATING"].includes(contest.status) && (
+                <Button variant="secondary" onClick={handleJudgingRepoClick}>
+                  <FaGithub /> &nbsp; View findings
+                </Button>
               )}
               {contest.status === "FINISHED" && contest.report && (
                 <Button variant="secondary" onClick={handleReportClick}>
