@@ -35,6 +35,7 @@ export const AccountFrozenBanner = () => {
   const { writeAsync } = useContractWrite(transferConfig)
   const { submitDepositTransaction, isLoading, error, reset } = useSubmitDepositTransaction()
   const [insufficientBalance, setInsufficientBalance] = useState(false)
+  const [wrongNetwork, setWrongNetwork] = useState(false)
 
   const handleTransfer = useCallback(async () => {
     try {
@@ -57,10 +58,14 @@ export const AccountFrozenBanner = () => {
   }, [reset])
 
   useEffect(() => {
-    if (usdcBalanceData && usdcBalanceData.value.lt(ethers.utils.parseUnits(`${profile?.unfreezeDeposit ?? 0}`, 6))) {
-      setInsufficientBalance(true)
-    }
+    setInsufficientBalance(
+      !!usdcBalanceData && usdcBalanceData.value.lt(ethers.utils.parseUnits(`${profile?.unfreezeDeposit ?? 0}`, 6))
+    )
   }, [setInsufficientBalance, profile, usdcBalanceData])
+
+  useEffect(() => {
+    setWrongNetwork(!!chain && !config.networks.includes(chain.id))
+  }, [chain])
 
   if (!profile) return null
 
@@ -82,14 +87,21 @@ export const AccountFrozenBanner = () => {
               </Column>
               <Button
                 variant="alternate"
-                disabled={!writeAsync || !!transferConfigError}
+                disabled={!writeAsync || !!transferConfigError || wrongNetwork}
                 onClick={handleTransfer}
               >{`Transfer ${commify(profile.unfreezeDeposit)} USDC`}</Button>
-              {insufficientBalance && (
-                <Text variant="warning" size="small">
-                  Insufficient USDC balance
-                </Text>
-              )}
+              <Column spacing="s">
+                {insufficientBalance && (
+                  <Text variant="warning" size="small">
+                    Insufficient USDC balance
+                  </Text>
+                )}
+                {wrongNetwork && (
+                  <Text variant="warning" size="small">
+                    You're connected to the wrong network
+                  </Text>
+                )}
+              </Column>
             </Row>
             <Text strong variant="secondary">
               Supported networks are: Ethereum mainnet, Optimism and Arbitrum One
