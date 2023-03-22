@@ -5,13 +5,12 @@ import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
-
-import styles from "./Contests.module.scss"
 import { commify } from "../../utils/units"
 import { Table, TBody, Td, Th, THead, Tr } from "../../components/Table/Table"
 import { Contest } from "../../hooks/api/contests"
 import { timeLeftString } from "../../utils/dates"
-import { getTotalRewards } from "../../utils/contests"
+
+import styles from "./Contests.module.scss"
 
 type Props = {
   contests?: Contest[]
@@ -89,7 +88,7 @@ export const ActiveContests: React.FC<Props> = ({ contests, onContestClick }) =>
                 <Td>
                   <Column spacing="xs">
                     <Text variant="mono" strong size="large" alignment="center">
-                      {commify(getTotalRewards(contest))} USDC
+                      {commify(contest.rewards)} USDC
                     </Text>
                     {contest.id === 38 && (
                       <Text variant="secondary" alignment="center" size="small">

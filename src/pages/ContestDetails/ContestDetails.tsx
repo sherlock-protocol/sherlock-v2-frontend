@@ -31,7 +31,6 @@ import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { ContestLeaderboardModal } from "./ContestLeaderboardModal"
 import { useContestant } from "../../hooks/api/contests/useContestant"
 import { useContestLeaderboard } from "../../hooks/api/contests/useContestLeaderboard"
-import { getTotalRewards } from "../../utils/contests"
 import { contestsRoutes } from "../../utils/routes"
 
 const STATUS_LABELS = {
@@ -288,8 +287,8 @@ export const ContestDetails = () => {
                         <Row spacing="xs" alignment={["start", "baseline"]}>
                           <Text size="extra-large" strong>
                             {contest.id === 38 || contest.id === 63
-                              ? `$${commify(getTotalRewards(contest))}`
-                              : `${commify(getTotalRewards(contest))} USDC`}
+                              ? `$${commify(contest.rewards)}`
+                              : `${commify(contest.rewards)} USDC`}
                           </Text>
                         </Row>
                       </Column>
