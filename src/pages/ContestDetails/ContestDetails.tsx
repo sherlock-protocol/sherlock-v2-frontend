@@ -271,7 +271,7 @@ export const ContestDetails = () => {
                   <Text variant="alternate" strong>{`Time left: ${timeLeftString(timeLeft)}`}</Text>
                 </Row>
               )}
-              {["JUDGING", "SHERLOCK_JUDGING", "ESCALATING"].includes(contest.status) && (
+              {!["CREATED", "RUNNING"].includes(contest.status) && (
                 <Button variant="secondary" onClick={handleJudgingRepoClick}>
                   <FaGithub /> &nbsp; View findings
                 </Button>
