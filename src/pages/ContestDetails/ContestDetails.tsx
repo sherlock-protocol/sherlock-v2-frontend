@@ -369,14 +369,16 @@ export const ContestDetails = () => {
                   </Row>
                 </Column>
                 <Column spacing="xs">
-                  <Text variant="alternate" size="small" strong>
-                    LEAD JUDGE
-                  </Text>
-                  {contest.leadJudgeHandle ? (
-                    <Row spacing="s" alignment={["start", "center"]}>
-                      <FaGavel title="Lead Judge" />
-                      <Text strong>{contest.leadJudgeHandle}</Text>
-                    </Row>
+                  {contest.judgingPrizePool ? (
+                    <>
+                      <Text variant="alternate" size="small" strong>
+                        LEAD JUDGE
+                      </Text>
+                      <Row spacing="s" alignment={["start", "center"]}>
+                        <FaGavel title="Lead Judge" />
+                        <Text strong>{contest.leadJudgeHandle ?? "TBD"}</Text>
+                      </Row>
+                    </>
                   ) : null}
                 </Column>
               </Column>
