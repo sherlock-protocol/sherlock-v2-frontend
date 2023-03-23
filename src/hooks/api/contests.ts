@@ -25,12 +25,16 @@ export type Contest = {
   status: ContestStatus
   leadSeniorAuditorFixedPay: number
   leadSeniorAuditorHandle: string
+  leadJudgeHandle: string
+  leadJudgeFixedPay: number
   private: boolean
   fullPayment: number
   judgingPrizePool?: number
   jugdingEndDate?: number // Timestamp in seconds.
   repo: string
   linesOfCode?: string
+  rewards: number
+  judgingRepo: string
 }
 
 export type Scoreboard = {
@@ -53,11 +57,15 @@ type GetContestsResponseData = {
   status: ContestStatus
   lead_senior_auditor_fixed_pay: number
   lead_senior_auditor_handle: string
+  lead_judge_handle: string
+  lead_judge_fixed_pay: number
   private: boolean
   full_payment: number
   judging_ends_at?: number
   judging_prize_pool: number | null
   template_repo_name: string
+  rewards: number
+  judging_repo_name: string
 }[]
 
 export const contestsQueryKey = "contests"
@@ -81,6 +89,10 @@ export const useContests = () =>
       judgingPrizePool: d.judging_prize_pool ?? undefined,
       jugdingEndDate: d.judging_ends_at,
       repo: d.template_repo_name,
+      rewards: d.rewards,
+      leadJudgeHandle: d.lead_judge_handle,
+      leadJudgeFixedPay: d.lead_judge_fixed_pay,
+      judgingRepo: d.judging_repo_name,
     }))
   })
 
@@ -103,6 +115,10 @@ type GetContestResponseData = {
   judging_ends_at?: number
   template_repo_name: string
   lines_of_code: string
+  lead_judge_handle: string
+  lead_judge_fixed_pay: number
+  rewards: number
+  judging_repo_name: string
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -131,6 +147,10 @@ export const useContest = (id: number) =>
         jugdingEndDate: response.judging_ends_at,
         repo: response.template_repo_name,
         linesOfCode: response.lines_of_code,
+        rewards: response.rewards,
+        leadJudgeHandle: response.lead_judge_handle,
+        leadJudgeFixedPay: response.lead_judge_fixed_pay,
+        judgingRepo: response.judging_repo_name,
       }
     },
     {

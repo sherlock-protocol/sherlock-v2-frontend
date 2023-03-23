@@ -44,17 +44,18 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   const [contestNSLOC, setContestNSLOC] = useState("")
   const [contestStartDate, setContestStartDate] = useState("")
   const [contestAuditLength, setContestAuditLength] = useState("")
-  const [contestJudgingContestEndDate, setContestJudgingContestEndDate] = useState("")
   const [contestAuditPrizePool, setContestAuditPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestLeadSeniorWatsonFixedPay, setContestLeadSeniorWatsonFixedPay] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   )
   const [contestJudgingPrizePool, setContestJudgingPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
+  const [contestLeadJudgeFixedPay, setContestLeadJudgeFixedPay] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestTotalCost, setContestTotalCost] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialLeadSeniorWatsonFixedPay, setInitialLeadSeniorWatsonFixedPay] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   )
   const [initialJudgingPrizePool, setInitialJudgingPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
+  const [initialLeadJudgeFixedPay, setInitialLeadJudgeFixedPay] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialTotalCost, setInitialTotalCost] = useState<BigNumber | undefined>(BigNumber.from(0))
 
   const [startDateError, setStartDateError] = useState<string>()
@@ -63,16 +64,6 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   const [displayModalCloseConfirm, setDisplayModalFormConfirm] = useState(false)
 
   const displayProtocolInfo = !!protocol || protocolNotFound || protocolLoading
-
-  const updateDates = useCallback(() => {
-    if (contestStartDate !== "" && contestAuditLength !== "") {
-      const startDate = DateTime.fromFormat(contestStartDate, DATE_FORMAT)
-      const endDate = startDate.plus({ hours: 24 * parseInt(contestAuditLength) })
-      const judgingEndDate = endDate.plus({ hours: 24 * 3 })
-
-      setContestJudgingContestEndDate(judgingEndDate.toFormat(DATE_FORMAT))
-    }
-  }, [contestStartDate, contestAuditLength, setContestJudgingContestEndDate])
 
   useEffect(() => {
     if (isSuccess) onClose?.()
@@ -99,15 +90,13 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
       return
     }
 
-    updateDates()
-
     if (startDate < DateTime.now()) {
       setStartDateError("Start date cannot be in the past.")
       return
     }
 
     setStartDateError(undefined)
-  }, [contestStartDate, updateDates, contestAuditLength])
+  }, [contestStartDate, contestAuditLength])
 
   useEffect(() => {
     if (!contestAuditPrizePool) return
@@ -117,24 +106,38 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
 
     setInitialLeadSeniorWatsonFixedPay(fixedPay)
     setInitialJudgingPrizePool(judgingPool)
+    setInitialLeadJudgeFixedPay(judgingPool)
   }, [contestAuditPrizePool, setInitialLeadSeniorWatsonFixedPay, setInitialJudgingPrizePool, setInitialTotalCost])
+
+  useEffect(() => {
+    if (!contestJudgingPrizePool) return
+    setInitialLeadJudgeFixedPay(contestJudgingPrizePool)
+  }, [contestJudgingPrizePool])
 
   useEffect(() => {
     const total = contestAuditPrizePool
       ?.add(contestLeadSeniorWatsonFixedPay ?? 0)
       .add(contestJudgingPrizePool ?? 0)
+      .add(contestLeadJudgeFixedPay ?? 0)
       .add(contestAuditPrizePool.div(100).mul(5))
     setInitialTotalCost(total)
-  }, [contestAuditPrizePool, contestLeadSeniorWatsonFixedPay, contestJudgingPrizePool])
+  }, [contestAuditPrizePool, contestLeadSeniorWatsonFixedPay, contestJudgingPrizePool, contestLeadJudgeFixedPay])
 
   const sherlockFee = useMemo(() => {
     const fee = contestTotalCost
       ?.sub(contestAuditPrizePool ?? 0)
       .sub(contestLeadSeniorWatsonFixedPay ?? 0)
       .sub(contestJudgingPrizePool ?? 0)
+      .sub(contestLeadJudgeFixedPay ?? 0)
 
     return commify(parseInt(ethers.utils.formatUnits(fee ?? 0, 6)))
-  }, [contestAuditPrizePool, contestLeadSeniorWatsonFixedPay, contestJudgingPrizePool, contestTotalCost])
+  }, [
+    contestAuditPrizePool,
+    contestLeadSeniorWatsonFixedPay,
+    contestJudgingPrizePool,
+    contestTotalCost,
+    contestLeadJudgeFixedPay,
+  ])
 
   const canCreateContest = useMemo(() => {
     if (protocolName === "") return false
@@ -148,14 +151,9 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     if (contestAuditLength === "") return false
 
     const startDate = DateTime.fromFormat(contestStartDate, DATE_FORMAT)
-    const endDate = startDate.plus({ hours: 24 * parseInt(contestAuditLength) })
-    const judgingEndDate = DateTime.fromFormat(contestJudgingContestEndDate, DATE_FORMAT)
 
     if (!startDate.isValid) return false
     if (startDate < DateTime.now()) return false
-
-    if (!judgingEndDate.isValid) return false
-    if (judgingEndDate < endDate) return false
 
     if (contestAuditPrizePool?.eq(BigNumber.from(0))) return false
     if (contestLeadSeniorWatsonFixedPay?.eq(BigNumber.from(0))) return false
@@ -165,7 +163,6 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   }, [
     contestAuditLength,
     contestAuditPrizePool,
-    contestJudgingContestEndDate,
     contestLeadSeniorWatsonFixedPay,
     contestShortDescription.length,
     contestStartDate,
@@ -204,12 +201,6 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     const endDate = startDate
       .plus({ hours: 24 * parseInt(contestAuditLength) })
       .set({ hour: 15, minute: 0, second: 0, millisecond: 0 })
-    const judgingEndDate = DateTime.fromFormat(contestJudgingContestEndDate, DATE_FORMAT, { zone: "utc" }).set({
-      hour: 15,
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-    })
 
     createContest({
       protocol: {
@@ -225,19 +216,19 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
         nSLOC: contestNSLOC,
         startDate,
         endDate,
-        judgingEndDate,
         auditPrizePool: parseInt(ethers.utils.formatUnits(contestAuditPrizePool ?? 0, 6)),
         judgingPrizePool: parseInt(ethers.utils.formatUnits(contestJudgingPrizePool ?? 0, 6)),
         leadSeniorAuditorFixedPay: parseInt(ethers.utils.formatUnits(contestLeadSeniorWatsonFixedPay ?? 0, 6)),
+        leadJudgeFixedPay: parseInt(ethers.utils.formatUnits(contestLeadJudgeFixedPay ?? 0, 6)),
         fullPayment: parseInt(ethers.utils.formatUnits(contestTotalCost ?? 0, 6)),
       },
     })
   }, [
     contestAuditLength,
     contestAuditPrizePool,
-    contestJudgingContestEndDate,
     contestJudgingPrizePool,
     contestLeadSeniorWatsonFixedPay,
+    contestLeadJudgeFixedPay,
     contestNSLOC,
     contestShortDescription,
     contestStartDate,
@@ -259,17 +250,17 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
       contestNSLOC !== "" ||
       contestStartDate !== "" ||
       contestAuditLength !== "" ||
-      contestJudgingContestEndDate !== "" ||
       contestAuditPrizePool?.gt(BigNumber.from(0)) ||
       contestLeadSeniorWatsonFixedPay?.gt(BigNumber.from(0)) ||
       contestJudgingPrizePool?.gt(BigNumber.from(0)) ||
+      contestLeadJudgeFixedPay?.gt(BigNumber.from(0)) ||
       contestTotalCost?.gt(BigNumber.from(0)),
     [
       contestAuditLength,
       contestAuditPrizePool,
-      contestJudgingContestEndDate,
       contestJudgingPrizePool,
       contestLeadSeniorWatsonFixedPay,
+      contestLeadJudgeFixedPay,
       contestNSLOC,
       contestShortDescription,
       contestStartDate,
@@ -391,9 +382,6 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
             <Field label="Audit Length">
               <Input type="number" value={contestAuditLength} onChange={setContestAuditLength} />
             </Field>
-            <Field label="Judging Contest End Date">
-              <Input value={contestJudgingContestEndDate} onChange={setContestJudgingContestEndDate} />
-            </Field>
             <Field label="Audit Contest Prize Pool">
               <TokenInput token="USDC" onChange={setContestAuditPrizePool} />
             </Field>
@@ -406,6 +394,9 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
             </Field>
             <Field label="Judging Contest Prize Pool">
               <TokenInput token="USDC" initialValue={initialJudgingPrizePool} onChange={setContestJudgingPrizePool} />
+            </Field>
+            <Field label="Lead Judge Fixed Pay">
+              <TokenInput token="USDC" initialValue={initialLeadJudgeFixedPay} onChange={setContestLeadJudgeFixedPay} />
             </Field>
             <Field label="Total Cost" detail={`Sherlock fee will be ${sherlockFee} USDC`}>
               <TokenInput token="USDC" initialValue={initialTotalCost} onChange={setContestTotalCost} />

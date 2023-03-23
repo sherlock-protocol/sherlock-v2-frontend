@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
-import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy, FaLock } from "react-icons/fa"
+import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy, FaLock, FaGavel } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -31,7 +31,6 @@ import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { ContestLeaderboardModal } from "./ContestLeaderboardModal"
 import { useContestant } from "../../hooks/api/contests/useContestant"
 import { useContestLeaderboard } from "../../hooks/api/contests/useContestLeaderboard"
-import { getTotalRewards } from "../../utils/contests"
 import { contestsRoutes } from "../../utils/routes"
 
 const STATUS_LABELS = {
@@ -157,6 +156,10 @@ export const ContestDetails = () => {
     setReportModalOpen(true)
   }, [setReportModalOpen])
 
+  const handleJudgingRepoClick = useCallback(() => {
+    contest?.judgingRepo && window.open(`https://github.com/${contest.judgingRepo}`, "__blank")
+  }, [contest])
+
   const handleLeaderboardClick = useCallback(() => {
     setLeaderboardModalOpen(true)
   }, [setLeaderboardModalOpen])
@@ -268,6 +271,11 @@ export const ContestDetails = () => {
                   <Text variant="alternate" strong>{`Time left: ${timeLeftString(timeLeft)}`}</Text>
                 </Row>
               )}
+              {!["CREATED", "RUNNING"].includes(contest.status) && (
+                <Button variant="secondary" onClick={handleJudgingRepoClick}>
+                  <FaGithub /> &nbsp; View findings
+                </Button>
+              )}
               {contest.status === "FINISHED" && contest.report && (
                 <Button variant="secondary" onClick={handleReportClick}>
                   <FaBook /> &nbsp; Read report
@@ -288,8 +296,8 @@ export const ContestDetails = () => {
                         <Row spacing="xs" alignment={["start", "baseline"]}>
                           <Text size="extra-large" strong>
                             {contest.id === 38 || contest.id === 63
-                              ? `$${commify(getTotalRewards(contest))}`
-                              : `${commify(getTotalRewards(contest))} USDC`}
+                              ? `$${commify(contest.rewards)}`
+                              : `${commify(contest.rewards)} USDC`}
                           </Text>
                         </Row>
                       </Column>
@@ -308,8 +316,13 @@ export const ContestDetails = () => {
                           Judging Pool
                         </Text>
                       ) : null}
+                      {contest.leadJudgeFixedPay ? (
+                        <Text variant="secondary" strong>
+                          Lead Judge
+                        </Text>
+                      ) : null}
                     </Column>
-                    <Column spacing="s">
+                    <Column spacing="s" alignment="end">
                       <Text variant="secondary" strong>
                         {`${contest.id === 38 || contest.id === 63 ? "$" : ""}${commify(contest.prizePool)} ${
                           contest.id !== 38 && contest.id !== 63 ? "USDC" : "(*)"
@@ -322,6 +335,9 @@ export const ContestDetails = () => {
                         }${commify(contest.judgingPrizePool)} ${
                           contest.id !== 38 && contest.id !== 63 ? "USDC" : ""
                         }`}</Text>
+                      ) : null}
+                      {contest.leadJudgeFixedPay ? (
+                        <Text variant="secondary" strong>{`${commify(contest.leadJudgeFixedPay)} USDC`}</Text>
                       ) : null}
                     </Column>
                   </Row>
@@ -338,14 +354,34 @@ export const ContestDetails = () => {
                 </Column>
               </Row>
               <hr />
-              <Row spacing="s" alignment={["start", "center"]}>
-                <FaCrown title="Lead Senior Watson" />
-                {contest.id === 38 || contest.id === 63 ? (
-                  <Text strong>obront + Trust</Text>
-                ) : (
-                  <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
-                )}
-              </Row>
+              <Column spacing="m">
+                <Column spacing="xs">
+                  <Text variant="alternate" size="small" strong>
+                    LEAD SENIOR WATSON
+                  </Text>
+                  <Row spacing="s" alignment={["start", "center"]}>
+                    <FaCrown title="Lead Senior Watson" />
+                    {contest.id === 38 || contest.id === 63 ? (
+                      <Text strong>obront + Trust</Text>
+                    ) : (
+                      <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
+                    )}
+                  </Row>
+                </Column>
+                <Column spacing="xs">
+                  {contest.judgingPrizePool ? (
+                    <>
+                      <Text variant="alternate" size="small" strong>
+                        LEAD JUDGE
+                      </Text>
+                      <Row spacing="s" alignment={["start", "center"]}>
+                        <FaGavel title="Lead Judge" />
+                        <Text strong>{contest.leadJudgeHandle ?? "TBD"}</Text>
+                      </Row>
+                    </>
+                  ) : null}
+                </Column>
+              </Column>
               <hr />
               <Row>
                 <Column>

@@ -17,6 +17,8 @@ export type ContestDetails = {
   judgingPrizePool: number
   leadSeniorAuditorHandle: string
   leadSeniorAuditorFixedPay: number
+  leadJudgeHandle: string
+  leadJudgeFixedPay: number
   sherlockFee: number
   repo: string
   submissionReady: boolean
@@ -66,6 +68,8 @@ type PaymentsResponse = {
     team_handles_added: boolean
     context_questions_ready: boolean
     context_questions_active: boolean
+    lead_judge_handle: string
+    lead_judge_fixed_pay: number
   }
   payments: {
     tx_hash: string
@@ -102,6 +106,8 @@ export const useProtocolDashboard = (dashboardID: string) =>
         teamHandlesAdded: data.contest.team_handles_added,
         contextQuestionsReady: data.contest.context_questions_ready,
         contextQuestionsActive: data.contest.context_questions_active,
+        leadJudgeHandle: data.contest.lead_judge_handle,
+        leadJudgeFixedPay: data.contest.lead_judge_fixed_pay,
       },
       payments: {
         totalAmount: data.contest.full_payment,

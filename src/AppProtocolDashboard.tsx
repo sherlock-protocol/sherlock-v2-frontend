@@ -58,7 +58,7 @@ const AppProtocolDashboard = () => {
       <div className={styles.contentContainer}>
         <div className={styles.content}>
           <Row spacing="xl" grow={1} className={styles.fullWidth}>
-            <Column className={styles.forefront}>
+            <Column shrink={0} grow={0} className={styles.forefront}>
               <Column className={styles.sticky} spacing="xl">
                 <ProtocolDashboardSideBar dashboardID={dashboardID} />
                 <Box shadow={false}>
@@ -115,6 +115,16 @@ const AppProtocolDashboard = () => {
                         </Td>
                         <Td>
                           <Text alignment="right">{`${commify(protocolDashboard.contest.judgingPrizePool)} USDC`}</Text>
+                        </Td>
+                      </Tr>
+                      <Tr>
+                        <Td>
+                          <Text strong>Lead Judge Fixed Pay</Text>
+                        </Td>
+                        <Td>
+                          <Text alignment="right">{`${commify(
+                            protocolDashboard.contest.leadJudgeFixedPay
+                          )} USDC`}</Text>
                         </Td>
                       </Tr>
                       <Tr>
