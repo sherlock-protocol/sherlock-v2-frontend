@@ -14,9 +14,10 @@ type ErrorStateProps =
 type Props = {
   label?: React.ReactElement | string
   detail?: React.ReactElement | string
+  sublabel?: React.ReactElement | string
 } & ErrorStateProps
 
-export const Field: React.FC<PropsWithChildren<Props>> = ({ label, detail, children, ...props }) => {
+export const Field: React.FC<PropsWithChildren<Props>> = ({ label, detail, children, sublabel, ...props }) => {
   return (
     <Column spacing="xs" grow={1}>
       {(label || props.error) && (
@@ -33,6 +34,13 @@ export const Field: React.FC<PropsWithChildren<Props>> = ({ label, detail, child
               </Text>
             </Column>
           )}
+        </Row>
+      )}
+      {sublabel && (
+        <Row spacing="xs">
+          <Text size="small" variant="secondary" strong>
+            {sublabel}
+          </Text>
         </Row>
       )}
       <Row>{children}</Row>
