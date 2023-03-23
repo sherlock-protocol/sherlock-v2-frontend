@@ -49,11 +49,13 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     BigNumber.from(0)
   )
   const [contestJudgingPrizePool, setContestJudgingPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
+  const [contestLeadJudgeFixedPay, setContestLeadJudgeFixedPay] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestTotalCost, setContestTotalCost] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialLeadSeniorWatsonFixedPay, setInitialLeadSeniorWatsonFixedPay] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   )
   const [initialJudgingPrizePool, setInitialJudgingPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
+  const [initialLeadJudgeFixedPay, setInitialLeadJudgeFixedPay] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialTotalCost, setInitialTotalCost] = useState<BigNumber | undefined>(BigNumber.from(0))
 
   const [startDateError, setStartDateError] = useState<string>()
@@ -104,24 +106,38 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
 
     setInitialLeadSeniorWatsonFixedPay(fixedPay)
     setInitialJudgingPrizePool(judgingPool)
+    setInitialLeadJudgeFixedPay(judgingPool)
   }, [contestAuditPrizePool, setInitialLeadSeniorWatsonFixedPay, setInitialJudgingPrizePool, setInitialTotalCost])
+
+  useEffect(() => {
+    if (!contestJudgingPrizePool) return
+    setInitialLeadJudgeFixedPay(contestJudgingPrizePool)
+  }, [contestJudgingPrizePool])
 
   useEffect(() => {
     const total = contestAuditPrizePool
       ?.add(contestLeadSeniorWatsonFixedPay ?? 0)
       .add(contestJudgingPrizePool ?? 0)
+      .add(contestLeadJudgeFixedPay ?? 0)
       .add(contestAuditPrizePool.div(100).mul(5))
     setInitialTotalCost(total)
-  }, [contestAuditPrizePool, contestLeadSeniorWatsonFixedPay, contestJudgingPrizePool])
+  }, [contestAuditPrizePool, contestLeadSeniorWatsonFixedPay, contestJudgingPrizePool, contestLeadJudgeFixedPay])
 
   const sherlockFee = useMemo(() => {
     const fee = contestTotalCost
       ?.sub(contestAuditPrizePool ?? 0)
       .sub(contestLeadSeniorWatsonFixedPay ?? 0)
       .sub(contestJudgingPrizePool ?? 0)
+      .sub(contestLeadJudgeFixedPay ?? 0)
 
     return commify(parseInt(ethers.utils.formatUnits(fee ?? 0, 6)))
-  }, [contestAuditPrizePool, contestLeadSeniorWatsonFixedPay, contestJudgingPrizePool, contestTotalCost])
+  }, [
+    contestAuditPrizePool,
+    contestLeadSeniorWatsonFixedPay,
+    contestJudgingPrizePool,
+    contestTotalCost,
+    contestLeadJudgeFixedPay,
+  ])
 
   const canCreateContest = useMemo(() => {
     if (protocolName === "") return false
@@ -203,6 +219,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
         auditPrizePool: parseInt(ethers.utils.formatUnits(contestAuditPrizePool ?? 0, 6)),
         judgingPrizePool: parseInt(ethers.utils.formatUnits(contestJudgingPrizePool ?? 0, 6)),
         leadSeniorAuditorFixedPay: parseInt(ethers.utils.formatUnits(contestLeadSeniorWatsonFixedPay ?? 0, 6)),
+        leadJudgeFixedPay: parseInt(ethers.utils.formatUnits(contestLeadJudgeFixedPay ?? 0, 6)),
         fullPayment: parseInt(ethers.utils.formatUnits(contestTotalCost ?? 0, 6)),
       },
     })
@@ -211,6 +228,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     contestAuditPrizePool,
     contestJudgingPrizePool,
     contestLeadSeniorWatsonFixedPay,
+    contestLeadJudgeFixedPay,
     contestNSLOC,
     contestShortDescription,
     contestStartDate,
@@ -235,12 +253,14 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
       contestAuditPrizePool?.gt(BigNumber.from(0)) ||
       contestLeadSeniorWatsonFixedPay?.gt(BigNumber.from(0)) ||
       contestJudgingPrizePool?.gt(BigNumber.from(0)) ||
+      contestLeadJudgeFixedPay?.gt(BigNumber.from(0)) ||
       contestTotalCost?.gt(BigNumber.from(0)),
     [
       contestAuditLength,
       contestAuditPrizePool,
       contestJudgingPrizePool,
       contestLeadSeniorWatsonFixedPay,
+      contestLeadJudgeFixedPay,
       contestNSLOC,
       contestShortDescription,
       contestStartDate,
@@ -374,6 +394,9 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
             </Field>
             <Field label="Judging Contest Prize Pool">
               <TokenInput token="USDC" initialValue={initialJudgingPrizePool} onChange={setContestJudgingPrizePool} />
+            </Field>
+            <Field label="Lead Judge Fixed Pay">
+              <TokenInput token="USDC" initialValue={initialLeadJudgeFixedPay} onChange={setContestLeadJudgeFixedPay} />
             </Field>
             <Field label="Total Cost" detail={`Sherlock fee will be ${sherlockFee} USDC`}>
               <TokenInput token="USDC" initialValue={initialTotalCost} onChange={setContestTotalCost} />

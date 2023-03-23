@@ -22,6 +22,7 @@ type AdminCreateContestParams = {
     auditPrizePool: number
     judgingPrizePool: number
     leadSeniorAuditorFixedPay: number
+    leadJudgeFixedPay: number
     fullPayment: number
   }
 }
@@ -47,6 +48,7 @@ export const useAdminCreateContest = () => {
           prize_pool: params.contest.auditPrizePool,
           judging_prize_pool: params.contest.judgingPrizePool,
           lead_senior_auditor_fixed_pay: params.contest.leadSeniorAuditorFixedPay,
+          lead_judge_fixed_pay: params.contest.leadJudgeFixedPay,
           full_payment: params.contest.fullPayment,
         })
       } catch (error) {
