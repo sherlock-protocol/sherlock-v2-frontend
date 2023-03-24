@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react"
 import { erc20ABI, useAccount, useBalance, useContractWrite, useNetwork, usePrepareContractWrite } from "wagmi"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
-import { CopyAddress } from "../../../components/CopyAddress/CopyAddress"
 import { Row, Column } from "../../../components/Layout"
 import LoadingContainer from "../../../components/LoadingContainer/LoadingContainer"
 import { Text } from "../../../components/Text"
@@ -73,14 +72,18 @@ export const AccountFrozenBanner = () => {
     <LoadingContainer loading={isLoading} label="Processing transaction ...">
       <Box shadow={false}>
         <Column spacing="m">
-          <Title variant="h2">ACCOUNT IS FROZEN</Title>
+          <Title variant="h2">ACCOUNT IS INACTIVE</Title>
           <Row alignment={["space-between", "center"]} spacing="s">
             <Column spacing="s">
-              <Text>{`In order to unfreeze your account and being able to join audit contests, a deposit of ${commify(
+              <Text>
+                This could be because you just joined the platform or because you submitted too many invalid
+                issues/escalations.
+              </Text>
+              <Text>{`In order to activate your account and join audit contests, a deposit of ${commify(
                 profile.unfreezeDeposit
               )} USDC is required.`}</Text>
               <Text strong variant="secondary">
-                Supported networks are: Ethereum mainnet, Optimism and Arbitrum One
+                Supported payment networks are: Ethereum Mainnet, Optimism and Arbitrum One
               </Text>
             </Column>
             <Column spacing="s">

@@ -493,8 +493,8 @@ export const ContestDetails = () => {
                         )}
                         {profile.frozen && (
                           <Text variant="secondary" size="small">
-                            Your account is currently frozen. Go to your profile and make the deposit in order to be
-                            able to join audit contests.
+                            Your account is currently inactive. Please go to your profile and add USDC in order to join
+                            audit contests.
                           </Text>
                         )}
                       </Column>
