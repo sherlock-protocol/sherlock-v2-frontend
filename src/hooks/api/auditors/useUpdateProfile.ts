@@ -47,7 +47,7 @@ export const useUpdateProfile = () => {
       try {
         const { data } = await contestsAPI.patch<UpdateProfileResponseData>(updateProfileUrl(), {
           github_handle: updates.githubHandle,
-          discord_handle: updates.discordHandle,
+          discord_handle: updates.discordHandle === "" ? null : updates.discordHandle,
           twitter_handle: updates.twitterHandle === "" ? null : updates.twitterHandle,
           telegram_handle: updates.telegramHandle === "" ? null : updates.telegramHandle,
           payout_address_mainnet: updates.payoutAddress,
