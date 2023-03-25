@@ -253,7 +253,9 @@ export const AuditorForm: React.FC<Props> = ({
             onSubmit({
               handle,
               githubHandle,
-              discordHandle: `${discordValidation?.handle}#${discordValidation?.discriminator}`,
+              discordHandle: discordValidation
+                ? `${discordValidation?.handle}#${discordValidation?.discriminator}`
+                : undefined,
               telegramHandle,
               twitterHandle,
             })
