@@ -165,13 +165,24 @@ export const AuditorForm: React.FC<Props> = ({
   return (
     <Column spacing="l">
       <Row>
-        <Field label="HANDLE *" error={!!handleVerificationError} errorMessage={handleVerificationError ?? ""}>
-          <Input value={handle} onChange={setHandle} disabled={disabledFields.includes("handle")} />
+        <Field
+          label="HANDLE *"
+          sublabel="The username that will be visible on the Sherlock leaderboard"
+          error={!!handleVerificationError}
+          errorMessage={handleVerificationError ?? ""}
+        >
+          <Input
+            value={handle}
+            onChange={setHandle}
+            disabled={disabledFields.includes("handle")}
+            placeholder="future-watson-913"
+          />
         </Field>
       </Row>
       <Row>
         <Field
           label="GITHUB *"
+          sublabel="Your GitHub username"
           error={githubVerificationError && !isVerifyingGithubHandle}
           errorMessage={"Github handle not found"}
           detail={

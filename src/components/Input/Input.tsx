@@ -47,6 +47,11 @@ export type InputProps<T extends string | number> = {
    * Multiline or single line
    */
   multiline?: boolean
+
+  /**
+   * Persist the placeholder after a value has been set
+   */
+  persistPlaceholder?: boolean
 }
 
 export const Input = <T extends string | number>({
@@ -58,6 +63,7 @@ export const Input = <T extends string | number>({
   textVariant = "normal",
   disabled = false,
   multiline = false,
+  persistPlaceholder = false,
 }: InputProps<T>) => {
   const handleChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback(
     (e) => {
@@ -68,7 +74,7 @@ export const Input = <T extends string | number>({
 
   return (
     <div className={classNames([styles.inputContainer, styles[variant]], { [styles.multiline]: multiline })}>
-      {placeholder && <span className={styles.placeholder}>{placeholder}</span>}
+      {placeholder && (!value || persistPlaceholder) && <span className={styles.placeholder}>{placeholder}</span>}
       {multiline ? (
         <textarea
           className={classNames([styles.textarea, styles[variant], styles[textVariant]])}

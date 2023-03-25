@@ -214,7 +214,13 @@ export const FundraisingPage: React.FC = () => {
           </Row>
           <Row className={styles.rewardsContainer}>
             <Column grow={1} spacing="l">
-              <TokenInput onChange={handleUsdcChange} token="USDC" placeholder="Choose amount" balance={usdcBalance} />
+              <TokenInput
+                onChange={handleUsdcChange}
+                token="USDC"
+                placeholder="Choose amount"
+                persistPlaceholder
+                balance={usdcBalance}
+              />
               {rewards && (
                 <Row>
                   <Column grow={1} spacing="m">
