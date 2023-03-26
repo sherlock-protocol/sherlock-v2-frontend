@@ -157,7 +157,7 @@ export const ContestDetails = () => {
   }, [setReportModalOpen])
 
   const handleJudgingRepoClick = useCallback(() => {
-    contest?.judgingRepo && window.open(`https://github.com/${contest.judgingRepo}`, "__blank")
+    contest?.judgingRepo && window.open(`https://github.com/${contest.judgingRepo}/issues`, "__blank")
   }, [contest])
 
   const handleLeaderboardClick = useCallback(() => {
