@@ -15,7 +15,7 @@ import { ConfirmContestActionModal } from "./ConfirmContestActionModal"
 import { CreateContestModal } from "./CreateContestModal"
 import { ContestScopeModal } from "./ContestScopeModal"
 
-export type ContestAction = "PUBLISH" | "APPROVE_START"
+export type ContestAction = "START_SENIOR_SELECTION" | "PUBLISH" | "APPROVE_START"
 
 type ConfirmationModal = {
   contestIndex: number
@@ -23,6 +23,10 @@ type ConfirmationModal = {
 }
 
 const getContestAction = (contest: ContestsListItem, force: boolean): ContestAction | undefined => {
+  // if (contest.status === "CREATED" && !contest.leadSeniorAuditorHandle && !contest.leadSeniorSelectionMessageSentAt) {
+  //   return force ? "PUBLISH" : "START_SENIOR_SELECTION"
+  // }
+
   if (contest.status === "CREATED" && !contest.adminUpcomingApproved && (contest.initialPayment || force)) {
     return "PUBLISH"
   }
@@ -83,6 +87,16 @@ export const AdminContestsList = () => {
       const contest = contests[contestIndex]
       const action = getContestAction(contest, forceActionRowIndex === contestIndex)
 
+      if (action === "START_SENIOR_SELECTION")
+        return (
+          <Button
+            onClick={() => handleActionClick(contestIndex, action)}
+            variant={forceActionRowIndex === contestIndex ? "alternate" : "primary"}
+            fullWidth
+          >
+            Select senior
+          </Button>
+        )
       if (action === "PUBLISH")
         return (
           <Button
@@ -124,6 +138,25 @@ export const AdminContestsList = () => {
         return (
           <Row spacing="s" alignment={["start", "center"]}>
             <Text variant="secondary">Waiting on initial payment</Text>
+            <Button
+              size="small"
+              variant={forceActionRowIndex === contestIndex ? "alternate" : "secondary"}
+              onClick={() => handleForceActionClick(contestIndex)}
+            >
+              <FaFastForward />
+            </Button>
+          </Row>
+        )
+      }
+
+      if (
+        contest.status === "CREATED" &&
+        !contest.leadSeniorSelectionMessageSentAt &&
+        !contest.leadSeniorAuditorHandle
+      ) {
+        return (
+          <Row spacing="s" alignment={["start", "center"]}>
+            <Text variant="secondary">No Lead Senior Watson selected</Text>
             <Button
               size="small"
               variant={forceActionRowIndex === contestIndex ? "alternate" : "secondary"}
