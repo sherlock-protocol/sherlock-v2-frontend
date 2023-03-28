@@ -80,6 +80,8 @@ export const DebtHistorySection = () => {
   const { data: profile } = useProfile()
   const { data: debtHistory } = useDebtHistory()
 
+  const hasDebts = debtHistory && debtHistory?.length > 0
+
   return (
     <Box shadow={false} fullWidth>
       <Row alignment={["space-between", "center"]} spacing="m">
@@ -94,26 +96,33 @@ export const DebtHistorySection = () => {
           </Text>
         </Column>
       </Row>
-      <Table selectable={false}>
-        <THead>
-          <Tr>
-            <Td></Td>
-            <Td>
-              <Text>Description</Text>
-            </Td>
-            <Td align="center">Contest</Td>
-            <Td align="center">Date</Td>
-            <Td align="right">Amount</Td>
-          </Tr>
-        </THead>
-        <TBody>
-          {debtHistory?.map((item) => (
-            <Tr key={item.id} className={styles.debtItem}>
-              {item.type === "INCREASE" ? <DebtIncreaseItem item={item} /> : <DebtDecreaseItem item={item} />}
+      {hasDebts ? (
+        <Table selectable={false}>
+          <THead>
+            <Tr>
+              <Td></Td>
+              <Td>
+                <Text>Description</Text>
+              </Td>
+              <Td align="center">Contest</Td>
+              <Td align="center">Date</Td>
+              <Td align="right">Amount</Td>
             </Tr>
-          ))}
-        </TBody>
-      </Table>
+          </THead>
+
+          <TBody>
+            {debtHistory?.map((item) => (
+              <Tr key={item.id} className={styles.debtItem}>
+                {item.type === "INCREASE" ? <DebtIncreaseItem item={item} /> : <DebtDecreaseItem item={item} />}
+              </Tr>
+            ))}
+          </TBody>
+        </Table>
+      ) : (
+        <Column alignment="center" className={styles.emptyListPlaceholder}>
+          <Text variant="secondary">No debt entries</Text>
+        </Column>
+      )}
     </Box>
   )
 }
