@@ -15,6 +15,40 @@ import { ConfirmContestActionModal } from "./ConfirmContestActionModal"
 import { CreateContestModal } from "./CreateContestModal"
 import { ContestScopeModal } from "./ContestScopeModal"
 
+type ContestLifeCycleStatus =
+  | "WAITING_INITIAL_PAYMENT"
+  | "READY_TO_SELECT_SENIOR"
+  | "WAITING_FOR_SENIOR_SELECTION"
+  | "READY_TO_PUBLISH"
+  | "WAITING_ON_FINAL_PAYMENT"
+  | "READY_TO_APPROVE_START"
+  | "START_APPROVED"
+
+const getCurrentStatus = (contest: ContestsListItem): ContestLifeCycleStatus => {
+  if (!contest.initialPayment) return "WAITING_INITIAL_PAYMENT"
+  if (!contest.leadSeniorAuditorHandle && !contest.leadSeniorSelectionMessageSentAt) return "READY_TO_SELECT_SENIOR"
+  if (!contest.leadSeniorAuditorHandle) return "WAITING_FOR_SENIOR_SELECTION"
+  if (!contest.adminUpcomingApproved) return "READY_TO_PUBLISH"
+  if (!contest.fullPayment) return "WAITING_ON_FINAL_PAYMENT"
+  if (!contest.adminStartApproved) return "READY_TO_APPROVE_START"
+
+  return "START_APPROVED"
+}
+
+const getForcedStatus = (contest: ContestsListItem): ContestLifeCycleStatus | undefined => {
+  const currentStatus = getCurrentStatus(contest)
+
+  switch (currentStatus) {
+    case "WAITING_INITIAL_PAYMENT":
+      return "READY_TO_SELECT_SENIOR"
+    case "READY_TO_SELECT_SENIOR":
+    case "WAITING_FOR_SENIOR_SELECTION":
+      return "READY_TO_PUBLISH"
+    case "WAITING_ON_FINAL_PAYMENT":
+      return "READY_TO_APPROVE_START"
+  }
+}
+
 export type ContestAction = "START_SENIOR_SELECTION" | "PUBLISH" | "APPROVE_START"
 
 type ConfirmationModal = {
@@ -23,9 +57,11 @@ type ConfirmationModal = {
 }
 
 const getContestAction = (contest: ContestsListItem, force: boolean): ContestAction | undefined => {
-  // if (contest.status === "CREATED" && !contest.leadSeniorAuditorHandle && !contest.leadSeniorSelectionMessageSentAt) {
-  //   return force ? "PUBLISH" : "START_SENIOR_SELECTION"
-  // }
+  if (!contest.initialPayment && !force) return
+
+  if (contest.status === "CREATED" && !contest.leadSeniorAuditorHandle && !contest.leadSeniorSelectionMessageSentAt) {
+    return force ? "PUBLISH" : "START_SENIOR_SELECTION"
+  }
 
   if (contest.status === "CREATED" && !contest.adminUpcomingApproved && (contest.initialPayment || force)) {
     return "PUBLISH"
@@ -85,34 +121,35 @@ export const AdminContestsList = () => {
       if (!contests) return null
 
       const contest = contests[contestIndex]
-      const action = getContestAction(contest, forceActionRowIndex === contestIndex)
+      const forced = forceActionRowIndex === contestIndex
+      const status = forced ? getForcedStatus(contest) : getCurrentStatus(contest)
 
-      if (action === "START_SENIOR_SELECTION")
+      if (status === "READY_TO_SELECT_SENIOR")
         return (
           <Button
-            onClick={() => handleActionClick(contestIndex, action)}
+            onClick={() => handleActionClick(contestIndex, "START_SENIOR_SELECTION")}
             variant={forceActionRowIndex === contestIndex ? "alternate" : "primary"}
             fullWidth
           >
             Select senior
           </Button>
         )
-      if (action === "PUBLISH")
+      if (status === "READY_TO_PUBLISH")
         return (
           <Button
-            onClick={() => handleActionClick(contestIndex, action)}
+            onClick={() => handleActionClick(contestIndex, "PUBLISH")}
             variant={forceActionRowIndex === contestIndex ? "alternate" : "primary"}
             fullWidth
           >
             Publish
           </Button>
         )
-      if (action === "APPROVE_START")
+      if (status === "READY_TO_APPROVE_START")
         return (
           <Button
             size="normal"
             variant={forceActionRowIndex === contestIndex ? "alternate" : "primary"}
-            onClick={() => handleActionClick(contestIndex, action)}
+            onClick={() => handleActionClick(contestIndex, "APPROVE_START")}
             fullWidth
           >
             Approve Start

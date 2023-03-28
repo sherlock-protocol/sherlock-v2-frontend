@@ -34,8 +34,8 @@ export const AdminApproveStartAction: React.FC<Props> = ({ contest, force, onCan
 
   return (
     <LoadingContainer loading={isLoadingStartApproval}>
-      <Column alignment={["center", "start"]} spacing="l">
-        <AdminActionHeader contest={contest} />
+      <Column alignment={["center", "start"]} spacing="xl">
+        <AdminActionHeader contest={contest} title="Approve Start" />
         <Column spacing="s" alignment={"center"}>
           <Text>
             Approve contest to start on{" "}

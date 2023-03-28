@@ -34,7 +34,7 @@ export const AdminPublishAction: React.FC<Props> = ({ contest, force, onCancel, 
   return (
     <LoadingContainer loading={isLoadingContestApproval}>
       <Column alignment={["center", "start"]} spacing="l">
-        <AdminActionHeader contest={contest} />
+        <AdminActionHeader contest={contest} title="Publish" />
         <Column spacing="s" alignment={"center"}>
           <Text>Make contest visible on the frontend</Text>
           <Text>Announce new contest on Twitter & Discord</Text>

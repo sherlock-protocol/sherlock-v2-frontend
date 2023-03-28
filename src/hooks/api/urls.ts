@@ -61,6 +61,9 @@ export const getAdminContestScope = (contestID: number) => `/admin/contest/${con
 export const adminCreateContest = () => `/admin/contests`
 export const getAdminTwitterAccount = (handle: string) => `/admin/twitter_account/${handle}`
 export const adminSubmitScope = () => `/admin/scope`
+export const getSeniorWatson = (handle: string) => `/admin/senior_watson?handle=${handle}`
+export const adminStartLeadSeniorWatsonSelection = () => `/admin/start_lead_senior_watson_selection`
+export const adminSelectLeadSeniorWatson = () => `/admin/select_lead_senior_watson`
 
 export const getRepositoryBranches = (repo: string) => `/audit_scope/${repo}/branches`
 export const getRepositoryCommits = (repo: string, branch: string) => `/audit_scope/${repo}/${branch}/commits`

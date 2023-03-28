@@ -1,11 +1,10 @@
 import { useCallback } from "react"
-import { Column } from "../../../components/Layout"
 import { Modal, Props as ModalProps } from "../../../components/Modal/Modal"
-import { Text } from "../../../components/Text"
 import { ContestsListItem } from "../../../hooks/api/admin/useAdminContests"
 import { AdminApproveStartAction } from "./AdminApproveStartAction"
 import { ContestAction } from "./AdminContestsList"
 import { AdminPublishAction } from "./AdminPublishAction"
+import { AdminSelectSeniorAction } from "./AdminSelectSeniorAction"
 
 type Props = Omit<ModalProps, "onClose"> & {
   contest: ContestsListItem
@@ -24,6 +23,8 @@ export type ActionProps = {
 
 const Action: React.FC<ActionProps> = ({ action, ...props }) => {
   switch (action) {
+    case "START_SENIOR_SELECTION":
+      return <AdminSelectSeniorAction {...props} />
     case "PUBLISH":
       return <AdminPublishAction {...props} />
     case "APPROVE_START":
