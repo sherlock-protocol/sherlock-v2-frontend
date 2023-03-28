@@ -20,6 +20,7 @@ type AuditorResponseData = {
   }[]
   payout_address_mainnet: string
   days: number
+  outstanding_debt: number
 }
 
 export type GetAuditorProfile = {
@@ -50,6 +51,7 @@ export const useProfile = () =>
         })),
         payoutAddress: data.profile.payout_address_mainnet,
         auditDays: data.profile.days,
+        outstandingDebt: data.profile.outstanding_debt,
       }
     },
     {
