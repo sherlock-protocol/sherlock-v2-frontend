@@ -90,9 +90,9 @@ export const DebtHistorySection = () => {
         </Column>
         <Column spacing="xs">
           <Text variant="normal">
-            {profile?.outstandingDebt === 0
-              ? "No outstanding debt"
-              : `Outstanding debt: ${profile?.outstandingDebt} USDC`}
+            {!!profile?.outstandingDebt && profile?.outstandingDebt > 0
+              ? `Outstanding debt: ${profile?.outstandingDebt} USDC`
+              : "No outstanding debt"}
           </Text>
         </Column>
       </Row>
