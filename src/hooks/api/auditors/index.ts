@@ -18,4 +18,5 @@ export type AuditorProfile = {
   }[]
   payoutAddress: string
   auditDays: number
+  outstandingDebt?: number
 }
