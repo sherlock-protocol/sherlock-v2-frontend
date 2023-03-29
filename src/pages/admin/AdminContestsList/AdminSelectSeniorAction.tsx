@@ -1,10 +1,11 @@
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useDebounce } from "use-debounce"
 import { Button } from "../../../components/Button"
 import { Input } from "../../../components/Input"
 import { Column, Row } from "../../../components/Layout"
 import LoadingContainer from "../../../components/LoadingContainer/LoadingContainer"
 import { Text } from "../../../components/Text"
+import { useAdminSelectLeadSeniorWatson } from "../../../hooks/api/admin/useAdminSelectLeadSeniorWatson"
 import { useAdminSeniorWatson } from "../../../hooks/api/admin/useAdminSeniorWatson"
 import { useAdminStartLeadSeniorWatsonSelection } from "../../../hooks/api/admin/useAdminStartLeadSeniorWatsonSelection"
 import { ErrorModal } from "../../ContestDetails/ErrorModal"
@@ -23,8 +24,22 @@ export const AdminSelectSeniorAction: React.FC<Props> = ({ contest, force, onCan
     startLeadSeniorWatsonSelection,
     isLoading: startSeniorWatsonSelectionLoading,
     error: startSeniorWatsonSelectionError,
+    isSuccess: startSeniorWatsonSelectionSuccess,
     reset: startSeniorWatsonSelectionReset,
   } = useAdminStartLeadSeniorWatsonSelection()
+  const {
+    selectLeadSeniorWatson,
+    isLoading: selectLeadSeniorWatsonLoading,
+    isSuccess: selectLeadSeniorWatsonSuccess,
+    error: selectLeadSeniorWatsonError,
+    reset: selectLeadSeniorWatsonReset,
+  } = useAdminSelectLeadSeniorWatson()
+
+  useEffect(() => {
+    if (selectLeadSeniorWatsonSuccess || startSeniorWatsonSelectionSuccess) {
+      onConfirm()
+    }
+  }, [startSeniorWatsonSelectionSuccess, selectLeadSeniorWatsonSuccess, onConfirm])
 
   const handleStartLeadSeniorWatsonSelectionClick = useCallback(() => {
     startLeadSeniorWatsonSelection({
@@ -33,12 +48,23 @@ export const AdminSelectSeniorAction: React.FC<Props> = ({ contest, force, onCan
     })
   }, [startLeadSeniorWatsonSelection, contest.id, force])
 
+  const handleSelectLeadSeniorWatsonClick = useCallback(() => {
+    if (!seniorWatson) return
+
+    selectLeadSeniorWatson({
+      seniorWatsonID: seniorWatson.id,
+      contestID: contest.id,
+      force,
+    })
+  }, [selectLeadSeniorWatson, seniorWatson, contest.id, force])
+
   const handleErrorModalClose = useCallback(() => {
     startSeniorWatsonSelectionReset()
-  }, [startSeniorWatsonSelectionReset])
+    selectLeadSeniorWatsonReset()
+  }, [startSeniorWatsonSelectionReset, selectLeadSeniorWatsonReset])
 
   return (
-    <LoadingContainer loading={startSeniorWatsonSelectionLoading}>
+    <LoadingContainer loading={startSeniorWatsonSelectionLoading || selectLeadSeniorWatsonLoading}>
       <Column alignment={["center", "start"]} spacing="l">
         <AdminActionHeader contest={contest} title="Select Lead Senior Watson" />
         <Column spacing="s" alignment={"center"}>
@@ -51,7 +77,12 @@ export const AdminSelectSeniorAction: React.FC<Props> = ({ contest, force, onCan
         <Column spacing="xs">
           <Row spacing="s">
             <Input value={seniorWatsonHandle} onChange={setSeniorWatsonHandle} />
-            <Button disabled={isLoading || isError || debouncedSeniorWatsonHandle === ""}>Select</Button>
+            <Button
+              disabled={isLoading || isError || debouncedSeniorWatsonHandle === ""}
+              onClick={handleSelectLeadSeniorWatsonClick}
+            >
+              Select
+            </Button>
           </Row>
           {error && <Text variant="warning">{error?.message}</Text>}
         </Column>
@@ -63,6 +94,9 @@ export const AdminSelectSeniorAction: React.FC<Props> = ({ contest, force, onCan
       </Column>
       {startSeniorWatsonSelectionError && (
         <ErrorModal reason={startSeniorWatsonSelectionError.message} onClose={handleErrorModalClose} />
+      )}
+      {selectLeadSeniorWatsonError && (
+        <ErrorModal reason={selectLeadSeniorWatsonError.message} onClose={handleErrorModalClose} />
       )}
     </LoadingContainer>
   )

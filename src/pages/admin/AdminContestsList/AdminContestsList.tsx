@@ -21,8 +21,14 @@ type ContestLifeCycleStatus =
   | "WAITING_FOR_SENIOR_SELECTION"
   | "READY_TO_PUBLISH"
   | "WAITING_ON_FINAL_PAYMENT"
+  | "WAITING_ON_FINALIZE_SUBMISSION"
   | "READY_TO_APPROVE_START"
   | "START_APPROVED"
+  | "RUNNING"
+  | "JUDGING"
+  | "ESCALATING"
+  | "SHERLOCK_JUDGING"
+  | "FINISHED"
 
 const getCurrentStatus = (contest: ContestsListItem): ContestLifeCycleStatus => {
   if (!contest.initialPayment) return "WAITING_INITIAL_PAYMENT"
@@ -30,9 +36,15 @@ const getCurrentStatus = (contest: ContestsListItem): ContestLifeCycleStatus => 
   if (!contest.leadSeniorAuditorHandle) return "WAITING_FOR_SENIOR_SELECTION"
   if (!contest.adminUpcomingApproved) return "READY_TO_PUBLISH"
   if (!contest.fullPayment) return "WAITING_ON_FINAL_PAYMENT"
+  if (!contest.submissionReady) return "WAITING_ON_FINALIZE_SUBMISSION"
   if (!contest.adminStartApproved) return "READY_TO_APPROVE_START"
 
-  return "START_APPROVED"
+  switch (contest.status) {
+    case "CREATED":
+      return "START_APPROVED"
+    default:
+      return contest.status
+  }
 }
 
 const getForcedStatus = (contest: ContestsListItem): ContestLifeCycleStatus | undefined => {
@@ -40,7 +52,10 @@ const getForcedStatus = (contest: ContestsListItem): ContestLifeCycleStatus | un
 
   switch (currentStatus) {
     case "WAITING_INITIAL_PAYMENT":
-      return "READY_TO_SELECT_SENIOR"
+      if (!contest.leadSeniorAuditorHandle && !contest.leadSeniorSelectionMessageSentAt) return "READY_TO_SELECT_SENIOR"
+      if (!contest.adminUpcomingApproved) return "READY_TO_PUBLISH"
+      if (!contest.adminStartApproved) return "READY_TO_APPROVE_START"
+      break
     case "READY_TO_SELECT_SENIOR":
     case "WAITING_FOR_SENIOR_SELECTION":
       return "READY_TO_PUBLISH"
@@ -54,26 +69,6 @@ export type ContestAction = "START_SENIOR_SELECTION" | "PUBLISH" | "APPROVE_STAR
 type ConfirmationModal = {
   contestIndex: number
   action: ContestAction
-}
-
-const getContestAction = (contest: ContestsListItem, force: boolean): ContestAction | undefined => {
-  if (!contest.initialPayment && !force) return
-
-  if (contest.status === "CREATED" && !contest.leadSeniorAuditorHandle && !contest.leadSeniorSelectionMessageSentAt) {
-    return force ? "PUBLISH" : "START_SENIOR_SELECTION"
-  }
-
-  if (contest.status === "CREATED" && !contest.adminUpcomingApproved && (contest.initialPayment || force)) {
-    return "PUBLISH"
-  }
-
-  if (
-    contest.status === "CREATED" &&
-    !contest.adminStartApproved &&
-    ((contest.fullPayment && contest.submissionReady) || force)
-  ) {
-    return "APPROVE_START"
-  }
 }
 
 export const AdminContestsList = () => {
@@ -170,46 +165,46 @@ export const AdminContestsList = () => {
       if (!contests) return null
 
       const contest = contests[contestIndex]
+      const status = getCurrentStatus(contest)
 
-      if (contest.status === "CREATED" && !contest.adminUpcomingApproved && !contest.initialPayment) {
+      if (status === "WAITING_INITIAL_PAYMENT") {
+        return <Text variant="secondary">Waiting on initial payment</Text>
+      }
+
+      if (status === "READY_TO_SELECT_SENIOR") {
+        return <Text variant="secondary">No Lead Senior Watson selected</Text>
+      }
+
+      if (status === "WAITING_FOR_SENIOR_SELECTION") {
+        const timeLeft = DateTime.fromSeconds(contest.leadSeniorSelectionMessageSentAt)
+          .plus({ hours: 72 })
+          .diffNow(["days", "hours"])
         return (
-          <Row spacing="s" alignment={["start", "center"]}>
-            <Text variant="secondary">Waiting on initial payment</Text>
-            <Button
-              size="small"
-              variant={forceActionRowIndex === contestIndex ? "alternate" : "secondary"}
-              onClick={() => handleForceActionClick(contestIndex)}
-            >
-              <FaFastForward />
-            </Button>
-          </Row>
+          <Column spacing="s">
+            <Text variant="secondary">Lead Senior Watson selection in progress</Text>
+            <Text variant="secondary" size="small">
+              {`Time left: ${timeLeft.toHuman({ maximumFractionDigits: 0 })}`}
+            </Text>
+          </Column>
         )
       }
 
-      if (
-        contest.status === "CREATED" &&
-        !contest.leadSeniorSelectionMessageSentAt &&
-        !contest.leadSeniorAuditorHandle
-      ) {
-        return (
-          <Row spacing="s" alignment={["start", "center"]}>
-            <Text variant="secondary">No Lead Senior Watson selected</Text>
-            <Button
-              size="small"
-              variant={forceActionRowIndex === contestIndex ? "alternate" : "secondary"}
-              onClick={() => handleForceActionClick(contestIndex)}
-            >
-              <FaFastForward />
-            </Button>
-          </Row>
-        )
-      }
-
-      if (contest.status === "CREATED" && !contest.adminUpcomingApproved) {
+      if (status === "READY_TO_PUBLISH") {
         return <Text variant="secondary">Ready to publish</Text>
       }
 
-      if (contest.status === "CREATED" && contest.adminStartApproved) {
+      if (status === "WAITING_ON_FINAL_PAYMENT") {
+        return <Text variant="secondary">Waiting on full payment</Text>
+      }
+
+      if (status === "WAITING_ON_FINALIZE_SUBMISSION")
+        return <Text variant="secondary">Waiting of protocol to finalize submission</Text>
+
+      if (status === "READY_TO_APPROVE_START") {
+        return <Text variant="secondary">Ready to approve start</Text>
+      }
+
+      if (status === "START_APPROVED") {
         return (
           <Row spacing="xs">
             <Text variant="secondary">Contest approved to start on </Text>
@@ -220,41 +215,7 @@ export const AdminContestsList = () => {
         )
       }
 
-      if (contest.status === "CREATED" && !contest.fullPayment) {
-        return (
-          <Row spacing="s" alignment={["start", "center"]}>
-            <Text variant="secondary">Waiting on full payment</Text>
-            <Button
-              size="small"
-              variant={forceActionRowIndex === contestIndex ? "alternate" : "secondary"}
-              onClick={() => handleForceActionClick(contestIndex)}
-            >
-              <FaFastForward />
-            </Button>
-          </Row>
-        )
-      }
-
-      if (contest.status === "CREATED" && !contest.submissionReady) {
-        return (
-          <Row spacing="s" alignment={["start", "center"]}>
-            <Text variant="secondary">Waiting for protocol to finalize submission</Text>
-            <Button
-              size="small"
-              variant={forceActionRowIndex === contestIndex ? "alternate" : "secondary"}
-              onClick={() => handleForceActionClick(contestIndex)}
-            >
-              <FaFastForward />
-            </Button>
-          </Row>
-        )
-      }
-
-      if (contest.status === "CREATED" && !contest.adminStartApproved) {
-        return <Text variant="secondary">Ready to approve start</Text>
-      }
-
-      if (contest.status === "RUNNING") {
+      if (status === "RUNNING") {
         return (
           <Text variant="secondary" strong>
             Running
@@ -262,7 +223,7 @@ export const AdminContestsList = () => {
         )
       }
 
-      if (contest.status === "ESCALATING") {
+      if (status === "ESCALATING") {
         return (
           <Text variant="secondary" strong>
             Escalations Open
@@ -270,7 +231,7 @@ export const AdminContestsList = () => {
         )
       }
 
-      if (contest.status === "JUDGING") {
+      if (status === "JUDGING") {
         return (
           <Text variant="secondary" strong>
             Judging Contest
@@ -278,7 +239,7 @@ export const AdminContestsList = () => {
         )
       }
 
-      if (contest.status === "SHERLOCK_JUDGING") {
+      if (status === "SHERLOCK_JUDGING") {
         return (
           <Text variant="secondary" strong>
             Sherlock Judging
@@ -286,7 +247,7 @@ export const AdminContestsList = () => {
         )
       }
 
-      if (contest.status === "FINISHED") {
+      if (status === "FINISHED") {
         return (
           <Text variant="secondary" strong>
             Finished
@@ -294,7 +255,7 @@ export const AdminContestsList = () => {
         )
       }
     },
-    [contests, forceActionRowIndex, handleForceActionClick]
+    [contests]
   )
 
   return (
@@ -326,6 +287,8 @@ export const AdminContestsList = () => {
             </THead>
             <TBody>
               {contests?.map((c, index) => {
+                const forceStatus = getForcedStatus(c)
+
                 return (
                   <Tr>
                     <Td>{c.id}</Td>
@@ -368,7 +331,20 @@ export const AdminContestsList = () => {
                         </Button>
                       </Row>
                     </Td>
-                    <Td>{renderContestState(index)}</Td>
+                    <Td>
+                      <Row spacing="s" alignment={["start", "center"]}>
+                        {renderContestState(index)}
+                        {forceStatus && (
+                          <Button
+                            size="small"
+                            variant={forceActionRowIndex === index ? "alternate" : "secondary"}
+                            onClick={() => handleForceActionClick(index)}
+                          >
+                            <FaFastForward />
+                          </Button>
+                        )}
+                      </Row>
+                    </Td>
                     <Td>{renderContestAction(index)}</Td>
                   </Tr>
                 )
