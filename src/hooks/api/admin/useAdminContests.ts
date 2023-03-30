@@ -19,6 +19,9 @@ export type ContestsListItem = {
   endDate: number
   submissionReady: boolean
   hasSolidityMetricsReport: boolean
+  leadSeniorAuditorHandle: string
+  leadSeniorSelectionMessageSentAt: number
+  leadSeniorConfirmationMessage: string
 }
 
 type GetAdminContestsResponse = {
@@ -35,6 +38,9 @@ type GetAdminContestsResponse = {
   ends_at: number
   protocol_submission_ready: boolean
   has_solidity_metrics_report: boolean
+  lead_senior_auditor_handle: string
+  senior_selection_message_sent_at: number
+  senior_confirmed_message: string
 }[]
 
 export const adminContestsQuery = () => "admin-contests"
@@ -56,5 +62,8 @@ export const useAdminContests = () =>
       endDate: d.ends_at,
       submissionReady: d.protocol_submission_ready,
       hasSolidityMetricsReport: d.has_solidity_metrics_report,
+      leadSeniorAuditorHandle: d.lead_senior_auditor_handle,
+      leadSeniorSelectionMessageSentAt: d.senior_selection_message_sent_at,
+      leadSeniorConfirmationMessage: d.senior_confirmed_message,
     }))
   })
