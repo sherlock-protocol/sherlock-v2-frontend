@@ -52,7 +52,7 @@ export const useSignUp = () => {
         const { data } = await contestsAPI.post<SignUpResponseData>(signUpUrl(), {
           handle: params.handle,
           github_handle: params.githubHandle,
-          discord_handle: params.discordHandle,
+          discord_handle: params.discordHandle === "" ? null : params.discordHandle,
           twitter_handle: params.twitterHandle && params.twitterHandle.length > 0 ? params.twitterHandle : undefined,
           telegram_handle:
             params.telegramHandle && params.telegramHandle.length > 0 ? params.telegramHandle : undefined,
