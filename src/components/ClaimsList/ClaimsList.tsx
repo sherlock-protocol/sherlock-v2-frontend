@@ -19,6 +19,17 @@ const CLAIMS = [
     amount: 4_529_285,
     txHashUrl: "https://etherscan.io/tx/0x234cd8e369fdcd0387ada4214e563a6a72aad4abd0b464a2873f3eb9dac2579b",
   },
+  {
+    id: 2,
+    protocol: "Sentiment",
+    date: "April 7, 2023",
+    coverageAgreementUrl:
+      "https://github.com/sherlock-protocol/sherlock-reports/blob/588192a19aef3180fa302e9ae10e8c29d7c7f044/coverage-agreements/Sentiment%20Coverage%20Agreement%20(Revised%202023.2.17).pdf",
+    evidenceUrl:
+      "https://sherlock-files.ams3.digitaloceanspaces.com/claims/Sentiment_0x5af5b22283e35ef9d9d4a32753014cdc40fd7a5a5d920d83d2c1e901c10a0a7c_16977102.pdf?hash=f513422f0d98aaac6f669142caf9148172ca7f2a17559f3c1cb26177df11e8ef",
+    amount: 65_701,
+    txHashUrl: "https://etherscan.io/tx/0xe67bbb7a9085f1a603fcea1eefe08c7674a2f504e81f6d69df41c8b077c2765e",
+  },
 ]
 
 /**
