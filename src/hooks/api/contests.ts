@@ -35,6 +35,7 @@ export type Contest = {
   linesOfCode?: string
   rewards: number
   judgingRepo: string
+  escalationStartDate?: number // Timestamp in seconds.
 }
 
 export type Scoreboard = {
@@ -66,6 +67,7 @@ type GetContestsResponseData = {
   template_repo_name: string
   rewards: number
   judging_repo_name: string
+  escalation_started_at?: number
 }[]
 
 export const contestsQueryKey = "contests"
@@ -93,6 +95,7 @@ export const useContests = () =>
       leadJudgeHandle: d.lead_judge_handle,
       leadJudgeFixedPay: d.lead_judge_fixed_pay,
       judgingRepo: d.judging_repo_name,
+      escalationStartDate: d.escalation_started_at,
     }))
   })
 
@@ -119,6 +122,7 @@ type GetContestResponseData = {
   lead_judge_fixed_pay: number
   rewards: number
   judging_repo_name: string
+  escalation_started_at?: number
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -151,6 +155,7 @@ export const useContest = (id: number) =>
         leadJudgeHandle: response.lead_judge_handle,
         leadJudgeFixedPay: response.lead_judge_fixed_pay,
         judgingRepo: response.judging_repo_name,
+        escalationStartDate: response.escalation_started_at,
       }
     },
     {

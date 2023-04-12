@@ -214,6 +214,10 @@ export const ContestDetails = () => {
 
   const hasEnoughAuditDays = profile && profile.auditDays >= 28
 
+  const canViewFindings =
+    !["CREATED", "RUNNING"].includes(contest.status) ||
+    (contest.status === "SHERLOCK_JUDGING" && contest.escalationStartDate)
+
   return (
     <Column spacing="m" className={styles.container}>
       {!isAuditor && (
@@ -271,7 +275,7 @@ export const ContestDetails = () => {
                   <Text variant="alternate" strong>{`Time left: ${timeLeftString(timeLeft)}`}</Text>
                 </Row>
               )}
-              {!["CREATED", "RUNNING"].includes(contest.status) && (
+              {canViewFindings && (
                 <Button variant="secondary" onClick={handleJudgingRepoClick}>
                   <FaGithub /> &nbsp; View findings
                 </Button>
