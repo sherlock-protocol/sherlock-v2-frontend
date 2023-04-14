@@ -3,7 +3,6 @@ import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
 import { useScope } from "../../hooks/api/scope/useScope"
 import { Text } from "../../components/Text"
-import { useProtocolDashboard } from "../../hooks/api/contests/useProtocolDashboard"
 import { ScopeList } from "./ScopeList"
 
 import styles from "./AuditScope.module.scss"
@@ -14,7 +13,6 @@ type Props = {
 }
 
 export const AuditScopeReadOnly: React.FC<Props> = ({ dashboardID }) => {
-  const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
   const { data: scope } = useScope(dashboardID)
 
   return (
