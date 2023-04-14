@@ -32,7 +32,7 @@ export type Contest = {
   judgingPrizePool?: number
   jugdingEndDate?: number // Timestamp in seconds.
   repo: string
-  linesOfCode?: string
+  linesOfCode?: number
   rewards: number
   judgingRepo: string
   escalationStartDate?: number // Timestamp in seconds.
@@ -117,7 +117,7 @@ type GetContestResponseData = {
   judging_prize_pool: number | null
   judging_ends_at?: number
   template_repo_name: string
-  expected_lines_of_code: string
+  expected_lines_of_code: number
   lead_judge_handle: string
   lead_judge_fixed_pay: number
   rewards: number
