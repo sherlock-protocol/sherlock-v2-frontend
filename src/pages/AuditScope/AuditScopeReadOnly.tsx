@@ -33,7 +33,7 @@ export const AuditScopeReadOnly: React.FC<Props> = ({ dashboardID }) => {
           </Row>
           <Row spacing="xs">
             <Text>nSLOC:</Text>
-            <Text strong>{protocolDashboard?.contest.linesOfCode}</Text>
+            <Text strong>{scope?.reduce((t, s) => (t += s.nSLOC ?? 0), 0)}</Text>
           </Row>
         </Column>
       </Box>
