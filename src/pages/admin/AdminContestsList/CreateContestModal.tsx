@@ -373,7 +373,14 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
             <Field label="Short Description" error={!!shortDescriptionError} errorMessage={shortDescriptionError ?? ""}>
               <Input value={contestShortDescription} onChange={handleUpdateShortDescription} />
             </Field>
-            <Field label="nSLOC">
+            <Field
+              label="nSLOC"
+              detail={
+                isNaN(Number(contestNSLOC))
+                  ? "Value is not a number. It won't be used to check the submitted nSLOC"
+                  : ""
+              }
+            >
               <Input value={contestNSLOC} onChange={setContestNSLOC} />
             </Field>
             <Field label="Start Date" error={!!startDateError} errorMessage={startDateError ?? ""}>
