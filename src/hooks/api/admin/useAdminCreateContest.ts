@@ -42,7 +42,7 @@ export const useAdminCreateContest = () => {
           },
           title: params.contest.title,
           short_description: params.contest.shortDescription,
-          expected_lines_of_code: params.contest.nSLOC,
+          lines_of_code: params.contest.nSLOC,
           starts_at: params.contest.startDate.toSeconds(),
           ends_at: params.contest.endDate.toSeconds(),
           prize_pool: params.contest.auditPrizePool,
