@@ -29,7 +29,6 @@ export const updateProfile = () => "profile"
 export const signOut = () => "signout"
 export const signUp = () => "signup"
 export const joinContest = () => "/contests/join-contest"
-export const getContestLeaderboard = (id: number) => `/contests/${id}/scoreboard`
 export const getProtocolDashboard = (dashboardID: string) => `/contests/dashboard/${dashboardID}`
 export const submitPayment = () => "/contests/payments/transaction"
 
@@ -71,3 +70,4 @@ export const getRepositoryContracts = (repo: string, commit: string) => `/audit_
 
 // Stats
 export const getLeaderboard = () => "/stats/leaderboard"
+export const getContestLeaderboard = (id: number) => `/stats/contest_leaderboard/${id}`

@@ -5,7 +5,7 @@ import { Text } from "../../components/Text"
 import { useContest } from "../../hooks/api/contests"
 import { Title } from "../../components/Title"
 import { Table, TBody, Td, Th, THead, Tr } from "../../components/Table/Table"
-import { useContestLeaderboard } from "../../hooks/api/contests/useContestLeaderboard"
+import { useContestLeaderboard } from "../../hooks/api/stats/leaderboard/useContestLeaderboard"
 import { commify } from "../../utils/units"
 
 import styles from "../Leaderboard/Leaderboard.module.scss"

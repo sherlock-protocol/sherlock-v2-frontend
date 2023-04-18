@@ -1,6 +1,6 @@
 import { useQuery } from "react-query"
-import { contests as contestsAPI } from "../axios"
-import { getContestLeaderboard as getContestLeaderboardUrl } from "../urls"
+import { contests as contestsAPI } from "../../axios"
+import { getContestLeaderboard } from "../../urls"
 
 type ContestLeaderboard = {
   contestants: {
@@ -15,24 +15,30 @@ type ContestLeaderboard = {
 }
 
 type GetContestLeaderboardResponse = {
-  contestants: {
-    handle: string
-    is_lead_senior: boolean
-    is_senior: boolean
-    is_team: boolean
-    score: number
-    payout: number
-  }[]
+  contestants: Record<
+    string,
+    {
+      handle: string
+      is_lead_senior: boolean
+      is_senior: boolean
+      is_team: boolean
+      score: number
+      payout: number
+    }
+  >
   total_contestants: number
 }
 
 export const contestLeaderboardQuery = (id: number) => `contest-${id}-leaderboard`
 export const useContestLeaderboard = (contestID: number) =>
   useQuery<ContestLeaderboard, Error>(contestLeaderboardQuery(contestID), async () => {
-    const { data } = await contestsAPI.get<GetContestLeaderboardResponse>(getContestLeaderboardUrl(contestID))
+    const { data } = await contestsAPI.get<GetContestLeaderboardResponse>(getContestLeaderboard(contestID))
+
+    const contestants = Object.values(data.contestants)
+    const contestantsOrderedByScore = contestants.sort((a, b) => a.score - b.score)
 
     return {
-      contestants: data.contestants.map((c) => ({
+      contestants: contestantsOrderedByScore.map((c) => ({
         handle: c.handle,
         isLeadSenior: c.is_lead_senior,
         isSenior: c.is_senior,
