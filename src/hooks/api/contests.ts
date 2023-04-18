@@ -3,12 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useAccount, useSignTypedData } from "wagmi"
 import { contests as contestsAPI } from "./axios"
 import { contestantQueryKey } from "./contests/useContestant"
-import {
-  getContests as getContestsUrl,
-  getContest as getContestUrl,
-  contestOptIn as contestOptInUrl,
-  getScoreboard as getScoreboardUrl,
-} from "./urls"
+import { getContests as getContestsUrl, getContest as getContestUrl, contestOptIn as contestOptInUrl } from "./urls"
 
 export type ContestStatus = "CREATED" | "RUNNING" | "JUDGING" | "FINISHED" | "ESCALATING" | "SHERLOCK_JUDGING"
 
@@ -213,27 +208,3 @@ export const useOptInOut = (contestId: number, optIn: boolean, handle: string) =
     [mutationIsLoading, signatureIsLoading, signAndOptIn]
   )
 }
-
-type GetScoreboardResponseData = {
-  handle: string
-  is_team: boolean
-  senior: boolean
-  score: number
-  days: number
-  payout: number
-}[]
-
-export const scoreboardQueryKey = () => "scoreboard"
-export const useScoreboard = () =>
-  useQuery<Scoreboard, Error>(scoreboardQueryKey(), async () => {
-    const { data } = await contestsAPI.get<GetScoreboardResponseData>(getScoreboardUrl())
-
-    return data.map((d) => ({
-      handle: d.handle,
-      senior: d.senior,
-      isTeam: d.is_team,
-      score: d.score,
-      contestDays: d.days,
-      payouts: d.payout,
-    }))
-  })

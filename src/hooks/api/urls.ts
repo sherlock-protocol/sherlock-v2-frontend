@@ -17,7 +17,6 @@ export const contestSignUp = () => "/contests/sign-up"
 export const contestOptIn = () => "/contests/ranking-opt-in"
 export const getContestant = (address: string, contestId: number) =>
   `/contests/contestant?address=${address}&contest_id=${contestId}`
-export const getScoreboard = () => "scoreboard"
 export const getIsAuditor = (address: string) => `is_auditor/${address}`
 export const authenticateAuditor = (address: string) => `auditors/${address}`
 export const getNonce = () => `nonce`
@@ -69,3 +68,6 @@ export const adminSelectLeadSeniorWatson = () => `/admin/select_lead_senior_wats
 export const getRepositoryBranches = (repo: string) => `/audit_scope/${repo}/branches`
 export const getRepositoryCommits = (repo: string, branch: string) => `/audit_scope/${repo}/${branch}/commits`
 export const getRepositoryContracts = (repo: string, commit: string) => `/audit_scope/${repo}/${commit}/contracts`
+
+// Stats
+export const getLeaderboard = () => "/stats/leaderboard"

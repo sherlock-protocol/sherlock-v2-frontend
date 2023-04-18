@@ -20,7 +20,7 @@ import MobileBlock from "./components/MobileBlock/MobileBlock"
 import { InternalOverviewPage } from "./pages/InternalOverview/InternalOverview"
 import { ContestsPage } from "./pages/Contests"
 import { ContestDetails } from "./pages/ContestDetails"
-import { Scoreboard } from "./pages/Scoreboard"
+import { Leaderboard } from "./pages/Leaderboard"
 import { AuditorProfile } from "./pages/AuditorProfile"
 import { AuthenticationGate } from "./components/AuthenticationGate"
 import { useAccount } from "wagmi"
@@ -83,7 +83,7 @@ function App() {
         <Route path={`${routes.AuditContests}/*`} element={<AppContests />}>
           <Route path={contestsRoutes.Contests} element={<ContestsPage />} />
           <Route path={contestsRoutes.ContestDetails} element={<ContestDetails />} />
-          <Route path={contestsRoutes.Leaderboard} element={<Scoreboard />} />
+          <Route path={contestsRoutes.Leaderboard} element={<Leaderboard />} />
 
           <Route
             path="scoreboard"

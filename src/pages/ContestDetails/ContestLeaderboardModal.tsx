@@ -8,7 +8,7 @@ import { Table, TBody, Td, Th, THead, Tr } from "../../components/Table/Table"
 import { useContestLeaderboard } from "../../hooks/api/contests/useContestLeaderboard"
 import { commify } from "../../utils/units"
 
-import styles from "../Scoreboard/Scoreboard.module.scss"
+import styles from "../Leaderboard/Leaderboard.module.scss"
 
 type Props = ModalProps & {
   contestID: number

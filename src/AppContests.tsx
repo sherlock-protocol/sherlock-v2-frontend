@@ -5,14 +5,14 @@ import { contestsRoutes, routes } from "./utils/routes"
 import { Footer } from "./components/Footer"
 
 import styles from "./App.module.scss"
-import { useScoreboard } from "./hooks/api/contests"
 import { useAccount } from "wagmi"
 import { useIsAuditor } from "./hooks/api/auditors"
+import { useLeaderboard } from "./hooks/api/stats/leaderboard/useLeaderboard"
 
 export const AppContests = () => {
   const { address: connectedAddress } = useAccount()
   const { data: isAuditor } = useIsAuditor(connectedAddress)
-  const { data: scoreboard } = useScoreboard()
+  const { data: leaderboard } = useLeaderboard()
   const contentRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
 
@@ -28,7 +28,7 @@ export const AppContests = () => {
     },
   ]
 
-  if (scoreboard && scoreboard.length > 0) {
+  if (leaderboard && leaderboard.length > 0) {
     navigationLinks.push({
       title: "LEADERBOARD",
       route: contestsRoutes.Leaderboard,

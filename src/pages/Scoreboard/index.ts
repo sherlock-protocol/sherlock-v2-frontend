@@ -1,1 +1,0 @@
-export { Scoreboard } from "./Scoreboard"
