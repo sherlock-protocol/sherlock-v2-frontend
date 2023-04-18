@@ -14,7 +14,6 @@ export type Leaderboard = {
 type GetLeaderboardResponseData = Record<
   string,
   {
-    handle: string
     is_team: boolean
     senior: boolean
     score: number
@@ -28,15 +27,14 @@ export const useLeaderboard = () =>
   useQuery<Leaderboard>(leaderboardKey(), async () => {
     const { data } = await contestsAPI.get<GetLeaderboardResponseData>(getLeaderboard())
 
-    const entries = Object.values(data)
-    const entriesOrderedByScore = entries.sort((a, b) => a.score - b.score)
+    const entriesOrderedByScore = Object.entries(data).sort((a, b) => b[1].score - a[1].score)
 
     return entriesOrderedByScore.map((l) => ({
-      handle: l.handle,
-      isTeam: l.is_team,
-      senior: l.senior,
-      days: l.days,
-      payout: l.payout,
-      score: l.score,
+      handle: l[0],
+      isTeam: l[1].is_team,
+      senior: l[1].senior,
+      days: l[1].days,
+      payout: l[1].payout,
+      score: l[1].score,
     }))
   })

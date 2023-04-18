@@ -18,7 +18,6 @@ type GetContestLeaderboardResponse = {
   contestants: Record<
     string,
     {
-      handle: string
       is_lead_senior: boolean
       is_senior: boolean
       is_team: boolean
@@ -34,17 +33,16 @@ export const useContestLeaderboard = (contestID: number) =>
   useQuery<ContestLeaderboard, Error>(contestLeaderboardQuery(contestID), async () => {
     const { data } = await contestsAPI.get<GetContestLeaderboardResponse>(getContestLeaderboard(contestID))
 
-    const contestants = Object.values(data.contestants)
-    const contestantsOrderedByScore = contestants.sort((a, b) => a.score - b.score)
+    const contestantsOrderedByScore = Object.entries(data.contestants).sort((a, b) => b[1].score - a[1].score)
 
     return {
       contestants: contestantsOrderedByScore.map((c) => ({
-        handle: c.handle,
-        isLeadSenior: c.is_lead_senior,
-        isSenior: c.is_senior,
-        isTeam: c.is_team,
-        score: c.score ?? 0,
-        payout: c.payout,
+        handle: c[0],
+        isLeadSenior: c[1].is_lead_senior,
+        isSenior: c[1].is_senior,
+        isTeam: c[1].is_team,
+        score: c[1].score ?? 0,
+        payout: c[1].payout,
       })),
       totalContestants: data.total_contestants,
     }
