@@ -31,8 +31,6 @@ export const useLeaderboard = () =>
     const entries = Object.values(data)
     const entriesOrderedByScore = entries.sort((a, b) => a.score - b.score)
 
-    console.log(entriesOrderedByScore)
-
     return entriesOrderedByScore.map((l) => ({
       handle: l.handle,
       isTeam: l.is_team,
