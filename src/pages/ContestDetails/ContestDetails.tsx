@@ -30,7 +30,7 @@ import { useIsAuditor } from "../../hooks/api/auditors"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { ContestLeaderboardModal } from "./ContestLeaderboardModal"
 import { useContestant } from "../../hooks/api/contests/useContestant"
-import { useContestLeaderboard } from "../../hooks/api/contests/useContestLeaderboard"
+import { useContestLeaderboard } from "../../hooks/api/stats/leaderboard/useContestLeaderboard"
 import { contestsRoutes } from "../../utils/routes"
 
 const STATUS_LABELS = {

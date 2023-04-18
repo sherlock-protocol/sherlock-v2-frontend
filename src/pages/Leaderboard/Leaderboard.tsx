@@ -6,22 +6,22 @@ import { Table, TBody, Td, Th, THead, Tr } from "../../components/Table/Table"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
 import { SeniorWatsonModal } from "./SeniorWatsonModal"
-import { useScoreboard } from "../../hooks/api/contests"
 
-import styles from "./Scoreboard.module.scss"
+import styles from "./Leaderboard.module.scss"
 import { commify } from "../../utils/units"
+import { useLeaderboard } from "../../hooks/api/stats/leaderboard/useLeaderboard"
 
-export const Scoreboard: React.FC = () => {
+export const Leaderboard: React.FC = () => {
   const [seniorWatsonModalOpen, setSeniorWatsonModalOpen] = useState(false)
 
-  const { data: scoreboard } = useScoreboard()
+  const { data: leaderboard } = useLeaderboard()
 
-  if (!scoreboard) return null
+  if (!leaderboard) return null
 
   return (
     <>
       <Box>
-        <Column className={styles.scoreboardTable}>
+        <Column className={styles.leaderboardTable}>
           <Title>LEADERBOARD</Title>
           <Table selectable={false}>
             <THead>
@@ -47,28 +47,28 @@ export const Scoreboard: React.FC = () => {
               </Tr>
             </THead>
             <TBody>
-              {scoreboard.map((s, index) => (
+              {leaderboard.map((l, index) => (
                 <Tr>
                   <Td>{index + 1}</Td>
                   <Td>
                     <Row spacing="l">
-                      <Text>{s.handle}</Text>
-                      <Text className={styles.highlight}>{s.isTeam && <FaUsers title="Team" />}</Text>
+                      <Text>{l.handle}</Text>
+                      <Text className={styles.highlight}>{l.isTeam && <FaUsers title="Team" />}</Text>
                       <Text className={styles.highlight}>
-                        {s.senior && <FaCrown onClick={() => setSeniorWatsonModalOpen(true)} title="Senior Watson" />}
+                        {l.senior && <FaCrown onClick={() => setSeniorWatsonModalOpen(true)} title="Senior Watson" />}
                       </Text>
                     </Row>
                   </Td>
                   <Td>
                     <Text variant="mono" alignment="center" strong>
-                      {s.score >= 1 ? s.score.toFixed(0) : "<1"}
+                      {l.score >= 1 ? l.score.toFixed(0) : "<1"}
                     </Text>
                   </Td>
                   <Td>
-                    <Text alignment="center">{s.contestDays.toFixed(1)}</Text>
+                    <Text alignment="center">{l.days.toFixed(1)}</Text>
                   </Td>
                   <Td>
-                    <Text alignment="center">{`${commify(s.payouts, 2)}`}</Text>
+                    <Text alignment="center">{`${commify(l.payout, 2)}`}</Text>
                   </Td>
                 </Tr>
               ))}
