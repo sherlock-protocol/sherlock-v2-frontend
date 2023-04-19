@@ -23,7 +23,7 @@ const DebtIncreaseItem: React.FC<ItemProps> = React.memo(({ item }) => (
     </Td>
     <Td>
       <Column spacing="xs">
-        <Text strong>Rejected escalation</Text>
+        <Text strong>{item.escalationUrl ? "Rejected escalation" : "Invalid issues penalty"}</Text>
         {item.escalationUrl && (
           <Text>
             <a href={item.escalationUrl} target="_blank" rel="noopener noreferrer" className={styles.link}>
