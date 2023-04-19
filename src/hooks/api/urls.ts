@@ -48,6 +48,11 @@ export const getContextQuestions = (dashboardID: string) => `dashboard/${dashboa
 export const updateContextQuestionAnswers = (dashboardID: string) => `dashboard/${dashboardID}/context_questions`
 export const submitContextQuestionAnswers = (dashboardID: string) => `dashboard/${dashboardID}/submit_answers`
 
+export const getRepositoryBranches = (repo: string) => `/audit_scope/${repo}/branches`
+export const getRepositoryCommits = (repo: string, branch: string) => `/audit_scope/${repo}/${branch}/commits`
+export const getRepositoryContracts = (repo: string, commit: string) => `/audit_scope/${repo}/${commit}/contracts`
+
+// Admin
 export const getAdminProfile = () => `/admin/profile`
 export const adminSignIn = () => `/admin/signin`
 export const adminSignOut = () => `/admin/signout`
@@ -65,10 +70,7 @@ export const adminSubmitScope = () => `/admin/scope`
 export const getSeniorWatson = (handle: string) => `/admin/senior_watson?handle=${handle}`
 export const adminStartLeadSeniorWatsonSelection = () => `/admin/start_lead_senior_watson_selection`
 export const adminSelectLeadSeniorWatson = () => `/admin/select_lead_senior_watson`
-
-export const getRepositoryBranches = (repo: string) => `/audit_scope/${repo}/branches`
-export const getRepositoryCommits = (repo: string, branch: string) => `/audit_scope/${repo}/${branch}/commits`
-export const getRepositoryContracts = (repo: string, commit: string) => `/audit_scope/${repo}/${commit}/contracts`
+export const adminGenerateReport = (contestID: number) => `/admin/contest/${contestID}/generate_report`
 
 // Stats
 export const getLeaderboard = () => "/stats/leaderboard"

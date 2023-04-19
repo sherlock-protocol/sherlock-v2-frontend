@@ -1,4 +1,5 @@
 import { DateTime } from "luxon"
+import { useCallback, useEffect, useState } from "react"
 import { FaClipboardList, FaEye } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
@@ -8,14 +9,41 @@ import { Table, TBody, Td, Th, THead, Tr } from "../../../components/Table/Table
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
 import { useAdminContests } from "../../../hooks/api/admin/useAdminContests"
+import { useAdminGenerateReport } from "../../../hooks/api/admin/useGenerateReport"
 
 import styles from "./AdminContestsList.module.scss"
+import { GenerateReportSuccessModal } from "./GenerateReportSuccessModal"
 
 export const AdminContestsListFinished = () => {
   const { data: contests, isLoading } = useAdminContests("finished")
+  const { generateReport, isLoading: generateReportIsLoading, isSuccess, reset, variables } = useAdminGenerateReport()
+  const [reportGeneratedModalVisible, setReportGenerateModalVisible] = useState<number | undefined>()
+
+  useEffect(() => {
+    if (isSuccess) {
+      const index = contests?.findIndex((c) => c.id === variables?.contestID)
+      setReportGenerateModalVisible(index)
+    } else {
+      setReportGenerateModalVisible(undefined)
+    }
+  }, [isSuccess, setReportGenerateModalVisible, variables, contests])
+
+  const handleModalClose = useCallback(() => {
+    reset()
+  }, [reset])
+
+  const handleGenerateReportClick = useCallback(
+    (index: number) => {
+      if (!contests) return
+
+      const contest = contests[index]
+      generateReport({ contestID: contest.id })
+    },
+    [generateReport, contests]
+  )
 
   return (
-    <LoadingContainer loading={isLoading}>
+    <LoadingContainer loading={isLoading || generateReportIsLoading}>
       <Column spacing="l">
         <Box shadow={false} fullWidth>
           <Title>FINISHED CONTESTS</Title>
@@ -71,7 +99,7 @@ export const AdminContestsListFinished = () => {
                   </Td>
                   <Td></Td>
                   <Td>
-                    <Button>Generate report</Button>
+                    <Button onClick={() => handleGenerateReportClick(index)}>Generate report</Button>
                   </Td>
                 </Tr>
               ))}
@@ -79,6 +107,9 @@ export const AdminContestsListFinished = () => {
           </Table>
         </Box>
       </Column>
+      {reportGeneratedModalVisible && contests && (
+        <GenerateReportSuccessModal contest={contests[reportGeneratedModalVisible]} onClose={handleModalClose} />
+      )}
     </LoadingContainer>
   )
 }
