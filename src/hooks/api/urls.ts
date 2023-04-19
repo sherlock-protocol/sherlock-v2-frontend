@@ -1,3 +1,5 @@
+import { ContestListStatus } from "./admin/useAdminContests"
+
 export const getFundraisePosition = (account: string) => `positions/${account}/fundraise`
 export const getUnlockOverTime = () => "stats/unlock"
 export const getAPYOverTime = () => "stats/apy"
@@ -50,7 +52,7 @@ export const getAdminProfile = () => `/admin/profile`
 export const adminSignIn = () => `/admin/signin`
 export const adminSignOut = () => `/admin/signout`
 export const getAdminNonce = () => `/admin/nonce`
-export const getAdminContests = () => `/admin/contests`
+export const getAdminContests = (status: ContestListStatus) => `/admin/contests/${status}`
 export const getAdminContestTweetPreview = (contestID: number) =>
   `/admin/contests/${contestID}/announcement_tweet_preview`
 export const adminApproveContest = () => `/admin/approve_contest`

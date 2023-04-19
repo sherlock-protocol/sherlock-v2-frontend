@@ -43,10 +43,12 @@ type GetAdminContestsResponse = {
   senior_confirmed_message: string
 }[]
 
-export const adminContestsQuery = () => "admin-contests"
-export const useAdminContests = () =>
-  useQuery<ContestsListItem[], Error>(adminContestsQuery(), async () => {
-    const { data } = await contestsAPI.get<GetAdminContestsResponse>(getAdminContestsUrl())
+export type ContestListStatus = "active" | "finished"
+
+export const adminContestsQuery = (status: ContestListStatus) => ["admin-contests", status]
+export const useAdminContests = (status: ContestListStatus) =>
+  useQuery<ContestsListItem[], Error>(adminContestsQuery(status), async () => {
+    const { data } = await contestsAPI.get<GetAdminContestsResponse>(getAdminContestsUrl(status))
 
     return data.map((d) => ({
       id: d.id,
