@@ -10,6 +10,8 @@ type AdminContestScopeResponse = {
     commit_hash: string
     files: string[]
     solidity_metrics_report: string
+    nsloc: number
+    comment_to_source_ratio: number
   }[]
 }
 
@@ -24,5 +26,7 @@ export const useAdminContestScope = (contestID: number) =>
       commitHash: d.commit_hash,
       files: d.files,
       solidityMetricsReport: d.solidity_metrics_report,
+      nSLOC: d.nsloc,
+      commentToSourceRatio: d.comment_to_source_ratio,
     }))
   })

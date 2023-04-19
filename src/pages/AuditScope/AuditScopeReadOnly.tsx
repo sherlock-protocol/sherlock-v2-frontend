@@ -3,7 +3,6 @@ import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
 import { useScope } from "../../hooks/api/scope/useScope"
 import { Text } from "../../components/Text"
-import { useProtocolDashboard } from "../../hooks/api/contests/useProtocolDashboard"
 import { ScopeList } from "./ScopeList"
 
 import styles from "./AuditScope.module.scss"
@@ -14,7 +13,6 @@ type Props = {
 }
 
 export const AuditScopeReadOnly: React.FC<Props> = ({ dashboardID }) => {
-  const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
   const { data: scope } = useScope(dashboardID)
 
   return (
@@ -33,7 +31,7 @@ export const AuditScopeReadOnly: React.FC<Props> = ({ dashboardID }) => {
           </Row>
           <Row spacing="xs">
             <Text>nSLOC:</Text>
-            <Text strong>{protocolDashboard?.contest.linesOfCode}</Text>
+            <Text strong>{scope?.reduce((t, s) => (t += s.nSLOC ?? 0), 0)}</Text>
           </Row>
         </Column>
       </Box>

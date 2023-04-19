@@ -33,3 +33,14 @@
 .mono {
   font-family: monospace;
 }
+
+.warning {
+  color: #ffcc00;
+}
+
+.warningBox {
+  border: 1px solid #ffcc00;
+  padding: 1rem;
+  background-color: transparentize($color: #ffcc00, $amount: 0.9);
+  color: #ffcc00;
+}
