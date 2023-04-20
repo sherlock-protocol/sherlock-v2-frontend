@@ -1,7 +1,7 @@
 import { BigNumber, ethers } from "ethers"
 import { DateTime } from "luxon"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { FaChrome, FaTwitter } from "react-icons/fa"
+import { FaChrome, FaTwitter, FaGithub } from "react-icons/fa"
 import { useDebounce } from "use-debounce"
 import { Button } from "../../../components/Button"
 import { Input } from "../../../components/Input"
@@ -33,6 +33,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   const { createContest, isLoading, isSuccess, error, reset } = useAdminCreateContest()
 
   const [protocolTwitter, setProtocolTwitter] = useState(protocol?.twitter ?? "")
+  const [protocolGithubTeam, setProtocolGithubTeam] = useState(protocol?.githubTeam ?? "")
   const [protocolWebsite, setProtocolWebsite] = useState(protocol?.website ?? "")
   const [protocolLogoURL, setProtocolLogoURL] = useState(protocol?.logoURL ?? "")
 
@@ -68,6 +69,12 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   useEffect(() => {
     if (isSuccess) onClose?.()
   }, [isSuccess, onClose])
+
+  useEffect(() => {
+    if (protocol?.name) {
+      setProtocolName(protocol?.name)
+    }
+  }, [protocol])
 
   useEffect(() => {
     if (twitterAccount?.profilePictureUrl) {
@@ -144,6 +151,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     if (protocolLogoURL === "" && !protocol?.logoURL) return false
     if (protocolWebsite === "" && !protocol?.website) return false
     if (protocolTwitter === "" && !protocol?.twitter) return false
+    if (protocolGithubTeam === "" && !protocol?.githubTeam) return false
 
     if (contestTitle === "") return false
     if (contestShortDescription.length < 100 || contestShortDescription.length > 200) return false
@@ -171,10 +179,12 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     protocol?.logoURL,
     protocol?.twitter,
     protocol?.website,
+    protocol?.githubTeam,
     protocolLogoURL,
     protocolName,
     protocolTwitter,
     protocolWebsite,
+    protocolGithubTeam,
   ])
 
   const handleUpdateShortDescription = useCallback((value: string) => {
@@ -205,10 +215,11 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     createContest({
       protocol: {
         id: protocol?.id,
-        githubTeam: protocolName,
-        website: protocolWebsite,
-        twitter: protocolTwitter,
-        logoUrl: protocolLogoURL,
+        name: protocolName,
+        githubTeam: protocolGithubTeam || undefined,
+        website: protocolWebsite || undefined,
+        twitter: protocolTwitter || undefined,
+        logoUrl: protocolLogoURL || undefined,
       },
       contest: {
         title: contestTitle,
@@ -240,6 +251,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     protocolName,
     protocolTwitter,
     protocolWebsite,
+    protocolGithubTeam,
   ])
 
   const formIsDirty = useMemo(
@@ -315,6 +327,20 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
             </Field>
             {displayProtocolInfo && (
               <>
+                <Field
+                  label={
+                    <Row spacing="xs">
+                      <FaGithub />
+                      <Text>GitHub</Text>
+                    </Row>
+                  }
+                >
+                  <Input
+                    value={protocol?.githubTeam ?? protocolGithubTeam}
+                    disabled={!!protocol}
+                    onChange={setProtocolGithubTeam}
+                  />
+                </Field>
                 <Field
                   label={
                     <Row spacing="xs">

@@ -8,6 +8,7 @@ import { AxiosError } from "axios"
 type AdminCreateContestParams = {
   protocol: {
     id?: number
+    name?: string
     logoUrl?: string
     githubTeam?: string
     twitter?: string
@@ -35,6 +36,7 @@ export const useAdminCreateContest = () => {
         await contestsAPI.post(adminCreateContestUrl(), {
           protocol: {
             id: params.protocol.id,
+            name: params.protocol.name,
             logo_url: params.protocol.logoUrl,
             github_team: params.protocol.githubTeam,
             twitter: params.protocol.twitter,
