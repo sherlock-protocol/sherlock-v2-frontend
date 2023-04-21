@@ -1,5 +1,9 @@
 @import "../../styles/variables";
 
+.container {
+  position: relative;
+}
+
 .leaderboardTable {
   min-width: 600px;
 }
@@ -26,4 +30,33 @@
 
 .logo {
   border-radius: 50%;
+}
+
+.pending {
+  opacity: 0.5;
+}
+
+.tableLogo {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+}
+
+.timeline {
+  overflow-y: scroll;
+  position: sticky;
+
+  top: 0;
+  right: -300px;
+
+  max-height: 74vh;
+}
+
+.divisor {
+  background-color: $alternate-pink !important;
+
+  & td {
+    height: 2px !important;
+    padding: 0 !important;
+  }
 }
