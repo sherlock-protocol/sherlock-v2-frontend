@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useCallback, useState } from "react"
 import cx from "classnames"
 import { FaCrown, FaUsers } from "react-icons/fa"
 import { Box } from "../../components/Box"
@@ -15,6 +15,7 @@ import {
   ContestLeaderboardTimelineStatus,
   useLeaderboardTimelineContests,
 } from "../../hooks/api/contests/useLeaderboardTimelineContests"
+import { ContestLeaderboardModal } from "../ContestDetails/ContestLeaderboardModal"
 
 const getStatusLabel = (status: ContestLeaderboardTimelineStatus) => {
   if (status === "ESCALATING") return "Escalations Open"
@@ -23,9 +24,21 @@ const getStatusLabel = (status: ContestLeaderboardTimelineStatus) => {
 
 export const Leaderboard: React.FC = () => {
   const [seniorWatsonModalOpen, setSeniorWatsonModalOpen] = useState(false)
+  const [contestLeaderboardOpen, setLeaderboardContestModalOpen] = useState<number | undefined>()
 
   const { data: leaderboard } = useLeaderboard()
   const { data: leaderboardTimeline } = useLeaderboardTimelineContests()
+
+  const handleContestLeaderboardModalClose = useCallback(() => {
+    setLeaderboardContestModalOpen(undefined)
+  }, [setLeaderboardContestModalOpen])
+
+  const handleContestLeaderboardModalOpen = useCallback(
+    (contestID: number) => {
+      setLeaderboardContestModalOpen(contestID)
+    },
+    [setLeaderboardContestModalOpen]
+  )
 
   if (!leaderboard) return null
 
@@ -110,6 +123,7 @@ export const Leaderboard: React.FC = () => {
                         className={cx({
                           [styles.pending]: !c.completed,
                         })}
+                        onClick={() => c.completed && handleContestLeaderboardModalOpen(c.id)}
                       >
                         <Td>
                           <Row spacing="s" alignment={["space-between", "center"]}>
@@ -132,6 +146,9 @@ export const Leaderboard: React.FC = () => {
         </Box>
       </Column>
       {seniorWatsonModalOpen && <SeniorWatsonModal onClose={() => setSeniorWatsonModalOpen(false)} />}
+      {contestLeaderboardOpen && (
+        <ContestLeaderboardModal contestID={contestLeaderboardOpen} onClose={handleContestLeaderboardModalClose} />
+      )}
     </Row>
   )
 }
