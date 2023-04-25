@@ -5,6 +5,7 @@ import { contests as contestsAPI } from "../axios"
 type AdminGetProtocolResponse = {
   protocol: {
     id: number
+    name: string
     logo_url: string
     github_team: string
     twitter: string
@@ -14,6 +15,7 @@ type AdminGetProtocolResponse = {
 
 type ProtocolInfo = {
   id: number
+  name: string
   logoURL: string
   githubTeam: string
   twitter: string
@@ -29,6 +31,7 @@ export const useAdminProtocol = (name?: string) =>
 
       return {
         id: data.protocol.id,
+        name: data.protocol.name,
         logoURL: data.protocol.logo_url,
         githubTeam: data.protocol.github_team,
         twitter: data.protocol.twitter,

@@ -1,5 +1,5 @@
 import React from "react"
-import { FaDownload, FaGithub } from "react-icons/fa"
+import { FaDownload, FaExclamationTriangle, FaGithub } from "react-icons/fa"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
 import LoadingContainer from "../../../components/LoadingContainer/LoadingContainer"
@@ -16,46 +16,78 @@ type Props = ModalProps & {
   contestID: number
 }
 
+const COMMENT_TO_SOURCE_MIN = 0.8
+
 export const ContestScopeModal: React.FC<Props> = ({ onClose, contestID }) => {
   const { data: contest, isLoading: contestIsLoading } = useContest(contestID)
   const { data: scope, isLoading: scopeIsLoading } = useAdminContestScope(contestID)
+
+  const submittedNSLOC = scope?.reduce((t, s) => t + (s.nSLOC ?? 0), 0)
+  const expectedNSLOCExceeded = contest && scope && (contest.linesOfCode ?? 0) < (submittedNSLOC ?? 0)
 
   return (
     <Modal closeable onClose={onClose}>
       <LoadingContainer loading={contestIsLoading || scopeIsLoading}>
         <Column spacing="l">
           <Title>{contest?.title}</Title>
+          {expectedNSLOCExceeded ? (
+            <Column spacing="s" className={styles.warningBox}>
+              <Row spacing="xs">
+                <FaExclamationTriangle />
+                <Text size="small">Submitted nSLOC is higher than expected</Text>
+              </Row>
+              <Text size="small">
+                Expected nSLOC: <strong>{contest?.linesOfCode}</strong>
+              </Text>
+              <Text size="small">
+                Submitted nSLOC: <strong>{submittedNSLOC}</strong>
+              </Text>
+            </Column>
+          ) : null}
           <Column spacing="s">
-            <Table>
-              <TBody>
-                <Tr>
-                  <Td>
-                    <Row spacing="s">
-                      <Text strong>Contracts:</Text>
-                      <Text>{scope?.reduce((t, s) => t + s.files.length, 0)}</Text>
-                    </Row>
-                  </Td>
-                </Tr>
-                <Tr>
-                  <Td>
-                    <Row spacing="s">
-                      <Text strong>nLSOC:</Text>
-                      <Text>{contest?.linesOfCode}</Text>
-                    </Row>
-                  </Td>
-                </Tr>
-              </TBody>
-            </Table>
-            <Title variant="h2">Repositories in scope</Title>
-            {scope?.map((s) => (
+            {scope?.map((s, index) => (
               <Column spacing="s">
-                <Title variant="h3">
+                <Title variant="h2">
                   <FaGithub />
                   &nbsp;{s.repoName}
                 </Title>
                 <Text variant="mono" size="small" className={styles.mono}>
                   {s.commitHash}
                 </Text>
+                <Table>
+                  <TBody>
+                    <Tr>
+                      <Td>
+                        <Row spacing="s">
+                          <Text strong>Contracts:</Text>
+                          <Text>{s.files.length}</Text>
+                        </Row>
+                      </Td>
+                    </Tr>
+                    <Tr>
+                      <Td>
+                        <Row spacing="s">
+                          <Text strong>nSLOC:</Text>
+                          <Text>{s.nSLOC}</Text>
+                        </Row>
+                      </Td>
+                    </Tr>
+                    <Tr>
+                      <Td>
+                        <Row spacing="s">
+                          <Text strong>Comments ratio:</Text>
+                          <Text>{Math.round(s.commentToSourceRatio! * 100)}%</Text>
+                          {s.commentToSourceRatio! < COMMENT_TO_SOURCE_MIN ? (
+                            <Row spacing="xs" className={styles.warning}>
+                              <FaExclamationTriangle />
+                              <Text size="small">Comments ratio is below 80%</Text>
+                            </Row>
+                          ) : null}
+                        </Row>
+                      </Td>
+                    </Tr>
+                  </TBody>
+                </Table>
                 <Button
                   onClick={() => window.open(s.solidityMetricsReport, "blank")}
                   disabled={!s.solidityMetricsReport}
@@ -63,6 +95,7 @@ export const ContestScopeModal: React.FC<Props> = ({ onClose, contestID }) => {
                   <FaDownload />
                   &nbsp;Download report
                 </Button>
+                {index < scope.length - 1 ? <hr /> : null}
               </Column>
             ))}
           </Column>
