@@ -16,7 +16,8 @@ import { ContestStatus, useContests } from "../../hooks/api/contests"
 
 const getStatusLabel = (status: ContestStatus) => {
   if (status === "ESCALATING") return "Escalations Open"
-  if (status === "SHERLOCK_JUDGING") return "Judging"
+  if (status === "SHERLOCK_JUDGING") return "Sherlock Judging"
+  if (status === "JUDGING") return "Judging Contest"
 
   return ""
 }
