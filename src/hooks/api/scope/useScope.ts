@@ -8,6 +8,8 @@ export type Scope = {
   commitHash: string
   files: string[]
   solidityMetricsReport?: string
+  nSLOC?: number
+  commentToSourceRatio?: number
 }[]
 
 export type GetScopeResponse = {
@@ -16,6 +18,8 @@ export type GetScopeResponse = {
     branch_name: string
     commit_hash: string
     files: string[]
+    nsloc?: number
+    comment_to_source_ratio?: number
   }[]
 }
 
@@ -31,6 +35,8 @@ export const useScope = (dashboardID?: string) =>
         branchName: d.branch_name,
         commitHash: d.commit_hash,
         files: d.files,
+        nSLOC: d.nsloc,
+        commentToSourceRatio: d.comment_to_source_ratio,
       }))
     },
     {
