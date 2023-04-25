@@ -37,12 +37,14 @@ export const useAPYOverTime = () =>
     if (response.ok === false) throw Error(response.error)
     if (response.data === null) return null
 
-    return response.data.map((r) => ({
-      timestamp: r.timestamp,
-      totalAPY: +(r.value * 100).toFixed(2),
-      premiumsAPY: +(r.premiums_apy * 100).toFixed(2),
-      incentivesAPY: +((r.incentives_apy ?? 0) * 100).toFixed(2),
-    }))
+    return response.data
+      .map((r) => ({
+        timestamp: r.timestamp,
+        totalAPY: +(r.value * 100).toFixed(2),
+        premiumsAPY: +(r.premiums_apy * 100).toFixed(2),
+        incentivesAPY: +((r.incentives_apy ?? 0) * 100).toFixed(2),
+      }))
+      .sort((a, b) => a.timestamp - b.timestamp)
   })
 
 type DataPoint<T> = {
@@ -71,10 +73,12 @@ export const useTVCOverTime = () =>
     if (response.ok === false) throw Error(response.error)
     if (response.data === null) return null
 
-    return response.data.map((r) => ({
-      timestamp: r.timestamp,
-      value: BigNumber.from(r.value),
-    }))
+    return response.data
+      .map((r) => ({
+        timestamp: r.timestamp,
+        value: BigNumber.from(r.value),
+      }))
+      .sort((a, b) => a.timestamp - b.timestamp)
   })
 
 export const tvlOverTimeQueryKey = "tvlOverTime"
@@ -85,8 +89,10 @@ export const useTVLOverTime = () =>
     if (response.ok === false) throw Error(response.error)
     if (response.data === null) return null
 
-    return response.data.map((r) => ({
-      timestamp: r.timestamp,
-      value: BigNumber.from(r.value),
-    }))
+    return response.data
+      .map((r) => ({
+        timestamp: r.timestamp,
+        value: BigNumber.from(r.value),
+      }))
+      .sort((a, b) => a.timestamp - b.timestamp)
   })
