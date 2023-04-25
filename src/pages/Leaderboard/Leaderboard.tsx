@@ -16,7 +16,8 @@ import { ContestStatus, useContests } from "../../hooks/api/contests"
 
 const getStatusLabel = (status: ContestStatus) => {
   if (status === "ESCALATING") return "Escalations Open"
-  if (status === "SHERLOCK_JUDGING") return "Judging"
+  if (status === "SHERLOCK_JUDGING") return "Sherlock Judging"
+  if (status === "JUDGING") return "Judging Contest"
 
   return ""
 }
@@ -109,7 +110,7 @@ export const Leaderboard: React.FC = () => {
       <Column className={styles.timeline}>
         <Box shadow={false}>
           <Column spacing="m">
-            <Title variant="h2">Judging Timeline</Title>
+            <Title>TIMELINE</Title>
             <Table size="small">
               <TBody>
                 {contests?.map((c, index, cs) => {
