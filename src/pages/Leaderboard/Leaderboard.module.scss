@@ -5,7 +5,11 @@
 }
 
 .leaderboardTable {
-  min-width: 600px;
+  width: 600px;
+
+  & th {
+    vertical-align: middle;
+  }
 }
 
 .positionColumn {
