@@ -71,4 +71,3 @@ export const getRepositoryContracts = (repo: string, commit: string) => `/audit_
 // Stats
 export const getLeaderboard = () => "/stats/leaderboard"
 export const getContestLeaderboard = (id: number) => `/stats/contest_leaderboard/${id}`
-export const getLeaderboardTimelineContests = () => `/contests/leaderboard_timeline`

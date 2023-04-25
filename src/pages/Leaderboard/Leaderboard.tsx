@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useMemo, useState } from "react"
 import cx from "classnames"
 import { FaCrown, FaUsers } from "react-icons/fa"
 import { Box } from "../../components/Box"
@@ -11,15 +11,14 @@ import { SeniorWatsonModal } from "./SeniorWatsonModal"
 import styles from "./Leaderboard.module.scss"
 import { commify } from "../../utils/units"
 import { useLeaderboard } from "../../hooks/api/stats/leaderboard/useLeaderboard"
-import {
-  ContestLeaderboardTimelineStatus,
-  useLeaderboardTimelineContests,
-} from "../../hooks/api/contests/useLeaderboardTimelineContests"
 import { ContestLeaderboardModal } from "../ContestDetails/ContestLeaderboardModal"
+import { ContestStatus, useContests } from "../../hooks/api/contests"
 
-const getStatusLabel = (status: ContestLeaderboardTimelineStatus) => {
+const getStatusLabel = (status: ContestStatus) => {
   if (status === "ESCALATING") return "Escalations Open"
   if (status === "SHERLOCK_JUDGING") return "Judging"
+
+  return ""
 }
 
 export const Leaderboard: React.FC = () => {
@@ -27,7 +26,7 @@ export const Leaderboard: React.FC = () => {
   const [contestLeaderboardOpen, setLeaderboardContestModalOpen] = useState<number | undefined>()
 
   const { data: leaderboard } = useLeaderboard()
-  const { data: leaderboardTimeline } = useLeaderboardTimelineContests()
+  const { data: rawContests } = useContests()
 
   const handleContestLeaderboardModalClose = useCallback(() => {
     setLeaderboardContestModalOpen(undefined)
@@ -38,6 +37,11 @@ export const Leaderboard: React.FC = () => {
       setLeaderboardContestModalOpen(contestID)
     },
     [setLeaderboardContestModalOpen]
+  )
+
+  const contests = useMemo(
+    () => rawContests?.filter((c) => !!c.scoreSequence).sort((a, b) => b.scoreSequence! - a.scoreSequence!),
+    [rawContests]
   )
 
   if (!leaderboard) return null
@@ -108,9 +112,9 @@ export const Leaderboard: React.FC = () => {
             <Title variant="h2">Judging Timeline</Title>
             <Table size="small">
               <TBody>
-                {leaderboardTimeline?.map((c, index, cs) => {
+                {contests?.map((c, index, cs) => {
                   const previousContest = index > 0 ? cs[index - 1] : undefined
-                  const displayDivisor = previousContest && !previousContest.completed && c.completed
+                  const displayDivisor = previousContest && !previousContest.calcCompleted && c.calcCompleted
 
                   return (
                     <>
@@ -121,9 +125,9 @@ export const Leaderboard: React.FC = () => {
                       ) : null}
                       <Tr
                         className={cx({
-                          [styles.pending]: !c.completed,
+                          [styles.pending]: !c.calcCompleted,
                         })}
-                        onClick={() => c.completed && handleContestLeaderboardModalOpen(c.id)}
+                        onClick={() => c.calcCompleted && handleContestLeaderboardModalOpen(c.id)}
                       >
                         <Td>
                           <Row spacing="s" alignment={["space-between", "center"]}>
