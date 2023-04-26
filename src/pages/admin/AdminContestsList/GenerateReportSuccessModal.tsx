@@ -7,6 +7,7 @@ import Modal, { Props as ModalProps } from "../../../components/Modal/Modal"
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
 import { ContestsListItem } from "../../../hooks/api/admin/useAdminContests"
+import { useAdminGenerateReport } from "../../../hooks/api/admin/useGenerateReport"
 import { useAdminPublishReport } from "../../../hooks/api/admin/usePublishReport"
 
 import styles from "./AdminContestsList.module.scss"
@@ -18,6 +19,11 @@ type Props = ModalProps & {
 
 export const GenerateReportSuccessModal: React.FC<Props> = ({ contest, report, ...props }) => {
   const { publishReport, isLoading: publishReportIsLoading, isSuccess: publishReportSuccess } = useAdminPublishReport()
+  const {
+    generateReport,
+    isLoading: generateReportIsLoading,
+    isSuccess: generateReportSuccess,
+  } = useAdminGenerateReport()
 
   const handleDownloadClick = useCallback(() => {
     report && window.open(report)
@@ -30,12 +36,14 @@ export const GenerateReportSuccessModal: React.FC<Props> = ({ contest, report, .
   }, [contest, publishReport])
 
   const handleRegenerateClick = useCallback(() => {
-    props.onClose?.()
-  }, [props])
+    generateReport({
+      contestID: contest.id,
+    })
+  }, [contest, generateReport])
 
   return (
     <Modal closeable {...props}>
-      <LoadingContainer loading={publishReportIsLoading} label="Loading ...">
+      <LoadingContainer loading={publishReportIsLoading || generateReportIsLoading} label="Loading ...">
         <Column spacing="l">
           <Column alignment={["center", "start"]} spacing="m">
             <Title variant="h2">AUDIT REPORT</Title>
@@ -43,6 +51,7 @@ export const GenerateReportSuccessModal: React.FC<Props> = ({ contest, report, .
             <Title variant="h2">{contest.title}</Title>
           </Column>
           {publishReportSuccess ? <Text alignment="center">Audit report was uploaded to Judging Repo</Text> : null}
+          {generateReportSuccess ? <Text alignment="center">Audit report was re-generated</Text> : null}
           <Column spacing="xl">
             <Column spacing="s">
               <Button onClick={handleDownloadClick}>
