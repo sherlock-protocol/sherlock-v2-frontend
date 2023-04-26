@@ -22,6 +22,7 @@ export type ContestsListItem = {
   leadSeniorAuditorHandle: string
   leadSeniorSelectionMessageSentAt: number
   leadSeniorConfirmationMessage: string
+  auditReport?: string
 }
 
 type GetAdminContestsResponse = {
@@ -41,6 +42,7 @@ type GetAdminContestsResponse = {
   lead_senior_auditor_handle: string
   senior_selection_message_sent_at: number
   senior_confirmed_message: string
+  audit_report?: string
 }[]
 
 export type ContestListStatus = "active" | "finished"
@@ -67,5 +69,6 @@ export const useAdminContests = (status: ContestListStatus) =>
       leadSeniorAuditorHandle: d.lead_senior_auditor_handle,
       leadSeniorSelectionMessageSentAt: d.senior_selection_message_sent_at,
       leadSeniorConfirmationMessage: d.senior_confirmed_message,
+      auditReport: d.audit_report,
     }))
   })

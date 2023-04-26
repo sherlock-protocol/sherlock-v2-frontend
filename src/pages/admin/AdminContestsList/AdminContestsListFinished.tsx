@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
 import { useCallback, useEffect, useState } from "react"
-import { FaClipboardList, FaEye } from "react-icons/fa"
+import { FaClipboardList, FaEye, FaFileDownload, FaRecycle, FaRedo } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -16,20 +16,31 @@ import { GenerateReportSuccessModal } from "./GenerateReportSuccessModal"
 
 export const AdminContestsListFinished = () => {
   const { data: contests, isLoading } = useAdminContests("finished")
-  const { generateReport, isLoading: generateReportIsLoading, isSuccess, reset, variables } = useAdminGenerateReport()
+  const {
+    generateReport,
+    isLoading: generateReportIsLoading,
+    isSuccess,
+    reset,
+    variables,
+    data: reportURL,
+  } = useAdminGenerateReport()
   const [reportGeneratedModalVisible, setReportGenerateModalVisible] = useState<number | undefined>()
 
   useEffect(() => {
     if (isSuccess) {
       const index = contests?.findIndex((c) => c.id === variables?.contestID)
       setReportGenerateModalVisible(index)
+      console.log("undef")
     } else {
       setReportGenerateModalVisible(undefined)
+      console.log("undef")
     }
   }, [isSuccess, setReportGenerateModalVisible, variables, contests])
 
   const handleModalClose = useCallback(() => {
+    console.log("close")
     reset()
+    setReportGenerateModalVisible(undefined)
   }, [reset])
 
   const handleGenerateReportClick = useCallback(
@@ -42,12 +53,23 @@ export const AdminContestsListFinished = () => {
     [generateReport, contests]
   )
 
+  const handleViewReportClick = useCallback(
+    (index: number) => {
+      if (!contests) return
+
+      setReportGenerateModalVisible(index)
+
+      console.log(contests[index])
+    },
+    [contests, setReportGenerateModalVisible]
+  )
+
   return (
-    <LoadingContainer loading={isLoading || generateReportIsLoading}>
+    <LoadingContainer loading={isLoading || generateReportIsLoading} label="Generating Audit Report ...">
       <Column spacing="l">
         <Box shadow={false} fullWidth>
           <Title>FINISHED CONTESTS</Title>
-          <Table selectable={false} className={styles.contestsTable}>
+          <Table selectable={false} className={styles.finishedContestsTable}>
             <THead>
               <Tr>
                 <Th>
@@ -58,7 +80,11 @@ export const AdminContestsListFinished = () => {
                 </Th>
                 <Th></Th>
                 <Th></Th>
-                <Th>Action</Th>
+                <Th>
+                  <Text strong alignment="center">
+                    Audit Report
+                  </Text>
+                </Th>
               </Tr>
             </THead>
             <TBody>
@@ -99,7 +125,15 @@ export const AdminContestsListFinished = () => {
                   </Td>
                   <Td></Td>
                   <Td>
-                    <Button onClick={() => handleGenerateReportClick(index)}>Generate report</Button>
+                    <Row spacing="s" alignment="end">
+                      {c.auditReport ? (
+                        <Button onClick={() => handleViewReportClick(index)}>View report</Button>
+                      ) : (
+                        <Button onClick={() => handleGenerateReportClick(index)} variant="alternate">
+                          Generate
+                        </Button>
+                      )}
+                    </Row>
                   </Td>
                 </Tr>
               ))}
@@ -107,8 +141,12 @@ export const AdminContestsListFinished = () => {
           </Table>
         </Box>
       </Column>
-      {reportGeneratedModalVisible && contests && (
-        <GenerateReportSuccessModal contest={contests[reportGeneratedModalVisible]} onClose={handleModalClose} />
+      {(reportGeneratedModalVisible === 0 || !!reportGeneratedModalVisible) && contests && (
+        <GenerateReportSuccessModal
+          contest={contests[reportGeneratedModalVisible]}
+          report={reportURL}
+          onClose={handleModalClose}
+        />
       )}
     </LoadingContainer>
   )

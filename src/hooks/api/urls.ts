@@ -70,7 +70,7 @@ export const adminSubmitScope = () => `/admin/scope`
 export const getSeniorWatson = (handle: string) => `/admin/senior_watson?handle=${handle}`
 export const adminStartLeadSeniorWatsonSelection = () => `/admin/start_lead_senior_watson_selection`
 export const adminSelectLeadSeniorWatson = () => `/admin/select_lead_senior_watson`
-export const adminGenerateReport = (contestID: number) => `/admin/contest/${contestID}/generate_report`
+export const adminGenerateReport = (contestID: number) => `/admin/contest/${contestID}/report/generate`
 
 // Stats
 export const getLeaderboard = () => "/stats/leaderboard"

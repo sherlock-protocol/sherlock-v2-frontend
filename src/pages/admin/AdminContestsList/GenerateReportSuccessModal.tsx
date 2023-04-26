@@ -1,3 +1,6 @@
+import { report } from "process"
+import { useCallback } from "react"
+import { FaDownload, FaFileDownload, FaGithub, FaRecycle } from "react-icons/fa"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
 import Modal, { Props as ModalProps } from "../../../components/Modal/Modal"
@@ -9,21 +12,45 @@ import styles from "./AdminContestsList.module.scss"
 
 type Props = ModalProps & {
   contest: ContestsListItem
+  report?: string
 }
 
-export const GenerateReportSuccessModal: React.FC<Props> = ({ contest, ...props }) => {
+export const GenerateReportSuccessModal: React.FC<Props> = ({ contest, report, ...props }) => {
+  const handleDownloadClick = useCallback(() => {
+    report && window.open(report)
+  }, [report])
+
+  const handleRegenerateClick = useCallback(() => {
+    props.onClose?.()
+  }, [props])
+
   return (
     <Modal closeable {...props}>
       <Column spacing="l">
         <Column alignment={["center", "start"]} spacing="m">
-          <Title variant="h1">Audit Report Generated</Title>
-          <Row spacing="s" alignment={["center", "center"]}>
-            <img src={contest.logoURL} className={styles.logo} alt={contest.title} />
-            <Text strong>{contest.title}</Text>
-          </Row>
+          <Title variant="h2">AUDIT REPORT</Title>
+          <img src={contest.logoURL} className={styles.logoBg} alt={contest.title} />
+          <Title variant="h2">{contest.title}</Title>
         </Column>
-        <Text>The audit report has been generated and sent to Discord</Text>
-        <Button onClick={props.onClose}>OK</Button>
+        <Column spacing="xl">
+          <Column spacing="s">
+            <Button onClick={handleDownloadClick}>
+              <FaFileDownload />
+              &nbsp;Download
+            </Button>
+            <Button>
+              <FaGithub />
+              &nbsp;Publish
+            </Button>
+          </Column>
+          <Button variant="alternate" onClick={handleRegenerateClick}>
+            <FaRecycle />
+            &nbsp;Re-generate
+          </Button>
+          <Button variant="secondary" onClick={props.onClose}>
+            Close
+          </Button>
+        </Column>
       </Column>
     </Modal>
   )
