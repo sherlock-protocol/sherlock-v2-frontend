@@ -7,7 +7,7 @@ import { Column, Row } from "../../components/Layout"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
-import { useAddScope } from "../../hooks/api/scope/useAddScope"
+import { AddScopeError, useAddScope } from "../../hooks/api/scope/useAddScope"
 import { shortenCommitHash } from "../../utils/repository"
 import { BranchSelectionModal } from "./BranchSelectionModal"
 import { CommitSelectionModal } from "./CommitSelectionModal"
@@ -24,6 +24,35 @@ import { ErrorModal } from "../ContestDetails/ErrorModal"
 
 type Props = ModalProps & {
   dashboardID: string
+}
+
+const ErrorMessage: React.FC<{ error: AddScopeError }> = ({ error }) => {
+  switch (error.type) {
+    case "repo_not_found":
+      return (
+        <Column spacing="m">
+          <Text variant="secondary">We couldn't find the repo.</Text>
+          <Text variant="secondary">
+            If it's private, make sure to invite{" "}
+            <strong>
+              <a href="https://github.com/sherlock-admin" target="_blank" rel="noreferrer">
+                sherlock-admin
+              </a>
+            </strong>{" "}
+            and try again.
+          </Text>
+        </Column>
+      )
+    case "branch_not_found":
+      return <Text variant="warning">Branch not found</Text>
+    case "invalid_github_url":
+      return <Text variant="warning">Invalid Github URL</Text>
+    case "repo_already_added":
+      return <Text>This repo was already added</Text>
+
+    default:
+      return null
+  }
 }
 
 const SubmitScopeModal: React.FC<Props> = ({ onClose, dashboardID }) => {
@@ -62,6 +91,7 @@ const SubmitScopeModal: React.FC<Props> = ({ onClose, dashboardID }) => {
     </Modal>
   )
 }
+
 export const AuditScope = () => {
   const { dashboardID } = useParams()
   const [repoName, setRepoName] = useState("")
@@ -69,7 +99,7 @@ export const AuditScope = () => {
   const [commitSelectionModalRepoName, setCommitSelectionModalRepoName] = useState<string>()
   const [submitScopeModalOpen, setSubmitScopeModalOpen] = useState(false)
   const { data: scope } = useScope(dashboardID)
-  const { addScope, isLoading: addScopeIsLoading, error: addScopeError } = useAddScope()
+  const { addScope, isLoading: addScopeIsLoading, error: addScopeError, reset } = useAddScope()
   const { updateScope, isLoading: updateScopeIsLoading, variables: updateParams } = useUpdateScope()
   const { deleteScope } = useDeleteScope()
   const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
@@ -134,7 +164,7 @@ export const AuditScope = () => {
   )
 
   const handleAddScope = useCallback(() => {
-    addScope({ repoName: repoName, protocolDashboardID: dashboardID ?? "" })
+    addScope({ repoLink: repoName, protocolDashboardID: dashboardID ?? "" })
     setRepoName("")
   }, [addScope, dashboardID, repoName])
 
@@ -191,26 +221,7 @@ export const AuditScope = () => {
               <Button disabled={addScopeIsLoading || repoName === ""} onClick={handleAddScope}>
                 {addScopeIsLoading ? "Adding repo ..." : "Add repo"}
               </Button>
-              {addScopeError && (
-                <Column spacing="m">
-                  {addScopeError.type === "repo_not_found" ? (
-                    <>
-                      <Text variant="secondary">We couldn't find the repo.</Text>
-                      <Text variant="secondary">
-                        If it's private, make sure to invite{" "}
-                        <strong>
-                          <a href="https://github.com/sherlock-admin" target="_blank" rel="noreferrer">
-                            sherlock-admin
-                          </a>
-                        </strong>{" "}
-                        and try again.
-                      </Text>
-                    </>
-                  ) : (
-                    <Text variant="secondary">This repo was already added.</Text>
-                  )}
-                </Column>
-              )}
+              {addScopeError && <ErrorMessage error={addScopeError} />}
             </Column>
           </Column>
         </Box>
