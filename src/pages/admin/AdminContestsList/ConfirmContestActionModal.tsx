@@ -2,7 +2,7 @@ import { useCallback } from "react"
 import { Modal, Props as ModalProps } from "../../../components/Modal/Modal"
 import { ContestsListItem } from "../../../hooks/api/admin/useAdminContests"
 import { AdminApproveStartAction } from "./AdminApproveStartAction"
-import { ContestAction } from "./AdminContestsList"
+import { ContestAction } from "./AdminContestsListActive"
 import { AdminPublishAction } from "./AdminPublishAction"
 import { AdminSelectSeniorAction } from "./AdminSelectSeniorAction"
 

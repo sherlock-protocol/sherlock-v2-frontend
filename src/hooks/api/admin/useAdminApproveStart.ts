@@ -19,7 +19,7 @@ export const useAdminApproveStart = () => {
     },
     {
       onSuccess: async () => {
-        await queryClient.invalidateQueries(adminContestsQuery())
+        await queryClient.invalidateQueries(adminContestsQuery("active"))
       },
     }
   )
