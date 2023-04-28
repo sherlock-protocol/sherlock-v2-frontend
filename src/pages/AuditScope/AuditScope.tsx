@@ -99,7 +99,7 @@ export const AuditScope = () => {
   const [commitSelectionModalRepoName, setCommitSelectionModalRepoName] = useState<string>()
   const [submitScopeModalOpen, setSubmitScopeModalOpen] = useState(false)
   const { data: scope } = useScope(dashboardID)
-  const { addScope, isLoading: addScopeIsLoading, error: addScopeError, reset } = useAddScope()
+  const { addScope, isLoading: addScopeIsLoading, error: addScopeError } = useAddScope()
   const { updateScope, isLoading: updateScopeIsLoading, variables: updateParams } = useUpdateScope()
   const { deleteScope } = useDeleteScope()
   const { data: protocolDashboard } = useProtocolDashboard(dashboardID ?? "")
