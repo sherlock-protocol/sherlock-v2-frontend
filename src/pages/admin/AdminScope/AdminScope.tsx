@@ -16,6 +16,7 @@ import { CommitSelectionModal } from "../../AuditScope/CommitSelectionModal"
 import { RepositoryContractsSelector } from "../../AuditScope/RepositoryContractsSelector"
 
 export const AdminScope = () => {
+  const [repoLink, setRepoLink] = useState("")
   const [repoName, setRepoName] = useState("")
   const [debouncedRepoName] = useDebounce(repoName, 300)
   const [branchName, setBranchName] = useState<string>()
@@ -29,11 +30,21 @@ export const AdminScope = () => {
   const { submitScope, isLoading, data: report } = useAdminSubmitScope()
 
   useEffect(() => {
+    const pattern = /^https?:\/\/github\.com\/([A-Za-z0-9-]+\/[A-Za-z0-9-]+)(?:\.git)?(?:\/tree\/([A-Za-z0-9-]+))?$/
+    const match = repoLink.match(pattern)
+
+    if (match) {
+      setRepoName(match[1])
+      setBranchName(match.at(2))
+    }
+  }, [repoLink])
+
+  useEffect(() => {
     if (repo) {
-      setBranchName(repo.mainBranch.name)
+      if (!branchName) setBranchName(repo.mainBranch.name)
       setCommitHash(repo.mainBranch.commit)
     }
-  }, [repo])
+  }, [repo, branchName])
 
   const handlePathSelected = useCallback(
     (selectedPaths: string[]) => {
@@ -110,7 +121,7 @@ export const AdminScope = () => {
               <Title variant="h2">SCOPE</Title>
               <Column spacing="s">
                 <Text>Copy & paste the Github repository link(s) you would like to audit</Text>
-                <Input value={repoName} onChange={setRepoName} />
+                <Input value={repoLink} onChange={setRepoLink} />
               </Column>
             </Column>
           </Box>
