@@ -7,12 +7,20 @@ import { protocolDashboardQuery } from "../contests/useProtocolDashboard"
 
 type AddScopeParams = {
   protocolDashboardID: string
-  repoName: string
+  repoLink: string
 }
 
-type AddScopeErrorType = "repo_not_found" | "repo_already_added"
+type AddScopeErrorType =
+  | "repo_not_found"
+  | "repo_already_added"
+  | "contest_not_found"
+  | "invalid_github_url"
+  | "repo_already_added"
+  | "repo_not_found"
+  | "branch_not_found"
+  | "fetch_contracts_failed"
 
-class AddScopeError extends Error {
+export class AddScopeError extends Error {
   type: AddScopeErrorType
 
   constructor(type: AddScopeErrorType) {
@@ -31,20 +39,13 @@ export const useAddScope = () => {
   } = useMutation<void, AddScopeError, AddScopeParams>(
     async (params) => {
       try {
-        const repo_name = params.repoName.startsWith("https://github.com/")
-          ? params.repoName.replace("https://github.com/", "")
-          : params.repoName
         await contestsAPI.post(addScopeUrl(params.protocolDashboardID), {
-          repo_name,
+          repo_link: params.repoLink,
         })
       } catch (error) {
         const axiosError = error as AxiosError
 
-        if (axiosError.response?.status === 422) {
-          throw new AddScopeError("repo_already_added")
-        } else {
-          throw new AddScopeError("repo_not_found")
-        }
+        throw new AddScopeError(axiosError.response?.data.error)
       }
     },
     {
