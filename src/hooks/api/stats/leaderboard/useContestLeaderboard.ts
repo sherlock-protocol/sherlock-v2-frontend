@@ -34,7 +34,7 @@ export const useContestLeaderboard = (contestID: number) =>
     const { data } = await contestsAPI.get<GetContestLeaderboardResponse>(getContestLeaderboard(contestID))
 
     const contestantsOrderedByScore = Object.entries(data.contestants).sort(
-      (a, b) => b[1].score - a[1].score || b[1].payout - a[1].payout
+      (a, b) => Math.round(b[1].score) - Math.round(a[1].score) || b[1].payout - a[1].payout
     )
 
     return {
