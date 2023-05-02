@@ -28,7 +28,7 @@ export const useLeaderboard = () =>
     const { data } = await contestsAPI.get<GetLeaderboardResponseData>(getLeaderboard())
 
     const entriesOrderedByScore = Object.entries(data).sort(
-      (a, b) => b[1].score - a[1].score || b[1].payout - a[1].payout
+      (a, b) => Math.round(b[1].score) - Math.round(a[1].score) || b[1].payout - a[1].payout
     )
 
     return entriesOrderedByScore.map((l) => ({
