@@ -37,8 +37,9 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   const [protocolWebsite, setProtocolWebsite] = useState(protocol?.website ?? "")
   const [protocolLogoURL, setProtocolLogoURL] = useState(protocol?.logoURL ?? "")
 
-  const [debouncedProtocolTwitter] = useDebounce(protocolTwitter, 300)
-  const { data: twitterAccount } = useAdminTwitterAccount(debouncedProtocolTwitter)
+  // Skip twitter until we fix issues with their API
+  // const [debouncedProtocolTwitter] = useDebounce(protocolTwitter, 300)
+  // const { data: twitterAccount } = useAdminTwitterAccount(debouncedProtocolTwitter)
 
   const [contestTitle, setContestTitle] = useState("")
   const [contestShortDescription, setShortDescription] = useState("")
@@ -76,13 +77,15 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     }
   }, [protocol])
 
-  useEffect(() => {
-    if (twitterAccount?.profilePictureUrl) {
-      setProtocolLogoURL(twitterAccount.profilePictureUrl)
-    } else {
-      setProtocolLogoURL("")
-    }
-  }, [twitterAccount])
+  // Skip twitter until we fix issues with their API
+
+  // useEffect(() => {
+  //   if (twitterAccount?.profilePictureUrl) {
+  //     setProtocolLogoURL(twitterAccount.profilePictureUrl)
+  //   } else {
+  //     setProtocolLogoURL("")
+  //   }
+  // }, [twitterAccount])
 
   useEffect(() => {
     if (contestStartDate === "") {
