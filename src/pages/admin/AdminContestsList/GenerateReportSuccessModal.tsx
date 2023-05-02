@@ -26,8 +26,8 @@ export const GenerateReportSuccessModal: React.FC<Props> = ({ contest, report, .
   } = useAdminGenerateReport()
 
   const handleDownloadClick = useCallback(() => {
-    report && window.open(report)
-  }, [report])
+    if (report || contest.auditReport) window.open(report ?? contest.auditReport)
+  }, [report, contest])
 
   const handlePublishClick = useCallback(() => {
     publishReport({
