@@ -127,14 +127,6 @@ const AppProtocolDashboard = () => {
                           )} USDC`}</Text>
                         </Td>
                       </Tr>
-                      <Tr>
-                        <Td>
-                          <Text strong>Sherlock Admin Fee</Text>
-                        </Td>
-                        <Td>
-                          <Text alignment="right">{`${commify(protocolDashboard.contest.sherlockFee)} USDC`}</Text>
-                        </Td>
-                      </Tr>
                     </TBody>
                   </Table>
                   <Column spacing="s">
