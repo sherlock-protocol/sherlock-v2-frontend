@@ -215,8 +215,9 @@ export const ContestDetails = () => {
   const hasEnoughAuditDays = profile && profile.auditDays >= 28
 
   const canViewFindings =
-    !["CREATED", "RUNNING"].includes(contest.status) ||
-    (contest.status === "SHERLOCK_JUDGING" && contest.escalationStartDate)
+    !contest.private &&
+    (!["CREATED", "RUNNING"].includes(contest.status) ||
+      (contest.status === "SHERLOCK_JUDGING" && contest.escalationStartDate))
 
   return (
     <Column spacing="m" className={styles.container}>
