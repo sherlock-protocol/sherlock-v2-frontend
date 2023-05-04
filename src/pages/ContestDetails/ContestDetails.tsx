@@ -216,7 +216,7 @@ export const ContestDetails = () => {
 
   const canViewFindings =
     !contest.private &&
-    (!["CREATED", "RUNNING"].includes(contest.status) ||
+    (!["CREATED", "RUNNING", "SHERLOCK_JUDGING"].includes(contest.status) ||
       (contest.status === "SHERLOCK_JUDGING" && contest.escalationStartDate))
 
   return (
