@@ -48,9 +48,11 @@ export const getContextQuestions = (dashboardID: string) => `dashboard/${dashboa
 export const updateContextQuestionAnswers = (dashboardID: string) => `dashboard/${dashboardID}/context_questions`
 export const submitContextQuestionAnswers = (dashboardID: string) => `dashboard/${dashboardID}/submit_answers`
 
-export const getRepositoryBranches = (repo: string) => `/audit_scope/${repo}/branches`
-export const getRepositoryCommits = (repo: string, branch: string) => `/audit_scope/${repo}/${branch}/commits`
-export const getRepositoryContracts = (repo: string, commit: string) => `/audit_scope/${repo}/${commit}/contracts`
+export const getRepositoryBranches = (repo: string) => `/audit_scope/branches?repo_name=${repo}`
+export const getRepositoryCommits = (repo: string, branch: string) =>
+  `/audit_scope/commits?repo_name=${repo}&branch_name=${branch}`
+export const getRepositoryContracts = (repo: string, commit: string) =>
+  `/audit_scope/contracts?repo_name=${repo}&commit_hash=${commit}`
 
 // Admin
 export const getAdminProfile = () => `/admin/profile`
