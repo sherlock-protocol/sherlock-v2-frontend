@@ -2,7 +2,6 @@ import { FaCrown, FaUsers } from "react-icons/fa"
 import { Column, Row } from "../../components/Layout"
 import { Modal, Props as ModalProps } from "../../components/Modal/Modal"
 import { Text } from "../../components/Text"
-import { useContest } from "../../hooks/api/contests"
 import { Title } from "../../components/Title"
 import { Table, TBody, Td, Th, THead, Tr } from "../../components/Table/Table"
 import { useContestLeaderboard } from "../../hooks/api/stats/leaderboard/useContestLeaderboard"
@@ -13,20 +12,21 @@ import LoadingContainer from "../../components/LoadingContainer/LoadingContainer
 
 type Props = ModalProps & {
   contestID: number
+  logoURL?: string
+  title?: string
 }
 
-export const ContestLeaderboardModal: React.FC<Props> = ({ contestID, onClose }) => {
-  const { data: contest } = useContest(contestID)
+export const ContestLeaderboardModal: React.FC<Props> = ({ contestID, logoURL, title, onClose }) => {
   const { data: leaderboard, isLoading: isLoadingLeaderboard } = useContestLeaderboard(contestID)
 
   return (
     <Modal closeable onClose={onClose}>
       <LoadingContainer loading={isLoadingLeaderboard}>
         <Column alignment={["center", "center"]} spacing="xl" className={styles.scoreboardTable}>
-          <Title>{`${contest?.title ?? ""} Leaderboard`}</Title>
+          <Title>{`${title} Leaderboard`}</Title>
 
           <Row>
-            <img src={contest?.logoURL} width={80} height={80} alt={contest?.title} className={styles.logo} />
+            <img src={logoURL} width={80} height={80} alt={title} className={styles.logo} />
           </Row>
 
           <Row spacing="s">
