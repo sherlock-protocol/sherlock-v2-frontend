@@ -151,8 +151,13 @@ export const Leaderboard: React.FC = () => {
         </Box>
       </Column>
       {seniorWatsonModalOpen && <SeniorWatsonModal onClose={() => setSeniorWatsonModalOpen(false)} />}
-      {contestLeaderboardOpen && (
-        <ContestLeaderboardModal contestID={contestLeaderboardOpen} onClose={handleContestLeaderboardModalClose} />
+      {contestLeaderboardOpen && contests && (
+        <ContestLeaderboardModal
+          contestID={contestLeaderboardOpen}
+          title={contests[contestLeaderboardOpen].title}
+          logoURL={contests[contestLeaderboardOpen].logoURL}
+          onClose={handleContestLeaderboardModalClose}
+        />
       )}
     </Row>
   )
