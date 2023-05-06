@@ -636,14 +636,7 @@ export const ContestDetails = () => {
             />
           )}
           {signUpModalOpen && <AuditorSignUpModal closeable onClose={handleSignUpModalClose} />}
-          {leaderboardModalOpen && (
-            <ContestLeaderboardModal
-              contestID={contest.id}
-              title={contest.title}
-              logoURL={contest.logoURL}
-              onClose={handleLeaderboardModalClose}
-            />
-          )}
+          {leaderboardModalOpen && <ContestLeaderboardModal contest={contest} onClose={handleLeaderboardModalClose} />}
         </LoadingContainer>
       </Box>
     </Column>
