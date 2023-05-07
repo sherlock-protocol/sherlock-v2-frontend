@@ -34,8 +34,8 @@ export const Leaderboard: React.FC = () => {
   }, [setLeaderboardContestModalOpen])
 
   const handleContestLeaderboardModalOpen = useCallback(
-    (contestID: number) => {
-      setLeaderboardContestModalOpen(contestID)
+    (contestIndex: number) => {
+      setLeaderboardContestModalOpen(contestIndex)
     },
     [setLeaderboardContestModalOpen]
   )
@@ -128,7 +128,7 @@ export const Leaderboard: React.FC = () => {
                         className={cx({
                           [styles.pending]: !c.calcCompleted,
                         })}
-                        onClick={() => c.calcCompleted && handleContestLeaderboardModalOpen(c.id)}
+                        onClick={() => c.calcCompleted && handleContestLeaderboardModalOpen(index)}
                       >
                         <Td>
                           <Row spacing="s" alignment={["space-between", "center"]}>
@@ -153,9 +153,7 @@ export const Leaderboard: React.FC = () => {
       {seniorWatsonModalOpen && <SeniorWatsonModal onClose={() => setSeniorWatsonModalOpen(false)} />}
       {contestLeaderboardOpen && contests && (
         <ContestLeaderboardModal
-          contestID={contestLeaderboardOpen}
-          title={contests[contestLeaderboardOpen].title}
-          logoURL={contests[contestLeaderboardOpen].logoURL}
+          contest={contests[contestLeaderboardOpen]}
           onClose={handleContestLeaderboardModalClose}
         />
       )}

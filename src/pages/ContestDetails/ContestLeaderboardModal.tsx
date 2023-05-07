@@ -10,23 +10,27 @@ import { commify } from "../../utils/units"
 import styles from "../Leaderboard/Leaderboard.module.scss"
 import LoadingContainer from "../../components/LoadingContainer/LoadingContainer"
 
-type Props = ModalProps & {
-  contestID: number
+type Contest = {
+  id: number
+  title: string
   logoURL?: string
-  title?: string
 }
 
-export const ContestLeaderboardModal: React.FC<Props> = ({ contestID, logoURL, title, onClose }) => {
-  const { data: leaderboard, isLoading: isLoadingLeaderboard } = useContestLeaderboard(contestID)
+type Props = ModalProps & {
+  contest: Contest
+}
+
+export const ContestLeaderboardModal: React.FC<Props> = ({ contest, onClose }) => {
+  const { data: leaderboard, isLoading: isLoadingLeaderboard } = useContestLeaderboard(contest.id)
 
   return (
     <Modal closeable onClose={onClose}>
       <LoadingContainer loading={isLoadingLeaderboard}>
         <Column alignment={["center", "center"]} spacing="xl" className={styles.scoreboardTable}>
-          <Title>{`${title} Leaderboard`}</Title>
+          <Title>{`${contest.title} Leaderboard`}</Title>
 
           <Row>
-            <img src={logoURL} width={80} height={80} alt={title} className={styles.logo} />
+            <img src={contest.logoURL} width={80} height={80} alt={contest.title} className={styles.logo} />
           </Row>
 
           <Row spacing="s">
