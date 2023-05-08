@@ -323,7 +323,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
           <Column spacing="m">
             <Title variant="h3">PROTOCOL</Title>
             <Field label="Name" detail={protocolNotFound ? "Protocol not found. A new protocol will be created." : ""}>
-              <Input value={protocolName} onChange={setProtocolName} />
+              <Input value={protocolName} onChange={setProtocolName} placeholder="Foo Protocol" />
             </Field>
             {displayProtocolInfo && (
               <>
@@ -339,6 +339,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
                     value={protocol?.githubTeam ?? protocolGithubTeam}
                     disabled={!!protocol}
                     onChange={setProtocolGithubTeam}
+                    placeholder="foo-protocol"
                   />
                 </Field>
                 <Field
