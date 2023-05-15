@@ -14,7 +14,13 @@ type Props = ModalProps & {
   judging?: boolean
 }
 
-export const JoinContestModal: React.FC<Props> = ({ onClose, onSelectHandle, contest, auditor, judging = false }) => {
+export const JoinContestSelectHandleModal: React.FC<Props> = ({
+  onClose,
+  onSelectHandle,
+  contest,
+  auditor,
+  judging = false,
+}) => {
   return (
     <Modal closeable onClose={onClose}>
       <Column alignment="stretch" spacing="l">
