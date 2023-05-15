@@ -113,6 +113,7 @@ export const ContestDetails = () => {
           points,
         })
       }
+      setSelectPointsModalOpen(false)
     },
     [setJoinContestModalOpen, joinContest, profile]
   )
