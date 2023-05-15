@@ -24,7 +24,7 @@ import { ReportModal } from "./ReportModal"
 import { timeLeftString } from "../../utils/dates"
 import { useProfile } from "../../hooks/api/auditors/useProfile"
 import { useJoinContest } from "../../hooks/api/auditors/useJoinContest"
-import { JoinContestModal } from "./JoinContestModal"
+import { JoinContestSelectHandleModal } from "./JoinContestSelectHandleModal"
 import { AuditorSignUpModal } from "../Contests/AuditorSignUpModal"
 import { useIsAuditor } from "../../hooks/api/auditors"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
@@ -32,6 +32,7 @@ import { ContestLeaderboardModal } from "./ContestLeaderboardModal"
 import { useContestant } from "../../hooks/api/contests/useContestant"
 import { useContestLeaderboard } from "../../hooks/api/stats/leaderboard/useContestLeaderboard"
 import { contestsRoutes } from "../../utils/routes"
+import { JoinContestSelectPointsModal } from "./JoinContestSelectPointsModal"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -50,8 +51,10 @@ export const ContestDetails = () => {
   const { data: isAuditor } = useIsAuditor(address)
   const { authenticate, isLoading: authenticationIsLoading } = useAuthentication()
 
+  const [competingForPoints, setCompetingForPoints] = useState(false)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [reportModalOpen, setReportModalOpen] = useState(false)
+  const [selectPointsModalOpen, setSelectPointsModalOpen] = useState(false)
   const [joinContestModalOpen, setJoinContestModalOpen] = useState(false)
   const [joinJudgingContestModalOpen, setJoinJudgingContestModalOpen] = useState(false)
   const [signUpModalOpen, setSignUpModalOpen] = useState(false)
@@ -95,15 +98,28 @@ export const ContestDetails = () => {
   }, [contestant?.audit?.countsTowardsRanking])
 
   const handleJoinContest = useCallback(() => {
-    if (!profile) return
+    setSelectPointsModalOpen(true)
+  }, [setSelectPointsModalOpen])
 
-    // If the auditor is also a team admin, we give them the option to join the contest as a team.
-    if (profile.managedTeams.length > 0) {
-      setJoinContestModalOpen(true)
-    } else {
-      joinContest(profile.handle)
-    }
-  }, [joinContest, profile])
+  const handleSelectPoints = useCallback(
+    (points: boolean) => {
+      if (!profile) return
+
+      // If the auditor is also a team admin, we give them the option to join the contest as a team.
+      if (profile.managedTeams.length > 0) {
+        setCompetingForPoints(points)
+        setSelectPointsModalOpen(false)
+        setJoinContestModalOpen(true)
+      } else {
+        joinContest({
+          handle: profile.handle,
+          judging: false,
+          points,
+        })
+      }
+    },
+    [setJoinContestModalOpen, joinContest, profile]
+  )
 
   const handleJoinJudgingContest = useCallback(() => {
     if (!profile) return
@@ -112,21 +128,30 @@ export const ContestDetails = () => {
     if (profile.managedTeams.length > 0) {
       setJoinJudgingContestModalOpen(true)
     } else {
-      joinContest(profile.handle, true)
+      joinContest({
+        handle: profile.handle,
+        judging: true,
+      })
     }
   }, [joinContest, profile])
 
   const handleJoinContestWithHandle = useCallback(
     (handle: string) => {
-      joinContest(handle)
+      joinContest({
+        handle,
+        points: competingForPoints,
+      })
       setJoinContestModalOpen(false)
     },
-    [joinContest]
+    [joinContest, competingForPoints]
   )
 
   const handleJoinJudgingContestWithHandle = useCallback(
     (handle: string) => {
-      joinContest(handle, true)
+      joinContest({
+        handle,
+        judging: true,
+      })
       setJoinJudgingContestModalOpen(false)
     },
     [joinContest]
@@ -618,8 +643,15 @@ export const ContestDetails = () => {
           {reportModalOpen && (
             <ReportModal report={contest.report} contest={contest} onClose={() => setReportModalOpen(false)} />
           )}
+          {selectPointsModalOpen && (
+            <JoinContestSelectPointsModal
+              contest={contest}
+              onSelectPoints={handleSelectPoints}
+              onClose={() => setSelectPointsModalOpen(false)}
+            />
+          )}
           {joinContestModalOpen && (
-            <JoinContestModal
+            <JoinContestSelectHandleModal
               contest={contest}
               auditor={profile!!}
               onClose={() => setJoinContestModalOpen(false)}
@@ -627,7 +659,7 @@ export const ContestDetails = () => {
             />
           )}
           {joinJudgingContestModalOpen && (
-            <JoinContestModal
+            <JoinContestSelectHandleModal
               contest={contest}
               auditor={profile!!}
               onClose={() => setJoinJudgingContestModalOpen(false)}
