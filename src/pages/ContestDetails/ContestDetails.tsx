@@ -97,10 +97,6 @@ export const ContestDetails = () => {
     }
   }, [contestant?.audit?.countsTowardsRanking])
 
-  const handleJoinContest = useCallback(() => {
-    setSelectPointsModalOpen(true)
-  }, [setSelectPointsModalOpen])
-
   const handleSelectPoints = useCallback(
     (points: boolean) => {
       if (!profile) return
@@ -120,6 +116,17 @@ export const ContestDetails = () => {
     },
     [setJoinContestModalOpen, joinContest, profile]
   )
+
+  const handleJoinContest = useCallback(() => {
+    if (!contest) return
+    if (!profile) return
+
+    if (DateTime.fromSeconds(contest.startDate) > DateTime.fromObject({ year: 2023, month: 5, day: 16 })) {
+      setSelectPointsModalOpen(true)
+    } else {
+      handleSelectPoints(true)
+    }
+  }, [setSelectPointsModalOpen, contest, profile, handleSelectPoints])
 
   const handleJoinJudgingContest = useCallback(() => {
     if (!profile) return
