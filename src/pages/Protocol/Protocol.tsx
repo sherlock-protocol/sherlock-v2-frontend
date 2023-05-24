@@ -1,5 +1,5 @@
 import { BigNumber, ethers } from "ethers"
-import React from "react"
+import React, { useEffect } from "react"
 import ProtocolBalanceInput from "../../components/ProtocolBalanceInput/ProtocolBalanceInput"
 import useProtocolManager from "../../hooks/useProtocolManager"
 import styles from "./Protocol.module.scss"
@@ -18,6 +18,7 @@ import { formatAmount } from "../../utils/format"
 import { useProtocols, Protocol } from "../../hooks/api/protocols"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
+import { useParams } from "react-router-dom"
 
 export const ProtocolPage: React.FC = () => {
   const [selectedProtocolId, setSelectedProtocolId] = React.useState<`0x${string}`>()
@@ -51,6 +52,21 @@ export const ProtocolPage: React.FC = () => {
     useProtocolManager()
   const { balance: usdcBalance } = useERC20("USDC")
   const { waitForTx } = useWaitTx()
+
+  const { protocolTag } = useParams()
+
+  useEffect(() => {
+    if (!protocols) return
+
+    if (protocolTag) {
+      const found = Object.entries(protocols).find(([_, p]) => p.tag === protocolTag)
+
+      if (found) {
+        const [_, protocol] = found
+        setSelectedProtocolId(protocol.bytesIdentifier)
+      }
+    }
+  }, [protocolTag, protocols])
 
   /**
    * Handler for changing the protocol
@@ -139,7 +155,13 @@ export const ProtocolPage: React.FC = () => {
             <Title>Protocol</Title>
           </Column>
           <Column>
-            <Select value={selectedProtocolId} options={protocolSelectOptions} onChange={handleOnProtocolChanged} />
+            {protocolTag ? (
+              <Text strong variant="alternate" size="large">
+                {selectedProtocol?.name}
+              </Text>
+            ) : (
+              <Select value={selectedProtocolId} options={protocolSelectOptions} onChange={handleOnProtocolChanged} />
+            )}
           </Column>
         </Row>
         {selectedProtocol && (

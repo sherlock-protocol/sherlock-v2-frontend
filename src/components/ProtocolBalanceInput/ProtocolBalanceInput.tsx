@@ -44,16 +44,16 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
   const [amountDuration, setAmountDuration] = React.useState<BigNumber | null>(null)
 
   /**
-   * Select a predefined period (in weeks) and convert to USDC
+   * Select a predefined period (in months) and convert to USDC
    */
   const handleSelectPredefinedPeriod = React.useCallback(
-    (weeks: number) => {
+    (months: number) => {
       if (!protocolPremium) {
         return
       }
 
-      // Transform period from weeks to seconds
-      const seconds = weeks * 7 * 24 * 60 * 60
+      // Transform period from months to seconds
+      const seconds = months * 30 * 24 * 60 * 60
       const totalAmount = protocolPremium.mul(seconds)
 
       setPredefinedAmount(totalAmount)
@@ -99,18 +99,18 @@ const ProtocolBalanceInput: React.FC<Props> = ({ onChange = () => null, protocol
     <Column grow={1} spacing="m">
       <Row alignment="space-between" spacing="m">
         <Column grow={1}>
-          <Button variant="alternate" onClick={() => handleSelectPredefinedPeriod(2)}>
-            2 weeks
-          </Button>
-        </Column>
-        <Column grow={1}>
-          <Button variant="alternate" onClick={() => handleSelectPredefinedPeriod(4)}>
+          <Button variant="alternate" onClick={() => handleSelectPredefinedPeriod(1)}>
             1 month
           </Button>
         </Column>
         <Column grow={1}>
-          <Button variant="alternate" onClick={() => handleSelectPredefinedPeriod(12)}>
+          <Button variant="alternate" onClick={() => handleSelectPredefinedPeriod(3)}>
             3 months
+          </Button>
+        </Column>
+        <Column grow={1}>
+          <Button variant="alternate" onClick={() => handleSelectPredefinedPeriod(6)}>
+            6 months
           </Button>
         </Column>
       </Row>
