@@ -67,6 +67,8 @@ function App() {
           <Route path={protocolsRoutes.Balance} element={<ProtocolPage />} />
           <Route path={protocolsRoutes.Claims} element={<ClaimsPage />} />
 
+          <Route path={"balance/:protocolTag"} element={<ProtocolPage />} />
+
           <Route path="*" element={<Navigate replace to={protocolsRoutes.Balance} />} />
         </Route>
 
