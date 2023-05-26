@@ -134,17 +134,14 @@ export const ProtocolPage: React.FC = () => {
   }, [fetchProtocolDetails])
 
   const maxClaimableAmount = React.useMemo(() => {
-    if (selectedProtocol) {
-      const [current, previous] = selectedProtocol.coverages.map((item) => item.coverageAmount)
+    if (!selectedProtocol) return undefined
 
-      if (previous?.gt(current)) {
-        return previous
-      } else {
-        return current
-      }
-    }
+    const [current] = selectedProtocol.coverages.sort(
+      (a, b) => b.coverageAmountSetAt.getTime() - a.coverageAmountSetAt.getTime()
+    )
+    const coverage = selectedProtocol.tvl?.lt(current.coverageAmount) ? selectedProtocol.tvl : current.coverageAmount
 
-    return null
+    return coverage
   }, [selectedProtocol])
 
   return (
