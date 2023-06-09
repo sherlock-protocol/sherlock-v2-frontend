@@ -162,6 +162,11 @@ export const AuditorForm: React.FC<Props> = ({
       isDirty,
     ]
   )
+
+  const validatedDiscordHandle = discordValidation
+    ? discordValidation.handle + (discordValidation.discriminator !== "0" ? `#${discordValidation.discriminator}` : "")
+    : ""
+
   return (
     <Column spacing="l">
       <Row>
@@ -213,7 +218,9 @@ export const AuditorForm: React.FC<Props> = ({
                 <>
                   <FaDiscord />
                   <Text>{discordValidation.handle}</Text>
-                  <Text variant="secondary">{`#${discordValidation.discriminator}`}</Text>
+                  {discordValidation?.discriminator !== "0" && (
+                    <Text variant="secondary">{`#${discordValidation.discriminator}`}</Text>
+                  )}
                 </>
               )}
               {!isValidatingDiscordHandle && !discordValidation && (
@@ -264,7 +271,7 @@ export const AuditorForm: React.FC<Props> = ({
             onSubmit({
               handle,
               githubHandle,
-              discordHandle: discordValidation ? `${discordValidation.handle}#${discordValidation.discriminator}` : "",
+              discordHandle: validatedDiscordHandle,
               telegramHandle,
               twitterHandle,
             })

@@ -4,13 +4,13 @@ import { validateDiscordHandle as validateDiscordHandleUrl } from "../urls"
 
 type ValidateDiscordHandleResponse = {
   handle: string
-  discriminator: number
+  discriminator: string
   user_id: number
 }
 
 type DiscordHandleValidation = {
   handle: string
-  discriminator: number
+  discriminator: string
   userID: number
 }
 
