@@ -147,6 +147,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+strong {
+  font-weight: 800;
+}
+
 * {
   &::-webkit-scrollbar {
     background-color: $background-color;
@@ -157,12 +165,4 @@ body {
     background-color: darken($color: $background-color, $amount: 10);
     border-radius: 1rem;
   }
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
-}
-
-strong {
-  font-weight: 800;
 }

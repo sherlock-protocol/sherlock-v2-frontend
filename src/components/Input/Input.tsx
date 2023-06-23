@@ -42,6 +42,16 @@ export type InputProps<T extends string | number> = {
    * Disable input
    */
   disabled?: boolean
+
+  /**
+   * Multiline or single line
+   */
+  multiline?: boolean
+
+  /**
+   * Persist the placeholder after a value has been set
+   */
+  persistPlaceholder?: boolean
 }
 
 export const Input = <T extends string | number>({
@@ -52,8 +62,10 @@ export const Input = <T extends string | number>({
   variant = "regular",
   textVariant = "normal",
   disabled = false,
+  multiline = false,
+  persistPlaceholder = false,
 }: InputProps<T>) => {
-  const handleChange: React.ChangeEventHandler<HTMLInputElement> = useCallback(
+  const handleChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = useCallback(
     (e) => {
       onChange && onChange(e.target.value as T)
     },
@@ -61,16 +73,26 @@ export const Input = <T extends string | number>({
   )
 
   return (
-    <div className={classNames([styles.inputContainer, styles[variant]])}>
-      {placeholder && <span className={styles.placeholder}>{placeholder}</span>}
-      <input
-        className={classNames([styles.input, styles[variant], styles[textVariant]])}
-        value={value}
-        onChange={handleChange}
-        disabled={disabled}
-        type={type}
-        spellCheck={false}
-      />
+    <div className={classNames([styles.inputContainer, styles[variant]], { [styles.multiline]: multiline })}>
+      {placeholder && (!value || persistPlaceholder) && <span className={styles.placeholder}>{placeholder}</span>}
+      {multiline ? (
+        <textarea
+          className={classNames([styles.textarea, styles[variant], styles[textVariant]])}
+          onChange={handleChange}
+          disabled={disabled}
+          spellCheck={false}
+          value={value}
+        ></textarea>
+      ) : (
+        <input
+          className={classNames([styles.input, styles[variant], styles[textVariant]])}
+          value={value}
+          onChange={handleChange}
+          disabled={disabled}
+          type={type}
+          spellCheck={false}
+        />
+      )}
     </div>
   )
 }

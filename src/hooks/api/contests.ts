@@ -3,12 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useAccount, useSignTypedData } from "wagmi"
 import { contests as contestsAPI } from "./axios"
 import { contestantQueryKey } from "./contests/useContestant"
-import {
-  getContests as getContestsUrl,
-  getContest as getContestUrl,
-  contestOptIn as contestOptInUrl,
-  getScoreboard as getScoreboardUrl,
-} from "./urls"
+import { getContests as getContestsUrl, getContest as getContestUrl, contestOptIn as contestOptInUrl } from "./urls"
 
 export type ContestStatus = "CREATED" | "RUNNING" | "JUDGING" | "FINISHED" | "ESCALATING" | "SHERLOCK_JUDGING"
 
@@ -25,12 +20,19 @@ export type Contest = {
   status: ContestStatus
   leadSeniorAuditorFixedPay: number
   leadSeniorAuditorHandle: string
+  leadJudgeHandle: string
+  leadJudgeFixedPay: number
   private: boolean
   fullPayment: number
   judgingPrizePool?: number
   jugdingEndDate?: number // Timestamp in seconds.
   repo: string
   linesOfCode?: string
+  rewards: number
+  judgingRepo: string
+  escalationStartDate?: number // Timestamp in seconds.
+  scoreSequence?: number
+  calcCompleted: boolean
 }
 
 export type Scoreboard = {
@@ -53,11 +55,18 @@ type GetContestsResponseData = {
   status: ContestStatus
   lead_senior_auditor_fixed_pay: number
   lead_senior_auditor_handle: string
+  lead_judge_handle: string
+  lead_judge_fixed_pay: number
   private: boolean
   full_payment: number
   judging_ends_at?: number
   judging_prize_pool: number | null
   template_repo_name: string
+  rewards: number
+  judging_repo_name: string
+  escalation_started_at?: number
+  score_sequence?: number
+  calc_completed: boolean
 }[]
 
 export const contestsQueryKey = "contests"
@@ -81,6 +90,13 @@ export const useContests = () =>
       judgingPrizePool: d.judging_prize_pool ?? undefined,
       jugdingEndDate: d.judging_ends_at,
       repo: d.template_repo_name,
+      rewards: d.rewards,
+      leadJudgeHandle: d.lead_judge_handle,
+      leadJudgeFixedPay: d.lead_judge_fixed_pay,
+      judgingRepo: d.judging_repo_name,
+      escalationStartDate: d.escalation_started_at,
+      scoreSequence: d.score_sequence,
+      calcCompleted: d.calc_completed,
     }))
   })
 
@@ -103,6 +119,13 @@ type GetContestResponseData = {
   judging_ends_at?: number
   template_repo_name: string
   lines_of_code: string
+  lead_judge_handle: string
+  lead_judge_fixed_pay: number
+  rewards: number
+  judging_repo_name: string
+  escalation_started_at?: number
+  score_sequence: number
+  calc_completed: boolean
 }
 
 export const contestQueryKey = (id: number) => ["contest", id]
@@ -131,6 +154,13 @@ export const useContest = (id: number) =>
         jugdingEndDate: response.judging_ends_at,
         repo: response.template_repo_name,
         linesOfCode: response.lines_of_code,
+        rewards: response.rewards,
+        leadJudgeHandle: response.lead_judge_handle,
+        leadJudgeFixedPay: response.lead_judge_fixed_pay,
+        judgingRepo: response.judging_repo_name,
+        escalationStartDate: response.escalation_started_at,
+        scoreSequence: response.score_sequence,
+        calcCompleted: response.calc_completed,
       }
     },
     {
@@ -188,27 +218,3 @@ export const useOptInOut = (contestId: number, optIn: boolean, handle: string) =
     [mutationIsLoading, signatureIsLoading, signAndOptIn]
   )
 }
-
-type GetScoreboardResponseData = {
-  handle: string
-  is_team: boolean
-  senior: boolean
-  score: number
-  days: number
-  payout: number
-}[]
-
-export const scoreboardQueryKey = () => "scoreboard"
-export const useScoreboard = () =>
-  useQuery<Scoreboard, Error>(scoreboardQueryKey(), async () => {
-    const { data } = await contestsAPI.get<GetScoreboardResponseData>(getScoreboardUrl())
-
-    return data.map((d) => ({
-      handle: d.handle,
-      senior: d.senior,
-      isTeam: d.is_team,
-      score: d.score,
-      contestDays: d.days,
-      payouts: d.payout,
-    }))
-  })

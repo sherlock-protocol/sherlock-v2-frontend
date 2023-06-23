@@ -5,7 +5,7 @@ import { Modal, Props as ModalProps } from "../../components/Modal/Modal"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
 
-import styles from "./Scoreboard.module.scss"
+import styles from "./Leaderboard.module.scss"
 
 export const SeniorWatsonModal = (props: ModalProps) => {
   return (

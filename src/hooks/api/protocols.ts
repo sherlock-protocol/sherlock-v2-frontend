@@ -90,6 +90,8 @@ export type Protocol = {
    * Last indexed TVL
    */
   tvl?: BigNumber
+
+  tag?: string
 }
 
 type GetProtocolsResponseData =
@@ -110,6 +112,7 @@ type GetProtocolsResponseData =
         agreement: string
         agreement_hash: string
         tvl: string
+        tag: string
       }[]
     }
   | {
@@ -152,6 +155,7 @@ export const useProtocols = () =>
           tvl: p?.tvl ? BigNumber.from(p?.tvl) : undefined,
           agreement: p.agreement,
           agreementHash: p.agreement_hash,
+          tag: p.tag,
         }
         return map
       }, {})

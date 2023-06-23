@@ -54,16 +54,6 @@ export const AuditorSignUpModal: React.FC<Props> = (props) => {
       <LoadingContainer loading={isLoading} label="Loading ...">
         <Column spacing="l" className={styles.formContainer}>
           <Title>SIGN UP</Title>
-          <Row className={styles.c4Banner}>
-            <Column spacing="s">
-              <Row>
-                <FaInfoCircle />
-                &nbsp;
-                <Title variant="h3">IMPORTANT</Title>
-              </Row>
-              <Text>To claim a C4 handle, you need to authenticate using the address associated with it.</Text>
-            </Column>
-          </Row>
           <AuditorForm onSubmit={handleSubmit} />
         </Column>
       </LoadingContainer>

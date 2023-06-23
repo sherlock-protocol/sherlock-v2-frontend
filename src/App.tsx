@@ -20,7 +20,7 @@ import MobileBlock from "./components/MobileBlock/MobileBlock"
 import { InternalOverviewPage } from "./pages/InternalOverview/InternalOverview"
 import { ContestsPage } from "./pages/Contests"
 import { ContestDetails } from "./pages/ContestDetails"
-import { Scoreboard } from "./pages/Scoreboard"
+import { Leaderboard } from "./pages/Leaderboard"
 import { AuditorProfile } from "./pages/AuditorProfile"
 import { AuthenticationGate } from "./components/AuthenticationGate"
 import { useAccount } from "wagmi"
@@ -31,6 +31,7 @@ import { AdminScope } from "./pages/admin/AdminScope/AdminScope"
 import { AuditScope } from "./pages/AuditScope/AuditScope"
 import { InitialPayment } from "./pages/protocol_dashboard/InitialPayment/InitialPayment"
 import { FinalPayment } from "./pages/protocol_dashboard/FinalPayment/FinalPayment"
+import { ContextQuestions } from "./pages/protocol_dashboard/ContextQuestions/ContextQuestions"
 
 function App() {
   const { address: connectedAddress } = useAccount()
@@ -66,6 +67,8 @@ function App() {
           <Route path={protocolsRoutes.Balance} element={<ProtocolPage />} />
           <Route path={protocolsRoutes.Claims} element={<ClaimsPage />} />
 
+          <Route path={"balance/:protocolTag"} element={<ProtocolPage />} />
+
           <Route path="*" element={<Navigate replace to={protocolsRoutes.Balance} />} />
         </Route>
 
@@ -75,13 +78,14 @@ function App() {
           <Route path={protocolDashboardRoutes.Team} element={<ProtocolTeam />} />
           <Route path={protocolDashboardRoutes.FinalPayment} element={<FinalPayment />} />
           <Route path={protocolDashboardRoutes.Scope} element={<AuditScope />} />
+          <Route path={protocolDashboardRoutes.Context} element={<ContextQuestions />} />
         </Route>
 
         {/** Audit Contests section routes */}
         <Route path={`${routes.AuditContests}/*`} element={<AppContests />}>
           <Route path={contestsRoutes.Contests} element={<ContestsPage />} />
           <Route path={contestsRoutes.ContestDetails} element={<ContestDetails />} />
-          <Route path={contestsRoutes.Leaderboard} element={<Scoreboard />} />
+          <Route path={contestsRoutes.Leaderboard} element={<Leaderboard />} />
 
           <Route
             path="scoreboard"

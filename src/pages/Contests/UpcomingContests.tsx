@@ -4,13 +4,12 @@ import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components/Text"
 import { Title } from "../../components/Title"
-
-import styles from "./Contests.module.scss"
 import { commify } from "../../utils/units"
 import { Table, TBody, Td, Th, THead, Tr } from "../../components/Table/Table"
 import { Contest } from "../../hooks/api/contests"
 import { FaLock } from "react-icons/fa"
-import { getTotalRewards } from "../../utils/contests"
+
+import styles from "./Contests.module.scss"
 
 type Props = {
   contests?: Contest[]
@@ -75,9 +74,7 @@ export const UpcomingContests: React.FC<Props> = ({ contests, onContestClick }) 
                 <Td>
                   <Column spacing="xs">
                     <Text variant="mono" strong size="large" alignment="center">
-                      {contest.id === 38
-                        ? `$${commify(getTotalRewards(contest))}`
-                        : `${commify(getTotalRewards(contest))} USDC`}
+                      {contest.id === 38 ? `$${commify(contest.rewards)}` : `${commify(contest.rewards)} USDC`}
                     </Text>
                     {contest.id === 38 && (
                       <Text variant="secondary" alignment="center" size="small">

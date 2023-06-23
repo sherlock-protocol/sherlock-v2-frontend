@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { DateTime } from "luxon"
 import { useAccount } from "wagmi"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
-import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy, FaLock } from "react-icons/fa"
+import { FaGithub, FaBook, FaClock, FaUsers, FaCrown, FaTrophy, FaLock, FaGavel } from "react-icons/fa"
 
 import { Box } from "../../components/Box"
 import { Column, Row } from "../../components/Layout"
@@ -24,15 +24,15 @@ import { ReportModal } from "./ReportModal"
 import { timeLeftString } from "../../utils/dates"
 import { useProfile } from "../../hooks/api/auditors/useProfile"
 import { useJoinContest } from "../../hooks/api/auditors/useJoinContest"
-import { JoinContestModal } from "./JoinContestModal"
+import { JoinContestSelectHandleModal } from "./JoinContestSelectHandleModal"
 import { AuditorSignUpModal } from "../Contests/AuditorSignUpModal"
 import { useIsAuditor } from "../../hooks/api/auditors"
 import { useAuthentication } from "../../hooks/api/useAuthentication"
 import { ContestLeaderboardModal } from "./ContestLeaderboardModal"
 import { useContestant } from "../../hooks/api/contests/useContestant"
-import { useContestLeaderboard } from "../../hooks/api/contests/useContestLeaderboard"
-import { getTotalRewards } from "../../utils/contests"
+import { useContestLeaderboard } from "../../hooks/api/stats/leaderboard/useContestLeaderboard"
 import { contestsRoutes } from "../../utils/routes"
+import { JoinContestSelectPointsModal } from "./JoinContestSelectPointsModal"
 
 const STATUS_LABELS = {
   CREATED: "UPCOMING",
@@ -51,8 +51,10 @@ export const ContestDetails = () => {
   const { data: isAuditor } = useIsAuditor(address)
   const { authenticate, isLoading: authenticationIsLoading } = useAuthentication()
 
+  const [competingForPoints, setCompetingForPoints] = useState(false)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [reportModalOpen, setReportModalOpen] = useState(false)
+  const [selectPointsModalOpen, setSelectPointsModalOpen] = useState(false)
   const [joinContestModalOpen, setJoinContestModalOpen] = useState(false)
   const [joinJudgingContestModalOpen, setJoinJudgingContestModalOpen] = useState(false)
   const [signUpModalOpen, setSignUpModalOpen] = useState(false)
@@ -95,16 +97,37 @@ export const ContestDetails = () => {
     }
   }, [contestant?.audit?.countsTowardsRanking])
 
+  const handleSelectPoints = useCallback(
+    (points: boolean) => {
+      if (!profile) return
+
+      // If the auditor is also a team admin, we give them the option to join the contest as a team.
+      if (profile.managedTeams.length > 0) {
+        setCompetingForPoints(points)
+        setSelectPointsModalOpen(false)
+        setJoinContestModalOpen(true)
+      } else {
+        joinContest({
+          handle: profile.handle,
+          judging: false,
+          points,
+        })
+      }
+      setSelectPointsModalOpen(false)
+    },
+    [setJoinContestModalOpen, joinContest, profile]
+  )
+
   const handleJoinContest = useCallback(() => {
+    if (!contest) return
     if (!profile) return
 
-    // If the auditor is also a team admin, we give them the option to join the contest as a team.
-    if (profile.managedTeams.length > 0) {
-      setJoinContestModalOpen(true)
+    if (DateTime.fromSeconds(contest.startDate) > DateTime.fromObject({ year: 2023, month: 5, day: 16 })) {
+      setSelectPointsModalOpen(true)
     } else {
-      joinContest(profile.handle)
+      handleSelectPoints(true)
     }
-  }, [joinContest, profile])
+  }, [setSelectPointsModalOpen, contest, profile, handleSelectPoints])
 
   const handleJoinJudgingContest = useCallback(() => {
     if (!profile) return
@@ -113,21 +136,30 @@ export const ContestDetails = () => {
     if (profile.managedTeams.length > 0) {
       setJoinJudgingContestModalOpen(true)
     } else {
-      joinContest(profile.handle, true)
+      joinContest({
+        handle: profile.handle,
+        judging: true,
+      })
     }
   }, [joinContest, profile])
 
   const handleJoinContestWithHandle = useCallback(
     (handle: string) => {
-      joinContest(handle)
+      joinContest({
+        handle,
+        points: competingForPoints,
+      })
       setJoinContestModalOpen(false)
     },
-    [joinContest]
+    [joinContest, competingForPoints]
   )
 
   const handleJoinJudgingContestWithHandle = useCallback(
     (handle: string) => {
-      joinContest(handle, true)
+      joinContest({
+        handle,
+        judging: true,
+      })
       setJoinJudgingContestModalOpen(false)
     },
     [joinContest]
@@ -157,6 +189,10 @@ export const ContestDetails = () => {
     setReportModalOpen(true)
   }, [setReportModalOpen])
 
+  const handleJudgingRepoClick = useCallback(() => {
+    contest?.judgingRepo && window.open(`https://github.com/${contest.judgingRepo}/issues`, "__blank")
+  }, [contest])
+
   const handleLeaderboardClick = useCallback(() => {
     setLeaderboardModalOpen(true)
   }, [setLeaderboardModalOpen])
@@ -179,7 +215,7 @@ export const ContestDetails = () => {
   }, [setLeaderboardModalOpen])
 
   const canOptinOut = useMemo(
-    () => contest?.id !== 38 && !contest?.private && (contest?.status === "CREATED" || contest?.status === "RUNNING"),
+    () => contest?.id !== 63 && !contest?.private && (contest?.status === "CREATED" || contest?.status === "RUNNING"),
     [contest?.status, contest?.private, contest?.id]
   )
 
@@ -210,6 +246,11 @@ export const ContestDetails = () => {
   const profileIsComplete = profile && profile.githubHandle
 
   const hasEnoughAuditDays = profile && profile.auditDays >= 28
+
+  const canViewFindings =
+    !contest.private &&
+    (!["CREATED", "RUNNING", "SHERLOCK_JUDGING"].includes(contest.status) ||
+      (contest.status === "SHERLOCK_JUDGING" && contest.escalationStartDate))
 
   return (
     <Column spacing="m" className={styles.container}>
@@ -268,6 +309,11 @@ export const ContestDetails = () => {
                   <Text variant="alternate" strong>{`Time left: ${timeLeftString(timeLeft)}`}</Text>
                 </Row>
               )}
+              {canViewFindings && (
+                <Button variant="secondary" onClick={handleJudgingRepoClick}>
+                  <FaGithub /> &nbsp; View findings
+                </Button>
+              )}
               {contest.status === "FINISHED" && contest.report && (
                 <Button variant="secondary" onClick={handleReportClick}>
                   <FaBook /> &nbsp; Read report
@@ -287,15 +333,10 @@ export const ContestDetails = () => {
                         <Title variant="h3">TOTAL REWARDS</Title>
                         <Row spacing="xs" alignment={["start", "baseline"]}>
                           <Text size="extra-large" strong>
-                            {contest.id === 38
-                              ? `$${commify(getTotalRewards(contest))}`
-                              : `${commify(getTotalRewards(contest))} USDC`}
+                            {contest.id === 38 || contest.id === 63
+                              ? `$${commify(contest.rewards)}`
+                              : `${commify(contest.rewards)} USDC`}
                           </Text>
-                          {contest.id === 38 && (
-                            <Text variant="secondary" size="small">
-                              Maximum Payout
-                            </Text>
-                          )}
                         </Row>
                       </Column>
                     </Column>
@@ -313,18 +354,28 @@ export const ContestDetails = () => {
                           Judging Pool
                         </Text>
                       ) : null}
+                      {contest.leadJudgeFixedPay ? (
+                        <Text variant="secondary" strong>
+                          Lead Judge
+                        </Text>
+                      ) : null}
                     </Column>
-                    <Column spacing="s">
+                    <Column spacing="s" alignment="end">
                       <Text variant="secondary" strong>
-                        {`${contest.id === 38 ? "$" : ""}${commify(contest.prizePool)} ${
-                          contest.id !== 38 ? "USDC" : "(*)"
+                        {`${contest.id === 38 || contest.id === 63 ? "$" : ""}${commify(contest.prizePool)} ${
+                          contest.id !== 38 && contest.id !== 63 ? "USDC" : "(*)"
                         }`}
                       </Text>
                       <Text variant="secondary" strong>{`${commify(contest.leadSeniorAuditorFixedPay)} USDC`}</Text>
                       {contest.judgingPrizePool ? (
-                        <Text variant="secondary" strong>{`${contest.id === 38 ? "$" : ""}${commify(
-                          contest.judgingPrizePool
-                        )} ${contest.id !== 38 ? "USDC" : ""}`}</Text>
+                        <Text variant="secondary" strong>{`${
+                          contest.id === 38 || contest.id === 63 ? "$" : ""
+                        }${commify(contest.judgingPrizePool)} ${
+                          contest.id !== 38 && contest.id !== 63 ? "USDC" : ""
+                        }`}</Text>
+                      ) : null}
+                      {contest.leadJudgeFixedPay ? (
+                        <Text variant="secondary" strong>{`${commify(contest.leadJudgeFixedPay)} USDC`}</Text>
                       ) : null}
                     </Column>
                   </Row>
@@ -333,17 +384,42 @@ export const ContestDetails = () => {
                       (*) &#8531; USDC and &#8532; OP tokens
                     </Text>
                   )}
+                  {contest.id === 63 && (
+                    <Text variant="secondary" size="small">
+                      (*) $70k paid in OP tokens, $50k in USDC
+                    </Text>
+                  )}
                 </Column>
               </Row>
               <hr />
-              <Row spacing="s" alignment={["start", "center"]}>
-                <FaCrown title="Lead Senior Watson" />
-                {contest.id === 38 ? (
-                  <Text strong>obront + Trust</Text>
-                ) : (
-                  <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
-                )}
-              </Row>
+              <Column spacing="m">
+                <Column spacing="xs">
+                  <Text variant="alternate" size="small" strong>
+                    LEAD SENIOR WATSON
+                  </Text>
+                  <Row spacing="s" alignment={["start", "center"]}>
+                    <FaCrown title="Lead Senior Watson" />
+                    {contest.id === 38 || contest.id === 63 ? (
+                      <Text strong>obront + Trust</Text>
+                    ) : (
+                      <Text strong>{contest.leadSeniorAuditorHandle ?? "TBD"}</Text>
+                    )}
+                  </Row>
+                </Column>
+                <Column spacing="xs">
+                  {contest.judgingPrizePool ? (
+                    <>
+                      <Text variant="alternate" size="small" strong>
+                        LEAD JUDGE
+                      </Text>
+                      <Row spacing="s" alignment={["start", "center"]}>
+                        <FaGavel title="Lead Judge" />
+                        <Text strong>{contest.leadJudgeHandle ?? "TBD"}</Text>
+                      </Row>
+                    </>
+                  ) : null}
+                </Column>
+              </Column>
               <hr />
               <Row>
                 <Column>
@@ -575,8 +651,15 @@ export const ContestDetails = () => {
           {reportModalOpen && (
             <ReportModal report={contest.report} contest={contest} onClose={() => setReportModalOpen(false)} />
           )}
+          {selectPointsModalOpen && (
+            <JoinContestSelectPointsModal
+              contest={contest}
+              onSelectPoints={handleSelectPoints}
+              onClose={() => setSelectPointsModalOpen(false)}
+            />
+          )}
           {joinContestModalOpen && (
-            <JoinContestModal
+            <JoinContestSelectHandleModal
               contest={contest}
               auditor={profile!!}
               onClose={() => setJoinContestModalOpen(false)}
@@ -584,7 +667,7 @@ export const ContestDetails = () => {
             />
           )}
           {joinJudgingContestModalOpen && (
-            <JoinContestModal
+            <JoinContestSelectHandleModal
               contest={contest}
               auditor={profile!!}
               onClose={() => setJoinJudgingContestModalOpen(false)}
@@ -593,9 +676,7 @@ export const ContestDetails = () => {
             />
           )}
           {signUpModalOpen && <AuditorSignUpModal closeable onClose={handleSignUpModalClose} />}
-          {leaderboardModalOpen && (
-            <ContestLeaderboardModal contestID={contest.id} onClose={handleLeaderboardModalClose} />
-          )}
+          {leaderboardModalOpen && <ContestLeaderboardModal contest={contest} onClose={handleLeaderboardModalClose} />}
         </LoadingContainer>
       </Box>
     </Column>

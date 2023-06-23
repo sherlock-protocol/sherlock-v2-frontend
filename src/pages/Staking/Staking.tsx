@@ -204,6 +204,7 @@ export const StakingPage: React.FC = () => {
                     onChange={setAmount}
                     token="USDC"
                     placeholder="Choose amount"
+                    persistPlaceholder
                     balance={usdcBalance}
                     disabled={stakingDisabled}
                   />

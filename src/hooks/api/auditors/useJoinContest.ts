@@ -18,7 +18,8 @@ type JoinContest = {
 
 type JoinContestParams = {
   handle: string
-  judging: boolean
+  points?: boolean
+  judging?: boolean
 }
 
 export const useJoinContest = (contestId: number) => {
@@ -32,11 +33,12 @@ export const useJoinContest = (contestId: number) => {
           handle: params.handle,
           contest_id: contestId,
           judging: params.judging,
+          counts_towards_ranking: params.points,
         })
 
         return {
           repoName: data.repo_name,
-          judging: params.judging,
+          judging: params.judging ?? false,
         }
       } catch (error) {
         const axiosError = error as AxiosError
@@ -50,26 +52,12 @@ export const useJoinContest = (contestId: number) => {
     }
   )
 
-  const joinContest = useCallback(
-    async (handle: string, judging: boolean = false) => {
-      try {
-        mutate({
-          handle,
-          judging,
-        })
-      } catch (error) {
-        console.error(error)
-      }
-    },
-    [mutate]
-  )
-
   const reset = useCallback(() => {
     mutation.reset()
   }, [mutation])
 
   return {
-    joinContest,
+    joinContest: mutate,
     isLoading: mutation.isLoading,
     isSuccess: mutation.isSuccess,
     isError: mutation.isError,

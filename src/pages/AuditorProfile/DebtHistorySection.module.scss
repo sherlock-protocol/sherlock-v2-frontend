@@ -1,0 +1,17 @@
+@import "../../styles/variables";
+
+.debtItem {
+  .link {
+    color: $primary-purple;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  svg {
+    margin-left: 0.25rem;
+  }
+}
+
+.emptyListPlaceholder {
+  padding: 2rem;
+}

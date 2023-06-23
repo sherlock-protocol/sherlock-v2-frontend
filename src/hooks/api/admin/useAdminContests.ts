@@ -19,6 +19,10 @@ export type ContestsListItem = {
   endDate: number
   submissionReady: boolean
   hasSolidityMetricsReport: boolean
+  leadSeniorAuditorHandle: string
+  leadSeniorSelectionMessageSentAt: number
+  leadSeniorConfirmationMessage: string
+  auditReport?: string
 }
 
 type GetAdminContestsResponse = {
@@ -35,12 +39,18 @@ type GetAdminContestsResponse = {
   ends_at: number
   protocol_submission_ready: boolean
   has_solidity_metrics_report: boolean
+  lead_senior_auditor_handle: string
+  senior_selection_message_sent_at: number
+  senior_confirmed_message: string
+  audit_report?: string
 }[]
 
-export const adminContestsQuery = () => "admin-contests"
-export const useAdminContests = () =>
-  useQuery<ContestsListItem[], Error>(adminContestsQuery(), async () => {
-    const { data } = await contestsAPI.get<GetAdminContestsResponse>(getAdminContestsUrl())
+export type ContestListStatus = "active" | "finished"
+
+export const adminContestsQuery = (status: ContestListStatus) => ["admin-contests", status]
+export const useAdminContests = (status: ContestListStatus) =>
+  useQuery<ContestsListItem[], Error>(adminContestsQuery(status), async () => {
+    const { data } = await contestsAPI.get<GetAdminContestsResponse>(getAdminContestsUrl(status))
 
     return data.map((d) => ({
       id: d.id,
@@ -56,5 +66,9 @@ export const useAdminContests = () =>
       endDate: d.ends_at,
       submissionReady: d.protocol_submission_ready,
       hasSolidityMetricsReport: d.has_solidity_metrics_report,
+      leadSeniorAuditorHandle: d.lead_senior_auditor_handle,
+      leadSeniorSelectionMessageSentAt: d.senior_selection_message_sent_at,
+      leadSeniorConfirmationMessage: d.senior_confirmed_message,
+      auditReport: d.audit_report,
     }))
   })

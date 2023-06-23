@@ -33,6 +33,7 @@ const AppProtocolDashboard = () => {
     if (currentStep === "INITIAL_PAYMENT") return <Navigate replace to={protocolDashboardRoutes.InitialPayment} />
     if (currentStep === "SCOPE") return <Navigate replace to={protocolDashboardRoutes.Scope} />
     if (currentStep === "TEAM") return <Navigate replace to={protocolDashboardRoutes.Team} />
+    if (currentStep === "CONTEXT") return <Navigate replace to={protocolDashboardRoutes.Context} />
     if (currentStep === "FINAL_PAYMENT") return <Navigate replace to={protocolDashboardRoutes.FinalPayment} />
   }, [childRoute, protocolDashboard?.contest])
 
@@ -57,7 +58,7 @@ const AppProtocolDashboard = () => {
       <div className={styles.contentContainer}>
         <div className={styles.content}>
           <Row spacing="xl" grow={1} className={styles.fullWidth}>
-            <Column className={styles.forefront}>
+            <Column shrink={0} grow={0} className={styles.forefront}>
               <Column className={styles.sticky} spacing="xl">
                 <ProtocolDashboardSideBar dashboardID={dashboardID} />
                 <Box shadow={false}>
@@ -118,10 +119,12 @@ const AppProtocolDashboard = () => {
                       </Tr>
                       <Tr>
                         <Td>
-                          <Text strong>Sherlock Admin Fee</Text>
+                          <Text strong>Lead Judge Fixed Pay</Text>
                         </Td>
                         <Td>
-                          <Text alignment="right">{`${commify(protocolDashboard.contest.sherlockFee)} USDC`}</Text>
+                          <Text alignment="right">{`${commify(
+                            protocolDashboard.contest.leadJudgeFixedPay
+                          )} USDC`}</Text>
                         </Td>
                       </Tr>
                     </TBody>

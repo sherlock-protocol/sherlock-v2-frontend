@@ -1,7 +1,7 @@
 import { BigNumber, ethers } from "ethers"
 import { DateTime } from "luxon"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { FaChrome, FaTwitter } from "react-icons/fa"
+import { FaChrome, FaTwitter, FaGithub } from "react-icons/fa"
 import { useDebounce } from "use-debounce"
 import { Button } from "../../../components/Button"
 import { Input } from "../../../components/Input"
@@ -33,6 +33,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   const { createContest, isLoading, isSuccess, error, reset } = useAdminCreateContest()
 
   const [protocolTwitter, setProtocolTwitter] = useState(protocol?.twitter ?? "")
+  const [protocolGithubTeam, setProtocolGithubTeam] = useState(protocol?.githubTeam ?? "")
   const [protocolWebsite, setProtocolWebsite] = useState(protocol?.website ?? "")
   const [protocolLogoURL, setProtocolLogoURL] = useState(protocol?.logoURL ?? "")
 
@@ -44,17 +45,18 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   const [contestNSLOC, setContestNSLOC] = useState("")
   const [contestStartDate, setContestStartDate] = useState("")
   const [contestAuditLength, setContestAuditLength] = useState("")
-  const [contestJudgingContestEndDate, setContestJudgingContestEndDate] = useState("")
   const [contestAuditPrizePool, setContestAuditPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestLeadSeniorWatsonFixedPay, setContestLeadSeniorWatsonFixedPay] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   )
   const [contestJudgingPrizePool, setContestJudgingPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
+  const [contestLeadJudgeFixedPay, setContestLeadJudgeFixedPay] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestTotalCost, setContestTotalCost] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialLeadSeniorWatsonFixedPay, setInitialLeadSeniorWatsonFixedPay] = useState<BigNumber | undefined>(
     BigNumber.from(0)
   )
   const [initialJudgingPrizePool, setInitialJudgingPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
+  const [initialLeadJudgeFixedPay, setInitialLeadJudgeFixedPay] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialTotalCost, setInitialTotalCost] = useState<BigNumber | undefined>(BigNumber.from(0))
 
   const [startDateError, setStartDateError] = useState<string>()
@@ -64,19 +66,15 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
 
   const displayProtocolInfo = !!protocol || protocolNotFound || protocolLoading
 
-  const updateDates = useCallback(() => {
-    if (contestStartDate !== "" && contestAuditLength !== "") {
-      const startDate = DateTime.fromFormat(contestStartDate, DATE_FORMAT)
-      const endDate = startDate.plus({ hours: 24 * parseInt(contestAuditLength) })
-      const judgingEndDate = endDate.plus({ hours: 24 * 3 })
-
-      setContestJudgingContestEndDate(judgingEndDate.toFormat(DATE_FORMAT))
-    }
-  }, [contestStartDate, contestAuditLength, setContestJudgingContestEndDate])
-
   useEffect(() => {
     if (isSuccess) onClose?.()
   }, [isSuccess, onClose])
+
+  useEffect(() => {
+    if (protocol?.name) {
+      setProtocolName(protocol?.name)
+    }
+  }, [protocol])
 
   useEffect(() => {
     if (twitterAccount?.profilePictureUrl) {
@@ -99,15 +97,13 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
       return
     }
 
-    updateDates()
-
     if (startDate < DateTime.now()) {
       setStartDateError("Start date cannot be in the past.")
       return
     }
 
     setStartDateError(undefined)
-  }, [contestStartDate, updateDates, contestAuditLength])
+  }, [contestStartDate, contestAuditLength])
 
   useEffect(() => {
     if (!contestAuditPrizePool) return
@@ -117,30 +113,45 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
 
     setInitialLeadSeniorWatsonFixedPay(fixedPay)
     setInitialJudgingPrizePool(judgingPool)
+    setInitialLeadJudgeFixedPay(judgingPool)
   }, [contestAuditPrizePool, setInitialLeadSeniorWatsonFixedPay, setInitialJudgingPrizePool, setInitialTotalCost])
+
+  useEffect(() => {
+    if (!contestJudgingPrizePool) return
+    setInitialLeadJudgeFixedPay(contestJudgingPrizePool)
+  }, [contestJudgingPrizePool])
 
   useEffect(() => {
     const total = contestAuditPrizePool
       ?.add(contestLeadSeniorWatsonFixedPay ?? 0)
       .add(contestJudgingPrizePool ?? 0)
+      .add(contestLeadJudgeFixedPay ?? 0)
       .add(contestAuditPrizePool.div(100).mul(5))
     setInitialTotalCost(total)
-  }, [contestAuditPrizePool, contestLeadSeniorWatsonFixedPay, contestJudgingPrizePool])
+  }, [contestAuditPrizePool, contestLeadSeniorWatsonFixedPay, contestJudgingPrizePool, contestLeadJudgeFixedPay])
 
   const sherlockFee = useMemo(() => {
     const fee = contestTotalCost
       ?.sub(contestAuditPrizePool ?? 0)
       .sub(contestLeadSeniorWatsonFixedPay ?? 0)
       .sub(contestJudgingPrizePool ?? 0)
+      .sub(contestLeadJudgeFixedPay ?? 0)
 
     return commify(parseInt(ethers.utils.formatUnits(fee ?? 0, 6)))
-  }, [contestAuditPrizePool, contestLeadSeniorWatsonFixedPay, contestJudgingPrizePool, contestTotalCost])
+  }, [
+    contestAuditPrizePool,
+    contestLeadSeniorWatsonFixedPay,
+    contestJudgingPrizePool,
+    contestTotalCost,
+    contestLeadJudgeFixedPay,
+  ])
 
   const canCreateContest = useMemo(() => {
     if (protocolName === "") return false
     if (protocolLogoURL === "" && !protocol?.logoURL) return false
     if (protocolWebsite === "" && !protocol?.website) return false
     if (protocolTwitter === "" && !protocol?.twitter) return false
+    if (protocolGithubTeam === "" && !protocol?.githubTeam) return false
 
     if (contestTitle === "") return false
     if (contestShortDescription.length < 100 || contestShortDescription.length > 200) return false
@@ -148,14 +159,9 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     if (contestAuditLength === "") return false
 
     const startDate = DateTime.fromFormat(contestStartDate, DATE_FORMAT)
-    const endDate = startDate.plus({ hours: 24 * parseInt(contestAuditLength) })
-    const judgingEndDate = DateTime.fromFormat(contestJudgingContestEndDate, DATE_FORMAT)
 
     if (!startDate.isValid) return false
     if (startDate < DateTime.now()) return false
-
-    if (!judgingEndDate.isValid) return false
-    if (judgingEndDate < endDate) return false
 
     if (contestAuditPrizePool?.eq(BigNumber.from(0))) return false
     if (contestLeadSeniorWatsonFixedPay?.eq(BigNumber.from(0))) return false
@@ -165,7 +171,6 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
   }, [
     contestAuditLength,
     contestAuditPrizePool,
-    contestJudgingContestEndDate,
     contestLeadSeniorWatsonFixedPay,
     contestShortDescription.length,
     contestStartDate,
@@ -174,10 +179,12 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     protocol?.logoURL,
     protocol?.twitter,
     protocol?.website,
+    protocol?.githubTeam,
     protocolLogoURL,
     protocolName,
     protocolTwitter,
     protocolWebsite,
+    protocolGithubTeam,
   ])
 
   const handleUpdateShortDescription = useCallback((value: string) => {
@@ -204,20 +211,15 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     const endDate = startDate
       .plus({ hours: 24 * parseInt(contestAuditLength) })
       .set({ hour: 15, minute: 0, second: 0, millisecond: 0 })
-    const judgingEndDate = DateTime.fromFormat(contestJudgingContestEndDate, DATE_FORMAT, { zone: "utc" }).set({
-      hour: 15,
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-    })
 
     createContest({
       protocol: {
         id: protocol?.id,
-        githubTeam: protocolName,
-        website: protocolWebsite,
-        twitter: protocolTwitter,
-        logoUrl: protocolLogoURL,
+        name: protocolName,
+        githubTeam: protocolGithubTeam || undefined,
+        website: protocolWebsite || undefined,
+        twitter: protocolTwitter || undefined,
+        logoUrl: protocolLogoURL || undefined,
       },
       contest: {
         title: contestTitle,
@@ -225,19 +227,19 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
         nSLOC: contestNSLOC,
         startDate,
         endDate,
-        judgingEndDate,
         auditPrizePool: parseInt(ethers.utils.formatUnits(contestAuditPrizePool ?? 0, 6)),
         judgingPrizePool: parseInt(ethers.utils.formatUnits(contestJudgingPrizePool ?? 0, 6)),
         leadSeniorAuditorFixedPay: parseInt(ethers.utils.formatUnits(contestLeadSeniorWatsonFixedPay ?? 0, 6)),
+        leadJudgeFixedPay: parseInt(ethers.utils.formatUnits(contestLeadJudgeFixedPay ?? 0, 6)),
         fullPayment: parseInt(ethers.utils.formatUnits(contestTotalCost ?? 0, 6)),
       },
     })
   }, [
     contestAuditLength,
     contestAuditPrizePool,
-    contestJudgingContestEndDate,
     contestJudgingPrizePool,
     contestLeadSeniorWatsonFixedPay,
+    contestLeadJudgeFixedPay,
     contestNSLOC,
     contestShortDescription,
     contestStartDate,
@@ -249,6 +251,7 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     protocolName,
     protocolTwitter,
     protocolWebsite,
+    protocolGithubTeam,
   ])
 
   const formIsDirty = useMemo(
@@ -259,17 +262,17 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
       contestNSLOC !== "" ||
       contestStartDate !== "" ||
       contestAuditLength !== "" ||
-      contestJudgingContestEndDate !== "" ||
       contestAuditPrizePool?.gt(BigNumber.from(0)) ||
       contestLeadSeniorWatsonFixedPay?.gt(BigNumber.from(0)) ||
       contestJudgingPrizePool?.gt(BigNumber.from(0)) ||
+      contestLeadJudgeFixedPay?.gt(BigNumber.from(0)) ||
       contestTotalCost?.gt(BigNumber.from(0)),
     [
       contestAuditLength,
       contestAuditPrizePool,
-      contestJudgingContestEndDate,
       contestJudgingPrizePool,
       contestLeadSeniorWatsonFixedPay,
+      contestLeadJudgeFixedPay,
       contestNSLOC,
       contestShortDescription,
       contestStartDate,
@@ -320,10 +323,25 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
           <Column spacing="m">
             <Title variant="h3">PROTOCOL</Title>
             <Field label="Name" detail={protocolNotFound ? "Protocol not found. A new protocol will be created." : ""}>
-              <Input value={protocolName} onChange={setProtocolName} />
+              <Input value={protocolName} onChange={setProtocolName} placeholder="Foo Protocol" />
             </Field>
             {displayProtocolInfo && (
               <>
+                <Field
+                  label={
+                    <Row spacing="xs">
+                      <FaGithub />
+                      <Text>GitHub</Text>
+                    </Row>
+                  }
+                >
+                  <Input
+                    value={protocol?.githubTeam ?? protocolGithubTeam}
+                    disabled={!!protocol}
+                    onChange={setProtocolGithubTeam}
+                    placeholder="foo-protocol"
+                  />
+                </Field>
                 <Field
                   label={
                     <Row spacing="xs">
@@ -382,7 +400,14 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
             <Field label="Short Description" error={!!shortDescriptionError} errorMessage={shortDescriptionError ?? ""}>
               <Input value={contestShortDescription} onChange={handleUpdateShortDescription} />
             </Field>
-            <Field label="nSLOC">
+            <Field
+              label="nSLOC"
+              detail={
+                isNaN(Number(contestNSLOC))
+                  ? "Value is not a number. It won't be used to check the submitted nSLOC"
+                  : ""
+              }
+            >
               <Input value={contestNSLOC} onChange={setContestNSLOC} />
             </Field>
             <Field label="Start Date" error={!!startDateError} errorMessage={startDateError ?? ""}>
@@ -390,9 +415,6 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
             </Field>
             <Field label="Audit Length">
               <Input type="number" value={contestAuditLength} onChange={setContestAuditLength} />
-            </Field>
-            <Field label="Judging Contest End Date">
-              <Input value={contestJudgingContestEndDate} onChange={setContestJudgingContestEndDate} />
             </Field>
             <Field label="Audit Contest Prize Pool">
               <TokenInput token="USDC" onChange={setContestAuditPrizePool} />
@@ -406,6 +428,9 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
             </Field>
             <Field label="Judging Contest Prize Pool">
               <TokenInput token="USDC" initialValue={initialJudgingPrizePool} onChange={setContestJudgingPrizePool} />
+            </Field>
+            <Field label="Lead Judge Fixed Pay">
+              <TokenInput token="USDC" initialValue={initialLeadJudgeFixedPay} onChange={setContestLeadJudgeFixedPay} />
             </Field>
             <Field label="Total Cost" detail={`Sherlock fee will be ${sherlockFee} USDC`}>
               <TokenInput token="USDC" initialValue={initialTotalCost} onChange={setContestTotalCost} />

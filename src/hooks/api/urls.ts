@@ -1,3 +1,5 @@
+import { ContestListStatus } from "./admin/useAdminContests"
+
 export const getFundraisePosition = (account: string) => `positions/${account}/fundraise`
 export const getUnlockOverTime = () => "stats/unlock"
 export const getAPYOverTime = () => "stats/apy"
@@ -17,11 +19,11 @@ export const contestSignUp = () => "/contests/sign-up"
 export const contestOptIn = () => "/contests/ranking-opt-in"
 export const getContestant = (address: string, contestId: number) =>
   `/contests/contestant?address=${address}&contest_id=${contestId}`
-export const getScoreboard = () => "scoreboard"
 export const getIsAuditor = (address: string) => `is_auditor/${address}`
 export const authenticateAuditor = (address: string) => `auditors/${address}`
 export const getNonce = () => `nonce`
 export const getAuditorProfile = () => "profile"
+export const getDebtHistory = () => "debt-history"
 export const validateDiscordHandle = (handle: string) =>
   `validate_discord_handle?discord_handle=${encodeURIComponent(handle)}`
 
@@ -29,7 +31,6 @@ export const updateProfile = () => "profile"
 export const signOut = () => "signout"
 export const signUp = () => "signup"
 export const joinContest = () => "/contests/join-contest"
-export const getContestLeaderboard = (id: number) => `/contests/${id}/scoreboard`
 export const getProtocolDashboard = (dashboardID: string) => `/contests/dashboard/${dashboardID}`
 export const submitPayment = () => "/contests/payments/transaction"
 
@@ -43,12 +44,22 @@ export const getScope = (dashboardID: string) => `dashboard/${dashboardID}/audit
 export const addScope = (dashboardID: string) => `dashboard/${dashboardID}/audit_scope`
 export const updateScope = (dashboardID: string, repoName: string) => `dashboard/${dashboardID}/audit_scope/${repoName}`
 export const deleteScope = (dashboardID: string, repoName: string) => `dashboard/${dashboardID}/audit_scope/${repoName}`
+export const getContextQuestions = (dashboardID: string) => `dashboard/${dashboardID}/context_questions`
+export const updateContextQuestionAnswers = (dashboardID: string) => `dashboard/${dashboardID}/context_questions`
+export const submitContextQuestionAnswers = (dashboardID: string) => `dashboard/${dashboardID}/submit_answers`
 
+export const getRepositoryBranches = (repo: string) => `/audit_scope/branches?repo_name=${repo}`
+export const getRepositoryCommits = (repo: string, branch: string) =>
+  `/audit_scope/commits?repo_name=${repo}&branch_name=${branch}`
+export const getRepositoryContracts = (repo: string, commit: string) =>
+  `/audit_scope/contracts?repo_name=${repo}&commit_hash=${commit}`
+
+// Admin
 export const getAdminProfile = () => `/admin/profile`
 export const adminSignIn = () => `/admin/signin`
 export const adminSignOut = () => `/admin/signout`
 export const getAdminNonce = () => `/admin/nonce`
-export const getAdminContests = () => `/admin/contests`
+export const getAdminContests = (status: ContestListStatus) => `/admin/contests?status=${status}`
 export const getAdminContestTweetPreview = (contestID: number) =>
   `/admin/contests/${contestID}/announcement_tweet_preview`
 export const adminApproveContest = () => `/admin/approve_contest`
@@ -58,7 +69,12 @@ export const getAdminContestScope = (contestID: number) => `/admin/contest/${con
 export const adminCreateContest = () => `/admin/contests`
 export const getAdminTwitterAccount = (handle: string) => `/admin/twitter_account/${handle}`
 export const adminSubmitScope = () => `/admin/scope`
+export const getSeniorWatson = (handle: string) => `/admin/senior_watson?handle=${handle}`
+export const adminStartLeadSeniorWatsonSelection = () => `/admin/start_lead_senior_watson_selection`
+export const adminSelectLeadSeniorWatson = () => `/admin/select_lead_senior_watson`
+export const adminGenerateReport = (contestID: number) => `/admin/contest/${contestID}/report/generate`
+export const adminPublishReport = (contestID: number) => `/admin/contest/${contestID}/report/publish`
 
-export const getRepositoryBranches = (repo: string) => `/audit_scope/${repo}/branches`
-export const getRepositoryCommits = (repo: string, branch: string) => `/audit_scope/${repo}/${branch}/commits`
-export const getRepositoryContracts = (repo: string, commit: string) => `/audit_scope/${repo}/${commit}/contracts`
+// Stats
+export const getLeaderboard = () => "/stats/leaderboard"
+export const getContestLeaderboard = (id: number) => `/stats/contest_leaderboard/${id}`

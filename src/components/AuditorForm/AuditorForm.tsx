@@ -162,16 +162,32 @@ export const AuditorForm: React.FC<Props> = ({
       isDirty,
     ]
   )
+
+  const validatedDiscordHandle = discordValidation
+    ? discordValidation.handle + (discordValidation.discriminator !== "0" ? `#${discordValidation.discriminator}` : "")
+    : ""
+
   return (
     <Column spacing="l">
       <Row>
-        <Field label="HANDLE *" error={!!handleVerificationError} errorMessage={handleVerificationError ?? ""}>
-          <Input value={handle} onChange={setHandle} disabled={disabledFields.includes("handle")} />
+        <Field
+          label="HANDLE *"
+          sublabel="The username that will be visible on the Sherlock leaderboard"
+          error={!!handleVerificationError}
+          errorMessage={handleVerificationError ?? ""}
+        >
+          <Input
+            value={handle}
+            onChange={setHandle}
+            disabled={disabledFields.includes("handle")}
+            placeholder="future-watson-913"
+          />
         </Field>
       </Row>
       <Row>
         <Field
           label="GITHUB *"
+          sublabel="Your GitHub username"
           error={githubVerificationError && !isVerifyingGithubHandle}
           errorMessage={"Github handle not found"}
           detail={
@@ -202,7 +218,9 @@ export const AuditorForm: React.FC<Props> = ({
                 <>
                   <FaDiscord />
                   <Text>{discordValidation.handle}</Text>
-                  <Text variant="secondary">{`#${discordValidation.discriminator}`}</Text>
+                  {discordValidation?.discriminator !== "0" && (
+                    <Text variant="secondary">{`#${discordValidation.discriminator}`}</Text>
+                  )}
                 </>
               )}
               {!isValidatingDiscordHandle && !discordValidation && (
@@ -253,7 +271,7 @@ export const AuditorForm: React.FC<Props> = ({
             onSubmit({
               handle,
               githubHandle,
-              discordHandle: `${discordValidation?.handle}#${discordValidation?.discriminator}`,
+              discordHandle: validatedDiscordHandle,
               telegramHandle,
               twitterHandle,
             })
