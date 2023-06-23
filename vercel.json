@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/audits-v2",
+      "destination": "https://audits-goerli.sherlock.xyz"
+    }
+  ]
+}
