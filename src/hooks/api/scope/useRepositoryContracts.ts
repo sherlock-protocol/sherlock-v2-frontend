@@ -33,7 +33,7 @@ export const convertToTree = (paths: string[]) => {
     const parts = d.split("/")
     let current: Tree = tree
     parts.forEach((p) => {
-      if (p.endsWith(".sol")) {
+      if (p.endsWith(".sol") || p.endsWith(".vy")) {
         current.set(p, p)
       } else {
         if (!current.get(p)) current.set(p, new Map())
