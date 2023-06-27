@@ -1,8 +1,8 @@
 {
   "redirects": [
     {
-      "source": "/audits-v2",
-      "destination": "https://audits-goerli.sherlock.xyz",
+      "source": "/audits-v2/:path",
+      "destination": "https://audits-goerli.sherlock.xyz/:path*",
       "permanent": false
     }
   ]
