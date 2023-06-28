@@ -1,13 +1,13 @@
 {
   "redirects": [
     {
-      "source": "/audits-v2",
-      "destination": "https://audits-goerli.sherlock.xyz",
+      "source": "/audits",
+      "destination": "https://audits.sherlock.xyz",
       "permanent": false
     },
     {
-      "source": "/audits-v2/:path*",
-      "destination": "https://audits-goerli.sherlock.xyz/:path*",
+      "source": "/audits/:path*",
+      "destination": "https://audits.sherlock.xyz/:path*",
       "permanent": false
     }
   ]
