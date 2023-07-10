@@ -105,7 +105,7 @@ export const FinalPayment = () => {
         ) : (
           <Box shadow={false}>
             <Column spacing="m">
-              <Title variant="h3">SUBMIT INITIAL PAYMENT</Title>
+              <Title variant="h3">SUBMIT FINAL PAYMENT</Title>
               <Text>
                 1. Send <strong>{`${commify(amountDue)} USDC`}</strong> to the address below
               </Text>
