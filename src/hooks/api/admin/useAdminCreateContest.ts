@@ -20,9 +20,8 @@ type AdminCreateContestParams = {
     nSLOC: string
     startDate: DateTime
     endDate: DateTime
-    auditPrizePool: number
+    auditRewards: number
     judgingPrizePool: number
-    leadSeniorAuditorFixedPay: number
     leadJudgeFixedPay: number
     fullPayment: number
   }
@@ -47,9 +46,8 @@ export const useAdminCreateContest = () => {
           lines_of_code: params.contest.nSLOC,
           starts_at: params.contest.startDate.toSeconds(),
           ends_at: params.contest.endDate.toSeconds(),
-          prize_pool: params.contest.auditPrizePool,
+          audit_rewards: params.contest.auditRewards,
           judging_prize_pool: params.contest.judgingPrizePool,
-          lead_senior_auditor_fixed_pay: params.contest.leadSeniorAuditorFixedPay,
           lead_judge_fixed_pay: params.contest.leadJudgeFixedPay,
           full_payment: params.contest.fullPayment,
         })
