@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from "react"
 import { WagmiConfig, configureChains, createClient } from "wagmi"
-import { mainnet, goerli, hardhat, localhost } from "wagmi/chains"
+import { mainnet, goerli, hardhat, localhost, Chain } from "wagmi/chains"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { publicProvider } from "wagmi/providers/public"
 import { alchemyProvider } from "wagmi/providers/alchemy"
@@ -10,11 +10,10 @@ import config from "../config"
 
 // API key for Alchemy project
 const alchemyApiUrl = config.alchemyApiUrl
-const alchemyApiUrlHttp = alchemyApiUrl.replace("ws", "http")
 const alchemyApiKey = alchemyApiUrl?.split("/").slice(-1)[0] as string
 
 // Chains for connectors to support
-const chains = [mainnet, goerli]
+const chains: Chain[] = [mainnet, goerli]
 
 // Add local node support if developing
 if (process.env.NODE_ENV === "development") {
@@ -39,10 +38,18 @@ const connectors = [
   new WalletConnectConnector({
     chains,
     options: {
-      qrcode: true,
-      rpc: {
-        [mainnet.id]: alchemyApiUrlHttp,
-        [goerli.id]: alchemyApiUrlHttp,
+      projectId: "67c86b4ce6dac476f6f20f41c4ef0364",
+      metadata: {
+        name: "Sherlock Audits",
+        description: "",
+        url: "sherlock.xyz",
+        icons: [],
+      },
+      showQrModal: true,
+      qrModalOptions: {
+        themeVariables: {
+          "--wcm-z-index": "1000",
+        },
       },
     },
   }),
