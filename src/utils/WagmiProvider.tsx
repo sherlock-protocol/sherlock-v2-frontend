@@ -21,7 +21,11 @@ if (process.env.NODE_ENV === "development") {
   chains.push(localhost)
 }
 
-const { provider, webSocketProvider } = configureChains(chains, [
+const {
+  provider,
+  webSocketProvider,
+  chains: configuredChains,
+} = configureChains(chains, [
   alchemyProvider({ apiKey: alchemyApiKey }),
   publicProvider(),
   jsonRpcProvider({
@@ -33,10 +37,10 @@ const { provider, webSocketProvider } = configureChains(chains, [
 
 const connectors = [
   new InjectedConnector({
-    chains,
+    chains: configuredChains,
   }),
   new WalletConnectConnector({
-    chains,
+    chains: configuredChains,
     options: {
       projectId: "67c86b4ce6dac476f6f20f41c4ef0364",
       metadata: {
