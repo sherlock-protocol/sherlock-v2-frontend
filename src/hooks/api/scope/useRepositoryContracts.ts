@@ -4,53 +4,104 @@ import { getRepositoryContracts as getRepositoryContractsUrl } from "../urls"
 
 type GetRepositoryContractsResponse = string[]
 
+type File = {
+  filepath: string
+  nsloc?: number
+}
+
+interface BaseEntry {
+  name: string
+}
+
+interface FileEntry extends BaseEntry {
+  type: "file"
+  filepath: string
+  nsloc?: number
+}
+
+interface DirectoryEntry extends BaseEntry {
+  type: "directory"
+  entries: Array<Entry>
+}
+
+export type Entry = FileEntry | DirectoryEntry
+
+type AnyEntry = RootDirectory | DirectoryEntry
+
+export interface RootDirectory {
+  type: "root"
+  entries: Array<Entry>
+}
+
+export const convertToTree2 = (files: File[]) => {
+  const root: RootDirectory = {
+    type: "root",
+    entries: [],
+  }
+
+  files.forEach(({ filepath, nsloc }) => {
+    const parts = filepath.split("/")
+
+    let current: AnyEntry = root
+
+    parts.forEach((p) => {
+      if (p.endsWith(".sol") || p.endsWith(".vy")) {
+        current.entries.push({
+          type: "file",
+          name: p,
+          filepath,
+          nsloc,
+        })
+      } else {
+        let directory: DirectoryEntry | undefined = current.entries.find(
+          (e) => e.type === "directory" && e.name === p
+        ) as DirectoryEntry
+
+        if (!directory) {
+          directory = {
+            type: "directory",
+            name: p,
+            entries: [],
+          }
+          current.entries.push(directory)
+        }
+
+        current = directory
+      }
+    })
+  })
+
+  return root
+}
+
 export type TreeValue = Tree | string
 export interface Tree extends Map<string, TreeValue> {}
 
-export const getAllTreePaths = (parentPath: string, tree: TreeValue) => {
-  if (typeof tree === "string") {
+export const getAllTreePaths = (parentPath: string, tree: Entry) => {
+  if (tree.type === "file") {
     return [`${parentPath}`]
   }
 
   let paths: string[] = []
 
-  tree.forEach((value, key) => {
-    paths = [...paths, ...getAllTreePaths(`${parentPath}/${key}`, value)]
+  tree.entries.forEach((value, key) => {
+    paths = [...paths, ...getAllTreePaths(`${parentPath}/${value.name}`, value)]
   })
 
   return paths
 }
 
-type Files = {
-  tree: Tree
+type RepositoryContracts = {
+  tree: RootDirectory
   rawPaths: string[]
-}
-
-export const convertToTree = (paths: string[]) => {
-  const tree: Tree = new Map()
-
-  paths.forEach((d) => {
-    const parts = d.split("/")
-    let current: Tree = tree
-    parts.forEach((p) => {
-      if (p.endsWith(".sol") || p.endsWith(".vy")) {
-        current.set(p, p)
-      } else {
-        if (!current.get(p)) current.set(p, new Map())
-        current = current.get(p) as Tree
-      }
-    })
-  })
-
-  return tree
 }
 
 export const repositoryContractsQuery = (repo: string, commit: string) => ["repository-contracts", repo, commit]
 export const useRepositoryContracts = (repo: string, commit: string) =>
-  useQuery<Files, Error>(repositoryContractsQuery(repo, commit), async () => {
+  useQuery<RepositoryContracts, Error>(repositoryContractsQuery(repo, commit), async () => {
     const { data } = await contestsAPI.get<GetRepositoryContractsResponse>(getRepositoryContractsUrl(repo, commit))
 
-    const tree = convertToTree(data)
+    const tree = convertToTree2(data.map((f) => ({ filepath: f })))
 
     return {
       tree,

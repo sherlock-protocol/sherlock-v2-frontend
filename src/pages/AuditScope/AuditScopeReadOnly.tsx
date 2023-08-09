@@ -15,6 +15,8 @@ type Props = {
 export const AuditScopeReadOnly: React.FC<Props> = ({ dashboardID }) => {
   const { data: scope } = useScope(dashboardID)
 
+  const submittedNSLOC = scope?.reduce((t, s) => t + (s.files.reduce((t, f) => t + (f.nSLOC ?? 0), 0) ?? 0), 0) ?? 0
+
   return (
     <Column spacing="l" className={styles.auditScope}>
       <Box shadow={false}>
@@ -31,7 +33,7 @@ export const AuditScopeReadOnly: React.FC<Props> = ({ dashboardID }) => {
           </Row>
           <Row spacing="xs">
             <Text>nSLOC:</Text>
-            <Text strong>{scope?.reduce((t, s) => (t += s.nSLOC ?? 0), 0)}</Text>
+            <Text strong>{submittedNSLOC}</Text>
           </Row>
         </Column>
       </Box>

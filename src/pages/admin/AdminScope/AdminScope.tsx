@@ -14,6 +14,7 @@ import { shortenCommitHash } from "../../../utils/repository"
 import { BranchSelectionModal } from "../../AuditScope/BranchSelectionModal"
 import { CommitSelectionModal } from "../../AuditScope/CommitSelectionModal"
 import { RepositoryContractsSelector } from "../../AuditScope/RepositoryContractsSelector"
+import { useRepositoryContracts } from "../../../hooks/api/scope/useRepositoryContracts"
 
 export const AdminScope = () => {
   const [repoLink, setRepoLink] = useState("")
@@ -28,6 +29,8 @@ export const AdminScope = () => {
 
   const { data: repo, isLoading: repoIsLoading } = useRepository(debouncedRepoName)
   const { submitScope, isLoading, data: report } = useAdminSubmitScope()
+
+  const { data: repoContracts } = useRepositoryContracts(debouncedRepoName, commitHash ?? "")
 
   useEffect(() => {
     const pattern = /^https?:\/\/github\.com\/([A-Za-z0-9-]+\/[A-Za-z0-9-]+)(?:\.git)?(?:\/tree\/([A-Za-z0-9-]+))?$/
@@ -75,12 +78,9 @@ export const AdminScope = () => {
     [setCommitHash]
   )
 
-  const handleSelectAll = useCallback(
-    (selectedPaths: string[]) => {
-      setFiles(selectedPaths)
-    },
-    [setFiles]
-  )
+  const handleSelectAll = useCallback(() => {
+    setFiles(repoContracts?.rawPaths ?? [])
+  }, [repoContracts])
 
   const handleClearSelection = useCallback(() => {
     setFiles([])
@@ -177,14 +177,15 @@ export const AdminScope = () => {
                   &nbsp;
                   {repo.name}
                 </Title>
-                <RepositoryContractsSelector
-                  repo={repo?.name}
-                  commit={commitHash}
-                  onPathSelected={handlePathSelected}
-                  selectedPaths={files}
-                  onSelectAll={handleSelectAll}
-                  onClearSelection={handleClearSelection}
-                />
+                {repoContracts ? (
+                  <RepositoryContractsSelector
+                    tree={repoContracts.tree}
+                    onPathSelected={handlePathSelected}
+                    selectedPaths={files}
+                    onSelectAll={handleSelectAll}
+                    onClearSelection={handleClearSelection}
+                  />
+                ) : null}
               </Column>
             </Box>
           )}

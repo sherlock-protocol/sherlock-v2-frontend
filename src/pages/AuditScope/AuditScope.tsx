@@ -21,6 +21,9 @@ import { AuditScopeReadOnly } from "./AuditScopeReadOnly"
 import Modal, { Props as ModalProps } from "../../components/Modal/Modal"
 import { useSubmitScope } from "../../hooks/api/contests/useSubmitScope"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
+import { convertToTree2 } from "../../hooks/api/scope/useRepositoryContracts"
+
+import styles from "./AuditScope.module.scss"
 
 type Props = ModalProps & {
   dashboardID: string
@@ -106,8 +109,10 @@ export const AuditScope = () => {
 
   const handlePathSelected = useCallback(
     (repo: string, paths: string[]) => {
-      console.log(paths)
-      let selectedPaths = scope?.find((s) => s.repoName === repo)?.files
+      let selectedPaths = scope
+        ?.find((s) => s.repoName === repo)
+        ?.files.filter((f) => f.selected)
+        .map((f) => f.filePath)
 
       if (!selectedPaths) return
 
@@ -179,14 +184,14 @@ export const AuditScope = () => {
   )
 
   const handleSelectAll = useCallback(
-    (repoName: string, files: string[]) => {
-      const repo = scope?.find((s) => s.repoName === repoName)
-      if (!repo) return
+    (repoName: string) => {
+      const s = scope?.find((s) => s.repoName === repoName)
+      if (!s) return
 
       updateScope({
         protocolDashboardID: dashboardID ?? "",
         repoName,
-        files,
+        files: s.files.map((f) => f.filePath),
       })
     },
     [updateScope, dashboardID, scope]
@@ -281,25 +286,54 @@ export const AuditScope = () => {
             </Column>
           </Box>
         ) : null}
-        {scope?.map((s) => (
-          <Box shadow={false} fullWidth key={`contracts-${s.repoName}`}>
-            <Column spacing="l">
-              <Title variant="h2">
-                <FaGithub />
-                &nbsp;
-                {s.repoName}
-              </Title>
-              <RepositoryContractsSelector
-                repo={s.repoName}
-                commit={s.commitHash}
-                onPathSelected={(paths) => handlePathSelected(s.repoName, paths)}
-                selectedPaths={s.files}
-                onSelectAll={(files) => handleSelectAll(s.repoName, files)}
-                onClearSelection={() => handleClearSelection(s.repoName)}
-              />
-            </Column>
-          </Box>
-        ))}
+        {scope?.map((s) => {
+          const selectedNSLOC = s.files.reduce((t, f) => (t += f.selected ? f.nSLOC ?? 0 : 0), 0)
+          const initialNSLOC = s.initialScope?.files.reduce((t, f) => (t += f.selected ? f.nSLOC ?? 0 : 0), 0)
+          const differenceNSLOC = initialNSLOC && selectedNSLOC - initialNSLOC
+
+          return (
+            <Box shadow={false} fullWidth key={`contracts-${s.repoName}`}>
+              <Column spacing="l">
+                <Title variant="h2">
+                  <FaGithub />
+                  &nbsp;
+                  {s.repoName}
+                </Title>
+                <Row spacing="s">
+                  <Text variant="secondary" size="small">
+                    <strong>Selected files:</strong> {s.files.filter((f) => f.selected).length}
+                  </Text>
+                  <Text variant="secondary" size="small">
+                    <strong>nSLOC:</strong> {s.files.reduce((t, f) => (t += f.selected ? f.nSLOC ?? 0 : 0), 0)}
+                  </Text>
+                </Row>
+                {differenceNSLOC ? (
+                  <Row spacing="s">
+                    <Text variant="secondary" size="small">
+                      <strong>Difference with initial scoping:</strong>
+                    </Text>
+                    <Text size="small" strong variant="success">
+                      {differenceNSLOC} nSLOC
+                    </Text>
+                  </Row>
+                ) : null}
+                <RepositoryContractsSelector
+                  tree={convertToTree2(
+                    s.files.map((f) => ({
+                      filepath: f.filePath,
+                      nsloc: f.nSLOC ?? 0,
+                    })) ?? []
+                  )}
+                  onPathSelected={(paths) => handlePathSelected(s.repoName, paths)}
+                  selectedPaths={s.files.filter((f) => f.selected).map((f) => f.filePath)}
+                  onSelectAll={() => handleSelectAll(s.repoName)}
+                  onClearSelection={() => handleClearSelection(s.repoName)}
+                  initialScope={s.initialScope}
+                />
+              </Column>
+            </Box>
+          )
+        })}
         <Box shadow={false}>
           <Button onClick={() => setSubmitScopeModalOpen(true)} disabled={!selectedFiles}>
             Submit scope
