@@ -59,7 +59,9 @@ export const ProtocolPage: React.FC = () => {
     if (!protocols) return
 
     if (protocolTag) {
-      const found = Object.entries(protocols).find(([_, p]) => p.tag === protocolTag)
+      const found = Object.entries(protocols).find(
+        ([_, p]) => p.name && p.name.toLowerCase().replaceAll(" ", "_") === protocolTag
+      )
 
       if (found) {
         const [_, protocol] = found
