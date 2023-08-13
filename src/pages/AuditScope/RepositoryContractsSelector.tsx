@@ -1,9 +1,20 @@
 import { useCallback, useMemo, useState } from "react"
-import { FaCaretDown, FaCaretRight, FaCheckCircle, FaFile, FaFolder, FaRegFile } from "react-icons/fa"
+import {
+  FaCaretDown,
+  FaCaretRight,
+  FaCheckCircle,
+  FaDotCircle,
+  FaFile,
+  FaFolder,
+  FaMinusCircle,
+  FaPlusCircle,
+  FaRegDotCircle,
+  FaRegFile,
+} from "react-icons/fa"
 import cx from "classnames"
 import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components/Text"
-import { Entry, getAllTreePaths, RootDirectory } from "../../hooks/api/scope/useRepositoryContracts"
+import { Entry, FileEntry, getAllTreePaths, RootDirectory } from "../../hooks/api/scope/useRepositoryContracts"
 
 import styles from "./AuditScope.module.scss"
 import { Button } from "../../components/Button"
@@ -33,6 +44,27 @@ type TreeEntryProps = {
       readOnly: true
     }
 )
+
+const FileIcon: React.FC<{
+  entry: FileEntry
+  selected: boolean
+  initialScope?: { nSLOC?: number; selected: boolean }
+}> = ({ entry, selected, initialScope }) => {
+  if (!selected && !initialScope?.selected) return null
+
+  if (selected) {
+    if (initialScope?.selected) {
+      if (entry.nsloc !== initialScope.nSLOC) {
+        return <FaRegDotCircle className={styles.nslocDiff} />
+      }
+      return <FaCheckCircle />
+    } else {
+      return <FaPlusCircle className={styles.fileAdded} />
+    }
+  }
+
+  return <FaMinusCircle className={styles.fileRemoved} />
+}
 
 export const TreeEntry: React.FC<TreeEntryProps> = ({
   name,
@@ -90,10 +122,7 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
                 diffWithInitialScope === 0 ? "-" : diffWithInitialScope
               })`}</Text>
             ) : null}
-
-            <Text className={styles.icon}>
-              <FaCheckCircle style={{ opacity: selected ? 1 : 0 }} />
-            </Text>
+            <FileIcon entry={tree} selected={selected} initialScope={initialScopeFile} />
           </Row>
         </Row>
       </li>

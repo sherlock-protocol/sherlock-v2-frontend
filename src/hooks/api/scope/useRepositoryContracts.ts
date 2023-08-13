@@ -13,7 +13,7 @@ interface BaseEntry {
   name: string
 }
 
-interface FileEntry extends BaseEntry {
+export interface FileEntry extends BaseEntry {
   type: "file"
   filepath: string
   nsloc?: number
