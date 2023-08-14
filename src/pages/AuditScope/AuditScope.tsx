@@ -299,21 +299,40 @@ export const AuditScope = () => {
                   &nbsp;
                   {s.repoName}
                 </Title>
-                <Row spacing="s">
-                  <Text variant="secondary" size="small">
-                    <strong>Selected files:</strong> {s.files.filter((f) => f.selected).length}
+                <Column spacing="s">
+                  <Text variant="secondary" size="small" strong>
+                    Original Scope from Quote
                   </Text>
-                  <Text variant="secondary" size="small">
-                    <strong>nSLOC:</strong> {s.files.reduce((t, f) => (t += f.selected ? f.nSLOC ?? 0 : 0), 0)}
+                  <Row spacing="s">
+                    <Text variant="secondary" size="small">
+                      <strong>Files:</strong> {s.initialScope?.files.filter((f) => f.selected).length}
+                    </Text>
+                    <Text variant="secondary" size="small">
+                      <strong>nSLOC:</strong> {initialNSLOC}
+                    </Text>
+                  </Row>
+                </Column>
+                <Column spacing="s">
+                  <Text variant="secondary" size="small" strong>
+                    Currently Selected Scope
                   </Text>
-                </Row>
+                  <Row spacing="s">
+                    <Text variant="secondary" size="small">
+                      <strong>Files:</strong> {s.files.filter((f) => f.selected).length}
+                    </Text>
+                    <Text variant="secondary" size="small">
+                      <strong>nSLOC:</strong> {s.files.reduce((t, f) => (t += f.selected ? f.nSLOC ?? 0 : 0), 0)}
+                    </Text>
+                  </Row>
+                </Column>
+
                 {differenceNSLOC ? (
                   <Row spacing="s">
                     <Text variant="secondary" size="small">
-                      <strong>Difference with initial scoping:</strong>
+                      <strong>Changes from Original Scope:</strong>
                     </Text>
-                    <Text size="small" strong variant="success">
-                      {differenceNSLOC} nSLOC
+                    <Text size="small" strong variant={differenceNSLOC > 0 ? "success" : "info"}>
+                      {`${differenceNSLOC > 0 ? "+" : ""}${differenceNSLOC}`} nSLOC
                     </Text>
                   </Row>
                 ) : null}

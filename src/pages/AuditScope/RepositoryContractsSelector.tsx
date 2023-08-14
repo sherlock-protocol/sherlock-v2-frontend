@@ -50,7 +50,7 @@ const FileIcon: React.FC<{
   selected: boolean
   initialScope?: { nSLOC?: number; selected: boolean }
 }> = ({ entry, selected, initialScope }) => {
-  if (!selected && !initialScope?.selected) return null
+  if (!selected && !initialScope?.selected) return <FaCheckCircle style={{ opacity: 0 }} />
 
   if (selected) {
     if (initialScope?.selected) {
@@ -98,7 +98,7 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
 
   if (tree.type === "file") {
     const selected = selectedPaths.includes(parentPath !== "" ? `${parentPath}/${tree.name}` : tree.name)
-    const initialScopeFile = initialScope?.files.find((f) => f.filePath === tree.filepath && f.selected)
+    const initialScopeFile = initialScope?.files.find((f) => f.filePath === tree.filepath)
     const diffWithInitialScope =
       initialScopeFile && initialScopeFile.nSLOC && tree.nsloc && tree.nsloc - initialScopeFile.nSLOC
 
@@ -110,7 +110,20 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
             <Text>{tree.name}</Text>
           </Row>
           <Row spacing="s">
-            <Text variant="secondary" size="small" className={cx({ [styles.addedNSLOC]: !initialScopeFile })}>
+            <Text size="small" variant={initialScopeFile?.nSLOC ? "normal" : "secondary"} strong={selected}>
+              {initialScopeFile?.nSLOC ?? "NA"}
+            </Text>
+            <Text size="small" strong={selected}>
+              {tree.nsloc}
+            </Text>
+            <Text
+              size="small"
+              variant={diffWithInitialScope === undefined || diffWithInitialScope === 0 ? "secondary" : "normal"}
+              strong={selected}
+            >{`${diffWithInitialScope && diffWithInitialScope > 0 ? "+" : ""}${
+              diffWithInitialScope === undefined || diffWithInitialScope === 0 ? "NA" : diffWithInitialScope
+            }`}</Text>
+            {/* <Text variant="secondary" size="small" className={cx({ [styles.addedNSLOC]: !initialScopeFile })}>
               {`${!initialScopeFile ? "+ " : ""} ${tree.nsloc}`}
             </Text>
             {diffWithInitialScope !== undefined ? (
@@ -121,7 +134,7 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
               >{`(${diffWithInitialScope > 0 ? "+" : ""}${
                 diffWithInitialScope === 0 ? "-" : diffWithInitialScope
               })`}</Text>
-            ) : null}
+            ) : null} */}
             <FileIcon entry={tree} selected={selected} initialScope={initialScopeFile} />
           </Row>
         </Row>
@@ -222,9 +235,8 @@ export const RepositoryContractsSelector: React.FC<Props> = ({
         </Text>
         <Row spacing="s">
           <Text size="small" strong>
-            nSLOC
+            Original | Current | Diff
           </Text>
-          <Text size="small">(Diff.)</Text>
           <FaCheckCircle style={{ opacity: 0 }} />
         </Row>
       </Row>
