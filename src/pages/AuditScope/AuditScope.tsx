@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { FaGithub, FaTrashAlt } from "react-icons/fa"
+import { FaCheckCircle, FaGithub, FaMinusCircle, FaPlusCircle, FaRegDotCircle, FaTrashAlt } from "react-icons/fa"
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
 import { Input } from "../../components/Input"
@@ -231,60 +231,87 @@ export const AuditScope = () => {
           </Column>
         </Box>
         {scope && scope.length > 0 ? (
-          <Box shadow={false} fullWidth>
-            <Column spacing="l">
-              <Title>Branches & commits</Title>
-              <Column spacing="s">
-                <Text>Select branch and commit hash</Text>
-                <Row spacing="m">
-                  <Column spacing="s" grow={1}>
-                    <Text size="small" strong>
-                      Repo
-                    </Text>
-                    {scope?.map((s) => (
-                      <Input value={s.repoName} key={s.repoName} variant="small" disabled />
-                    ))}
-                  </Column>
-                  <Column spacing="s">
-                    <Text size="small" strong>
-                      Branch
-                    </Text>
-                    {scope?.map((s) => (
-                      <Button
-                        key={s.repoName}
-                        variant="secondary"
-                        onClick={() => setBranchSelectionModalRepoName(s.repoName)}
-                      >
-                        {s.branchName}
-                      </Button>
-                    ))}
-                  </Column>
-                  <Column spacing="s">
-                    <Text size="small" strong>
-                      Commit hash
-                    </Text>
-                    {scope?.map((s) => (
-                      <Button
-                        key={s.repoName}
-                        variant="secondary"
-                        onClick={() => setCommitSelectionModalRepoName(s.repoName)}
-                      >
-                        {shortenCommitHash(s.commitHash)}
-                      </Button>
-                    ))}
-                  </Column>
-                  <Column spacing="s">
-                    <Text size="small">Remove</Text>
-                    {scope?.map((s) => (
-                      <Button key={s.repoName} variant="secondary" icon onClick={() => handleDeleteScope(s.repoName)}>
-                        <FaTrashAlt />
-                      </Button>
-                    ))}
-                  </Column>
-                </Row>
+          <>
+            <Box shadow={false} fullWidth>
+              <Column spacing="l">
+                <Title>Branches & commits</Title>
+                <Column spacing="s">
+                  <Text>Select branch and commit hash</Text>
+                  <Row spacing="m">
+                    <Column spacing="s" grow={1}>
+                      <Text size="small" strong>
+                        Repo
+                      </Text>
+                      {scope?.map((s) => (
+                        <Input value={s.repoName} key={s.repoName} variant="small" disabled />
+                      ))}
+                    </Column>
+                    <Column spacing="s">
+                      <Text size="small" strong>
+                        Branch
+                      </Text>
+                      {scope?.map((s) => (
+                        <Button
+                          key={s.repoName}
+                          variant="secondary"
+                          onClick={() => setBranchSelectionModalRepoName(s.repoName)}
+                        >
+                          {s.branchName}
+                        </Button>
+                      ))}
+                    </Column>
+                    <Column spacing="s">
+                      <Text size="small" strong>
+                        Commit hash
+                      </Text>
+                      {scope?.map((s) => (
+                        <Button
+                          key={s.repoName}
+                          variant="secondary"
+                          onClick={() => setCommitSelectionModalRepoName(s.repoName)}
+                        >
+                          {shortenCommitHash(s.commitHash)}
+                        </Button>
+                      ))}
+                    </Column>
+                    <Column spacing="s">
+                      <Text size="small">Remove</Text>
+                      {scope?.map((s) => (
+                        <Button key={s.repoName} variant="secondary" icon onClick={() => handleDeleteScope(s.repoName)}>
+                          <FaTrashAlt />
+                        </Button>
+                      ))}
+                    </Column>
+                  </Row>
+                </Column>
               </Column>
-            </Column>
-          </Box>
+            </Box>
+            <Box shadow={false} fullWidth>
+              <Column spacing="xl">
+                <Title variant="h2">Legend</Title>
+                <Column spacing="s">
+                  <Row spacing="s">
+                    <FaCheckCircle className={styles.fileSame} />
+                    <Text variant="secondary">
+                      File selected in both original and current scope. No change in nSLOC.
+                    </Text>
+                  </Row>
+                  <Row spacing="s">
+                    <FaRegDotCircle className={styles.nslocDiff} />
+                    <Text variant="secondary">File selected in both original and current scope. nSLOC changed.</Text>
+                  </Row>
+                  <Row spacing="s">
+                    <FaPlusCircle className={styles.fileAdded} />
+                    <Text variant="secondary">File added </Text>
+                  </Row>
+                  <Row spacing="s">
+                    <FaMinusCircle className={styles.fileRemoved} />
+                    <Text variant="secondary">File removed</Text>
+                  </Row>
+                </Column>
+              </Column>
+            </Box>
+          </>
         ) : null}
         {scope?.map((s) => {
           const selectedNSLOC = s.files.reduce((t, f) => (t += f.selected ? f.nSLOC ?? 0 : 0), 0)

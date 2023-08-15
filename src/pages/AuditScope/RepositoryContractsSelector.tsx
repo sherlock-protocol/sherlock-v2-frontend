@@ -123,18 +123,6 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
             >{`${diffWithInitialScope && diffWithInitialScope > 0 ? "+" : ""}${
               diffWithInitialScope === undefined || diffWithInitialScope === 0 ? "NA" : diffWithInitialScope
             }`}</Text>
-            {/* <Text variant="secondary" size="small" className={cx({ [styles.addedNSLOC]: !initialScopeFile })}>
-              {`${!initialScopeFile ? "+ " : ""} ${tree.nsloc}`}
-            </Text>
-            {diffWithInitialScope !== undefined ? (
-              <Text
-                variant="secondary"
-                size="small"
-                className={cx({ [styles.addedNSLOC]: diffWithInitialScope > 0 })}
-              >{`(${diffWithInitialScope > 0 ? "+" : ""}${
-                diffWithInitialScope === 0 ? "-" : diffWithInitialScope
-              })`}</Text>
-            ) : null} */}
             <FileIcon entry={tree} selected={selected} initialScope={initialScopeFile} />
           </Row>
         </Row>
