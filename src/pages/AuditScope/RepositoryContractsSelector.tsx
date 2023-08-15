@@ -110,19 +110,23 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
             <Text>{tree.name}</Text>
           </Row>
           <Row spacing="s">
-            <Text size="small" variant={initialScopeFile?.nSLOC ? "normal" : "secondary"} strong={selected}>
-              {initialScopeFile?.nSLOC ?? "NA"}
-            </Text>
-            <Text size="small" strong={selected}>
-              {tree.nsloc}
-            </Text>
-            <Text
-              size="small"
-              variant={diffWithInitialScope === undefined || diffWithInitialScope === 0 ? "secondary" : "normal"}
-              strong={selected}
-            >{`${diffWithInitialScope && diffWithInitialScope > 0 ? "+" : ""}${
-              diffWithInitialScope === undefined || diffWithInitialScope === 0 ? "NA" : diffWithInitialScope
-            }`}</Text>
+            {initialScope ? (
+              <>
+                <Text size="small" variant={initialScopeFile?.nSLOC ? "normal" : "secondary"} strong={selected}>
+                  {initialScopeFile?.nSLOC ?? "NA"}
+                </Text>
+                <Text size="small" strong={selected}>
+                  {tree.nsloc}
+                </Text>
+                <Text
+                  size="small"
+                  variant={diffWithInitialScope === undefined || diffWithInitialScope === 0 ? "secondary" : "normal"}
+                  strong={selected}
+                >{`${diffWithInitialScope && diffWithInitialScope > 0 ? "+" : ""}${
+                  diffWithInitialScope === undefined || diffWithInitialScope === 0 ? "NA" : diffWithInitialScope
+                }`}</Text>
+              </>
+            ) : null}
             <FileIcon entry={tree} selected={selected} initialScope={initialScopeFile} />
           </Row>
         </Row>
@@ -222,9 +226,11 @@ export const RepositoryContractsSelector: React.FC<Props> = ({
           Files
         </Text>
         <Row spacing="s">
-          <Text size="small" strong>
-            Original | Current | Diff
-          </Text>
+          {initialScope ? (
+            <Text size="small" strong>
+              Original | Current | Diff
+            </Text>
+          ) : null}
           <FaCheckCircle style={{ opacity: 0 }} />
         </Row>
       </Row>

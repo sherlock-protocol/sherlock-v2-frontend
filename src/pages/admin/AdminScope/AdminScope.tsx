@@ -144,21 +144,7 @@ export const AdminScope = () => {
             <Box shadow={false}>
               {report ? (
                 <Column spacing="m">
-                  <Row spacing="s">
-                    <Text strong>nSLOC:</Text>
-                    <Text>{report.nSLOC}</Text>
-                  </Row>
-                  <Row spacing="s">
-                    <Column grow={1}>
-                      <Button onClick={handleDownloadReport}>
-                        <FaDownload />
-                        &nbsp;Download report
-                      </Button>
-                    </Column>
-                    <Button variant="secondary" onClick={handleCopyLink}>
-                      <FaCopy />
-                    </Button>
-                  </Row>
+                  <Button onClick={handleDownloadReport}>Save Scope</Button>
                 </Column>
               ) : (
                 <Button onClick={handleGenerateReport} disabled={!canGenerateReport}>
