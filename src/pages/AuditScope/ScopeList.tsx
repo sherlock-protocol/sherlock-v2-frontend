@@ -18,10 +18,12 @@ export const ScopeList: React.FC<Props> = ({ scope }) => {
     <Column>
       {scope?.map((s) => {
         const tree = convertToTree2(
-          s.files.map((f) => ({
-            filepath: f.filePath,
-            nsloc: f.nSLOC ?? 0,
-          })) ?? []
+          s.files
+            .filter((f) => f.selected)
+            .map((f) => ({
+              filepath: f.filePath,
+              nsloc: f.nSLOC ?? 0,
+            })) ?? []
         )
         const treeElements: React.ReactNode[] = []
 
