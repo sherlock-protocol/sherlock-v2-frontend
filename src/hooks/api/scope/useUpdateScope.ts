@@ -38,8 +38,6 @@ export const useUpdateScope = () => {
     },
     {
       onMutate: async (params) => {
-        await queryClient.invalidateQueries(scopeQueryKey(params.protocolDashboardID))
-
         const previousScope = queryClient.getQueryData<Scope[]>(scopeQueryKey(params.protocolDashboardID))
 
         queryClient.setQueryData<Scope[] | undefined>(scopeQueryKey(params.protocolDashboardID), (previous) => {
