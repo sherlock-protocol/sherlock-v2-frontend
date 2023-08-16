@@ -113,7 +113,7 @@ export const AdminScope = () => {
   }, [report?.url])
 
   return (
-    <LoadingContainer loading={isLoading || repoIsLoading} label={repoIsLoading ? "" : "Generating report ..."}>
+    <LoadingContainer loading={isLoading || repoIsLoading} label={repoIsLoading ? "" : "Saving scope ..."}>
       <Row spacing="l">
         <Column spacing="l">
           <Box shadow={false} fullWidth>
@@ -148,7 +148,7 @@ export const AdminScope = () => {
                 </Column>
               ) : (
                 <Button onClick={handleGenerateReport} disabled={!canGenerateReport}>
-                  Generate report
+                  Save scope
                 </Button>
               )}
             </Box>
