@@ -96,7 +96,9 @@ const AppProtocolDashboard = () => {
                           <Text strong>Contest Prize Pool</Text>
                         </Td>
                         <Td>
-                          <Text alignment="right">{`${commify(protocolDashboard.contest.prizePool)} USDC`}</Text>
+                          <Text alignment="right">{`${
+                            protocolDashboard.contest.prizePool ? commify(protocolDashboard.contest.prizePool) : "TBD"
+                          } USDC`}</Text>
                         </Td>
                       </Tr>
                       <Tr>
