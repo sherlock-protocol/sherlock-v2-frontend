@@ -111,21 +111,21 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
           </Row>
           <Row spacing="s">
             {initialScope ? (
-              <>
-                <Text size="small" variant={initialScopeFile?.nSLOC ? "normal" : "secondary"} strong={selected}>
-                  {initialScopeFile?.nSLOC ?? "NA"}
-                </Text>
-                <Text size="small" strong={selected}>
-                  {tree.nsloc}
-                </Text>
-                <Text
-                  size="small"
-                  variant={diffWithInitialScope === undefined || diffWithInitialScope === 0 ? "secondary" : "normal"}
-                  strong={selected}
-                >{`${diffWithInitialScope && diffWithInitialScope > 0 ? "+" : ""}${
-                  diffWithInitialScope === undefined || diffWithInitialScope === 0 ? "NA" : diffWithInitialScope
-                }`}</Text>
-              </>
+              <Text size="small" variant={initialScopeFile?.nSLOC ? "normal" : "secondary"} strong={selected}>
+                {initialScopeFile?.nSLOC ?? "NA"}
+              </Text>
+            ) : null}
+            <Text size="small" strong={selected}>
+              {tree.nsloc}
+            </Text>
+            {initialScope ? (
+              <Text
+                size="small"
+                variant={diffWithInitialScope === undefined || diffWithInitialScope === 0 ? "secondary" : "normal"}
+                strong={selected}
+              >{`${diffWithInitialScope && diffWithInitialScope > 0 ? "+" : ""}${
+                diffWithInitialScope === undefined || diffWithInitialScope === 0 ? "NA" : diffWithInitialScope
+              }`}</Text>
             ) : null}
             <FileIcon entry={tree} selected={selected} initialScope={initialScopeFile} />
           </Row>
