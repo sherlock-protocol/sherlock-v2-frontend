@@ -228,9 +228,13 @@ export const RepositoryContractsSelector: React.FC<Props> = ({
         <Row spacing="s">
           {initialScope ? (
             <Text size="small" strong>
-              Original | Current | Diff
+              Original nSLOC | Current nSLOC | Diff
             </Text>
-          ) : null}
+          ) : (
+            <Text size="small" strong>
+              nSLOC
+            </Text>
+          )}
           <FaCheckCircle style={{ opacity: 0 }} />
         </Row>
       </Row>

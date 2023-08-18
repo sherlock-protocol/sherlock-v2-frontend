@@ -302,11 +302,11 @@ export const AuditScope = () => {
                   </Row>
                   <Row spacing="s">
                     <FaPlusCircle className={styles.fileAdded} />
-                    <Text variant="secondary">File added </Text>
+                    <Text variant="secondary">File added to scope</Text>
                   </Row>
                   <Row spacing="s">
                     <FaMinusCircle className={styles.fileRemoved} />
-                    <Text variant="secondary">File removed</Text>
+                    <Text variant="secondary">File removed from scope</Text>
                   </Row>
                 </Column>
               </Column>
