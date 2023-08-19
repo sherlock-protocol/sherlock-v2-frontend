@@ -14,7 +14,7 @@ type UpdateScopeParams = {
 }
 
 type UpdateScopeContext = {
-  previousScope?: Scope
+  previousScope?: Scope[]
 }
 
 export const useUpdateScope = () => {
@@ -38,11 +38,9 @@ export const useUpdateScope = () => {
     },
     {
       onMutate: async (params) => {
-        await queryClient.invalidateQueries(scopeQueryKey(params.protocolDashboardID))
+        const previousScope = queryClient.getQueryData<Scope[]>(scopeQueryKey(params.protocolDashboardID))
 
-        const previousScope = queryClient.getQueryData<Scope>(scopeQueryKey(params.protocolDashboardID))
-
-        queryClient.setQueryData<Scope | undefined>(scopeQueryKey(params.protocolDashboardID), (previous) => {
+        queryClient.setQueryData<Scope[] | undefined>(scopeQueryKey(params.protocolDashboardID), (previous) => {
           if (!previous) return
 
           const scopeIndex = previous.findIndex((s) => s.repoName === params.repoName)
@@ -54,7 +52,13 @@ export const useUpdateScope = () => {
                 repoName: previous[scopeIndex].repoName,
                 branchName: params.branchName ?? previous[scopeIndex].branchName,
                 commitHash: params.commitHash ?? previous[scopeIndex].commitHash,
-                files: params.files ?? previous[scopeIndex].files,
+                files: params.files
+                  ? previous[scopeIndex].files.map((f) => ({
+                      ...f,
+                      selected: params.files!.includes(f.filePath),
+                    }))
+                  : previous[scopeIndex].files,
+                initialScope: previous[scopeIndex].initialScope,
               },
               ...previous.slice(scopeIndex + 1),
             ]

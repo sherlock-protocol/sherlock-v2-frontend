@@ -1,28 +1,41 @@
 import { useCallback, useMemo, useState } from "react"
-import { FaCaretDown, FaCaretRight, FaCheckCircle, FaFile, FaFolder, FaRegFile } from "react-icons/fa"
+import {
+  FaCaretDown,
+  FaCaretRight,
+  FaCheckCircle,
+  FaDotCircle,
+  FaFile,
+  FaFolder,
+  FaMinusCircle,
+  FaPlusCircle,
+  FaRegDotCircle,
+  FaRegFile,
+} from "react-icons/fa"
 import cx from "classnames"
 import { Column, Row } from "../../components/Layout"
 import { Text } from "../../components/Text"
-import { getAllTreePaths, TreeValue, useRepositoryContracts } from "../../hooks/api/scope/useRepositoryContracts"
+import { Entry, FileEntry, getAllTreePaths, RootDirectory } from "../../hooks/api/scope/useRepositoryContracts"
 
 import styles from "./AuditScope.module.scss"
 import { Button } from "../../components/Button"
+import { Scope } from "../../hooks/api/scope/useScope"
 
 type Props = {
-  repo: string
-  commit: string
+  tree: RootDirectory
   selectedPaths: string[]
   onPathSelected: (paths: string[]) => void
   onClearSelection: () => void
-  onSelectAll: (files: string[]) => void
+  onSelectAll: () => void
+  initialScope?: Scope
 }
 
 type TreeEntryProps = {
   name: string
   parentPath?: string
-  tree: TreeValue
+  tree: Entry
   onToggleCollapse?: (paths: string) => void
   collapsedEntries?: string[]
+  initialScope?: Scope
 } & (
   | { selectedPaths: string[]; onPathSelected: (path: string[]) => void; readOnly?: false }
   | {
@@ -31,6 +44,27 @@ type TreeEntryProps = {
       readOnly: true
     }
 )
+
+const FileIcon: React.FC<{
+  entry: FileEntry
+  selected: boolean
+  initialScope?: { nSLOC?: number; selected: boolean }
+}> = ({ entry, selected, initialScope }) => {
+  if (!selected && !initialScope?.selected) return <FaCheckCircle style={{ opacity: 0 }} />
+
+  if (selected) {
+    if (initialScope?.selected) {
+      if (entry.nsloc !== initialScope.nSLOC) {
+        return <FaRegDotCircle className={styles.nslocDiff} />
+      }
+      return <FaCheckCircle />
+    } else {
+      return <FaPlusCircle className={styles.fileAdded} />
+    }
+  }
+
+  return <FaMinusCircle className={styles.fileRemoved} />
+}
 
 export const TreeEntry: React.FC<TreeEntryProps> = ({
   name,
@@ -41,10 +75,11 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
   collapsedEntries = [],
   selectedPaths = [],
   readOnly = false,
+  initialScope,
 }) => {
   const handleFileClick = useCallback(
     (paths: string[]) => {
-      typeof tree === "string" ? onPathSelected?.(paths.map((p) => `${parentPath}/${p}`)) : onPathSelected?.(paths)
+      tree.type === "file" ? onPathSelected?.(paths.map((p) => `${parentPath}/${p}`)) : onPathSelected?.(paths)
     },
     [parentPath, onPathSelected, tree]
   )
@@ -54,23 +89,46 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
     [parentPath, tree, name]
   )
   const allSelected = useMemo(() => allSubPaths.every((p) => selectedPaths.includes(p)), [allSubPaths, selectedPaths])
+  const allInInitialScope = useMemo(
+    () => initialScope?.files.filter((f) => f.selected).map((f) => f.filePath) ?? [],
+    [initialScope]
+  )
 
   const isCollapsed = collapsedEntries.includes(`${parentPath}/${name}`)
 
-  if (typeof tree === "string") {
-    const selected = selectedPaths.includes(parentPath !== "" ? `${parentPath}/${tree}` : tree)
+  if (tree.type === "file") {
+    const selected = selectedPaths.includes(parentPath !== "" ? `${parentPath}/${tree.name}` : tree.name)
+    const initialScopeFile = initialScope?.files.find((f) => f.filePath === tree.filepath)
+    const diffWithInitialScope =
+      initialScopeFile && initialScopeFile.nSLOC && tree.nsloc && tree.nsloc - initialScopeFile.nSLOC
+
     return (
-      <li className={cx(styles.file, { [styles.selected]: selected })} onClick={() => handleFileClick([tree])}>
+      <li className={cx(styles.file, { [styles.selected]: selected })} onClick={() => handleFileClick([tree.name])}>
         <Row alignment="space-between">
           <Row spacing="xs">
             <Text className={styles.icon}>{selected ? <FaFile /> : <FaRegFile />}</Text>
-            <Text>{tree}</Text>
+            <Text>{tree.name}</Text>
           </Row>
-          {selected && (
-            <Text className={styles.icon}>
-              <FaCheckCircle />
+          <Row spacing="s">
+            {initialScope ? (
+              <Text size="small" variant={initialScopeFile?.nSLOC ? "normal" : "secondary"} strong={selected}>
+                {initialScopeFile?.nSLOC ?? "NA"}
+              </Text>
+            ) : null}
+            <Text size="small" strong={selected}>
+              {tree.nsloc}
             </Text>
-          )}
+            {initialScope ? (
+              <Text
+                size="small"
+                variant={diffWithInitialScope === undefined || diffWithInitialScope === 0 ? "secondary" : "normal"}
+                strong={selected}
+              >{`${diffWithInitialScope && diffWithInitialScope > 0 ? "+" : ""}${
+                diffWithInitialScope === undefined || diffWithInitialScope === 0 ? "NA" : diffWithInitialScope
+              }`}</Text>
+            ) : null}
+            <FileIcon entry={tree} selected={selected} initialScope={initialScopeFile} />
+          </Row>
         </Row>
       </li>
     )
@@ -78,17 +136,18 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
 
   const entryElements: React.ReactNode[] = []
 
-  tree.forEach((value, key) => {
+  tree.entries.forEach((value, key) => {
     entryElements.push(
       <TreeEntry
         key={key}
-        name={key}
+        name={value.name}
         tree={value}
         onPathSelected={handleFileClick}
         parentPath={`${parentPath ? `${parentPath}/` : ""}${name}`}
         selectedPaths={selectedPaths}
         onToggleCollapse={onToggleCollapse}
         collapsedEntries={collapsedEntries}
+        initialScope={initialScope}
       />
     )
   })
@@ -112,14 +171,13 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
 }
 
 export const RepositoryContractsSelector: React.FC<Props> = ({
-  repo,
-  commit,
+  tree,
   selectedPaths = [],
   onPathSelected,
   onClearSelection,
   onSelectAll,
+  initialScope,
 }) => {
-  const { data, isLoading } = useRepositoryContracts(repo, commit)
   const [collapsedEntries, setCollapsedEntries] = useState<string[]>([])
 
   const handleToggleCollapse = useCallback((path: string) => {
@@ -134,53 +192,51 @@ export const RepositoryContractsSelector: React.FC<Props> = ({
 
   const treeElements: React.ReactNode[] = []
 
-  data?.tree.forEach((value, key) => {
+  tree.entries.forEach((value, key) => {
     treeElements.push(
       <TreeEntry
         key={key}
-        name={key}
+        name={value.name}
         tree={value}
         onPathSelected={onPathSelected}
         selectedPaths={selectedPaths}
         onToggleCollapse={handleToggleCollapse}
         collapsedEntries={collapsedEntries}
+        initialScope={initialScope}
       />
     )
   })
 
-  if (isLoading) {
-    return (
-      <Row alignment="center">
-        <Text variant="secondary">Loading contracts ...</Text>
-      </Row>
-    )
-  }
-
-  if (treeElements.length === 0 && !isLoading) {
-    return (
-      <Row alignment="center">
-        <Text variant="secondary">No Solidity contracts found</Text>
-      </Row>
-    )
-  }
-
   return (
     <Column spacing="s" className={styles.tree}>
-      <Row alignment={["end", "center"]} spacing="s">
-        <Text variant="secondary" size="small">
-          {selectedPaths.length > 0 ? selectedPaths.length : "No"}&nbsp;
-          {`contract${selectedPaths.length === 1 ? "" : "s"} selected`}
-        </Text>
+      <Row alignment={["start", "center"]} spacing="s">
         <Button
-          variant={selectedPaths.length === data?.rawPaths.length ? "primary" : "secondary"}
+          // variant={selectedPaths.length === data?.rawPaths.length ? "primary" : "secondary"}
           size="small"
-          onClick={() => onSelectAll(data?.rawPaths ?? [])}
+          onClick={() => onSelectAll()}
         >
           Select all
         </Button>
         <Button variant="secondary" size="small" onClick={onClearSelection}>
           Clear selection
         </Button>
+      </Row>
+      <Row alignment="space-between">
+        <Text size="small" strong>
+          Files
+        </Text>
+        <Row spacing="s">
+          {initialScope ? (
+            <Text size="small" strong>
+              Original nSLOC | Current nSLOC | Diff
+            </Text>
+          ) : (
+            <Text size="small" strong>
+              nSLOC
+            </Text>
+          )}
+          <FaCheckCircle style={{ opacity: 0 }} />
+        </Row>
       </Row>
       <ul className={styles.directoryList}>{treeElements}</ul>
     </Column>

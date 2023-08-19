@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { FaGithub, FaTrashAlt } from "react-icons/fa"
+import { FaCheckCircle, FaGithub, FaMinusCircle, FaPlusCircle, FaRegDotCircle, FaTrashAlt } from "react-icons/fa"
 import { Box } from "../../components/Box"
 import { Button } from "../../components/Button"
 import { Input } from "../../components/Input"
@@ -21,6 +21,9 @@ import { AuditScopeReadOnly } from "./AuditScopeReadOnly"
 import Modal, { Props as ModalProps } from "../../components/Modal/Modal"
 import { useSubmitScope } from "../../hooks/api/contests/useSubmitScope"
 import { ErrorModal } from "../ContestDetails/ErrorModal"
+import { convertToTree2 } from "../../hooks/api/scope/useRepositoryContracts"
+
+import styles from "./AuditScope.module.scss"
 
 type Props = ModalProps & {
   dashboardID: string
@@ -106,8 +109,10 @@ export const AuditScope = () => {
 
   const handlePathSelected = useCallback(
     (repo: string, paths: string[]) => {
-      console.log(paths)
-      let selectedPaths = scope?.find((s) => s.repoName === repo)?.files
+      let selectedPaths = scope
+        ?.find((s) => s.repoName === repo)
+        ?.files.filter((f) => f.selected)
+        .map((f) => f.filePath)
 
       if (!selectedPaths) return
 
@@ -179,14 +184,14 @@ export const AuditScope = () => {
   )
 
   const handleSelectAll = useCallback(
-    (repoName: string, files: string[]) => {
-      const repo = scope?.find((s) => s.repoName === repoName)
-      if (!repo) return
+    (repoName: string) => {
+      const s = scope?.find((s) => s.repoName === repoName)
+      if (!s) return
 
       updateScope({
         protocolDashboardID: dashboardID ?? "",
         repoName,
-        files,
+        files: s.files.map((f) => f.filePath),
       })
     },
     [updateScope, dashboardID, scope]
@@ -226,80 +231,155 @@ export const AuditScope = () => {
           </Column>
         </Box>
         {scope && scope.length > 0 ? (
-          <Box shadow={false} fullWidth>
-            <Column spacing="l">
-              <Title>Branches & commits</Title>
-              <Column spacing="s">
-                <Text>Select branch and commit hash</Text>
-                <Row spacing="m">
-                  <Column spacing="s" grow={1}>
-                    <Text size="small" strong>
-                      Repo
-                    </Text>
-                    {scope?.map((s) => (
-                      <Input value={s.repoName} key={s.repoName} variant="small" disabled />
-                    ))}
-                  </Column>
-                  <Column spacing="s">
-                    <Text size="small" strong>
-                      Branch
-                    </Text>
-                    {scope?.map((s) => (
-                      <Button
-                        key={s.repoName}
-                        variant="secondary"
-                        onClick={() => setBranchSelectionModalRepoName(s.repoName)}
-                      >
-                        {s.branchName}
-                      </Button>
-                    ))}
-                  </Column>
-                  <Column spacing="s">
-                    <Text size="small" strong>
-                      Commit hash
-                    </Text>
-                    {scope?.map((s) => (
-                      <Button
-                        key={s.repoName}
-                        variant="secondary"
-                        onClick={() => setCommitSelectionModalRepoName(s.repoName)}
-                      >
-                        {shortenCommitHash(s.commitHash)}
-                      </Button>
-                    ))}
-                  </Column>
-                  <Column spacing="s">
-                    <Text size="small">Remove</Text>
-                    {scope?.map((s) => (
-                      <Button key={s.repoName} variant="secondary" icon onClick={() => handleDeleteScope(s.repoName)}>
-                        <FaTrashAlt />
-                      </Button>
-                    ))}
-                  </Column>
-                </Row>
+          <>
+            <Box shadow={false} fullWidth>
+              <Column spacing="l">
+                <Title>Branches & commits</Title>
+                <Column spacing="s">
+                  <Text>Select branch and commit hash</Text>
+                  <Row spacing="m">
+                    <Column spacing="s" grow={1}>
+                      <Text size="small" strong>
+                        Repo
+                      </Text>
+                      {scope?.map((s) => (
+                        <Input value={s.repoName} key={s.repoName} variant="small" disabled />
+                      ))}
+                    </Column>
+                    <Column spacing="s">
+                      <Text size="small" strong>
+                        Branch
+                      </Text>
+                      {scope?.map((s) => (
+                        <Button
+                          key={s.repoName}
+                          variant="secondary"
+                          onClick={() => setBranchSelectionModalRepoName(s.repoName)}
+                        >
+                          {s.branchName}
+                        </Button>
+                      ))}
+                    </Column>
+                    <Column spacing="s">
+                      <Text size="small" strong>
+                        Commit hash
+                      </Text>
+                      {scope?.map((s) => (
+                        <Button
+                          key={s.repoName}
+                          variant="secondary"
+                          onClick={() => setCommitSelectionModalRepoName(s.repoName)}
+                        >
+                          {shortenCommitHash(s.commitHash)}
+                        </Button>
+                      ))}
+                    </Column>
+                    <Column spacing="s">
+                      <Text size="small">Remove</Text>
+                      {scope?.map((s) => (
+                        <Button key={s.repoName} variant="secondary" icon onClick={() => handleDeleteScope(s.repoName)}>
+                          <FaTrashAlt />
+                        </Button>
+                      ))}
+                    </Column>
+                  </Row>
+                </Column>
               </Column>
-            </Column>
-          </Box>
+            </Box>
+            <Box shadow={false} fullWidth>
+              <Column spacing="xl">
+                <Title variant="h2">Legend</Title>
+                <Column spacing="s">
+                  <Row spacing="s">
+                    <FaCheckCircle className={styles.fileSame} />
+                    <Text variant="secondary">
+                      File selected in both original and current scope. No change in nSLOC.
+                    </Text>
+                  </Row>
+                  <Row spacing="s">
+                    <FaRegDotCircle className={styles.nslocDiff} />
+                    <Text variant="secondary">File selected in both original and current scope. nSLOC changed.</Text>
+                  </Row>
+                  <Row spacing="s">
+                    <FaPlusCircle className={styles.fileAdded} />
+                    <Text variant="secondary">File added to scope</Text>
+                  </Row>
+                  <Row spacing="s">
+                    <FaMinusCircle className={styles.fileRemoved} />
+                    <Text variant="secondary">File removed from scope</Text>
+                  </Row>
+                </Column>
+              </Column>
+            </Box>
+          </>
         ) : null}
-        {scope?.map((s) => (
-          <Box shadow={false} fullWidth key={`contracts-${s.repoName}`}>
-            <Column spacing="l">
-              <Title variant="h2">
-                <FaGithub />
-                &nbsp;
-                {s.repoName}
-              </Title>
-              <RepositoryContractsSelector
-                repo={s.repoName}
-                commit={s.commitHash}
-                onPathSelected={(paths) => handlePathSelected(s.repoName, paths)}
-                selectedPaths={s.files}
-                onSelectAll={(files) => handleSelectAll(s.repoName, files)}
-                onClearSelection={() => handleClearSelection(s.repoName)}
-              />
-            </Column>
-          </Box>
-        ))}
+        {scope?.map((s) => {
+          const selectedNSLOC = s.files.reduce((t, f) => (t += f.selected ? f.nSLOC ?? 0 : 0), 0)
+          const initialNSLOC = s.initialScope?.files.reduce((t, f) => (t += f.selected ? f.nSLOC ?? 0 : 0), 0)
+          const differenceNSLOC = initialNSLOC && selectedNSLOC - initialNSLOC
+
+          return (
+            <Box shadow={false} fullWidth key={`contracts-${s.repoName}`}>
+              <Column spacing="l">
+                <Title variant="h2">
+                  <FaGithub />
+                  &nbsp;
+                  {s.repoName}
+                </Title>
+                <Column spacing="s">
+                  <Text variant="secondary" size="small" strong>
+                    Original Scope from Quote
+                  </Text>
+                  <Row spacing="s">
+                    <Text variant="secondary" size="small">
+                      <strong>Files:</strong> {s.initialScope?.files.filter((f) => f.selected).length}
+                    </Text>
+                    <Text variant="secondary" size="small">
+                      <strong>nSLOC:</strong> {initialNSLOC}
+                    </Text>
+                  </Row>
+                </Column>
+                <Column spacing="s">
+                  <Text variant="secondary" size="small" strong>
+                    Currently Selected Scope
+                  </Text>
+                  <Row spacing="s">
+                    <Text variant="secondary" size="small">
+                      <strong>Files:</strong> {s.files.filter((f) => f.selected).length}
+                    </Text>
+                    <Text variant="secondary" size="small">
+                      <strong>nSLOC:</strong> {s.files.reduce((t, f) => (t += f.selected ? f.nSLOC ?? 0 : 0), 0)}
+                    </Text>
+                  </Row>
+                </Column>
+
+                {differenceNSLOC ? (
+                  <Row spacing="s">
+                    <Text variant="secondary" size="small">
+                      <strong>Changes from Original Scope:</strong>
+                    </Text>
+                    <Text size="small" strong variant={differenceNSLOC > 0 ? "success" : "info"}>
+                      {`${differenceNSLOC > 0 ? "+" : ""}${differenceNSLOC}`} nSLOC
+                    </Text>
+                  </Row>
+                ) : null}
+                <RepositoryContractsSelector
+                  tree={convertToTree2(
+                    s.files.map((f) => ({
+                      filepath: f.filePath,
+                      nsloc: f.nSLOC ?? 0,
+                    })) ?? []
+                  )}
+                  onPathSelected={(paths) => handlePathSelected(s.repoName, paths)}
+                  selectedPaths={s.files.filter((f) => f.selected).map((f) => f.filePath)}
+                  onSelectAll={() => handleSelectAll(s.repoName)}
+                  onClearSelection={() => handleClearSelection(s.repoName)}
+                  initialScope={s.initialScope}
+                />
+              </Column>
+            </Box>
+          )
+        })}
         <Box shadow={false}>
           <Button onClick={() => setSubmitScopeModalOpen(true)} disabled={!selectedFiles}>
             Submit scope

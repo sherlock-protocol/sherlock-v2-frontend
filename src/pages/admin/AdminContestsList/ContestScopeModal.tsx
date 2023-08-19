@@ -22,8 +22,8 @@ export const ContestScopeModal: React.FC<Props> = ({ onClose, contestID }) => {
   const { data: contest, isLoading: contestIsLoading } = useContest(contestID)
   const { data: scope, isLoading: scopeIsLoading } = useAdminContestScope(contestID)
 
-  const submittedNSLOC = scope?.reduce((t, s) => t + (s.nSLOC ?? 0), 0)
-  const expectedNSLOCExceeded = contest && scope && (contest.linesOfCode ?? 0) < (submittedNSLOC ?? 0)
+  const submittedNSLOC = scope?.reduce((t, s) => t + (s.files.reduce((t, f) => t + (f.nSLOC ?? 0), 0) ?? 0), 0) ?? 0
+  const expectedNSLOCExceeded = contest && scope && (parseInt(contest.linesOfCode ?? "") ?? 0) < (submittedNSLOC ?? 0)
 
   return (
     <Modal closeable onClose={onClose}>
@@ -68,7 +68,7 @@ export const ContestScopeModal: React.FC<Props> = ({ onClose, contestID }) => {
                       <Td>
                         <Row spacing="s">
                           <Text strong>nSLOC:</Text>
-                          <Text>{s.nSLOC}</Text>
+                          <Text>{s.files.reduce((t, f) => t + (f.nSLOC ?? 0), 0)}</Text>
                         </Row>
                       </Td>
                     </Tr>
