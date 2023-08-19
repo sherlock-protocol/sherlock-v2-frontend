@@ -136,7 +136,6 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     if (protocolName === "") return false
     if (protocolLogoURL === "" && !protocol?.logoURL) return false
     if (protocolWebsite === "" && !protocol?.website) return false
-    if (protocolTwitter === "" && !protocol?.twitter) return false
     if (protocolGithubTeam === "" && !protocol?.githubTeam) return false
 
     if (contestTitle === "") return false
@@ -161,12 +160,10 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     contestTitle,
     contestTotalCost,
     protocol?.logoURL,
-    protocol?.twitter,
     protocol?.website,
     protocol?.githubTeam,
     protocolLogoURL,
     protocolName,
-    protocolTwitter,
     protocolWebsite,
     protocolGithubTeam,
   ])
