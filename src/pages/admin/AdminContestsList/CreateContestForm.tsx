@@ -15,6 +15,8 @@ import { commify } from "../../../utils/units"
 import { Text } from "../../../components/Text"
 import TokenInput from "../../../components/TokenInput/TokenInput"
 import { Button } from "../../../components/Button"
+import { Contest } from "../../../hooks/api/contests"
+import { ContestsListItem } from "../../../hooks/api/admin/useAdminContests"
 
 type ContestValues = {
   protocol: {
@@ -42,11 +44,12 @@ type Props = {
   onSubmit: (values: ContestValues) => void
   onDirtyChange: (dirty: boolean) => void
   submitLabel: string
+  contest?: ContestsListItem
 }
 
 const DATE_FORMAT = "yyyy-MM-dd"
 
-export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, submitLabel }) => {
+export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, submitLabel, contest }) => {
   const [protocolName, setProtocolName] = useState("")
   const [debouncedProtocolName] = useDebounce(protocolName, 300)
 
@@ -66,7 +69,7 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
 
   const [contestTitle, setContestTitle] = useState("")
   const [contestShortDescription, setShortDescription] = useState("")
-  const [contestNSLOC, setContestNSLOC] = useState("")
+  const [contestNSLOC, setContestNSLOC] = useState(contest?.linesOfCode ?? "")
   const [debouncedContestNSLOC] = useDebounce(contestNSLOC, 300)
   const [contestStartDate, setContestStartDate] = useState("")
   const [contestAuditLength, setContestAuditLength] = useState("")
@@ -89,21 +92,31 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
   )
 
   useEffect(() => {
-    if (contestVariablesSuccess) {
-      setContestAuditLength(`${contestVariables.length}`)
+    if (contest) {
+      const startDate = DateTime.fromSeconds(contest.startDate)
+      const endDate = DateTime.fromSeconds(contest.endDate)
+      const auditLength = endDate.diff(startDate, "days").days
 
+      setContestTitle(contest.title)
+      setShortDescription(contest.shortDescription)
+      setContestStartDate(startDate.toFormat(DATE_FORMAT))
+      setContestAuditLength(auditLength.toString())
+      setInitialAuditContestRewards(ethers.utils.parseUnits(`${contest.rewards}`, 6))
+      setInitialJudgingPrizePool(ethers.utils.parseUnits(`${contest.judgingPrizePool}`, 6))
+      setInitialLeadJudgeFixedPay(ethers.utils.parseUnits(`${contest.leadJudgeFixedPay}`, 6))
+      setInitialTotalCost(ethers.utils.parseUnits(`${contest.fullPayment}`, 6))
+    }
+  }, [contest])
+
+  useEffect(() => {
+    if (contestVariablesSuccess && !contest) {
+      setContestAuditLength(`${contestVariables.length}`)
       setInitialAuditContestRewards(ethers.utils.parseUnits(`${contestVariables.auditContestRewards}`, 6))
       setInitialJudgingPrizePool(ethers.utils.parseUnits(`${contestVariables.judgingPrizePool}`, 6))
       setInitialLeadJudgeFixedPay(ethers.utils.parseUnits(`${contestVariables.leadJudgeFixedPay}`, 6))
       setInitialTotalCost(ethers.utils.parseUnits(`${contestVariables.fullPayment}`, 6))
-    } else {
-      setContestAuditLength("")
-      setInitialAuditContestRewards(BigNumber.from(0))
-      setInitialJudgingPrizePool(BigNumber.from(0))
-      setInitialLeadJudgeFixedPay(BigNumber.from(0))
-      setInitialTotalCost(BigNumber.from(0))
     }
-  }, [contestVariablesSuccess, setContestAuditLength, contestVariables])
+  }, [contestVariablesSuccess, setContestAuditLength, contestVariables, contest])
 
   useEffect(() => {
     if (protocol?.name) {
@@ -150,10 +163,12 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
   }, [contestTotalCost, contestAuditRewards, contestJudgingPrizePool, contestLeadJudgeFixedPay])
 
   const canSubmit = useMemo(() => {
-    if (protocolName === "") return false
-    if (protocolLogoURL === "" && !protocol?.logoURL) return false
-    if (protocolWebsite === "" && !protocol?.website) return false
-    if (protocolGithubTeam === "" && !protocol?.githubTeam) return false
+    if (!contest) {
+      if (protocolName === "") return false
+      if (protocolLogoURL === "" && !protocol?.logoURL) return false
+      if (protocolWebsite === "" && !protocol?.website) return false
+      if (protocolGithubTeam === "" && !protocol?.githubTeam) return false
+    }
 
     if (contestTitle === "") return false
     if (contestShortDescription.length < 100 || contestShortDescription.length > 200) return false
@@ -183,6 +198,7 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
     protocolName,
     protocolWebsite,
     protocolGithubTeam,
+    contest,
   ])
 
   useEffect(() => {
@@ -279,70 +295,82 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
 
   return (
     <Column spacing="xl">
-      <Column spacing="m">
-        <Title variant="h3">PROTOCOL</Title>
-        <Field label="Name" detail={protocolNotFound ? "Protocol not found. A new protocol will be created." : ""}>
-          <Input value={protocolName} onChange={setProtocolName} placeholder="Foo Protocol" />
-        </Field>
-        {displayProtocolInfo && (
-          <>
-            <Field
-              label={
-                <Row spacing="xs">
-                  <FaGithub />
-                  <Text>GitHub</Text>
-                </Row>
-              }
-            >
-              <Input
-                value={protocol?.githubTeam ?? protocolGithubTeam}
-                disabled={!!protocol}
-                onChange={setProtocolGithubTeam}
-                placeholder="foo-protocol"
-              />
+      {!contest ? (
+        <>
+          <Column spacing="m">
+            <Title variant="h3">PROTOCOL</Title>
+            <Field label="Name" detail={protocolNotFound ? "Protocol not found. A new protocol will be created." : ""}>
+              <Input value={protocolName} onChange={setProtocolName} placeholder="Foo Protocol" />
             </Field>
-            <Field
-              label={
-                <Row spacing="xs">
-                  <FaTwitter />
-                  <Text>Twitter</Text>
-                </Row>
-              }
-            >
-              <Input value={protocol?.twitter ?? protocolTwitter} disabled={!!protocol} onChange={setProtocolTwitter} />
-            </Field>
-            <Field
-              label={
-                <Row spacing="xs">
-                  <FaChrome />
-                  <Text>Website</Text>
-                </Row>
-              }
-            >
-              <Input value={protocol?.website ?? protocolWebsite} disabled={!!protocol} onChange={setProtocolWebsite} />
-            </Field>
-            <Field label="Logo URL">
-              <Row alignment={["baseline", "center"]} grow={1} spacing="s">
-                <Input
-                  value={protocol?.logoURL ?? protocolLogoURL}
-                  disabled={!!protocol}
-                  onChange={setProtocolLogoURL}
-                />
-                {(protocol?.logoURL || protocolLogoURL) && (
-                  <img
-                    src={protocol?.logoURL ?? protocolLogoURL}
-                    alt="logo preview"
-                    width={30}
-                    height={30}
-                    style={{ borderRadius: "50%" }}
+            {displayProtocolInfo && (
+              <>
+                <Field
+                  label={
+                    <Row spacing="xs">
+                      <FaGithub />
+                      <Text>GitHub</Text>
+                    </Row>
+                  }
+                >
+                  <Input
+                    value={protocol?.githubTeam ?? protocolGithubTeam}
+                    disabled={!!protocol}
+                    onChange={setProtocolGithubTeam}
+                    placeholder="foo-protocol"
                   />
-                )}
-              </Row>
-            </Field>
-          </>
-        )}
-      </Column>
-      <hr />
+                </Field>
+                <Field
+                  label={
+                    <Row spacing="xs">
+                      <FaTwitter />
+                      <Text>Twitter</Text>
+                    </Row>
+                  }
+                >
+                  <Input
+                    value={protocol?.twitter ?? protocolTwitter}
+                    disabled={!!protocol}
+                    onChange={setProtocolTwitter}
+                  />
+                </Field>
+                <Field
+                  label={
+                    <Row spacing="xs">
+                      <FaChrome />
+                      <Text>Website</Text>
+                    </Row>
+                  }
+                >
+                  <Input
+                    value={protocol?.website ?? protocolWebsite}
+                    disabled={!!protocol}
+                    onChange={setProtocolWebsite}
+                  />
+                </Field>
+                <Field label="Logo URL">
+                  <Row alignment={["baseline", "center"]} grow={1} spacing="s">
+                    <Input
+                      value={protocol?.logoURL ?? protocolLogoURL}
+                      disabled={!!protocol}
+                      onChange={setProtocolLogoURL}
+                    />
+                    {(protocol?.logoURL || protocolLogoURL) && (
+                      <img
+                        src={protocol?.logoURL ?? protocolLogoURL}
+                        alt="logo preview"
+                        width={30}
+                        height={30}
+                        style={{ borderRadius: "50%" }}
+                      />
+                    )}
+                  </Row>
+                </Field>
+              </>
+            )}
+          </Column>
+          <hr />
+        </>
+      ) : null}
       <Column spacing="m">
         <Title variant="h3">CONTEST</Title>
         <Field label="Title">

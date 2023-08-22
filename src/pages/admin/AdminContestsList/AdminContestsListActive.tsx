@@ -14,6 +14,7 @@ import styles from "./AdminContestsList.module.scss"
 import { ConfirmContestActionModal } from "./ConfirmContestActionModal"
 import { CreateContestModal } from "./CreateContestModal"
 import { ContestScopeModal } from "./ContestScopeModal"
+import { UpdateContestModal } from "./UpdateContestModal"
 
 type ContestLifeCycleStatus =
   | "WAITING_INITIAL_PAYMENT"
@@ -35,7 +36,7 @@ const getCurrentStatus = (contest: ContestsListItem): ContestLifeCycleStatus => 
   if (!contest.leadSeniorAuditorHandle && !contest.leadSeniorSelectionMessageSentAt) return "READY_TO_SELECT_SENIOR"
   if (!contest.leadSeniorAuditorHandle) return "WAITING_FOR_SENIOR_SELECTION"
   if (!contest.adminUpcomingApproved) return "READY_TO_PUBLISH"
-  if (!contest.fullPayment) return "WAITING_ON_FINAL_PAYMENT"
+  if (!contest.fullPaymentComplete) return "WAITING_ON_FINAL_PAYMENT"
   if (!contest.submissionReady) return "WAITING_ON_FINALIZE_SUBMISSION"
   if (!contest.adminStartApproved) return "READY_TO_APPROVE_START"
 
@@ -75,6 +76,7 @@ export const AdminContestsListActive = () => {
   const { data: contests, isLoading } = useAdminContests("active")
   const [confirmationModal, setConfirmationModal] = useState<ConfirmationModal | undefined>()
   const [createContestModalOpen, setCreateContestModalOpen] = useState(false)
+  const [updateContestIndex, setUpdateContextIndex] = useState<number | undefined>()
   const [scopeModal, setScopeModal] = useState<number | undefined>()
   const [forceActionRowIndex, setForceActionRowIndex] = useState<number | undefined>()
 
@@ -294,7 +296,12 @@ export const AdminContestsListActive = () => {
                     <Td>{c.id}</Td>
                     <Td>
                       <Row spacing="l" alignment={["start", "center"]}>
-                        <img src={c.logoURL} className={styles.logo} alt={c.title} />
+                        <img
+                          src={c.logoURL}
+                          className={styles.logo}
+                          alt={c.title}
+                          onClick={() => setUpdateContextIndex(index)}
+                        />
                         <Column spacing="xs">
                           <Text strong>{c.title}</Text>
                           <Text size="small" variant="secondary">
@@ -357,6 +364,12 @@ export const AdminContestsListActive = () => {
               action={confirmationModal.action}
               onClose={handleConfirmationModalClose}
               force={forceActionRowIndex === confirmationModal.contestIndex}
+            />
+          )}
+          {updateContestIndex !== undefined && contests && (
+            <UpdateContestModal
+              onClose={() => setUpdateContextIndex(undefined)}
+              contest={contests[updateContestIndex]}
             />
           )}
           {createContestModalOpen && <CreateContestModal onClose={() => setCreateContestModalOpen(false)} />}
