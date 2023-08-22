@@ -17,6 +17,7 @@ import TokenInput from "../../../components/TokenInput/TokenInput"
 import { Button } from "../../../components/Button"
 import { Contest } from "../../../hooks/api/contests"
 import { ContestsListItem } from "../../../hooks/api/admin/useAdminContests"
+import { start } from "repl"
 
 type ContestValues = {
   protocol: {
@@ -202,20 +203,40 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
   ])
 
   useEffect(() => {
-    onDirtyChange(
-      (protocolName !== "" ||
-        contestTitle !== "" ||
-        contestShortDescription !== "" ||
-        contestNSLOC !== "" ||
-        contestStartDate !== "" ||
-        contestAuditLength !== "" ||
-        contestAuditRewards?.gt(BigNumber.from(0)) ||
-        contestJudgingPrizePool?.gt(BigNumber.from(0)) ||
-        contestLeadJudgeFixedPay?.gt(BigNumber.from(0)) ||
-        contestTotalCost?.gt(BigNumber.from(0))) ??
-        false
-    )
+    if (contest) {
+      const startDate = DateTime.fromSeconds(contest.startDate)
+      const endDate = DateTime.fromSeconds(contest.endDate)
+      const auditLength = endDate.diff(startDate, "days").days
+
+      onDirtyChange(
+        (contestTitle !== contest.title ||
+          contestShortDescription !== contest.shortDescription ||
+          contestNSLOC !== contest.linesOfCode ||
+          contestStartDate !== startDate.toFormat(DATE_FORMAT) ||
+          contestAuditLength !== auditLength.toString() ||
+          !contestAuditRewards?.eq(ethers.utils.parseUnits(`${contest.rewards}`, 6)) ||
+          !contestJudgingPrizePool?.eq(ethers.utils.parseUnits(`${contest.judgingPrizePool}`, 6)) ||
+          !contestLeadJudgeFixedPay?.eq(ethers.utils.parseUnits(`${contest.leadJudgeFixedPay}`, 6)) ||
+          !contestTotalCost?.eq(ethers.utils.parseUnits(`${contest.fullPayment}`, 6))) ??
+          false
+      )
+    } else {
+      onDirtyChange(
+        (protocolName !== "" ||
+          contestTitle !== "" ||
+          contestShortDescription !== "" ||
+          contestNSLOC !== "" ||
+          contestStartDate !== "" ||
+          contestAuditLength !== "" ||
+          contestAuditRewards?.gt(BigNumber.from(0)) ||
+          contestJudgingPrizePool?.gt(BigNumber.from(0)) ||
+          contestLeadJudgeFixedPay?.gt(BigNumber.from(0)) ||
+          contestTotalCost?.gt(BigNumber.from(0))) ??
+          false
+      )
+    }
   }, [
+    contest,
     contestAuditLength,
     contestAuditRewards,
     contestJudgingPrizePool,
