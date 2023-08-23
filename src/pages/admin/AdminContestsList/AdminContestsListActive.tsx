@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
 import { useCallback, useState } from "react"
-import { FaClipboardList, FaEye, FaFastForward, FaPlus, FaBullseye } from "react-icons/fa"
+import { FaClipboardList, FaFastForward, FaPlus, FaEdit } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -296,12 +296,7 @@ export const AdminContestsListActive = () => {
                     <Td>{c.id}</Td>
                     <Td>
                       <Row spacing="l" alignment={["start", "center"]}>
-                        <img
-                          src={c.logoURL}
-                          className={styles.logo}
-                          alt={c.title}
-                          onClick={() => setUpdateContextIndex(index)}
-                        />
+                        <img src={c.logoURL} className={styles.logo} alt={c.title} />
                         <Column spacing="xs">
                           <Text strong>{c.title}</Text>
                           <Text size="small" variant="secondary">
@@ -323,18 +318,10 @@ export const AdminContestsListActive = () => {
                         <Button
                           size="small"
                           variant="secondary"
-                          disabled={!c.adminUpcomingApproved}
-                          onClick={() => window.open(`/audits/contests/${c.id}`)}
+                          disabled={c.status !== "CREATED"}
+                          onClick={() => setUpdateContextIndex(index)}
                         >
-                          <FaEye />
-                        </Button>
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          disabled={!c.hasSolidityMetricsReport}
-                          onClick={() => setScopeModal(c.id)}
-                        >
-                          <FaBullseye />
+                          <FaEdit />
                         </Button>
                       </Row>
                     </Td>
