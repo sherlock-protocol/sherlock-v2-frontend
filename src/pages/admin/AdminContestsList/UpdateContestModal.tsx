@@ -5,10 +5,10 @@ import LoadingContainer from "../../../components/LoadingContainer/LoadingContai
 import Modal, { Props as ModalProps } from "../../../components/Modal/Modal"
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
-import { useAdminCreateContest } from "../../../hooks/api/admin/useAdminCreateContest"
 import { ErrorModal } from "../../../pages/ContestDetails/ErrorModal"
-import { CreateContestForm } from "./CreateContestForm"
+import { ContestValues, CreateContestForm } from "./CreateContestForm"
 import { ContestsListItem } from "../../../hooks/api/admin/useAdminContests"
+import { useAdminUpdateContest } from "../../../hooks/api/admin/useAdminUpdateContest"
 
 type Props = ModalProps & {
   contest: ContestsListItem
@@ -16,7 +16,7 @@ type Props = ModalProps & {
 
 export const UpdateContestModal: React.FC<Props> = ({ onClose, contest }) => {
   const [formIsDirty, setFormIsDirty] = useState(false)
-  const { createContest, isLoading, isSuccess, error, reset } = useAdminCreateContest()
+  const { updateContest, isLoading, isSuccess, error, reset } = useAdminUpdateContest()
 
   const [displayModalCloseConfirm, setDisplayModalFormConfirm] = useState(false)
 
@@ -39,6 +39,16 @@ export const UpdateContestModal: React.FC<Props> = ({ onClose, contest }) => {
   const handleModalCloseCancel = useCallback(() => {
     setDisplayModalFormConfirm(false)
   }, [])
+
+  const handleFormSubmit = useCallback(
+    (values: ContestValues) => {
+      updateContest({
+        id: contest.id,
+        ...values.contest,
+      })
+    },
+    [contest.id, updateContest]
+  )
 
   return (
     <Modal closeable onClose={handleModalClose}>
@@ -63,7 +73,7 @@ export const UpdateContestModal: React.FC<Props> = ({ onClose, contest }) => {
         <Column spacing="xl">
           <Title>Edit {contest.title}</Title>
           <CreateContestForm
-            onSubmit={createContest}
+            onSubmit={handleFormSubmit}
             onDirtyChange={setFormIsDirty}
             submitLabel="Save"
             contest={contest}

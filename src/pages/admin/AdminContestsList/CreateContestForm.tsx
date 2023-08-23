@@ -15,11 +15,9 @@ import { commify } from "../../../utils/units"
 import { Text } from "../../../components/Text"
 import TokenInput from "../../../components/TokenInput/TokenInput"
 import { Button } from "../../../components/Button"
-import { Contest } from "../../../hooks/api/contests"
 import { ContestsListItem } from "../../../hooks/api/admin/useAdminContests"
-import { start } from "repl"
 
-type ContestValues = {
+export type ContestValues = {
   protocol: {
     id?: number
     name: string
@@ -173,14 +171,12 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
 
     if (contestTitle === "") return false
     if (contestShortDescription.length < 100 || contestShortDescription.length > 200) return false
-
     if (contestAuditLength === "") return false
 
     const startDate = DateTime.fromFormat(contestStartDate, DATE_FORMAT)
 
     if (!startDate.isValid) return false
     if (startDate < DateTime.now()) return false
-
     if (contestAuditRewards?.eq(BigNumber.from(0))) return false
     if (contestTotalCost?.eq(BigNumber.from(0))) return false
 
