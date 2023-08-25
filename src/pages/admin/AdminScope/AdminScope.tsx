@@ -22,6 +22,7 @@ export const AdminScope = () => {
   const [debouncedRepoName] = useDebounce(repoName, 300)
   const [branchName, setBranchName] = useState<string>()
   const [commitHash, setCommitHash] = useState<string>()
+  const [nSLOCExtra, setNSLOCExtra] = useState<number>()
   const [files, setFiles] = useState<string[]>([])
 
   const [branchSelectionModalOpen, setBranchSelectionModalOpen] = useState(false)
@@ -99,8 +100,9 @@ export const AdminScope = () => {
       branchName: branchName!,
       commitHash: commitHash!,
       files,
+      nSLOCExtra,
     })
-  }, [canGenerateReport, submitScope, repo, branchName, commitHash, files])
+  }, [canGenerateReport, submitScope, repo, branchName, commitHash, files, nSLOCExtra])
 
   const handleDownloadReport = useCallback(() => {
     if (report?.url) {
@@ -137,6 +139,14 @@ export const AdminScope = () => {
                     {shortenCommitHash(commitHash)}
                   </Button>
                 </Row>
+              </Column>
+            </Box>
+          )}
+          {repo && (
+            <Box shadow={false}>
+              <Column spacing="m">
+                <Title variant="h2">Extra nSLOC</Title>
+                <Input type="number" onChange={setNSLOCExtra} value={nSLOCExtra} />
               </Column>
             </Box>
           )}

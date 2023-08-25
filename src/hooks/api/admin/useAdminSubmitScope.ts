@@ -9,6 +9,7 @@ type AdminSubmitScopeParams = {
   branchName: string
   commitHash: string
   files: string[]
+  nSLOCExtra?: number
 }
 
 type AdminSubmitScopeResponse = {
@@ -38,6 +39,7 @@ export const useAdminSubmitScope = () => {
           branch_name: params.branchName,
           commit_hash: params.commitHash,
           files: params.files,
+          nsloc_extra: params.nSLOCExtra,
         },
         {
           timeout: 5 * 60 * 1000,
