@@ -145,7 +145,7 @@ export const AdminScope = () => {
           {repo && (
             <Box shadow={false}>
               <Column spacing="m">
-                <Title variant="h2">Extra nSLOC</Title>
+                <Title variant="h2">nSLOC Adjustment</Title>
                 <Input type="number" onChange={setNSLOCExtra} value={nSLOCExtra} />
               </Column>
             </Box>
