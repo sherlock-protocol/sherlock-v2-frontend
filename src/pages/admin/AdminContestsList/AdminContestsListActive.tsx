@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
 import { useCallback, useState } from "react"
-import { FaClipboardList, FaEye, FaFastForward, FaPlus, FaBullseye } from "react-icons/fa"
+import { FaClipboardList, FaFastForward, FaPlus, FaEdit } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -14,6 +14,7 @@ import styles from "./AdminContestsList.module.scss"
 import { ConfirmContestActionModal } from "./ConfirmContestActionModal"
 import { CreateContestModal } from "./CreateContestModal"
 import { ContestScopeModal } from "./ContestScopeModal"
+import { UpdateContestModal } from "./UpdateContestModal"
 
 type ContestLifeCycleStatus =
   | "WAITING_INITIAL_PAYMENT"
@@ -35,7 +36,7 @@ const getCurrentStatus = (contest: ContestsListItem): ContestLifeCycleStatus => 
   if (!contest.leadSeniorAuditorHandle && !contest.leadSeniorSelectionMessageSentAt) return "READY_TO_SELECT_SENIOR"
   if (!contest.leadSeniorAuditorHandle) return "WAITING_FOR_SENIOR_SELECTION"
   if (!contest.adminUpcomingApproved) return "READY_TO_PUBLISH"
-  if (!contest.fullPayment) return "WAITING_ON_FINAL_PAYMENT"
+  if (!contest.fullPaymentComplete) return "WAITING_ON_FINAL_PAYMENT"
   if (!contest.submissionReady) return "WAITING_ON_FINALIZE_SUBMISSION"
   if (!contest.adminStartApproved) return "READY_TO_APPROVE_START"
 
@@ -75,6 +76,7 @@ export const AdminContestsListActive = () => {
   const { data: contests, isLoading } = useAdminContests("active")
   const [confirmationModal, setConfirmationModal] = useState<ConfirmationModal | undefined>()
   const [createContestModalOpen, setCreateContestModalOpen] = useState(false)
+  const [updateContestIndex, setUpdateContextIndex] = useState<number | undefined>()
   const [scopeModal, setScopeModal] = useState<number | undefined>()
   const [forceActionRowIndex, setForceActionRowIndex] = useState<number | undefined>()
 
@@ -316,18 +318,10 @@ export const AdminContestsListActive = () => {
                         <Button
                           size="small"
                           variant="secondary"
-                          disabled={!c.adminUpcomingApproved}
-                          onClick={() => window.open(`/audits/contests/${c.id}`)}
+                          disabled={c.status !== "CREATED"}
+                          onClick={() => setUpdateContextIndex(index)}
                         >
-                          <FaEye />
-                        </Button>
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          disabled={!c.hasSolidityMetricsReport}
-                          onClick={() => setScopeModal(c.id)}
-                        >
-                          <FaBullseye />
+                          <FaEdit />
                         </Button>
                       </Row>
                     </Td>
@@ -357,6 +351,12 @@ export const AdminContestsListActive = () => {
               action={confirmationModal.action}
               onClose={handleConfirmationModalClose}
               force={forceActionRowIndex === confirmationModal.contestIndex}
+            />
+          )}
+          {updateContestIndex !== undefined && contests && (
+            <UpdateContestModal
+              onClose={() => setUpdateContextIndex(undefined)}
+              contest={contests[updateContestIndex]}
             />
           )}
           {createContestModalOpen && <CreateContestModal onClose={() => setCreateContestModalOpen(false)} />}
