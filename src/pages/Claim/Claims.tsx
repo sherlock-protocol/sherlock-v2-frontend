@@ -44,7 +44,7 @@ export const ClaimsPage: React.FC = () => {
   /**
    * Handler for protocol's select option change
    */
-  const handleProtocolChanged = useCallback((option: string) => {
+  const handleProtocolChanged = useCallback((option?: string) => {
     setSelectedProtocolBytesIdentifier(option)
   }, [])
 

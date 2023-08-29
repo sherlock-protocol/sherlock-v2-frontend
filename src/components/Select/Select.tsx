@@ -6,13 +6,13 @@ import { FaCaretDown } from "react-icons/fa"
 import Option from "./Option"
 
 type OptionType<T> = {
-  value: T
+  value?: T
   label: string
 }
 
 type Props<T> = {
   options: Array<OptionType<T>>
-  onChange: (value: T) => void
+  onChange: (value?: T) => void
   value?: T
   placeholder?: string
 }
@@ -36,7 +36,7 @@ const Select = <T,>({ options, onChange, value, placeholder }: Props<T>) => {
   const [optionsVisible, setOptionsVisible] = React.useState(false)
 
   const handleUpdateSelectedOption = React.useCallback(
-    (option: T) => {
+    (option: T | undefined) => {
       setOptionsVisible(false)
       onChange?.(option)
     },
