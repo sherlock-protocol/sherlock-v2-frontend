@@ -28,16 +28,25 @@ export const ProtocolPage: React.FC = () => {
   const { data: protocols } = useProtocols()
   const { address: connectedAddress } = useAccount()
 
-  const protocolSelectOptions = React.useMemo(
-    () =>
-      Object.entries(protocols ?? {})
+  const protocolSelectOptions = React.useMemo(() => {
+    const options = [
+      ...(!selectedProtocolId
+        ? [
+            {
+              value: undefined,
+              label: "Select Protocol",
+            },
+          ]
+        : []),
+      ...(Object.entries(protocols ?? {})
         .filter(([_, p]) => p.agent !== ethers.constants.AddressZero)
         .map(([key, item]) => ({
           label: item.name ?? "Unknown",
           value: key as `0x${string}`,
-        })) ?? [],
-    [protocols]
-  )
+        })) ?? []),
+    ]
+    return options
+  }, [protocols, selectedProtocolId])
   const selectedProtocol = React.useMemo<Protocol | null>(
     () => (selectedProtocolId ? protocols?.[selectedProtocolId] ?? null : null),
     [selectedProtocolId, protocols]
@@ -73,7 +82,7 @@ export const ProtocolPage: React.FC = () => {
   /**
    * Handler for changing the protocol
    */
-  const handleOnProtocolChanged = React.useCallback((option: `0x${string}`) => {
+  const handleOnProtocolChanged = React.useCallback((option?: `0x${string}`) => {
     setSelectedProtocolId(option)
   }, [])
 
