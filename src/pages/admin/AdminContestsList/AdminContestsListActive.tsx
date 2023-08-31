@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
 import { useCallback, useState } from "react"
-import { FaClipboardList, FaFastForward, FaPlus, FaEdit } from "react-icons/fa"
+import { FaClipboardList, FaFastForward, FaPlus, FaEdit, FaRegListAlt } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -322,6 +322,14 @@ export const AdminContestsListActive = () => {
                           onClick={() => setUpdateContextIndex(index)}
                         >
                           <FaEdit />
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          disabled={!c.hasSolidityMetricsReport}
+                          onClick={() => setScopeModal(c.id)}
+                        >
+                          <FaRegListAlt />
                         </Button>
                       </Row>
                     </Td>
