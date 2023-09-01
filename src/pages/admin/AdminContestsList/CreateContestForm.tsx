@@ -20,11 +20,11 @@ import { ContestsListItem } from "../../../hooks/api/admin/useAdminContests"
 export type ContestValues = {
   protocol: {
     id?: number
-    name: string
-    twitter: string
-    githubTeam: string
-    website: string
-    logoUrl: string
+    name?: string
+    twitter?: string
+    githubTeam?: string
+    website?: string
+    logoUrl?: string
   }
   contest: {
     title: string
@@ -273,11 +273,11 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
     onSubmit({
       protocol: {
         id: protocol?.id,
-        name: protocolName,
-        githubTeam: protocolGithubTeam,
-        twitter: protocolTwitter,
-        website: protocolWebsite,
-        logoUrl: protocolLogoURL,
+        name: protocolName === "" ? undefined : protocolName,
+        githubTeam: protocolGithubTeam === "" ? undefined : protocolGithubTeam,
+        twitter: protocolTwitter === "" ? undefined : protocolTwitter,
+        website: protocolWebsite === "" ? undefined : protocolWebsite,
+        logoUrl: protocolLogoURL === "" ? undefined : protocolLogoURL,
       },
       contest: {
         title: contestTitle,
