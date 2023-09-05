@@ -9,19 +9,14 @@ type AdminSubmitScopeParams = {
   branchName: string
   commitHash: string
   files: string[]
+  nSLOCAdjustment?: number
 }
 
 type AdminSubmitScopeResponse = {
-  report: {
-    url: string
-    nSLOC: number
-  }
+  report: string
 }
 
-type Report = {
-  url: string
-  nSLOC: number
-}
+type Report = string
 
 export const useAdminSubmitScope = () => {
   const {
@@ -38,16 +33,14 @@ export const useAdminSubmitScope = () => {
           branch_name: params.branchName,
           commit_hash: params.commitHash,
           files: params.files,
+          nsloc_adjustment: params.nSLOCAdjustment,
         },
         {
           timeout: 5 * 60 * 1000,
         }
       )
 
-      return {
-        url: data.report.url,
-        nSLOC: data.report.nSLOC,
-      }
+      return data.report
     } catch (error) {
       const axiosError = error as AxiosError
       throw Error(axiosError.response?.data.error ?? "Something went wrong. Please, try again.")

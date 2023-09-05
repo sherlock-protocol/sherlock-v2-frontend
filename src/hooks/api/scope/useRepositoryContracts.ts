@@ -2,7 +2,10 @@ import { useQuery } from "react-query"
 import { contests as contestsAPI } from "../axios"
 import { getRepositoryContracts as getRepositoryContractsUrl } from "../urls"
 
-type GetRepositoryContractsResponse = string[]
+type GetRepositoryContractsResponse = {
+  file_path: string
+  nsloc?: number
+}[]
 
 type File = {
   filepath: string
@@ -101,10 +104,10 @@ export const useRepositoryContracts = (repo: string, commit: string) =>
   useQuery<RepositoryContracts, Error>(repositoryContractsQuery(repo, commit), async () => {
     const { data } = await contestsAPI.get<GetRepositoryContractsResponse>(getRepositoryContractsUrl(repo, commit))
 
-    const tree = convertToTree2(data.map((f) => ({ filepath: f })))
+    const tree = convertToTree2(data.map((f) => ({ filepath: f.file_path, nsloc: f.nsloc })))
 
     return {
       tree,
-      rawPaths: data,
+      rawPaths: data.map((f) => f.file_path),
     }
   })
