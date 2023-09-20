@@ -79,9 +79,9 @@ export const ActiveClaim: React.FC<Props> = ({ claim, protocol }) => {
               <Button
                 variant="secondary"
                 onClick={handleAdditionalEvidenceClick}
-                disabled={!claim.additionalResourcesLink}
+                disabled={!claim.additionalResourcesLink || claim.id === 3}
               >
-                {claim.additionalResourcesLink ? (
+                {claim.additionalResourcesLink && claim.id !== 3 ? (
                   <>
                     <FaFileAlt /> <Text size="small">Additional evidence</Text>
                   </>
