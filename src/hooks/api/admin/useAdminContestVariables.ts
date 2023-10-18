@@ -7,7 +7,6 @@ type GetAdminContestVariablesResponse = {
   contest_rewards: number
   judging_prize_pool: number
   lead_judge_fixed_pay: number
-  admin_fee: number
 }
 
 type ContestVariables = {
@@ -16,7 +15,6 @@ type ContestVariables = {
   auditContestRewards: number
   judgingPrizePool: number
   leadJudgeFixedPay: number
-  adminFee: number
 }
 
 export const adminContestVariablesQueryKey = (nSLOC: number) => ["contest-variables", nSLOC]
@@ -30,6 +28,5 @@ export const useAdminContestVariables = (nSLOC: number) =>
       auditContestRewards: data.contest_rewards,
       judgingPrizePool: data.judging_prize_pool,
       leadJudgeFixedPay: data.lead_judge_fixed_pay,
-      adminFee: data.admin_fee,
     }
   })
