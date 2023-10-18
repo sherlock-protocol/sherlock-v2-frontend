@@ -72,10 +72,13 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
   const [debouncedContestNSLOC] = useDebounce(contestNSLOC, 300)
   const [contestStartDate, setContestStartDate] = useState("")
   const [contestAuditLength, setContestAuditLength] = useState("")
+  const [contestTotalRewards, setContestTotalRewards] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestAuditRewards, setContestAuditRewards] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestJudgingPrizePool, setContestJudgingPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestLeadJudgeFixedPay, setContestLeadJudgeFixedPay] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestTotalCost, setContestTotalCost] = useState<BigNumber | undefined>(BigNumber.from(0))
+
+  const [initialTotalRewards, setInitialTotalRewards] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialAuditContestRewards, setInitialAuditContestRewards] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialJudgingPrizePool, setInitialJudgingPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialLeadJudgeFixedPay, setInitialLeadJudgeFixedPay] = useState<BigNumber | undefined>(BigNumber.from(0))
@@ -100,6 +103,9 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
       setShortDescription(contest.shortDescription)
       setContestStartDate(startDate.toFormat(DATE_FORMAT))
       setContestAuditLength(auditLength.toString())
+      setInitialTotalRewards(
+        ethers.utils.parseUnits(`${contest.rewards + contest.judgingPrizePool + contest.leadJudgeFixedPay}`, 6)
+      )
       setInitialAuditContestRewards(ethers.utils.parseUnits(`${contest.rewards}`, 6))
       setInitialJudgingPrizePool(ethers.utils.parseUnits(`${contest.judgingPrizePool}`, 6))
       setInitialLeadJudgeFixedPay(ethers.utils.parseUnits(`${contest.leadJudgeFixedPay}`, 6))
@@ -110,12 +116,32 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
   useEffect(() => {
     if (contestVariablesSuccess && !contest) {
       setContestAuditLength(`${contestVariables.length}`)
+      setInitialTotalRewards(
+        ethers.utils.parseUnits(
+          `${
+            contestVariables.auditContestRewards +
+            contestVariables.judgingPrizePool +
+            contestVariables.leadJudgeFixedPay
+          }`,
+          6
+        )
+      )
       setInitialAuditContestRewards(ethers.utils.parseUnits(`${contestVariables.auditContestRewards}`, 6))
       setInitialJudgingPrizePool(ethers.utils.parseUnits(`${contestVariables.judgingPrizePool}`, 6))
       setInitialLeadJudgeFixedPay(ethers.utils.parseUnits(`${contestVariables.leadJudgeFixedPay}`, 6))
       setInitialTotalCost(ethers.utils.parseUnits(`${contestVariables.fullPayment}`, 6))
     }
   }, [contestVariablesSuccess, setContestAuditLength, contestVariables, contest])
+
+  useEffect(() => {
+    const diff = contestTotalRewards
+      ?.sub(contestAuditRewards ?? BigNumber.from(0))
+      .sub(contestJudgingPrizePool ?? BigNumber.from(0))
+      .sub(contestLeadJudgeFixedPay ?? BigNumber.from(0))
+
+    setInitialAuditContestRewards(contestAuditRewards?.add(diff ?? BigNumber.from(0)))
+    setInitialTotalCost(contestTotalCost?.add(diff ?? BigNumber.from(0)))
+  }, [contestTotalRewards, setInitialAuditContestRewards])
 
   useEffect(() => {
     if (protocol?.name) {
@@ -409,6 +435,9 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
         </Field>
         <Field label="Audit Length">
           <Input type="number" value={contestAuditLength} onChange={setContestAuditLength} />
+        </Field>
+        <Field label="Total Rewards">
+          <TokenInput token="USDC" initialValue={initialTotalRewards} onChange={setContestTotalRewards} />
         </Field>
         <Field label="Audit Contest Rewards" sublabel="Contest Pool + Lead fixed pay">
           <TokenInput token="USDC" initialValue={initialAuditContestRewards} onChange={setContestAuditRewards} />
