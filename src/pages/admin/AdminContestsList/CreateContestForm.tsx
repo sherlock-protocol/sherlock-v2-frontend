@@ -140,7 +140,6 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
       .sub(contestLeadJudgeFixedPay ?? BigNumber.from(0))
 
     setInitialAuditContestRewards(contestAuditRewards?.add(diff ?? BigNumber.from(0)))
-    setInitialTotalCost(contestTotalCost?.add(diff ?? BigNumber.from(0)))
   }, [contestTotalRewards, setInitialAuditContestRewards])
 
   useEffect(() => {
