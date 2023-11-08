@@ -14,8 +14,10 @@ import { shortenCommitHash } from "../../../utils/repository"
 import { BranchSelectionModal } from "../../AuditScope/BranchSelectionModal"
 import { CommitSelectionModal } from "../../AuditScope/CommitSelectionModal"
 import { RepositoryContractsSelector } from "../../AuditScope/RepositoryContractsSelector"
-import { useRepositoryContracts } from "../../../hooks/api/scope/useRepositoryContracts"
+import { repositoryContractsQuery, useRepositoryContracts } from "../../../hooks/api/scope/useRepositoryContracts"
 import { SaveScopeSuccessModal } from "./SaveScopeSuccessModal"
+import { ScopeErrorModal } from "./ScopeErrorModal"
+import { useQueryClient } from "react-query"
 
 export const AdminScope = () => {
   const [repoLink, setRepoLink] = useState("")
@@ -32,7 +34,13 @@ export const AdminScope = () => {
   const { data: repo, isLoading: repoIsLoading } = useRepository(debouncedRepoName)
   const { submitScope, isLoading, data: report, isSuccess } = useAdminSubmitScope()
 
-  const { data: repoContracts } = useRepositoryContracts(debouncedRepoName, commitHash ?? "")
+  const {
+    data: repoContracts,
+    isLoading: isLoadingContracts,
+    error: contractsError,
+  } = useRepositoryContracts(debouncedRepoName, commitHash ?? "")
+
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     const pattern = /^https?:\/\/github\.com\/([A-Za-z0-9-]+\/[A-Za-z0-9-]+)(?:\.git)?(?:\/tree\/([A-Za-z0-9-]+))?$/
@@ -50,6 +58,10 @@ export const AdminScope = () => {
       setCommitHash(repo.mainBranch.commit)
     }
   }, [repo, branchName])
+
+  const handleErrorModalClose = useCallback(() => {
+    window.location.reload()
+  }, [])
 
   const handlePathSelected = useCallback(
     (selectedPaths: string[]) => {
@@ -106,7 +118,10 @@ export const AdminScope = () => {
   }, [canGenerateReport, submitScope, repo, branchName, commitHash, files, nSLOCAdjustment])
 
   return (
-    <LoadingContainer loading={isLoading || repoIsLoading} label={repoIsLoading ? "" : "Saving scope ..."}>
+    <LoadingContainer
+      loading={isLoading || repoIsLoading || isLoadingContracts}
+      label={repoIsLoading || isLoadingContracts ? "Analyzing repo ..." : "Saving scope ..."}
+    >
       <Row spacing="l">
         <Column spacing="l">
           <Box shadow={false} fullWidth>
@@ -171,6 +186,7 @@ export const AdminScope = () => {
             </Box>
           )}
           {isSuccess && <SaveScopeSuccessModal reportURL={report} />}
+          {contractsError && <ScopeErrorModal onClose={handleErrorModalClose} />}
           {branchSelectionModalOpen && (
             <BranchSelectionModal
               repoName={repo?.name ?? ""}

@@ -101,13 +101,22 @@ type RepositoryContracts = {
 
 export const repositoryContractsQuery = (repo: string, commit: string) => ["repository-contracts", repo, commit]
 export const useRepositoryContracts = (repo: string, commit: string) =>
-  useQuery<RepositoryContracts, Error>(repositoryContractsQuery(repo, commit), async () => {
-    const { data } = await contestsAPI.get<GetRepositoryContractsResponse>(getRepositoryContractsUrl(repo, commit))
+  useQuery<RepositoryContracts, Error>(
+    repositoryContractsQuery(repo, commit),
+    async () => {
+      const { data } = await contestsAPI.get<GetRepositoryContractsResponse>(getRepositoryContractsUrl(repo, commit), {
+        timeout: 5 * 60 * 1000,
+      })
 
-    const tree = convertToTree2(data.map((f) => ({ filepath: f.file_path, nsloc: f.nsloc })))
+      const tree = convertToTree2(data.map((f) => ({ filepath: f.file_path, nsloc: f.nsloc })))
 
-    return {
-      tree,
-      rawPaths: data.map((f) => f.file_path),
+      return {
+        tree,
+        rawPaths: data.map((f) => f.file_path),
+      }
+    },
+    {
+      enabled: !!repo && !!commit,
+      refetchOnWindowFocus: false,
     }
-  })
+  )
