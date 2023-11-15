@@ -43,7 +43,7 @@ function App() {
   )
 
   useEffect(() => {
-    if (!connectedAddress || (profile && !addressIsAllowed(connectedAddress))) {
+    if (profile && connectedAddress && !addressIsAllowed(connectedAddress)) {
       signOut()
     }
   }, [connectedAddress, addressIsAllowed, signOut, profile])
