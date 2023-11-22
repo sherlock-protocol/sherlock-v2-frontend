@@ -148,7 +148,7 @@ export const StakingPage: React.FC = () => {
         <LoadingContainer loading={isLoadingRewards}>
           <Column spacing="xl">
             <Column className={styles.infoBanner}>
-              <Title variant="h3">The Summer 2023 Staking Round is currently open!</Title>
+              <Title variant="h3">The Winter 2023 Staking Round is currently open!</Title>
             </Column>
             <Column spacing="m">
               <Title>Stake</Title>
