@@ -30,6 +30,7 @@ type ContestLifeCycleStatus =
   | "ESCALATING"
   | "SHERLOCK_JUDGING"
   | "FINISHED"
+  | "DRAFT"
 
 const getCurrentStatus = (contest: ContestsListItem): ContestLifeCycleStatus => {
   if (!contest.initialPayment) return "WAITING_INITIAL_PAYMENT"

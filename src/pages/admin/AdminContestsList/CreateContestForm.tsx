@@ -44,11 +44,18 @@ type Props = {
   onDirtyChange: (dirty: boolean) => void
   submitLabel: string
   contest?: ContestsListItem
+  draft?: boolean
 }
 
 const DATE_FORMAT = "yyyy-MM-dd"
 
-export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, submitLabel, contest }) => {
+export const CreateContestForm: React.FC<Props> = ({
+  onSubmit,
+  onDirtyChange,
+  submitLabel,
+  contest,
+  draft = false,
+}) => {
   const [protocolName, setProtocolName] = useState("")
   const [debouncedProtocolName] = useDebounce(protocolName, 300)
 
@@ -114,7 +121,7 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
   }, [contest])
 
   useEffect(() => {
-    if (contestVariablesSuccess && !contest) {
+    if (contestVariablesSuccess && (!contest || contest.status === "DRAFT")) {
       setContestAuditLength(`${contestVariables.length}`)
       setInitialTotalRewards(
         ethers.utils.parseUnits(
@@ -195,7 +202,10 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
     }
 
     if (contestTitle === "") return false
-    if (contestShortDescription.length < 100 || contestShortDescription.length > 200) return false
+
+    if (draft) return true
+
+    if (contestShortDescription === "") return false
     if (contestAuditLength === "") return false
 
     const startDate = DateTime.fromFormat(contestStartDate, DATE_FORMAT)
@@ -270,20 +280,6 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
     onDirtyChange,
     protocolName,
   ])
-
-  const handleUpdateShortDescription = useCallback((value: string) => {
-    setShortDescription(value)
-
-    if (value === "") {
-      setShortDescriptionError(undefined)
-    } else if (value.length < 100) {
-      setShortDescriptionError("Too short. Must be between 100 and 200 characters.")
-    } else if (value.length > 200) {
-      setShortDescriptionError("Too long. Must be between 100 and 200 characters.")
-    } else {
-      setShortDescriptionError(undefined)
-    }
-  }, [])
 
   const handleSubmit = useCallback(() => {
     const startDate = DateTime.fromFormat(contestStartDate, DATE_FORMAT, { zone: "utc" }).set({
@@ -418,39 +414,45 @@ export const CreateContestForm: React.FC<Props> = ({ onSubmit, onDirtyChange, su
         <Field label="Title">
           <Input value={contestTitle} onChange={setContestTitle} />
         </Field>
-        <Field label="Short Description" error={!!shortDescriptionError} errorMessage={shortDescriptionError ?? ""}>
-          <Input value={contestShortDescription} onChange={handleUpdateShortDescription} />
-        </Field>
-        <Field label="Start Date" error={!!startDateError} errorMessage={startDateError ?? ""}>
-          <Input value={contestStartDate} onChange={setContestStartDate} />
-        </Field>
-        <Field
-          label="nSLOC"
-          detail={
-            isNaN(Number(contestNSLOC)) ? "Value is not a number. It won't be used to check the submitted nSLOC" : ""
-          }
-        >
-          <Input value={contestNSLOC} onChange={setContestNSLOC} />
-        </Field>
-        <Field label="Audit Length">
-          <Input type="number" value={contestAuditLength} onChange={setContestAuditLength} />
-        </Field>
-        <Field label="Total Rewards">
-          <TokenInput token="USDC" initialValue={initialTotalRewards} onChange={setContestTotalRewards} />
-        </Field>
-        <Field label="Audit Contest Rewards" sublabel="Contest Pool + Lead fixed pay">
-          <TokenInput token="USDC" initialValue={initialAuditContestRewards} onChange={setContestAuditRewards} />
-        </Field>
-        <Field label="Judging Contest Prize Pool">
-          <TokenInput token="USDC" initialValue={initialJudgingPrizePool} onChange={setContestJudgingPrizePool} />
-        </Field>
-        <Field label="Lead Judge Fixed Pay">
-          <TokenInput token="USDC" initialValue={initialLeadJudgeFixedPay} onChange={setContestLeadJudgeFixedPay} />
-        </Field>
-        <Field label="Total Cost">
-          <TokenInput token="USDC" initialValue={initialTotalCost} onChange={setContestTotalCost} />
-        </Field>
-        <Text size="small">{`Admin Fee: ${sherlockFee} USDC`}</Text>
+        {draft ? null : (
+          <>
+            <Field label="Short Description" error={!!shortDescriptionError} errorMessage={shortDescriptionError ?? ""}>
+              <Input value={contestShortDescription} onChange={setShortDescription} />
+            </Field>
+            <Field label="Start Date" error={!!startDateError} errorMessage={startDateError ?? ""}>
+              <Input value={contestStartDate} onChange={setContestStartDate} />
+            </Field>
+            <Field
+              label="nSLOC"
+              detail={
+                isNaN(Number(contestNSLOC))
+                  ? "Value is not a number. It won't be used to check the submitted nSLOC"
+                  : ""
+              }
+            >
+              <Input value={contestNSLOC} onChange={setContestNSLOC} />
+            </Field>
+            <Field label="Audit Length">
+              <Input type="number" value={contestAuditLength} onChange={setContestAuditLength} />
+            </Field>
+            <Field label="Total Rewards">
+              <TokenInput token="USDC" initialValue={initialTotalRewards} onChange={setContestTotalRewards} />
+            </Field>
+            <Field label="Audit Contest Rewards" sublabel="Contest Pool + Lead fixed pay">
+              <TokenInput token="USDC" initialValue={initialAuditContestRewards} onChange={setContestAuditRewards} />
+            </Field>
+            <Field label="Judging Contest Prize Pool">
+              <TokenInput token="USDC" initialValue={initialJudgingPrizePool} onChange={setContestJudgingPrizePool} />
+            </Field>
+            <Field label="Lead Judge Fixed Pay">
+              <TokenInput token="USDC" initialValue={initialLeadJudgeFixedPay} onChange={setContestLeadJudgeFixedPay} />
+            </Field>
+            <Field label="Total Cost">
+              <TokenInput token="USDC" initialValue={initialTotalCost} onChange={setContestTotalCost} />
+            </Field>
+            <Text size="small">{`Admin Fee: ${sherlockFee} USDC`}</Text>
+          </>
+        )}
       </Column>
       <hr />
       <Button disabled={!canSubmit} onClick={handleSubmit}>
