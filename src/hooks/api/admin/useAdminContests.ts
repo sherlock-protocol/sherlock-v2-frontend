@@ -30,6 +30,7 @@ export type ContestsListItem = {
   leadJudgeFixedPay: number
   fullPayment: number
   initialScopeSubmitted: boolean
+  finalScopeSubmitted: boolean
 }
 
 type GetAdminContestsResponse = {
@@ -57,6 +58,7 @@ type GetAdminContestsResponse = {
   lead_judge_fixed_pay: number
   full_payment: number
   initial_scope_submitted: boolean
+  final_scope_submitted: boolean
 }[]
 
 export type ContestListStatus = "active" | "finished" | "draft"
@@ -91,5 +93,6 @@ export const useAdminContests = (status: ContestListStatus) =>
       leadJudgeFixedPay: d.lead_judge_fixed_pay,
       fullPayment: d.full_payment,
       initialScopeSubmitted: d.initial_scope_submitted,
+      finalScopeSubmitted: d.final_scope_submitted,
     }))
   })

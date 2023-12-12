@@ -327,7 +327,7 @@ export const AdminContestsListActive = () => {
                         <Button
                           size="small"
                           variant="secondary"
-                          disabled={!c.hasSolidityMetricsReport}
+                          disabled={!c.finalScopeSubmitted}
                           onClick={() => setScopeModal(c.id)}
                         >
                           <FaRegListAlt />
