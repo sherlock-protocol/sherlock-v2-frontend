@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { FaClipboardList, FaRecycle, FaRedo, FaUndo } from "react-icons/fa"
+import { FaClipboardList, FaRecycle, FaRedo, FaTrash, FaUndo } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -12,12 +12,14 @@ import { useAdminContests } from "../../../hooks/api/admin/useAdminContests"
 import styles from "./AdminContestsList.module.scss"
 import { ConfirmContestModal } from "./ConfirmContestModal"
 import { ContestResetInitialScopeModal } from "./ContestResetInitialScopeModal"
+import { DeleteDraftContestModal } from "./DeleteDraftContestModal"
 
 export const AdminContestListDraft = () => {
   const { data: contests, isLoading } = useAdminContests("draft")
 
   const [confirmContestIndex, setConfirmContestIndex] = useState<number | undefined>()
   const [resetContestIndex, setResetContestIndex] = useState<number | undefined>()
+  const [deleteContestIndex, setDeleteContestIndex] = useState<number | undefined>()
 
   return (
     <LoadingContainer loading={isLoading}>
@@ -68,6 +70,9 @@ export const AdminContestListDraft = () => {
                         >
                           <FaUndo />
                         </Button>
+                        <Button size="small" variant="secondary" onClick={() => setDeleteContestIndex(index)}>
+                          <FaTrash />
+                        </Button>
                       </Row>
                     </Td>
                     <Td>
@@ -102,6 +107,12 @@ export const AdminContestListDraft = () => {
             <ContestResetInitialScopeModal
               onClose={() => setResetContestIndex(undefined)}
               contest={contests[resetContestIndex]}
+            />
+          )}
+          {deleteContestIndex !== undefined && contests && (
+            <DeleteDraftContestModal
+              onClose={() => setDeleteContestIndex(undefined)}
+              contest={contests[deleteContestIndex]}
             />
           )}
         </Box>
