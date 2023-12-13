@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { FaClipboardList } from "react-icons/fa"
+import { FaClipboardList, FaRecycle, FaRedo, FaUndo } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -11,11 +11,13 @@ import { useAdminContests } from "../../../hooks/api/admin/useAdminContests"
 
 import styles from "./AdminContestsList.module.scss"
 import { ConfirmContestModal } from "./ConfirmContestModal"
+import { ContestResetInitialScopeModal } from "./ContestResetInitialScopeModal"
 
 export const AdminContestListDraft = () => {
   const { data: contests, isLoading } = useAdminContests("draft")
 
   const [confirmContestIndex, setConfirmContestIndex] = useState<number | undefined>()
+  const [resetContestIndex, setResetContestIndex] = useState<number | undefined>()
 
   return (
     <LoadingContainer loading={isLoading}>
@@ -48,14 +50,25 @@ export const AdminContestListDraft = () => {
                       </Row>
                     </Td>
                     <Td>
-                      <Button
-                        size="small"
-                        variant="secondary"
-                        disabled={!c.dashboardID}
-                        onClick={() => window.open(`/dashboard/${c.dashboardID}`)}
-                      >
-                        <FaClipboardList />
-                      </Button>
+                      <Row spacing="m">
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          disabled={!c.dashboardID}
+                          onClick={() => window.open(`/dashboard/${c.dashboardID}`)}
+                        >
+                          <FaClipboardList />
+                        </Button>
+
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          disabled={!c.initialScopeSubmitted}
+                          onClick={() => setResetContestIndex(index)}
+                        >
+                          <FaUndo />
+                        </Button>
+                      </Row>
                     </Td>
                     <Td>
                       <Text variant="secondary">
@@ -83,6 +96,12 @@ export const AdminContestListDraft = () => {
             <ConfirmContestModal
               onClose={() => setConfirmContestIndex(undefined)}
               contest={contests[confirmContestIndex]}
+            />
+          )}
+          {resetContestIndex !== undefined && contests && (
+            <ContestResetInitialScopeModal
+              onClose={() => setResetContestIndex(undefined)}
+              contest={contests[resetContestIndex]}
             />
           )}
         </Box>
