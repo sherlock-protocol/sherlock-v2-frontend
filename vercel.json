@@ -3,12 +3,17 @@
     {
       "source": "/audits",
       "destination": "https://audits.sherlock.xyz",
-      "permanent": false
+      "permanent": true
     },
     {
       "source": "/audits/:path*",
       "destination": "https://audits.sherlock.xyz/:path*",
-      "permanent": false
+      "permanent": true
+    },
+    {
+      "source": "/dashboard/:path*",
+      "destination": "https://audits.sherlock.xyz/dashboard/:path*",
+      "permanent": true
     }
   ]
 }
