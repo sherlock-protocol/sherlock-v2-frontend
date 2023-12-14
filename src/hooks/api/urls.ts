@@ -68,7 +68,9 @@ export const getAdminProtocol = (name: string) => `/admin/protocol/${name}`
 export const getAdminContestScope = (contestID: number) => `/admin/contest/${contestID}/scope`
 export const adminCreateContest = () => `/admin/contests`
 export const adminUpdateContest = (contestID: number) => `/admin/contests/${contestID}`
-export const adminResetScope = (contestID: number) => `/admin/contests/${contestID}/scope`
+export const adminConfirmContest = (contestID: number) => `/admin/contests/${contestID}/confirm`
+export const adminResetScope = (contestID: number, scopeType: "initial" | "final") =>
+  `/admin/contests/${contestID}/scope/${scopeType}`
 export const getAdminTwitterAccount = (handle: string) => `/admin/twitter_account/${handle}`
 export const adminSubmitScope = () => `/admin/scope`
 export const getSeniorWatson = (handle: string) => `/admin/senior_watson?handle=${handle}`
@@ -76,6 +78,7 @@ export const adminStartLeadSeniorWatsonSelection = () => `/admin/start_lead_seni
 export const adminSelectLeadSeniorWatson = () => `/admin/select_lead_senior_watson`
 export const adminGenerateReport = (contestID: number) => `/admin/contest/${contestID}/report/generate`
 export const adminPublishReport = (contestID: number) => `/admin/contest/${contestID}/report/publish`
+export const adminDeleteDraftContest = (contestID: number) => `/admin/contests/${contestID}`
 
 // Stats
 export const getLeaderboard = () => "/stats/leaderboard"

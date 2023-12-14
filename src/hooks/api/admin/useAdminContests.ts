@@ -3,7 +3,7 @@ import { contests as contestsAPI } from "../axios"
 
 import { getAdminContests as getAdminContestsUrl } from "../urls"
 
-export type ContestStatus = "CREATED" | "RUNNING" | "JUDGING" | "FINISHED" | "ESCALATING" | "SHERLOCK_JUDGING"
+export type ContestStatus = "DRAFT" | "CREATED" | "RUNNING" | "JUDGING" | "FINISHED" | "ESCALATING" | "SHERLOCK_JUDGING"
 
 export type ContestsListItem = {
   id: number
@@ -29,6 +29,8 @@ export type ContestsListItem = {
   judgingPrizePool: number
   leadJudgeFixedPay: number
   fullPayment: number
+  initialScopeSubmitted: boolean
+  finalScopeSubmitted: boolean
 }
 
 type GetAdminContestsResponse = {
@@ -55,9 +57,11 @@ type GetAdminContestsResponse = {
   judging_prize_pool: number
   lead_judge_fixed_pay: number
   full_payment: number
+  initial_scope_submitted: boolean
+  final_scope_submitted: boolean
 }[]
 
-export type ContestListStatus = "active" | "finished"
+export type ContestListStatus = "active" | "finished" | "draft"
 
 export const adminContestsQuery = (status: ContestListStatus) => ["admin-contests", status]
 export const useAdminContests = (status: ContestListStatus) =>
@@ -88,5 +92,7 @@ export const useAdminContests = (status: ContestListStatus) =>
       judgingPrizePool: d.judging_prize_pool,
       leadJudgeFixedPay: d.lead_judge_fixed_pay,
       fullPayment: d.full_payment,
+      initialScopeSubmitted: d.initial_scope_submitted,
+      finalScopeSubmitted: d.final_scope_submitted,
     }))
   })

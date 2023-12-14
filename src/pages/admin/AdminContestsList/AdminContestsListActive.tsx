@@ -30,6 +30,7 @@ type ContestLifeCycleStatus =
   | "ESCALATING"
   | "SHERLOCK_JUDGING"
   | "FINISHED"
+  | "DRAFT"
 
 const getCurrentStatus = (contest: ContestsListItem): ContestLifeCycleStatus => {
   if (!contest.initialPayment) return "WAITING_INITIAL_PAYMENT"
@@ -326,7 +327,7 @@ export const AdminContestsListActive = () => {
                         <Button
                           size="small"
                           variant="secondary"
-                          disabled={!c.hasSolidityMetricsReport}
+                          disabled={!c.finalScopeSubmitted}
                           onClick={() => setScopeModal(c.id)}
                         >
                           <FaRegListAlt />

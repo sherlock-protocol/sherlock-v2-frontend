@@ -100,7 +100,7 @@ export const ContestScopeModal: React.FC<Props> = ({ onClose, contestID }) => {
                 {index < scope.length - 1 ? <hr /> : null}
               </Column>
             ))}
-            <Button variant="alternate" onClick={() => resetScope({ contestID: contestID })}>
+            <Button variant="alternate" onClick={() => resetScope({ contestID: contestID, scopeType: "final" })}>
               Reset scope
             </Button>
           </Column>

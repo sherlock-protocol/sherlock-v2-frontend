@@ -5,17 +5,20 @@ import LoadingContainer from "../../../components/LoadingContainer/LoadingContai
 import Modal, { Props as ModalProps } from "../../../components/Modal/Modal"
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
-import { useAdminCreateContest } from "../../../hooks/api/admin/useAdminCreateContest"
-import { ErrorModal } from "../../../pages/ContestDetails/ErrorModal"
+import { useAdminConfirmContest } from "../../../hooks/api/admin/useAdminConfirmContest"
+import { ContestsListItem } from "../../../hooks/api/admin/useAdminContests"
+import { ErrorModal } from "../../ContestDetails/ErrorModal"
 import { ContestValues, CreateContestForm } from "./CreateContestForm"
 
-type Props = ModalProps & {}
+type Props = ModalProps & {
+  contest: ContestsListItem
+}
 
-export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
+export const ConfirmContestModal: React.FC<Props> = ({ onClose, contest }) => {
   const [formIsDirty, setFormIsDirty] = useState(false)
-  const { createContest, isLoading, isSuccess, error, reset } = useAdminCreateContest()
-
   const [displayModalCloseConfirm, setDisplayModalFormConfirm] = useState(false)
+
+  const { confirmContest, isSuccess, isLoading, error, reset } = useAdminConfirmContest()
 
   useEffect(() => {
     if (isSuccess) onClose?.()
@@ -37,6 +40,15 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
     setDisplayModalFormConfirm(false)
   }, [])
 
+  const handleFormSubmit = useCallback(
+    (values: ContestValues) => {
+      confirmContest({
+        id: contest.id,
+        ...values.contest,
+      })
+    },
+    [contest.id, confirmContest]
+  )
   return (
     <Modal closeable onClose={handleModalClose}>
       {displayModalCloseConfirm && (
@@ -56,14 +68,14 @@ export const CreateContestModal: React.FC<Props> = ({ onClose }) => {
           </Column>
         </Modal>
       )}
-      <LoadingContainer loading={isLoading} label={`Creating contest ...`}>
+      <LoadingContainer loading={isLoading} label={`Confirming contest ...`}>
         <Column spacing="xl">
           <Title>New contest</Title>
           <CreateContestForm
-            onSubmit={createContest}
+            onSubmit={handleFormSubmit}
             onDirtyChange={setFormIsDirty}
-            submitLabel="Create Contest"
-            draft
+            submitLabel="Confirm Contest"
+            contest={contest}
           />
         </Column>
       </LoadingContainer>
