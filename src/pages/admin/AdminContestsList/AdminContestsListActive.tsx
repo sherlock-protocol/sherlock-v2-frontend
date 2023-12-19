@@ -22,7 +22,6 @@ type ContestLifeCycleStatus =
   | "WAITING_FOR_SENIOR_SELECTION"
   | "READY_TO_PUBLISH"
   | "WAITING_ON_FINAL_PAYMENT"
-  | "WAITING_ON_FINALIZE_SUBMISSION"
   | "READY_TO_APPROVE_START"
   | "START_APPROVED"
   | "RUNNING"
@@ -38,7 +37,6 @@ const getCurrentStatus = (contest: ContestsListItem): ContestLifeCycleStatus => 
   if (!contest.leadSeniorAuditorHandle) return "WAITING_FOR_SENIOR_SELECTION"
   if (!contest.adminUpcomingApproved) return "READY_TO_PUBLISH"
   if (!contest.fullPaymentComplete) return "WAITING_ON_FINAL_PAYMENT"
-  if (!contest.submissionReady) return "WAITING_ON_FINALIZE_SUBMISSION"
   if (!contest.adminStartApproved) return "READY_TO_APPROVE_START"
 
   switch (contest.status) {
@@ -199,9 +197,6 @@ export const AdminContestsListActive = () => {
       if (status === "WAITING_ON_FINAL_PAYMENT") {
         return <Text variant="secondary">Waiting on full payment</Text>
       }
-
-      if (status === "WAITING_ON_FINALIZE_SUBMISSION")
-        return <Text variant="secondary">Waiting of protocol to finalize submission</Text>
 
       if (status === "READY_TO_APPROVE_START") {
         return <Text variant="secondary">Ready to approve start</Text>
