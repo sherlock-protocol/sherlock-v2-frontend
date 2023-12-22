@@ -79,6 +79,7 @@ export const adminSelectLeadSeniorWatson = () => `/admin/select_lead_senior_wats
 export const adminGenerateReport = (contestID: number) => `/admin/contest/${contestID}/report/generate`
 export const adminPublishReport = (contestID: number) => `/admin/contest/${contestID}/report/publish`
 export const adminDeleteDraftContest = (contestID: number) => `/admin/contests/${contestID}`
+export const getAdminContest = (contestID: number) => `/admin/contests/${contestID}`
 
 // Stats
 export const getLeaderboard = () => "/stats/leaderboard"

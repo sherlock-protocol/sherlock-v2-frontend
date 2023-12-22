@@ -75,7 +75,7 @@ export const CreateContestForm: React.FC<Props> = ({
 
   const [contestTitle, setContestTitle] = useState("")
   const [contestShortDescription, setShortDescription] = useState("")
-  const [contestNSLOC, setContestNSLOC] = useState(contest?.linesOfCode ?? "")
+  const [contestNSLOC, setContestNSLOC] = useState(contest?.nSLOC?.toString() ?? "")
   const [debouncedContestNSLOC] = useDebounce(contestNSLOC, 300)
   const [contestStartDate, setContestStartDate] = useState("")
   const [contestAuditLength, setContestAuditLength] = useState("")
@@ -242,7 +242,7 @@ export const CreateContestForm: React.FC<Props> = ({
       onDirtyChange(
         (contestTitle !== contest.title ||
           contestShortDescription !== contest.shortDescription ||
-          contestNSLOC !== contest.linesOfCode ||
+          contestNSLOC !== contest.nSLOC?.toString() ||
           contestStartDate !== startDate.toFormat(DATE_FORMAT) ||
           contestAuditLength !== auditLength.toString() ||
           !contestAuditRewards?.eq(ethers.utils.parseUnits(`${contest.rewards}`, 6)) ||

@@ -14,6 +14,7 @@ export type Scope = {
   solidityMetricsReport?: string
   commentToSourceRatio?: number
   initialScope?: Scope
+  nSLOC?: number
 }
 
 type ScopeResponse = {

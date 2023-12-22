@@ -24,7 +24,8 @@ export type ContestsListItem = {
   leadSeniorSelectionMessageSentAt: number
   leadSeniorConfirmationMessage: string
   auditReport?: string
-  linesOfCode?: string
+  nSLOC?: number
+  expectedNSLOC?: number
   rewards: number
   judgingPrizePool: number
   leadJudgeFixedPay: number
@@ -33,7 +34,7 @@ export type ContestsListItem = {
   finalScopeSubmitted: boolean
 }
 
-type GetAdminContestsResponse = {
+export type GetAdminContestsResponse = {
   id: number
   title: string
   short_description: string
@@ -52,47 +53,51 @@ type GetAdminContestsResponse = {
   senior_selection_message_sent_at: number
   senior_confirmed_message: string
   audit_report?: string
-  lines_of_code?: string
+  nsloc?: number
+  expected_nsloc?: number
   audit_rewards: number
   judging_prize_pool: number
   lead_judge_fixed_pay: number
   full_payment: number
   initial_scope_submitted: boolean
   final_scope_submitted: boolean
-}[]
+}
 
 export type ContestListStatus = "active" | "finished" | "draft"
+
+export const parseContest = (d: GetAdminContestsResponse): ContestsListItem => {
+  return {
+    id: d.id,
+    title: d.title,
+    shortDescription: d.short_description,
+    logoURL: d.logo_url,
+    status: d.status,
+    initialPayment: d.initial_payment_complete,
+    fullPaymentComplete: d.full_payment_complete,
+    adminUpcomingApproved: d.admin_upcoming_approved,
+    adminStartApproved: d.admin_start_approved,
+    dashboardID: d.dashboard_id,
+    startDate: d.starts_at,
+    endDate: d.ends_at,
+    submissionReady: d.protocol_submission_ready,
+    hasSolidityMetricsReport: d.has_solidity_metrics_report,
+    leadSeniorAuditorHandle: d.lead_senior_auditor_handle,
+    leadSeniorSelectionMessageSentAt: d.senior_selection_message_sent_at,
+    leadSeniorConfirmationMessage: d.senior_confirmed_message,
+    auditReport: d.audit_report,
+    rewards: d.audit_rewards,
+    judgingPrizePool: d.judging_prize_pool,
+    leadJudgeFixedPay: d.lead_judge_fixed_pay,
+    fullPayment: d.full_payment,
+    initialScopeSubmitted: d.initial_scope_submitted,
+    finalScopeSubmitted: d.final_scope_submitted,
+  }
+}
 
 export const adminContestsQuery = (status: ContestListStatus) => ["admin-contests", status]
 export const useAdminContests = (status: ContestListStatus) =>
   useQuery<ContestsListItem[], Error>(adminContestsQuery(status), async () => {
-    const { data } = await contestsAPI.get<GetAdminContestsResponse>(getAdminContestsUrl(status))
+    const { data } = await contestsAPI.get<GetAdminContestsResponse[]>(getAdminContestsUrl(status))
 
-    return data.map((d) => ({
-      id: d.id,
-      title: d.title,
-      shortDescription: d.short_description,
-      logoURL: d.logo_url,
-      status: d.status,
-      initialPayment: d.initial_payment_complete,
-      fullPaymentComplete: d.full_payment_complete,
-      adminUpcomingApproved: d.admin_upcoming_approved,
-      adminStartApproved: d.admin_start_approved,
-      dashboardID: d.dashboard_id,
-      startDate: d.starts_at,
-      endDate: d.ends_at,
-      submissionReady: d.protocol_submission_ready,
-      hasSolidityMetricsReport: d.has_solidity_metrics_report,
-      leadSeniorAuditorHandle: d.lead_senior_auditor_handle,
-      leadSeniorSelectionMessageSentAt: d.senior_selection_message_sent_at,
-      leadSeniorConfirmationMessage: d.senior_confirmed_message,
-      auditReport: d.audit_report,
-      linesOfCode: d.lines_of_code,
-      rewards: d.audit_rewards,
-      judgingPrizePool: d.judging_prize_pool,
-      leadJudgeFixedPay: d.lead_judge_fixed_pay,
-      fullPayment: d.full_payment,
-      initialScopeSubmitted: d.initial_scope_submitted,
-      finalScopeSubmitted: d.final_scope_submitted,
-    }))
+    return data.map(parseContest)
   })
