@@ -9,7 +9,6 @@ type AdminUpdateContestParams = {
   id: number
   title: string
   shortDescription: string
-  nSLOC: string
   startDate: DateTime
   endDate: DateTime
   auditRewards: number
@@ -26,7 +25,6 @@ export const useAdminUpdateContest = () => {
         await contestsAPI.put(adminUpdateContestUrl(params.id), {
           title: params.title,
           short_description: params.shortDescription,
-          lines_of_code: params.nSLOC,
           starts_at: params.startDate.toSeconds(),
           ends_at: params.endDate.toSeconds(),
           audit_rewards: params.auditRewards,
