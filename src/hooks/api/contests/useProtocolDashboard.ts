@@ -24,7 +24,6 @@ export type ContestDetails = {
   submissionReady: boolean
   scopeReady: boolean
   startApproved: boolean
-  linesOfCode: string
   initialPaymentComplete: boolean
   fullPaymentComplete: boolean
   teamHandlesAdded: boolean
@@ -60,7 +59,6 @@ type PaymentsResponse = {
     protocol_submission_ready: boolean
     scope_ready: boolean
     admin_start_approved: boolean
-    lines_of_code: string
     judging_prize_pool: number
     rewards: number
     initial_payment_complete: boolean
@@ -100,7 +98,6 @@ export const useProtocolDashboard = (dashboardID: string) =>
         submissionReady: data.contest.protocol_submission_ready,
         scopeReady: data.contest.scope_ready,
         startApproved: data.contest.admin_start_approved,
-        linesOfCode: data.contest.lines_of_code,
         initialPaymentComplete: data.contest.initial_payment_complete,
         fullPaymentComplete: data.contest.full_payment_complete,
         teamHandlesAdded: data.contest.team_handles_added,

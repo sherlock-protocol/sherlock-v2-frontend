@@ -12,6 +12,7 @@ import { useContest } from "../../../hooks/api/contests"
 
 import styles from "./AdminContestsList.module.scss"
 import { useAdminResetScope } from "../../../hooks/api/admin/useAdminResetScope"
+import { useAdminContest } from "../../../hooks/api/admin/useAdminContest"
 
 type Props = ModalProps & {
   contestID: number
@@ -20,12 +21,11 @@ type Props = ModalProps & {
 const COMMENT_TO_SOURCE_MIN = 0.8
 
 export const ContestScopeModal: React.FC<Props> = ({ onClose, contestID }) => {
-  const { data: contest, isLoading: contestIsLoading } = useContest(contestID)
+  const { data: contest, isLoading: contestIsLoading } = useAdminContest(contestID)
   const { data: scope, isLoading: scopeIsLoading } = useAdminContestScope(contestID)
   const { resetScope, isLoading: resetScopeIsLoading } = useAdminResetScope()
 
-  const submittedNSLOC = scope?.reduce((t, s) => t + (s.files.reduce((t, f) => t + (f.nSLOC ?? 0), 0) ?? 0), 0) ?? 0
-  const expectedNSLOCExceeded = contest && scope && (parseInt(contest.linesOfCode ?? "") ?? 0) < (submittedNSLOC ?? 0)
+  const expectedNSLOCExceeded = contest?.nSLOC && contest.expectedNSLOC && contest.nSLOC > contest.expectedNSLOC
 
   return (
     <Modal closeable onClose={onClose}>
@@ -39,10 +39,10 @@ export const ContestScopeModal: React.FC<Props> = ({ onClose, contestID }) => {
                 <Text size="small">Submitted nSLOC is higher than expected</Text>
               </Row>
               <Text size="small">
-                Expected nSLOC: <strong>{contest?.linesOfCode}</strong>
+                Expected nSLOC: <strong>{contest?.expectedNSLOC}</strong>
               </Text>
               <Text size="small">
-                Submitted nSLOC: <strong>{submittedNSLOC}</strong>
+                Submitted nSLOC: <strong>{contest.nSLOC}</strong>
               </Text>
             </Column>
           ) : null}
@@ -70,24 +70,26 @@ export const ContestScopeModal: React.FC<Props> = ({ onClose, contestID }) => {
                       <Td>
                         <Row spacing="s">
                           <Text strong>nSLOC:</Text>
-                          <Text>{s.files.reduce((t, f) => t + (f.nSLOC ?? 0), 0)}</Text>
+                          <Text>{s.nSLOC}</Text>
                         </Row>
                       </Td>
                     </Tr>
-                    <Tr>
-                      <Td>
-                        <Row spacing="s">
-                          <Text strong>Comments ratio:</Text>
-                          <Text>{Math.round(s.commentToSourceRatio! * 100)}%</Text>
-                          {s.commentToSourceRatio! < COMMENT_TO_SOURCE_MIN ? (
-                            <Row spacing="xs" className={styles.warning}>
-                              <FaExclamationTriangle />
-                              <Text size="small">Comments ratio is below 80%</Text>
-                            </Row>
-                          ) : null}
-                        </Row>
-                      </Td>
-                    </Tr>
+                    {s.commentToSourceRatio ? (
+                      <Tr>
+                        <Td>
+                          <Row spacing="s">
+                            <Text strong>Comments ratio:</Text>
+                            <Text>{Math.round(s.commentToSourceRatio * 100)}%</Text>
+                            {s.commentToSourceRatio < COMMENT_TO_SOURCE_MIN ? (
+                              <Row spacing="xs" className={styles.warning}>
+                                <FaExclamationTriangle />
+                                <Text size="small">Comments ratio is below 80%</Text>
+                              </Row>
+                            ) : null}
+                          </Row>
+                        </Td>
+                      </Tr>
+                    ) : null}
                   </TBody>
                 </Table>
                 <Button
