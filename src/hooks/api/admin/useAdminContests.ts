@@ -91,6 +91,7 @@ export const parseContest = (d: GetAdminContestsResponse): ContestsListItem => {
     fullPayment: d.full_payment,
     initialScopeSubmitted: d.initial_scope_submitted,
     finalScopeSubmitted: d.final_scope_submitted,
+    nSLOC: d.nsloc,
   }
 }
 
