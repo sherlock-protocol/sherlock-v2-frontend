@@ -28,6 +28,7 @@ type ScopeResponse = {
   }[]
   comment_to_source_ratio?: number
   initial_scope?: Omit<ScopeResponse, "initial_scope">
+  nsloc?: number
 }
 
 export type GetScopeResponse = {
@@ -46,6 +47,7 @@ function parseScope(d: ScopeResponse): Scope {
     })),
     commentToSourceRatio: d.comment_to_source_ratio,
     initialScope: d.initial_scope ? parseScope(d.initial_scope) : undefined,
+    nSLOC: d.nsloc,
   }
 }
 
