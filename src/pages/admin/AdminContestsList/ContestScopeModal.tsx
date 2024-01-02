@@ -62,7 +62,7 @@ export const ContestScopeModal: React.FC<Props> = ({ onClose, contestID }) => {
                       <Td>
                         <Row spacing="s">
                           <Text strong>Contracts:</Text>
-                          <Text>{s.files.length}</Text>
+                          <Text>{s.files.filter((f) => f.selected).length}</Text>
                         </Row>
                       </Td>
                     </Tr>
