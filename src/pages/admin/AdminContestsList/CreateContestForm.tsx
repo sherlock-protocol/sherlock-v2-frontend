@@ -123,20 +123,11 @@ export const CreateContestForm: React.FC<Props> = ({
   useEffect(() => {
     if (contestVariablesSuccess && (!contest || contest.status === "DRAFT")) {
       setContestAuditLength(`${contestVariables.length}`)
-      setInitialTotalRewards(
-        ethers.utils.parseUnits(
-          `${
-            contestVariables.auditContestRewards +
-            contestVariables.judgingPrizePool +
-            contestVariables.leadJudgeFixedPay
-          }`,
-          6
-        )
-      )
-      setInitialAuditContestRewards(ethers.utils.parseUnits(`${contestVariables.auditContestRewards}`, 6))
+      setInitialTotalRewards(ethers.utils.parseUnits(`${contestVariables.minTotalRewards}`, 6))
+      setInitialAuditContestRewards(ethers.utils.parseUnits(`${contestVariables.minContestRewards}`, 6))
       setInitialJudgingPrizePool(ethers.utils.parseUnits(`${contestVariables.judgingPrizePool}`, 6))
       setInitialLeadJudgeFixedPay(ethers.utils.parseUnits(`${contestVariables.leadJudgeFixedPay}`, 6))
-      setInitialTotalCost(ethers.utils.parseUnits(`${contestVariables.fullPayment}`, 6))
+      setInitialTotalCost(ethers.utils.parseUnits(`${contestVariables.minTotalPrice}`, 6))
     }
   }, [contestVariablesSuccess, setContestAuditLength, contestVariables, contest])
 
@@ -331,6 +322,39 @@ export const CreateContestForm: React.FC<Props> = ({
     protocolWebsite,
   ])
 
+  const isMinimum = useMemo(
+    () =>
+      contestVariables &&
+      contestTotalRewards?.eq(ethers.utils.parseUnits(`${contestVariables?.minTotalRewards}`, 6)) &&
+      contestAuditRewards?.eq(ethers.utils.parseUnits(`${contestVariables?.minContestRewards}`, 6)) &&
+      contestTotalCost?.eq(ethers.utils.parseUnits(`${contestVariables?.minTotalPrice}`, 6)),
+    [contestTotalRewards, contestAuditRewards, contestTotalCost, contestVariables]
+  )
+
+  const isRecommended = useMemo(
+    () =>
+      contestVariables &&
+      contestTotalRewards?.eq(ethers.utils.parseUnits(`${contestVariables?.recTotalRewards}`, 6)) &&
+      contestAuditRewards?.eq(ethers.utils.parseUnits(`${contestVariables?.recContestRewards}`, 6)) &&
+      contestTotalCost?.eq(ethers.utils.parseUnits(`${contestVariables?.recTotalPrice}`, 6)),
+    [contestTotalRewards, contestAuditRewards, contestTotalCost, contestVariables]
+  )
+
+  const handleAutoFillValues = useCallback(
+    (type: "minimum" | "recommended") => {
+      if (type === "minimum") {
+        setInitialTotalRewards(ethers.utils.parseUnits(`${contestVariables?.minTotalRewards}`, 6))
+        setInitialAuditContestRewards(ethers.utils.parseUnits(`${contestVariables?.minContestRewards}`, 6))
+        setInitialTotalCost(ethers.utils.parseUnits(`${contestVariables?.minTotalPrice}`, 6))
+      } else {
+        setInitialTotalRewards(ethers.utils.parseUnits(`${contestVariables?.recTotalRewards}`, 6))
+        setInitialAuditContestRewards(ethers.utils.parseUnits(`${contestVariables?.recContestRewards}`, 6))
+        setInitialTotalCost(ethers.utils.parseUnits(`${contestVariables?.recTotalPrice}`, 6))
+      }
+    },
+    [setInitialTotalCost, setInitialAuditContestRewards, setInitialTotalRewards, contestVariables]
+  )
+
   return (
     <Column spacing="xl">
       {!contest ? (
@@ -435,6 +459,29 @@ export const CreateContestForm: React.FC<Props> = ({
             <Field label="Audit Length">
               <Input type="number" value={contestAuditLength} onChange={setContestAuditLength} />
             </Field>
+            <Column spacing="s">
+              <Text size="small" strong>
+                Pricing presets
+              </Text>
+              {isMinimum ? (
+                <Text variant="secondary" size="small">
+                  Using minimum pricing
+                </Text>
+              ) : null}
+              {isRecommended ? (
+                <Text variant="secondary" size="small">
+                  Using recommended pricing
+                </Text>
+              ) : null}
+              <Row spacing="m">
+                <Button size="small" disabled={isMinimum} onClick={() => handleAutoFillValues("minimum")}>
+                  Use minimum
+                </Button>
+                <Button size="small" disabled={isRecommended} onClick={() => handleAutoFillValues("recommended")}>
+                  Use recommended
+                </Button>
+              </Row>
+            </Column>
             <Field label="Total Rewards">
               <TokenInput token="USDC" initialValue={initialTotalRewards} onChange={setContestTotalRewards} />
             </Field>
