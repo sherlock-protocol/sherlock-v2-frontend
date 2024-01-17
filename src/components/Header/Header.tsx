@@ -16,7 +16,7 @@ import { Title } from "../Title"
 
 export type NavigationLink = {
   title: string
-  route: Route
+  route: Route | string
   external?: boolean
   protected?: boolean
 }
@@ -104,6 +104,7 @@ export const Header: React.FC<HeaderProps> = ({
                 {navLink.external && <FaExternalLinkAlt />}
               </CustomLink>
             ))}
+            <a href="https://audits.sherlock.xyz/admin/payouts">PAYOUTS</a>
           </Row>
         </div>
       )}
