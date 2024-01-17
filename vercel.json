@@ -14,6 +14,11 @@
       "source": "/dashboard/:path*",
       "destination": "https://audits.sherlock.xyz/dashboard/:path*",
       "permanent": true
+    },
+    {
+      "source": "/admin/payouts",
+      "destination": "https://audits.sherlock.xyz/admin/payouts",
+      "permanent": true
     }
   ]
 }
