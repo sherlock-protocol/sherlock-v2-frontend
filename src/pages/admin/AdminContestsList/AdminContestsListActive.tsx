@@ -15,6 +15,7 @@ import { ConfirmContestActionModal } from "./ConfirmContestActionModal"
 import { CreateContestModal } from "./CreateContestModal"
 import { ContestScopeModal } from "./ContestScopeModal"
 import { UpdateContestModal } from "./UpdateContestModal"
+import { TelegramBotIndicator } from "./TelegramBotIndicator"
 
 type ContestLifeCycleStatus =
   | "WAITING_INITIAL_PAYMENT"
@@ -298,6 +299,7 @@ export const AdminContestsListActive = () => {
                           <Text size="small" variant="secondary">
                             Starts {DateTime.fromSeconds(c.startDate).toFormat("LLLL d - t")}
                           </Text>
+                          <TelegramBotIndicator contest={c} />
                         </Column>
                       </Row>
                     </Td>
