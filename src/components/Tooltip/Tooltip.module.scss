@@ -1,0 +1,17 @@
+@import "../../styles/variables";
+
+.container {
+  display: inline-block;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.tooltip {
+  position: fixed;
+  padding: 10px;
+
+  background: $background-color;
+  border: 1px solid $primary-purple;
+}
