@@ -43,7 +43,7 @@ const AppInternal = () => {
   return (
     <div className={styles.app}>
       <div className={styles.noise} />
-      <Header navigationLinks={navigationLinks} />
+      <Header navigationLinks={navigationLinks} includePayouts />
       <div className={styles.contentContainer}>
         <div className={styles.content}>
           {validAdmin ? (
