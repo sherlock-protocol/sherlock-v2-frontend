@@ -76,3 +76,13 @@
   background-color: transparentize($color: #ffcc00, $amount: 0.9);
   color: #ffcc00;
 }
+
+.telegram {
+  opacity: 0.6;
+  display: flex;
+  font-weight: bold;
+
+  & *:first-child {
+    margin-right: 5px;
+  }
+}
