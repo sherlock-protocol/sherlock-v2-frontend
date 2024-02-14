@@ -1,5 +1,5 @@
 import { DateTime } from "luxon"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { FaClipboardList, FaFastForward, FaPlus, FaEdit, FaRegListAlt } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
@@ -16,6 +16,8 @@ import { CreateContestModal } from "./CreateContestModal"
 import { ContestScopeModal } from "./ContestScopeModal"
 import { UpdateContestModal } from "./UpdateContestModal"
 import { TelegramBotIndicator } from "./TelegramBotIndicator"
+import { GenerateReportSuccessModal } from "./GenerateReportSuccessModal"
+import { useAdminGenerateReport } from "../../../hooks/api/admin/useGenerateReport"
 
 type ContestLifeCycleStatus =
   | "WAITING_INITIAL_PAYMENT"
@@ -31,6 +33,8 @@ type ContestLifeCycleStatus =
   | "SHERLOCK_JUDGING"
   | "FINISHED"
   | "DRAFT"
+  | "FINAL_REPORT_AVAILABLE"
+  | "FINAL_REPORT_AVAILABLE_TO_GENERATE"
 
 const getCurrentStatus = (contest: ContestsListItem): ContestLifeCycleStatus => {
   if (!contest.initialPayment) return "WAITING_INITIAL_PAYMENT"
@@ -39,13 +43,11 @@ const getCurrentStatus = (contest: ContestsListItem): ContestLifeCycleStatus => 
   if (!contest.adminUpcomingApproved) return "READY_TO_PUBLISH"
   if (!contest.fullPaymentComplete) return "WAITING_ON_FINAL_PAYMENT"
   if (!contest.adminStartApproved) return "READY_TO_APPROVE_START"
+  if (contest.status === "CREATED") return "START_APPROVED"
+  if (contest.auditReport) return "FINAL_REPORT_AVAILABLE"
+  if (contest.finalReportAvailable) return "FINAL_REPORT_AVAILABLE_TO_GENERATE"
 
-  switch (contest.status) {
-    case "CREATED":
-      return "START_APPROVED"
-    default:
-      return contest.status
-  }
+  return contest.status
 }
 
 const getForcedStatus = (contest: ContestsListItem): ContestLifeCycleStatus | undefined => {
@@ -79,6 +81,26 @@ export const AdminContestsListActive = () => {
   const [updateContestIndex, setUpdateContextIndex] = useState<number | undefined>()
   const [scopeModal, setScopeModal] = useState<number | undefined>()
   const [forceActionRowIndex, setForceActionRowIndex] = useState<number | undefined>()
+  const [reportGeneratedModalVisible, setReportGenerateModalVisible] = useState<number | undefined>()
+  const {
+    generateReport,
+    isLoading: generateReportIsLoading,
+    isSuccess,
+    reset,
+    variables,
+    data: reportURL,
+  } = useAdminGenerateReport()
+
+  useEffect(() => {
+    if (isSuccess) {
+      const index = contests?.findIndex((c) => c.id === variables?.contestID)
+      setReportGenerateModalVisible(index)
+      console.log("undef")
+    } else {
+      setReportGenerateModalVisible(undefined)
+      console.log("undef")
+    }
+  }, [isSuccess, setReportGenerateModalVisible, variables, contests])
 
   const handleActionClick = useCallback(
     (contestIndex: number, action: ContestAction) => {
@@ -112,6 +134,33 @@ export const AdminContestsListActive = () => {
       return i === index ? undefined : index
     })
   }, [])
+
+  const handleModalClose = useCallback(() => {
+    console.log("close")
+    reset()
+    setReportGenerateModalVisible(undefined)
+  }, [reset])
+
+  const handleGenerateReportClick = useCallback(
+    (index: number) => {
+      if (!contests) return
+
+      const contest = contests[index]
+      generateReport({ contestID: contest.id })
+    },
+    [generateReport, contests]
+  )
+
+  const handleViewReportClick = useCallback(
+    (index: number) => {
+      if (!contests) return
+
+      setReportGenerateModalVisible(index)
+
+      console.log(contests[index])
+    },
+    [contests, setReportGenerateModalVisible]
+  )
 
   const renderContestAction = useCallback(
     (contestIndex: number) => {
@@ -153,13 +202,28 @@ export const AdminContestsListActive = () => {
           </Button>
         )
 
+      if (status === "FINAL_REPORT_AVAILABLE_TO_GENERATE")
+        return (
+          <Button
+            size="normal"
+            variant={forceActionRowIndex === contestIndex ? "alternate" : "primary"}
+            onClick={() => handleGenerateReportClick(contestIndex)}
+            fullWidth
+          >
+            Generate Report
+          </Button>
+        )
+
+      if (status === "FINAL_REPORT_AVAILABLE")
+        return <Button onClick={() => handleViewReportClick(contestIndex)}>View report</Button>
+
       return (
         <Button variant="secondary" disabled fullWidth>
           -
         </Button>
       )
     },
-    [contests, handleActionClick, forceActionRowIndex]
+    [contests, handleActionClick, forceActionRowIndex, handleGenerateReportClick, handleViewReportClick]
   )
 
   const renderContestState = useCallback(
@@ -258,7 +322,7 @@ export const AdminContestsListActive = () => {
   )
 
   return (
-    <LoadingContainer loading={isLoading}>
+    <LoadingContainer loading={isLoading || generateReportIsLoading}>
       <Column spacing="l">
         <Box shadow={false} fullWidth>
           <Row alignment="center">
@@ -369,6 +433,13 @@ export const AdminContestsListActive = () => {
           {scopeModal && <ContestScopeModal contestID={scopeModal} onClose={handleScopeModalClose} />}
         </Box>
       </Column>
+      {(reportGeneratedModalVisible === 0 || !!reportGeneratedModalVisible) && contests && (
+        <GenerateReportSuccessModal
+          contest={contests[reportGeneratedModalVisible]}
+          report={reportURL}
+          onClose={handleModalClose}
+        />
+      )}
     </LoadingContainer>
   )
 }

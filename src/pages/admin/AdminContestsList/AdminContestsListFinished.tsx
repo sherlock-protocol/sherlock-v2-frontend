@@ -128,10 +128,12 @@ export const AdminContestsListFinished = () => {
                     <Row spacing="s" alignment="end">
                       {c.auditReport ? (
                         <Button onClick={() => handleViewReportClick(index)}>View report</Button>
-                      ) : (
+                      ) : c.finalReportAvailable ? (
                         <Button onClick={() => handleGenerateReportClick(index)} variant="alternate">
                           Generate
                         </Button>
+                      ) : (
+                        <span>Conditions not met for the final report to be generated</span>
                       )}
                     </Row>
                   </Td>
