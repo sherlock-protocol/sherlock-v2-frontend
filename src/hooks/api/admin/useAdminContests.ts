@@ -33,6 +33,7 @@ export type ContestsListItem = {
   initialScopeSubmitted: boolean
   finalScopeSubmitted: boolean
   telegramChat?: string
+  finalReportAvailable?: boolean
 }
 
 export type GetAdminContestsResponse = {
@@ -63,6 +64,7 @@ export type GetAdminContestsResponse = {
   initial_scope_submitted: boolean
   final_scope_submitted: boolean
   telegram_chat?: string
+  final_report_available?: boolean
 }
 
 export type ContestListStatus = "active" | "finished" | "draft"
@@ -95,6 +97,7 @@ export const parseContest = (d: GetAdminContestsResponse): ContestsListItem => {
     finalScopeSubmitted: d.final_scope_submitted,
     nSLOC: d.nsloc,
     telegramChat: d.telegram_chat,
+    finalReportAvailable: d.final_report_available,
   }
 }
 
