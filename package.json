@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@floating-ui/react": "^0.26.9",
     "@sentry/react": "^6.19.7",
     "@sentry/tracing": "^6.19.7",
     "@testing-library/jest-dom": "^5.16.1",

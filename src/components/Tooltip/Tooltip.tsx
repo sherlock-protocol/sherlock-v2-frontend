@@ -1,43 +1,168 @@
-import React, { PropsWithChildren } from "react"
+import * as React from "react"
+import {
+  useFloating,
+  autoUpdate,
+  offset,
+  flip,
+  shift,
+  useHover,
+  useFocus,
+  useDismiss,
+  useRole,
+  useInteractions,
+  useMergeRefs,
+  FloatingPortal,
+  safePolygon,
+} from "@floating-ui/react"
+import type { Placement } from "@floating-ui/react"
 import cx from "classnames"
 
-import styles from "./Tooltip.module.scss"
-
-type Props = {
-  parent: React.ReactElement
-  className?: string
+interface TooltipOptions {
+  initialOpen?: boolean
+  placement?: Placement
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export const Tooltip: React.FC<PropsWithChildren<Props>> = ({ children, parent, className }) => {
-  const [isVisible, setIsVisible] = React.useState(false)
-  const [x, setX] = React.useState<number | null>(null)
-  const [y, setY] = React.useState<number | null>(null)
+export function useTooltip({
+  initialOpen = false,
+  placement = "top",
+  open: controlledOpen,
+  onOpenChange: setControlledOpen,
+}: TooltipOptions = {}) {
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(initialOpen)
 
-  const onMouseEnter = (e: React.MouseEvent) => {
-    setX(e.nativeEvent.clientX)
-    setY(e.nativeEvent.clientY)
-    setIsVisible(true)
-  }
+  const open = controlledOpen ?? uncontrolledOpen
+  const setOpen = setControlledOpen ?? setUncontrolledOpen
 
-  const onMouseLeave = (e: React.MouseEvent) => {
-    setIsVisible(false)
-  }
+  const data = useFloating({
+    placement,
+    open,
+    onOpenChange: setOpen,
+    whileElementsMounted: autoUpdate,
+    middleware: [
+      offset(5),
+      flip({
+        crossAxis: placement.includes("-"),
+        fallbackAxisSideDirection: "start",
+        padding: 5,
+      }),
+      shift({ padding: 5 }),
+    ],
+  })
 
-  return (
-    <div className={cx(styles.container, className)} onMouseLeave={onMouseLeave} onMouseEnter={onMouseEnter}>
-      {parent}
-      {isVisible && (
-        <div
-          className={styles.tooltip}
-          style={{
-            top: y ?? 0,
-            left: x ?? 0,
-            zIndex: 1000,
-          }}
-        >
-          {children}
-        </div>
-      )}
-    </div>
+  const context = data.context
+
+  const hover = useHover(context, {
+    move: false,
+    enabled: controlledOpen == null,
+    handleClose: safePolygon({ requireIntent: false }),
+  })
+  const focus = useFocus(context, {
+    enabled: controlledOpen == null,
+  })
+  const dismiss = useDismiss(context)
+  const role = useRole(context, { role: "tooltip" })
+
+  const interactions = useInteractions([hover, focus, dismiss, role])
+
+  return React.useMemo(
+    () => ({
+      open,
+      setOpen,
+      ...interactions,
+      ...data,
+    }),
+    [open, setOpen, interactions, data]
   )
 }
+
+type ContextType = ReturnType<typeof useTooltip> | null
+
+const TooltipContext = React.createContext<ContextType>(null)
+
+export const useTooltipContext = () => {
+  const context = React.useContext(TooltipContext)
+
+  if (context == null) {
+    throw new Error("Tooltip components must be wrapped in <Tooltip />")
+  }
+
+  return context
+}
+
+export function Tooltip({ children, ...options }: { children: React.ReactNode } & TooltipOptions) {
+  // This can accept any props as options, e.g. `placement`,
+  // or other positioning options.
+  const tooltip = useTooltip(options)
+  return <TooltipContext.Provider value={tooltip}>{children}</TooltipContext.Provider>
+}
+
+export const TooltipTrigger = React.forwardRef<HTMLElement, React.HTMLProps<HTMLElement> & { asChild?: boolean }>(
+  function TooltipTrigger({ children, asChild = false, ...props }, propRef) {
+    const context = useTooltipContext()
+    const childrenRef = (children as any).ref
+    const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef])
+
+    // `asChild` allows the user to pass any element as the anchor
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(
+        children,
+        context.getReferenceProps({
+          ref,
+          ...props,
+          ...children.props,
+          "data-state": context.open ? "open" : "closed",
+        })
+      )
+    }
+
+    return (
+      <div
+        ref={ref}
+        // The user can style the trigger based on the state
+        data-state={context.open ? "open" : "closed"}
+        {...context.getReferenceProps(props)}
+      >
+        {children}
+      </div>
+    )
+  }
+)
+
+type TooltipContentProps = {
+  padding?: boolean
+} & React.HTMLProps<HTMLDivElement>
+
+export const TooltipContent = React.forwardRef<HTMLDivElement, TooltipContentProps>(function TooltipContent(
+  { style, padding = true, ...props },
+  propRef
+) {
+  const context = useTooltipContext()
+  const ref = useMergeRefs([context.refs.setFloating, propRef])
+
+  if (!context.open) return null
+
+  return (
+    <FloatingPortal>
+      <div
+        ref={ref}
+        style={{
+          ...context.floatingStyles,
+          ...style,
+          ...{
+            zIndex: 1000,
+            overflow: "hidden",
+            borderRadius: 4,
+            borderWidth: 1,
+            borderColor: "rgba(84, 10, 152, 0.5)",
+            borderStyle: "solid",
+            backgroundColor: "#280745",
+            padding: padding ? 16 : 0,
+          },
+        }}
+        {...context.getFloatingProps(props)}
+      />
+    </FloatingPortal>
+  )
+})

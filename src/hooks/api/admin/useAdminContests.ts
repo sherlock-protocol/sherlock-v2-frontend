@@ -31,6 +31,7 @@ export type ContestsListItem = {
   leadJudgeFixedPay: number
   fullPayment: number
   initialScopeSubmitted: boolean
+  initialScopeSubmittedAt: number | null
   finalScopeSubmitted: boolean
   telegramChat?: string
   finalReportAvailable?: boolean
@@ -62,6 +63,7 @@ export type GetAdminContestsResponse = {
   lead_judge_fixed_pay: number
   full_payment: number
   initial_scope_submitted: boolean
+  initial_scope_submitted_at: number | null
   final_scope_submitted: boolean
   telegram_chat?: string
   final_report_available?: boolean
@@ -94,6 +96,7 @@ export const parseContest = (d: GetAdminContestsResponse): ContestsListItem => {
     leadJudgeFixedPay: d.lead_judge_fixed_pay,
     fullPayment: d.full_payment,
     initialScopeSubmitted: d.initial_scope_submitted,
+    initialScopeSubmittedAt: d.initial_scope_submitted_at,
     finalScopeSubmitted: d.final_scope_submitted,
     nSLOC: d.nsloc,
     telegramChat: d.telegram_chat,
