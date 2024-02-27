@@ -22,6 +22,7 @@ export type ContestsListItem = {
   hasSolidityMetricsReport: boolean
   leadSeniorAuditorHandle: string
   leadSeniorSelectionMessageSentAt: number
+  leadSeniorSelectionDate: number
   leadSeniorConfirmationMessage: string
   auditReport?: string
   nSLOC?: number
@@ -54,6 +55,7 @@ export type GetAdminContestsResponse = {
   has_solidity_metrics_report: boolean
   lead_senior_auditor_handle: string
   senior_selection_message_sent_at: number
+  senior_selection_date: number
   senior_confirmed_message: string
   audit_report?: string
   nsloc?: number
@@ -89,6 +91,7 @@ export const parseContest = (d: GetAdminContestsResponse): ContestsListItem => {
     hasSolidityMetricsReport: d.has_solidity_metrics_report,
     leadSeniorAuditorHandle: d.lead_senior_auditor_handle,
     leadSeniorSelectionMessageSentAt: d.senior_selection_message_sent_at,
+    leadSeniorSelectionDate: d.senior_selection_date,
     leadSeniorConfirmationMessage: d.senior_confirmed_message,
     auditReport: d.audit_report,
     rewards: d.audit_rewards,
