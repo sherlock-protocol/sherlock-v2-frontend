@@ -242,9 +242,7 @@ export const AdminContestsListActive = () => {
       }
 
       if (status === "WAITING_FOR_SENIOR_SELECTION") {
-        const timeLeft = DateTime.fromSeconds(contest.leadSeniorSelectionMessageSentAt)
-          .plus({ hours: 72 })
-          .diffNow(["days", "hours"])
+        const timeLeft = DateTime.fromSeconds(contest.leadSeniorSelectionDate).diffNow(["days", "hours"])
         return (
           <Column spacing="s">
             <Text variant="secondary">Lead Senior Watson selection in progress</Text>
