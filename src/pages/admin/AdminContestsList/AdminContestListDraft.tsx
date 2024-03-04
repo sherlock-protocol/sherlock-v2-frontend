@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { FaClipboardList, FaFilter, FaRecycle, FaRedo, FaTrash, FaUndo } from "react-icons/fa"
+import { FaClipboardList, FaFilter, FaTrash, FaUndo } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -16,6 +16,14 @@ import { DeleteDraftContestModal } from "./DeleteDraftContestModal"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../components/Tooltip/Tooltip"
 import { DateTime } from "luxon"
 
+type FilterType = "ALL" | "ONLY_SCOPE_SUBMITTED" | "ONLY_SCOPE_NOT_SUBMITTED"
+
+const FilterLabels: Record<FilterType, string> = {
+  ALL: "All contests",
+  ONLY_SCOPE_SUBMITTED: "Only with submitted scope",
+  ONLY_SCOPE_NOT_SUBMITTED: "Only without submitted scope",
+}
+
 export const AdminContestListDraft = () => {
   const { data: contests, isLoading } = useAdminContests("draft")
 
@@ -23,17 +31,20 @@ export const AdminContestListDraft = () => {
   const [resetContestIndex, setResetContestIndex] = useState<number | undefined>()
   const [deleteContestIndex, setDeleteContestIndex] = useState<number | undefined>()
 
-  const [isFilterActive, setIsFilterActive] = useState(false)
+  const [activeFilter, setActiveFilter] = useState<FilterType>("ALL")
 
   const visibleContests = useMemo(() => {
-    if (!isFilterActive) {
-      return contests
+    switch (activeFilter) {
+      case "ALL":
+        return contests
+      case "ONLY_SCOPE_SUBMITTED":
+        return contests
+          ?.filter((item) => item.initialScopeSubmitted)
+          .sort((a, b) => (b.initialScopeSubmittedAt ?? 0) - (a.initialScopeSubmittedAt ?? 0))
+      case "ONLY_SCOPE_NOT_SUBMITTED":
+        return contests?.filter((item) => !item.initialScopeSubmitted)
     }
-
-    return contests
-      ?.filter((item) => item.initialScopeSubmitted)
-      .sort((a, b) => (b.initialScopeSubmittedAt ?? 0) - (a.initialScopeSubmittedAt ?? 0))
-  }, [contests, isFilterActive])
+  }, [contests, activeFilter])
 
   return (
     <LoadingContainer loading={isLoading}>
@@ -47,18 +58,17 @@ export const AdminContestListDraft = () => {
                   <FaFilter />
                   <span>Filter</span>
                   <div className={styles.activeFilter}>
-                    <span>{isFilterActive ? "Only with submitted scope" : "All contests"}</span>
+                    <span>{FilterLabels[activeFilter]}</span>
                   </div>
                 </div>
               </TooltipTrigger>
               <TooltipContent padding={false}>
                 <div className={styles.filtersList}>
-                  <div onClick={() => setIsFilterActive(false)}>
-                    <span>All contests</span>
-                  </div>
-                  <div onClick={() => setIsFilterActive(true)}>
-                    <span>Only with submitted scope</span>
-                  </div>
+                  {Object.entries(FilterLabels).map(([value, label]) => (
+                    <div key={label} onClick={() => setActiveFilter(value as FilterType)}>
+                      <span>{label}</span>
+                    </div>
+                  ))}
                 </div>
               </TooltipContent>
             </Tooltip>
