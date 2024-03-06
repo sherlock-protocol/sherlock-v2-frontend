@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { FaChrome, FaGithub, FaTwitter } from "react-icons/fa"
+import { FaChrome, FaTwitter } from "react-icons/fa"
 import { useDebounce } from "use-debounce"
 import { BigNumber, ethers } from "ethers"
 import { DateTime } from "luxon"
@@ -22,7 +22,6 @@ export type ContestValues = {
     id?: number
     name?: string
     twitter?: string
-    githubTeam?: string
     website?: string
     logoUrl?: string
   }
@@ -66,7 +65,6 @@ export const CreateContestForm: React.FC<Props> = ({
   } = useAdminProtocol(debouncedProtocolName)
 
   const [protocolTwitter, setProtocolTwitter] = useState(protocol?.twitter ?? "")
-  const [protocolGithubTeam, setProtocolGithubTeam] = useState(protocol?.githubTeam ?? "")
   const [protocolWebsite, setProtocolWebsite] = useState(protocol?.website ?? "")
   const [protocolLogoURL, setProtocolLogoURL] = useState(protocol?.logoURL ?? "")
 
@@ -189,7 +187,6 @@ export const CreateContestForm: React.FC<Props> = ({
       if (protocolName === "") return false
       if (protocolLogoURL === "" && !protocol?.logoURL) return false
       if (protocolWebsite === "" && !protocol?.website) return false
-      if (protocolGithubTeam === "" && !protocol?.githubTeam) return false
     }
 
     if (contestTitle === "") return false
@@ -208,19 +205,18 @@ export const CreateContestForm: React.FC<Props> = ({
 
     return true
   }, [
+    draft,
+    contestShortDescription,
     contestAuditLength,
     contestAuditRewards,
-    contestShortDescription.length,
     contestStartDate,
     contestTitle,
     contestTotalCost,
     protocol?.logoURL,
     protocol?.website,
-    protocol?.githubTeam,
     protocolLogoURL,
     protocolName,
     protocolWebsite,
-    protocolGithubTeam,
     contest,
   ])
 
@@ -286,7 +282,6 @@ export const CreateContestForm: React.FC<Props> = ({
       protocol: {
         id: protocol?.id,
         name: protocolName === "" ? undefined : protocolName,
-        githubTeam: protocolGithubTeam === "" ? undefined : protocolGithubTeam,
         twitter: protocolTwitter === "" ? undefined : protocolTwitter,
         website: protocolWebsite === "" ? undefined : protocolWebsite,
         logoUrl: protocolLogoURL === "" ? undefined : protocolLogoURL,
@@ -315,7 +310,6 @@ export const CreateContestForm: React.FC<Props> = ({
     contestTotalCost,
     onSubmit,
     protocol?.id,
-    protocolGithubTeam,
     protocolLogoURL,
     protocolName,
     protocolTwitter,
@@ -366,21 +360,6 @@ export const CreateContestForm: React.FC<Props> = ({
             </Field>
             {displayProtocolInfo && (
               <>
-                <Field
-                  label={
-                    <Row spacing="xs">
-                      <FaGithub />
-                      <Text>GitHub</Text>
-                    </Row>
-                  }
-                >
-                  <Input
-                    value={protocol?.githubTeam ?? protocolGithubTeam}
-                    disabled={!!protocol}
-                    onChange={setProtocolGithubTeam}
-                    placeholder="foo-protocol"
-                  />
-                </Field>
                 <Field
                   label={
                     <Row spacing="xs">
