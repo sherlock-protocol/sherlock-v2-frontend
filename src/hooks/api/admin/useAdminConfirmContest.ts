@@ -15,6 +15,7 @@ type AdminConfirmContestParams = {
   judgingPrizePool: number
   leadJudgeFixedPay: number
   fullPayment: number
+  isBestEfforts?: boolean
 }
 
 export const useAdminConfirmContest = () => {
@@ -33,6 +34,7 @@ export const useAdminConfirmContest = () => {
             judging_prize_pool: params.judgingPrizePool,
             lead_judge_fixed_pay: params.leadJudgeFixedPay,
             full_payment: params.fullPayment,
+            is_best_efforts: params.isBestEfforts,
           },
 
           {

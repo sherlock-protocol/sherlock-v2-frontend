@@ -16,6 +16,7 @@ import { Text } from "../../../components/Text"
 import TokenInput from "../../../components/TokenInput/TokenInput"
 import { Button } from "../../../components/Button"
 import { ContestsListItem } from "../../../hooks/api/admin/useAdminContests"
+import Checkbox from "../../../components/Checkbox/Checkbox"
 
 export type ContestValues = {
   protocol: {
@@ -35,6 +36,7 @@ export type ContestValues = {
     judgingPrizePool: number
     leadJudgeFixedPay: number
     fullPayment: number
+    isBestEfforts?: boolean
   }
 }
 
@@ -82,6 +84,7 @@ export const CreateContestForm: React.FC<Props> = ({
   const [contestJudgingPrizePool, setContestJudgingPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestLeadJudgeFixedPay, setContestLeadJudgeFixedPay] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestTotalCost, setContestTotalCost] = useState<BigNumber | undefined>(BigNumber.from(0))
+  const [contestIsBestEfforts, setContestIsBestEfforts] = useState(false)
 
   const [initialTotalRewards, setInitialTotalRewards] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialAuditContestRewards, setInitialAuditContestRewards] = useState<BigNumber | undefined>(BigNumber.from(0))
@@ -296,6 +299,7 @@ export const CreateContestForm: React.FC<Props> = ({
         judgingPrizePool: parseInt(ethers.utils.formatUnits(contestJudgingPrizePool ?? 0, 6)),
         leadJudgeFixedPay: parseInt(ethers.utils.formatUnits(contestLeadJudgeFixedPay ?? 0, 6)),
         fullPayment: parseInt(ethers.utils.formatUnits(contestTotalCost ?? 0, 6)),
+        isBestEfforts: contestIsBestEfforts,
       },
     })
   }, [
@@ -308,6 +312,7 @@ export const CreateContestForm: React.FC<Props> = ({
     contestStartDate,
     contestTitle,
     contestTotalCost,
+    contestIsBestEfforts,
     onSubmit,
     protocol?.id,
     protocolLogoURL,
@@ -477,6 +482,17 @@ export const CreateContestForm: React.FC<Props> = ({
               <TokenInput token="USDC" initialValue={initialTotalCost} onChange={setContestTotalCost} />
             </Field>
             <Text size="small">{`Admin Fee: ${sherlockFee} USDC`}</Text>
+            <hr />
+            <Column spacing="m">
+              <Row alignment={["start", "center"]} spacing="m">
+                <Checkbox checked={contestIsBestEfforts} onChange={setContestIsBestEfforts} />
+                <Text strong>Best Efforts Contest</Text>
+              </Row>
+              <Text>A Best Efforts contest will not use the regular tiered Lead Senior Watson fixed pay.</Text>
+              <Text>
+                Instead, a fixed 33% of the Audit Contest Rewards will be reserved for the Lead Senior Watson.
+              </Text>
+            </Column>
           </>
         )}
       </Column>
