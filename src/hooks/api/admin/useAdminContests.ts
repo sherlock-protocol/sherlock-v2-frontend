@@ -21,6 +21,7 @@ export type ContestsListItem = {
   submissionReady: boolean
   hasSolidityMetricsReport: boolean
   leadSeniorAuditorHandle: string
+  leadSeniorAuditorFixedPay: number | null
   leadSeniorSelectionMessageSentAt: number
   leadSeniorSelectionDate: number
   leadSeniorConfirmationMessage: string
@@ -36,6 +37,11 @@ export type ContestsListItem = {
   finalScopeSubmitted: boolean
   telegramChat?: string
   finalReportAvailable?: boolean
+  lswPaymentStructure: "TIERED" | "BEST_EFFORTS" | "FIXED"
+  customLswFixedPay: number | null
+  private: boolean
+  requiresKYC: boolean
+  maxNumberOfParticipants: number | null
 }
 
 export type GetAdminContestsResponse = {
@@ -69,6 +75,11 @@ export type GetAdminContestsResponse = {
   final_scope_submitted: boolean
   telegram_chat?: string
   final_report_available?: boolean
+  lsw_payment_structure: "TIERED" | "BEST_EFFORTS" | "FIXED"
+  lead_senior_auditor_fixed_pay: number | null
+  private: boolean
+  requires_kyc: boolean
+  max_number_of_participants: number | null
 }
 
 export type ContestListStatus = "active" | "finished" | "draft"
@@ -104,6 +115,12 @@ export const parseContest = (d: GetAdminContestsResponse): ContestsListItem => {
     nSLOC: d.nsloc,
     telegramChat: d.telegram_chat,
     finalReportAvailable: d.final_report_available,
+    lswPaymentStructure: d.lsw_payment_structure,
+    customLswFixedPay: d.lead_senior_auditor_fixed_pay,
+    private: d.private,
+    requiresKYC: d.requires_kyc,
+    maxNumberOfParticipants: d.max_number_of_participants,
+    leadSeniorAuditorFixedPay: d.lead_senior_auditor_fixed_pay,
   }
 }
 

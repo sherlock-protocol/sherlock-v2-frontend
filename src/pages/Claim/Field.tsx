@@ -19,7 +19,7 @@ type Props = {
 
 export const Field: React.FC<PropsWithChildren<Props>> = ({ label, detail, children, sublabel, ...props }) => {
   return (
-    <Column spacing="xs" grow={1}>
+    <Column spacing="xs" grow={1} alignment={["stretch", "stretch"]}>
       {(label || props.error) && (
         <Row spacing="xs">
           <Column>
@@ -43,7 +43,9 @@ export const Field: React.FC<PropsWithChildren<Props>> = ({ label, detail, child
           </Text>
         </Row>
       )}
-      <Row>{children}</Row>
+      <Row alignment={["stretch", "stretch"]} grow={1}>
+        {children}
+      </Row>
       {detail && (
         <Row>
           <Text size="small">{detail}</Text>
