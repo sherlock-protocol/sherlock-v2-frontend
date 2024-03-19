@@ -16,6 +16,8 @@ import { Text } from "../../../components/Text"
 import TokenInput from "../../../components/TokenInput/TokenInput"
 import { Button } from "../../../components/Button"
 import { ContestsListItem } from "../../../hooks/api/admin/useAdminContests"
+import RadioButton from "../../../components/RadioButton/RadioButton"
+import styles from "./CreateContestForm.module.scss"
 
 export type ContestValues = {
   protocol: {
@@ -35,6 +37,11 @@ export type ContestValues = {
     judgingPrizePool: number
     leadJudgeFixedPay: number
     fullPayment: number
+    lswPaymentStructure?: "TIERED" | "BEST_EFFORTS" | "FIXED"
+    customLswFixedPay?: number | null
+    private?: boolean
+    requiresKYC?: boolean
+    maxNumberOfParticipants?: number | null
   }
 }
 
@@ -82,12 +89,19 @@ export const CreateContestForm: React.FC<Props> = ({
   const [contestJudgingPrizePool, setContestJudgingPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestLeadJudgeFixedPay, setContestLeadJudgeFixedPay] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [contestTotalCost, setContestTotalCost] = useState<BigNumber | undefined>(BigNumber.from(0))
+  const [isPrivate, setIsPrivate] = useState(false)
+  const [requiresKYC, setRequiresKYC] = useState(false)
+  const [lswPaymentStructure, setLswPaymentStructure] = useState<"TIERED" | "BEST_EFFORTS" | "FIXED">("TIERED")
+  const [customLswFixedPay, setCustomLswFixedPay] = useState<BigNumber | undefined>(undefined)
+  const [hasLimitedContestants, setHasLimitedContestants] = useState(false)
+  const [maxNumberOfParticipants, setmaxNumberOfParticipants] = useState<string>("")
 
   const [initialTotalRewards, setInitialTotalRewards] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialAuditContestRewards, setInitialAuditContestRewards] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialJudgingPrizePool, setInitialJudgingPrizePool] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialLeadJudgeFixedPay, setInitialLeadJudgeFixedPay] = useState<BigNumber | undefined>(BigNumber.from(0))
   const [initialTotalCost, setInitialTotalCost] = useState<BigNumber | undefined>(BigNumber.from(0))
+  const [initialCustomLswFixedPay, setInitialCustomLswFixedPay] = useState<BigNumber | undefined>(BigNumber.from(0))
 
   const [startDateError, setStartDateError] = useState<string>()
   const [shortDescriptionError, setShortDescriptionError] = useState<string>()
@@ -115,6 +129,13 @@ export const CreateContestForm: React.FC<Props> = ({
       setInitialJudgingPrizePool(ethers.utils.parseUnits(`${contest.judgingPrizePool}`, 6))
       setInitialLeadJudgeFixedPay(ethers.utils.parseUnits(`${contest.leadJudgeFixedPay}`, 6))
       setInitialTotalCost(ethers.utils.parseUnits(`${contest.fullPayment}`, 6))
+      setIsPrivate(contest.private)
+      setRequiresKYC(contest.requiresKYC)
+      setLswPaymentStructure(contest.lswPaymentStructure)
+      setHasLimitedContestants(!!contest.maxNumberOfParticipants)
+      setmaxNumberOfParticipants(contest.maxNumberOfParticipants?.toString() ?? "")
+      setCustomLswFixedPay(ethers.utils.parseUnits(`${contest.leadSeniorAuditorFixedPay ?? 0}`, 6))
+      setInitialCustomLswFixedPay(ethers.utils.parseUnits(`${contest.leadSeniorAuditorFixedPay ?? 0}`, 6))
     }
   }, [contest])
 
@@ -202,6 +223,8 @@ export const CreateContestForm: React.FC<Props> = ({
     if (startDate < DateTime.now()) return false
     if (contestAuditRewards?.eq(BigNumber.from(0))) return false
     if (contestTotalCost?.eq(BigNumber.from(0))) return false
+    if (lswPaymentStructure === "FIXED" && !customLswFixedPay?.gt(BigNumber.from(0))) return false
+    if (hasLimitedContestants && (maxNumberOfParticipants === "" || maxNumberOfParticipants === "0")) return false
 
     return true
   }, [
@@ -218,6 +241,10 @@ export const CreateContestForm: React.FC<Props> = ({
     protocolName,
     protocolWebsite,
     contest,
+    lswPaymentStructure,
+    customLswFixedPay,
+    hasLimitedContestants,
+    maxNumberOfParticipants,
   ])
 
   useEffect(() => {
@@ -296,6 +323,14 @@ export const CreateContestForm: React.FC<Props> = ({
         judgingPrizePool: parseInt(ethers.utils.formatUnits(contestJudgingPrizePool ?? 0, 6)),
         leadJudgeFixedPay: parseInt(ethers.utils.formatUnits(contestLeadJudgeFixedPay ?? 0, 6)),
         fullPayment: parseInt(ethers.utils.formatUnits(contestTotalCost ?? 0, 6)),
+        lswPaymentStructure,
+        private: isPrivate,
+        requiresKYC,
+        customLswFixedPay: customLswFixedPay ? parseInt(ethers.utils.formatUnits(customLswFixedPay ?? 0, 6)) : null,
+        maxNumberOfParticipants:
+          hasLimitedContestants && maxNumberOfParticipants && maxNumberOfParticipants !== ""
+            ? parseInt(maxNumberOfParticipants)
+            : null,
       },
     })
   }, [
@@ -314,6 +349,12 @@ export const CreateContestForm: React.FC<Props> = ({
     protocolName,
     protocolTwitter,
     protocolWebsite,
+    lswPaymentStructure,
+    isPrivate,
+    requiresKYC,
+    customLswFixedPay,
+    maxNumberOfParticipants,
+    hasLimitedContestants,
   ])
 
   const isMinimum = useMemo(
@@ -348,6 +389,62 @@ export const CreateContestForm: React.FC<Props> = ({
     },
     [setInitialTotalCost, setInitialAuditContestRewards, setInitialTotalRewards, contestVariables]
   )
+
+  const lswPaymentStructureDetails = useMemo(() => {
+    switch (lswPaymentStructure) {
+      case "TIERED":
+        return "The Lead Senior Watson fixed pay is determied by his leaderboard ranking."
+      case "BEST_EFFORTS":
+        return "The Lead Senior Watson is 33% of the Audit Contest Rewards."
+      case "FIXED":
+        return "The Lead Senior Watson is a custom fixed amount."
+    }
+  }, [lswPaymentStructure])
+
+  const handleSetContestSetup = useCallback((contestSetup: "public" | "private" | "1v1" | "custom") => {
+    if (contestSetup === "public") {
+      setIsPrivate(false)
+      setRequiresKYC(false)
+      setLswPaymentStructure("TIERED")
+      setHasLimitedContestants(false)
+    } else if (contestSetup === "private") {
+      setIsPrivate(true)
+      setRequiresKYC(true)
+      setLswPaymentStructure("TIERED")
+      setHasLimitedContestants(true)
+      setmaxNumberOfParticipants("10")
+    } else if (contestSetup === "1v1") {
+      setIsPrivate(true)
+      setRequiresKYC(true)
+      setLswPaymentStructure("FIXED")
+      setHasLimitedContestants(true)
+      setmaxNumberOfParticipants("2")
+    }
+  }, [])
+
+  const contestSetup = useMemo(() => {
+    if (!isPrivate && !requiresKYC && lswPaymentStructure === "TIERED" && !hasLimitedContestants) {
+      return "public"
+    } else if (
+      isPrivate &&
+      requiresKYC &&
+      lswPaymentStructure === "TIERED" &&
+      hasLimitedContestants &&
+      maxNumberOfParticipants === "10"
+    ) {
+      return "private"
+    } else if (
+      isPrivate &&
+      requiresKYC &&
+      lswPaymentStructure === "FIXED" &&
+      hasLimitedContestants &&
+      maxNumberOfParticipants === "2"
+    ) {
+      return "1v1"
+    } else {
+      return "custom"
+    }
+  }, [isPrivate, requiresKYC, lswPaymentStructure, hasLimitedContestants, maxNumberOfParticipants])
 
   return (
     <Column spacing="xl">
@@ -418,69 +515,199 @@ export const CreateContestForm: React.FC<Props> = ({
           <Input value={contestTitle} onChange={setContestTitle} />
         </Field>
         {draft ? null : (
-          <>
+          <Column spacing="s">
             <Field label="Short Description" error={!!shortDescriptionError} errorMessage={shortDescriptionError ?? ""}>
               <Input value={contestShortDescription} onChange={setShortDescription} />
             </Field>
-            <Field label="Start Date" error={!!startDateError} errorMessage={startDateError ?? ""}>
-              <Input value={contestStartDate} onChange={setContestStartDate} />
-            </Field>
-            <Field
-              label="nSLOC"
-              detail={
-                isNaN(Number(contestNSLOC))
-                  ? "Value is not a number. It won't be used to check the submitted nSLOC"
-                  : ""
-              }
-            >
-              <Input value={contestNSLOC} onChange={setContestNSLOC} />
-            </Field>
-            <Field label="Audit Length">
-              <Input type="number" value={contestAuditLength} onChange={setContestAuditLength} />
-            </Field>
-            <Column spacing="s">
-              <Text size="small" strong>
-                Pricing presets
-              </Text>
-              {isMinimum ? (
-                <Text variant="secondary" size="small">
-                  Using minimum pricing
-                </Text>
-              ) : null}
-              {isRecommended ? (
-                <Text variant="secondary" size="small">
-                  Using recommended pricing
-                </Text>
-              ) : null}
-              <Row spacing="m">
-                <Button size="small" disabled={isMinimum} onClick={() => handleAutoFillValues("minimum")}>
-                  Use minimum
-                </Button>
-                <Button size="small" disabled={isRecommended} onClick={() => handleAutoFillValues("recommended")}>
-                  Use recommended
-                </Button>
-              </Row>
-            </Column>
-            <Field label="Total Rewards">
-              <TokenInput token="USDC" initialValue={initialTotalRewards} onChange={setContestTotalRewards} />
-            </Field>
-            <Field label="Audit Contest Rewards" sublabel="Contest Pool + Lead fixed pay">
-              <TokenInput token="USDC" initialValue={initialAuditContestRewards} onChange={setContestAuditRewards} />
-            </Field>
-            <Field label="Judging Contest Prize Pool">
-              <TokenInput token="USDC" initialValue={initialJudgingPrizePool} onChange={setContestJudgingPrizePool} />
-            </Field>
-            <Field label="Lead Judge Fixed Pay">
-              <TokenInput token="USDC" initialValue={initialLeadJudgeFixedPay} onChange={setContestLeadJudgeFixedPay} />
-            </Field>
-            <Field label="Total Cost">
-              <TokenInput token="USDC" initialValue={initialTotalCost} onChange={setContestTotalCost} />
-            </Field>
-            <Text size="small">{`Admin Fee: ${sherlockFee} USDC`}</Text>
-          </>
+            <Row spacing="s">
+              <Field label="Start Date" error={!!startDateError} errorMessage={startDateError ?? ""}>
+                <Input value={contestStartDate} onChange={setContestStartDate} />
+              </Field>
+              <Field
+                label="nSLOC"
+                detail={
+                  isNaN(Number(contestNSLOC))
+                    ? "Value is not a number. It won't be used to check the submitted nSLOC"
+                    : ""
+                }
+              >
+                <Input value={contestNSLOC} onChange={setContestNSLOC} />
+              </Field>
+              <Field label="Audit Length">
+                <Input
+                  type="number"
+                  value={contestAuditLength}
+                  onChange={setContestAuditLength}
+                  placeholder="days"
+                  persistPlaceholder
+                />
+              </Field>
+            </Row>
+
+            <Row spacing="xl">
+              <Column spacing="s" alignment={["stretch", "start"]} className={styles.settingsSection}>
+                <Column spacing="s">
+                  <Text size="small" strong>
+                    Pricing presets
+                  </Text>
+                  {isMinimum ? (
+                    <Text variant="secondary" size="small">
+                      Using minimum pricing
+                    </Text>
+                  ) : null}
+                  {isRecommended ? (
+                    <Text variant="secondary" size="small">
+                      Using recommended pricing
+                    </Text>
+                  ) : null}
+                  <Row spacing="m">
+                    <Button size="small" disabled={isMinimum} onClick={() => handleAutoFillValues("minimum")}>
+                      Minimum
+                    </Button>
+                    <Button size="small" disabled={isRecommended} onClick={() => handleAutoFillValues("recommended")}>
+                      Recommended
+                    </Button>
+                  </Row>
+                </Column>
+                <Field label="Total Rewards">
+                  <TokenInput
+                    token="USDC"
+                    initialValue={initialTotalRewards}
+                    onChange={setContestTotalRewards}
+                    placeholder="USDC"
+                    persistPlaceholder
+                    displayTokenLabel={false}
+                  />
+                </Field>
+                <Field label="Audit Contest Rewards" sublabel="Contest Pool + Lead fixed pay">
+                  <TokenInput
+                    token="USDC"
+                    initialValue={initialAuditContestRewards}
+                    onChange={setContestAuditRewards}
+                    placeholder="USDC"
+                    persistPlaceholder
+                    displayTokenLabel={false}
+                  />
+                </Field>
+                <Field label="Judging Contest Prize Pool">
+                  <TokenInput
+                    token="USDC"
+                    initialValue={initialJudgingPrizePool}
+                    onChange={setContestJudgingPrizePool}
+                    placeholder="USDC"
+                    persistPlaceholder
+                    displayTokenLabel={false}
+                  />
+                </Field>
+                <Field label="Lead Judge Fixed Pay">
+                  <TokenInput
+                    token="USDC"
+                    initialValue={initialLeadJudgeFixedPay}
+                    onChange={setContestLeadJudgeFixedPay}
+                    placeholder="USDC"
+                    persistPlaceholder
+                    displayTokenLabel={false}
+                  />
+                </Field>
+                <Field label="Total Cost">
+                  <TokenInput
+                    token="USDC"
+                    initialValue={initialTotalCost}
+                    onChange={setContestTotalCost}
+                    placeholder="USDC"
+                    persistPlaceholder
+                    displayTokenLabel={false}
+                  />
+                </Field>
+                <Text size="small">{`Admin Fee: ${sherlockFee} USDC`}</Text>
+              </Column>
+              <Column spacing="l" alignment={["stretch", "start"]} className={styles.settingsSection}>
+                <RadioButton
+                  label="Contest setup"
+                  options={[
+                    { label: "Public", value: "public" },
+                    { label: "Private", value: "private" },
+                    { label: "1v1", value: "1v1" },
+                    { label: "Custom", value: "custom" },
+                  ]}
+                  value={contestSetup}
+                  onChange={handleSetContestSetup}
+                />
+                <hr />
+                <RadioButton
+                  label="Visibility"
+                  options={[
+                    { label: "Public", value: false },
+                    { label: "Private", value: true },
+                  ]}
+                  value={isPrivate}
+                  onChange={setIsPrivate}
+                />
+                <RadioButton
+                  label="Requires KYC"
+                  options={[
+                    { label: "Yes", value: true },
+                    { label: "No", value: false },
+                  ]}
+                  value={requiresKYC}
+                  onChange={setRequiresKYC}
+                />
+                <Column spacing="xs">
+                  <RadioButton
+                    label="Lead Senior Watson Fixed Pay"
+                    options={[
+                      { label: "Tiered", value: "TIERED" },
+                      { label: "Best Efforts", value: "BEST_EFFORTS" },
+                      { label: "Fixed", value: "FIXED" },
+                    ]}
+                    value={lswPaymentStructure}
+                    onChange={setLswPaymentStructure}
+                  />
+                  <Text size="small" variant="secondary">
+                    {lswPaymentStructureDetails}
+                  </Text>
+                  {lswPaymentStructure === "FIXED" && (
+                    <TokenInput
+                      token="USDC"
+                      initialValue={initialCustomLswFixedPay}
+                      onChange={setCustomLswFixedPay}
+                      placeholder="USDC"
+                      persistPlaceholder
+                      displayTokenLabel={false}
+                    />
+                  )}
+                </Column>
+                <Column spacing="xs">
+                  <RadioButton
+                    label="Maximum number of contestants"
+                    options={[
+                      { label: "Unlimited", value: false },
+                      { label: "Custom", value: true },
+                    ]}
+                    value={hasLimitedContestants}
+                    onChange={setHasLimitedContestants}
+                  />
+
+                  {hasLimitedContestants && (
+                    <>
+                      <Input
+                        placeholder="Contestans"
+                        persistPlaceholder
+                        value={maxNumberOfParticipants}
+                        onChange={setmaxNumberOfParticipants}
+                        type="number"
+                      />
+                      <Text size="small" variant="secondary">
+                        Includes the Lead Senior Watson
+                      </Text>
+                    </>
+                  )}
+                </Column>
+              </Column>
+            </Row>
+          </Column>
         )}
       </Column>
-      <hr />
       <Button disabled={!canSubmit} onClick={handleSubmit}>
         {submitLabel}
       </Button>

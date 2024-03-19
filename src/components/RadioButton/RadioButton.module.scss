@@ -1,0 +1,35 @@
+@import "../../styles/variables";
+
+.options {
+  border: 3px solid #000;
+  height: 3.315rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .option {
+    height: 100%;
+    width: 100%;
+    background: darken($primary-purple, 30%);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    cursor: pointer;
+
+    &.active {
+      background: $primary-purple;
+      font-weight: bold;
+    }
+
+    &:hover {
+      background: darken($primary-purple, 10%);
+    }
+
+    &:active {
+      background: darken($primary-purple, 35%);
+    }
+  }
+}

@@ -1,0 +1,25 @@
+@import "../../styles/variables";
+
+.container {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 4px;
+  border: 1px solid $primary-purple;
+  color: $primary-purple;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    border-color: lighten($primary-purple, 20%);
+    color: lighten($primary-purple, 20%);
+  }
+
+  &:active {
+    border-color: darken($primary-purple, 20%);
+    color: darken($primary-purple, 20%);
+  }
+}

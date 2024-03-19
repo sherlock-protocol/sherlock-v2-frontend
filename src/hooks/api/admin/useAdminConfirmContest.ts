@@ -15,6 +15,11 @@ type AdminConfirmContestParams = {
   judgingPrizePool: number
   leadJudgeFixedPay: number
   fullPayment: number
+  lswPaymentStructure?: "TIERED" | "BEST_EFFORTS" | "FIXED"
+  customLswFixedPay?: number | null
+  private?: boolean
+  requiresKYC?: boolean
+  maxNumberOfParticipants?: number | null
 }
 
 export const useAdminConfirmContest = () => {
@@ -33,6 +38,11 @@ export const useAdminConfirmContest = () => {
             judging_prize_pool: params.judgingPrizePool,
             lead_judge_fixed_pay: params.leadJudgeFixedPay,
             full_payment: params.fullPayment,
+            lsw_payment_structure: params.lswPaymentStructure,
+            custom_lsw_fixed_pay: params.customLswFixedPay,
+            private: params.private,
+            requires_kyc: params.requiresKYC,
+            max_number_of_participants: params.maxNumberOfParticipants,
           },
 
           {
