@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { FaClipboardList, FaFilter, FaTrash, FaUndo } from "react-icons/fa"
+import { FaClipboardList, FaFilter, FaTrash, FaUndo, FaUsers } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -15,6 +15,7 @@ import { ContestResetInitialScopeModal } from "./ContestResetInitialScopeModal"
 import { DeleteDraftContestModal } from "./DeleteDraftContestModal"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../components/Tooltip/Tooltip"
 import { DateTime } from "luxon"
+import { useNavigate } from "react-router-dom"
 
 type FilterType = "ALL" | "ONLY_SCOPE_SUBMITTED" | "ONLY_SCOPE_NOT_SUBMITTED"
 
@@ -32,6 +33,8 @@ export const AdminContestListDraft = () => {
   const [deleteContestIndex, setDeleteContestIndex] = useState<number | undefined>()
 
   const [activeFilter, setActiveFilter] = useState<FilterType>("ALL")
+
+  const navigate = useNavigate()
 
   const visibleContests = useMemo(() => {
     switch (activeFilter) {
@@ -107,6 +110,13 @@ export const AdminContestListDraft = () => {
                           onClick={() => window.open(`/dashboard/${c.dashboardID}`)}
                         >
                           <FaClipboardList />
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          onClick={() => navigate(`/admin/contests/${c.id}/watsons`)}
+                        >
+                          <FaUsers />
                         </Button>
 
                         <Button

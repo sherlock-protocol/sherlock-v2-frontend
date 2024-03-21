@@ -18,6 +18,7 @@ import { UpdateContestModal } from "./UpdateContestModal"
 import { TelegramBotIndicator } from "./TelegramBotIndicator"
 import { GenerateReportSuccessModal } from "./GenerateReportSuccessModal"
 import { useAdminGenerateReport } from "../../../hooks/api/admin/useGenerateReport"
+import { useNavigate } from "react-router-dom"
 
 type ContestLifeCycleStatus =
   | "WAITING_INITIAL_PAYMENT"
@@ -90,6 +91,7 @@ export const AdminContestsListActive = () => {
     variables,
     data: reportURL,
   } = useAdminGenerateReport()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (isSuccess) {
