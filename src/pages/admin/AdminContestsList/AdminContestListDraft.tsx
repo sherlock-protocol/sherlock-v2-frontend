@@ -114,7 +114,7 @@ export const AdminContestListDraft = () => {
                         <Button
                           size="small"
                           variant="secondary"
-                          onClick={() => navigate(`/admin/contests/${c.id}/watsons`)}
+                          onClick={() => window.open(`https://audits.sherlock.xyz/admin/contests/${c.id}/watsons`)}
                         >
                           <FaUsers />
                         </Button>
