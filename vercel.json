@@ -19,6 +19,11 @@
       "source": "/admin/payouts",
       "destination": "https://audits.sherlock.xyz/admin/payouts",
       "permanent": true
+    },
+    {
+      "source": "/admin/contests/([^/]+)/(.+)",
+      "destination": "https://audits.sherlock.xyz/admin/contests/$1/$2",
+      "permanent": true
     }
   ]
 }

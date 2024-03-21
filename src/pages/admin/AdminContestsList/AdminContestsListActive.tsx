@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
 import { useCallback, useEffect, useState } from "react"
-import { FaClipboardList, FaFastForward, FaPlus, FaEdit, FaRegListAlt } from "react-icons/fa"
+import { FaClipboardList, FaFastForward, FaPlus, FaEdit, FaRegListAlt, FaUsers } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -374,6 +374,13 @@ export const AdminContestsListActive = () => {
                           onClick={() => window.open(`/dashboard/${c.dashboardID}`)}
                         >
                           <FaClipboardList />
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          onClick={() => window.open(`https://audits.sherlock.xyz/admin/contests/${c.id}/watsons`)}
+                        >
+                          <FaUsers />
                         </Button>
                         <Button
                           size="small"
