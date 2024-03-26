@@ -4,6 +4,7 @@ import { Column, Row } from "../Layout"
 import { Text } from "../Text"
 import { FaCaretDown } from "react-icons/fa"
 import Option from "./Option"
+import cx from "classnames"
 
 type OptionType<T> = {
   value?: T
@@ -15,12 +16,13 @@ type Props<T> = {
   onChange: (value?: T) => void
   value?: T
   placeholder?: string
+  variant?: "small" | "full-width"
 }
 
 /**
  * Custom Select/Dropdown component
  */
-const Select = <T,>({ options, onChange, value, placeholder }: Props<T>) => {
+const Select = <T,>({ options, onChange, value, placeholder, variant = "small" }: Props<T>) => {
   // const [selectedOption, setSelectedOption] = React.useState<string>()
   const selectedOptionLabel = React.useMemo(
     () => options?.find((item) => item.value === value)?.label ?? placeholder,
@@ -61,8 +63,13 @@ const Select = <T,>({ options, onChange, value, placeholder }: Props<T>) => {
   }, [options, value, handleUpdateSelectedOption, placeholder])
 
   return (
-    <Column className={styles.container}>
-      <Row className={styles.button} spacing="m" alignment="space-between" onClick={handleToggleDropdown}>
+    <Column className={cx(styles.container, styles[variant])}>
+      <Row
+        className={cx(styles.button, styles[variant])}
+        spacing="m"
+        alignment="space-between"
+        onClick={handleToggleDropdown}
+      >
         <Column grow={1} className={styles.selectedOptionContainer}>
           <Text strong>{hasOptions ? selectedOptionLabel : "No entries"}</Text>
         </Column>

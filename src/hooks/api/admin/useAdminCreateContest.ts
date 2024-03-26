@@ -16,6 +16,7 @@ type AdminCreateContestParams = {
   }
   contest: {
     title: string
+    previousContestId?: number | null
   }
 }
 
@@ -34,6 +35,7 @@ export const useAdminCreateContest = () => {
             website: params.protocol.website,
           },
           title: params.contest.title,
+          previous_contest_id: params.contest.previousContestId,
         })
       } catch (error) {
         const axiosError = error as AxiosError

@@ -72,6 +72,7 @@ export const adminConfirmContest = (contestID: number) => `/admin/contests/${con
 export const adminResetScope = (contestID: number, scopeType: "initial" | "final") =>
   `/admin/contests/${contestID}/scope/${scopeType}`
 export const getAdminTwitterAccount = (handle: string) => `/admin/twitter_account/${handle}`
+export const getAdminProtocolContests = (protocolID: number) => `/admin/protocol_contests/${protocolID}`
 export const adminSubmitScope = () => `/admin/scope`
 export const getSeniorWatson = (handle: string) => `/admin/senior_watson?handle=${handle}`
 export const adminStartLeadSeniorWatsonSelection = () => `/admin/start_lead_senior_watson_selection`

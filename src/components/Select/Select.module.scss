@@ -7,7 +7,6 @@
     border: 3px solid black;
 
     background-color: $primary-purple;
-    width: 180px;
 
     padding: $spacing-m;
     align-items: center;
@@ -20,6 +19,18 @@
     &:active {
       background-color: darken($color: $primary-purple, $amount: 15%);
     }
+
+    &.small {
+      width: 180px;
+    }
+
+    &.full-width {
+      flex-grow: 1;
+    }
+  }
+
+  &.full-width {
+    flex-grow: 1;
   }
 
   .optionsContainer {
