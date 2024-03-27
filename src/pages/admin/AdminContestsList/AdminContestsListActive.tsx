@@ -390,12 +390,7 @@ export const AdminContestsListActive = () => {
                         >
                           <FaEdit />
                         </Button>
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          disabled={!c.finalScopeSubmitted}
-                          onClick={() => setScopeModal(c.id)}
-                        >
+                        <Button size="small" variant="secondary" onClick={() => setScopeModal(c.id)}>
                           <FaRegListAlt />
                         </Button>
                       </Row>
