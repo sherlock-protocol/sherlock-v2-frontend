@@ -18,6 +18,8 @@ import { Button } from "../../../components/Button"
 import { ContestsListItem } from "../../../hooks/api/admin/useAdminContests"
 import RadioButton from "../../../components/RadioButton/RadioButton"
 import styles from "./CreateContestForm.module.scss"
+import { useAdminProtocolContests } from "../../../hooks/api/admin/useAdminProtocolContests"
+import Select from "../../../components/Select/Select"
 
 export type ContestValues = {
   protocol: {
@@ -42,6 +44,7 @@ export type ContestValues = {
     private?: boolean
     requiresKYC?: boolean
     maxNumberOfParticipants?: number | null
+    previousContestId?: number | null
   }
 }
 
@@ -70,6 +73,30 @@ export const CreateContestForm: React.FC<Props> = ({
     isError: protocolNotFound,
     isLoading: protocolLoading,
   } = useAdminProtocol(debouncedProtocolName)
+  const { data: protocolContests } = useAdminProtocolContests(protocol?.id)
+  const [isUpdateContest, setIsUpdateContest] = useState(false)
+  const [previousContest, setPreviousContest] = useState<number>()
+
+  useEffect(() => {
+    if (!!previousContest) {
+      return
+    }
+
+    if (protocolContests && protocolContests?.length > 0) {
+      setPreviousContest(protocolContests[0].id)
+    }
+  }, [protocolContests, previousContest])
+
+  const previousContestOptions = useMemo(
+    () =>
+      protocolContests?.map((item) => ({
+        label: item.title,
+        value: item.id,
+      })) ?? [],
+    [protocolContests]
+  )
+
+  console.log("Protocol contests", protocolContests)
 
   const [protocolTwitter, setProtocolTwitter] = useState(protocol?.twitter ?? "")
   const [protocolWebsite, setProtocolWebsite] = useState(protocol?.website ?? "")
@@ -331,6 +358,7 @@ export const CreateContestForm: React.FC<Props> = ({
           hasLimitedContestants && maxNumberOfParticipants && maxNumberOfParticipants !== ""
             ? parseInt(maxNumberOfParticipants)
             : null,
+        previousContestId: isUpdateContest ? previousContest : null,
       },
     })
   }, [
@@ -355,6 +383,8 @@ export const CreateContestForm: React.FC<Props> = ({
     customLswFixedPay,
     maxNumberOfParticipants,
     hasLimitedContestants,
+    previousContest,
+    isUpdateContest,
   ])
 
   const isMinimum = useMemo(
@@ -514,6 +544,30 @@ export const CreateContestForm: React.FC<Props> = ({
         <Field label="Title">
           <Input value={contestTitle} onChange={setContestTitle} />
         </Field>
+        {draft && !!previousContest && (
+          <Column spacing="xs">
+            <RadioButton
+              label="Is this an update contest?"
+              options={[
+                { label: "Yes", value: true },
+                { label: "No", value: false },
+              ]}
+              value={isUpdateContest}
+              onChange={setIsUpdateContest}
+            />
+            {isUpdateContest && (
+              <Field label="Previous contest">
+                <Select
+                  variant="full-width"
+                  value={previousContest}
+                  placeholder="Select previous contest"
+                  options={previousContestOptions}
+                  onChange={setPreviousContest}
+                />
+              </Field>
+            )}
+          </Column>
+        )}
         {draft ? null : (
           <Column spacing="s">
             <Field label="Short Description" error={!!shortDescriptionError} errorMessage={shortDescriptionError ?? ""}>
