@@ -13,6 +13,7 @@ import { useContest } from "../../../hooks/api/contests"
 import styles from "./AdminContestsList.module.scss"
 import { useAdminResetScope } from "../../../hooks/api/admin/useAdminResetScope"
 import { useAdminContest } from "../../../hooks/api/admin/useAdminContest"
+import { useAdminResetQA } from "../../../hooks/api/admin/useAdminResetQA"
 
 type Props = ModalProps & {
   contestID: number
@@ -24,12 +25,13 @@ export const ContestScopeModal: React.FC<Props> = ({ onClose, contestID }) => {
   const { data: contest, isLoading: contestIsLoading } = useAdminContest(contestID)
   const { data: scope, isLoading: scopeIsLoading } = useAdminContestScope(contestID)
   const { resetScope, isLoading: resetScopeIsLoading } = useAdminResetScope()
+  const { resetQA, isLoading: resetQAIsLoading } = useAdminResetQA()
 
   const expectedNSLOCExceeded = contest?.nSLOC && contest.expectedNSLOC && contest.nSLOC > contest.expectedNSLOC
 
   return (
     <Modal closeable onClose={onClose}>
-      <LoadingContainer loading={contestIsLoading || scopeIsLoading || resetScopeIsLoading}>
+      <LoadingContainer loading={contestIsLoading || scopeIsLoading || resetScopeIsLoading || resetQAIsLoading}>
         <Column spacing="l">
           <Title>{contest?.title}</Title>
           {expectedNSLOCExceeded ? (
@@ -104,6 +106,13 @@ export const ContestScopeModal: React.FC<Props> = ({ onClose, contestID }) => {
             ))}
             <Button variant="alternate" onClick={() => resetScope({ contestID: contestID, scopeType: "final" })}>
               Reset scope
+            </Button>
+            <Button
+              variant="alternate"
+              disabled={!contest?.contextQuestionsReady}
+              onClick={() => resetQA({ contestID })}
+            >
+              Reset Q&A
             </Button>
           </Column>
         </Column>
