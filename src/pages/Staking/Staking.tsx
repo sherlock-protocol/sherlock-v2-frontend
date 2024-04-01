@@ -147,9 +147,6 @@ export const StakingPage: React.FC = () => {
       <USBlockContainer>
         <LoadingContainer loading={isLoadingRewards}>
           <Column spacing="xl">
-            <Column className={styles.infoBanner}>
-              <Title variant="h3">The Winter 2023 Staking Round is currently open!</Title>
-            </Column>
             <Column spacing="m">
               <Title>Stake</Title>
               <Row alignment="space-between">
