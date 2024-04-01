@@ -1,5 +1,14 @@
-import { useMemo, useState } from "react"
-import { FaClipboardList, FaFilter, FaTrash, FaUndo, FaUsers } from "react-icons/fa"
+import { useEffect, useMemo, useState } from "react"
+import {
+  FaCaretDown,
+  FaCaretRight,
+  FaCaretUp,
+  FaClipboardList,
+  FaFilter,
+  FaTrash,
+  FaUndo,
+  FaUsers,
+} from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -33,8 +42,7 @@ export const AdminContestListDraft = () => {
   const [deleteContestIndex, setDeleteContestIndex] = useState<number | undefined>()
 
   const [activeFilter, setActiveFilter] = useState<FilterType>("ALL")
-
-  const navigate = useNavigate()
+  const [collapsed, setCollapsed] = useState(true)
 
   const visibleContests = useMemo(() => {
     switch (activeFilter) {
@@ -49,115 +57,139 @@ export const AdminContestListDraft = () => {
     }
   }, [contests, activeFilter])
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+        setCollapsed(false)
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [])
+
   return (
     <LoadingContainer loading={isLoading}>
       <Column spacing="l">
         <Box shadow={false} fullWidth>
           <Row alignment={"space-between"}>
-            <Title>DRAFTS</Title>
-            <Tooltip placement="bottom-start">
-              <TooltipTrigger>
-                <div className={styles.filterContainer}>
-                  <FaFilter />
-                  <span>Filter</span>
-                  <div className={styles.activeFilter}>
-                    <span>{FilterLabels[activeFilter]}</span>
-                  </div>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent padding={false}>
-                <div className={styles.filtersList}>
-                  {Object.entries(FilterLabels).map(([value, label]) => (
-                    <div key={label} onClick={() => setActiveFilter(value as FilterType)}>
-                      <span>{label}</span>
+            <Row spacing="m">
+              <Title>DRAFTS</Title>
+              <Button variant="secondary" size="small" onClick={() => setCollapsed((c) => !c)}>
+                {collapsed ? "Show all" : "Hide"}&nbsp;
+                {collapsed ? <FaCaretRight /> : <FaCaretUp />}
+              </Button>
+            </Row>
+            {!collapsed && (
+              <Tooltip placement="bottom-start">
+                <TooltipTrigger>
+                  <div className={styles.filterContainer}>
+                    <FaFilter />
+                    <span>Filter</span>
+                    <div className={styles.activeFilter}>
+                      <span>{FilterLabels[activeFilter]}</span>
                     </div>
-                  ))}
-                </div>
-              </TooltipContent>
-            </Tooltip>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent padding={false}>
+                  <div className={styles.filtersList}>
+                    {Object.entries(FilterLabels).map(([value, label]) => (
+                      <div key={label} onClick={() => setActiveFilter(value as FilterType)}>
+                        <span>{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </Row>
-          <Table selectable={false} className={styles.contestsTable}>
-            <THead>
-              <Tr>
-                <Th>
-                  <Text>ID</Text>
-                </Th>
-                <Th>
-                  <Text>Contest</Text>
-                </Th>
-                <Th></Th>
-                <Th>Status</Th>
-                <Th>Action</Th>
-              </Tr>
-            </THead>
-            <TBody>
-              {visibleContests?.map((c, index) => {
-                return (
-                  <Tr>
-                    <Td>{c.id}</Td>
-                    <Td>
-                      <Row spacing="l" alignment={["start", "center"]}>
-                        <img src={c.logoURL} className={styles.logo} alt={c.title} />
-                        <Text strong>{c.title}</Text>
-                      </Row>
-                    </Td>
-                    <Td>
-                      <Row spacing="m">
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          disabled={!c.dashboardID}
-                          onClick={() => window.open(`/dashboard/${c.dashboardID}`)}
-                        >
-                          <FaClipboardList />
-                        </Button>
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          onClick={() => window.open(`https://audits.sherlock.xyz/admin/contests/${c.id}/watsons`)}
-                        >
-                          <FaUsers />
-                        </Button>
+          {!collapsed && (
+            <Table selectable={false} className={styles.contestsTable}>
+              <THead>
+                <Tr>
+                  <Th>
+                    <Text>ID</Text>
+                  </Th>
+                  <Th>
+                    <Text>Contest</Text>
+                  </Th>
+                  <Th></Th>
+                  <Th>Status</Th>
+                  <Th>Action</Th>
+                </Tr>
+              </THead>
+              <TBody>
+                {visibleContests?.map((c, index) => {
+                  return (
+                    <Tr>
+                      <Td>{c.id}</Td>
+                      <Td>
+                        <Row spacing="l" alignment={["start", "center"]}>
+                          <img src={c.logoURL} className={styles.logo} alt={c.title} />
+                          <Text strong>{c.title}</Text>
+                        </Row>
+                      </Td>
+                      <Td>
+                        <Row spacing="m">
+                          <Button
+                            size="small"
+                            variant="secondary"
+                            disabled={!c.dashboardID}
+                            onClick={() => window.open(`/dashboard/${c.dashboardID}`)}
+                          >
+                            <FaClipboardList />
+                          </Button>
+                          <Button
+                            size="small"
+                            variant="secondary"
+                            onClick={() => window.open(`https://audits.sherlock.xyz/admin/contests/${c.id}/watsons`)}
+                          >
+                            <FaUsers />
+                          </Button>
 
-                        <Button
-                          size="small"
-                          variant="secondary"
-                          disabled={!c.initialScopeSubmitted}
-                          onClick={() => setResetContestIndex(index)}
-                        >
-                          <FaUndo />
-                        </Button>
-                        <Button size="small" variant="secondary" onClick={() => setDeleteContestIndex(index)}>
-                          <FaTrash />
-                        </Button>
-                      </Row>
-                    </Td>
-                    <Td>
-                      <Text variant="secondary">
-                        {c.initialScopeSubmittedAt
-                          ? `Initial scope submitted at ${DateTime.fromSeconds(
-                              c.initialScopeSubmittedAt
-                            ).toLocaleString(DateTime.DATETIME_SHORT)}`
-                          : "Waiting on initial scope"}
-                      </Text>
-                    </Td>
-                    <Td>
-                      <Row>
-                        <Button
-                          size="normal"
-                          onClick={() => setConfirmContestIndex(index)}
-                          fullWidth
-                          disabled={!c.initialScopeSubmitted}
-                        >
-                          Confirm contest
-                        </Button>
-                      </Row>
-                    </Td>
-                  </Tr>
-                )
-              })}
-            </TBody>
-          </Table>
+                          <Button
+                            size="small"
+                            variant="secondary"
+                            disabled={!c.initialScopeSubmitted}
+                            onClick={() => setResetContestIndex(index)}
+                          >
+                            <FaUndo />
+                          </Button>
+                          <Button size="small" variant="secondary" onClick={() => setDeleteContestIndex(index)}>
+                            <FaTrash />
+                          </Button>
+                        </Row>
+                      </Td>
+                      <Td>
+                        <Text variant="secondary">
+                          {c.initialScopeSubmittedAt
+                            ? `Initial scope submitted at ${DateTime.fromSeconds(
+                                c.initialScopeSubmittedAt
+                              ).toLocaleString(DateTime.DATETIME_SHORT)}`
+                            : "Waiting on initial scope"}
+                        </Text>
+                      </Td>
+                      <Td>
+                        <Row>
+                          <Button
+                            size="normal"
+                            onClick={() => setConfirmContestIndex(index)}
+                            fullWidth
+                            disabled={!c.initialScopeSubmitted}
+                          >
+                            Confirm contest
+                          </Button>
+                        </Row>
+                      </Td>
+                    </Tr>
+                  )
+                })}
+              </TBody>
+            </Table>
+          )}
           {confirmContestIndex !== undefined && contests && (
             <ConfirmContestModal
               onClose={() => setConfirmContestIndex(undefined)}
