@@ -12,7 +12,6 @@ import { ContestsListItem, useAdminContests } from "../../../hooks/api/admin/use
 
 import styles from "./AdminContestsList.module.scss"
 import { ConfirmContestActionModal } from "./ConfirmContestActionModal"
-import { CreateContestModal } from "./CreateContestModal"
 import { ContestScopeModal } from "./ContestScopeModal"
 import { UpdateContestModal } from "./UpdateContestModal"
 import { TelegramBotIndicator } from "./TelegramBotIndicator"
@@ -77,7 +76,6 @@ type ConfirmationModal = {
 export const AdminContestsListActive = () => {
   const { data: contests, isLoading } = useAdminContests("active")
   const [confirmationModal, setConfirmationModal] = useState<ConfirmationModal | undefined>()
-  const [createContestModalOpen, setCreateContestModalOpen] = useState(false)
   const [updateContestIndex, setUpdateContextIndex] = useState<number | undefined>()
   const [scopeModal, setScopeModal] = useState<number | undefined>()
   const [forceActionRowIndex, setForceActionRowIndex] = useState<number | undefined>()
@@ -323,14 +321,6 @@ export const AdminContestsListActive = () => {
     <LoadingContainer loading={isLoading || generateReportIsLoading}>
       <Column spacing="l">
         <Box shadow={false} fullWidth>
-          <Row alignment="center">
-            <Button variant="alternate" onClick={() => setCreateContestModalOpen(true)}>
-              <FaPlus />
-              &nbsp;Create contest
-            </Button>
-          </Row>
-        </Box>
-        <Box shadow={false} fullWidth>
           <Title>CONTESTS</Title>
           <Table selectable={false} className={styles.contestsTable}>
             <THead>
@@ -429,7 +419,6 @@ export const AdminContestsListActive = () => {
               contest={contests[updateContestIndex]}
             />
           )}
-          {createContestModalOpen && <CreateContestModal onClose={() => setCreateContestModalOpen(false)} />}
           {scopeModal && <ContestScopeModal contestID={scopeModal} onClose={handleScopeModalClose} />}
         </Box>
       </Column>

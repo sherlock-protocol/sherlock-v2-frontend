@@ -44,6 +44,7 @@ export const useAdminCreateContest = () => {
     },
     {
       onSuccess: async () => {
+        await queryClient.invalidateQueries(adminContestsQuery("draft"))
         await queryClient.invalidateQueries(adminContestsQuery("active"))
       },
     }
