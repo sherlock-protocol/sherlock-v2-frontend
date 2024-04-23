@@ -71,7 +71,7 @@ export const FundraisingClaimPage = () => {
     }
 
     fetchClaimIsActive()
-  })
+  }, [sherClaim])
 
   const handleOnSuccess = useCallback(
     async (blockNumber: number) => {
