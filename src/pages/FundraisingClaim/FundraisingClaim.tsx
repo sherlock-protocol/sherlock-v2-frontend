@@ -130,7 +130,7 @@ export const FundraisingClaimPage = () => {
           <Row alignment="space-between">
             <Column>
               <Text strong>
-                Claiming {fundraisePositionData?.claimableAt < DateTime.now() ? "started" : "starts in"}
+                Claiming {fundraisePositionData?.claimableAt < DateTime.now() ? " started" : " starts in"}
               </Text>
             </Column>
             <Column>

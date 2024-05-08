@@ -136,30 +136,19 @@ export const StakingPositionsList: React.FC = () => {
     navigate("/")
   }, [navigate])
 
-  const mapleAlertVisible = useMemo(() => positions?.some((item) => item.id <= 442), [positions])
-
   if (!data) return null
 
   return (
     <LoadingContainer loading={isRefreshing} label="Refreshing...">
-      {mapleAlertVisible && (
-        <Row className={styles.alert}>
-          <Column spacing="m">
-            <Title>Stakers affected by the Maple loss</Title>
-            <Text>
-              A portion of the Maple funds will be airdropped directly to staker addresses instead of delivered when
-              unstaking. More info{" "}
-              <a
-                href="https://discord.com/channels/812037309376495636/881691425253761026/1054616702102544394"
-                target="blank"
-              >
-                here
-              </a>
-              .
-            </Text>
-          </Column>
-        </Row>
-      )}
+      <Row className={styles.alert}>
+        <Column spacing="m">
+          <Title>Important Information for Unstaking</Title>
+          <Text>
+            If a position is not unstaked within two weeks of unlocking, the position will get automatically restaked
+            for 6 months
+          </Text>
+        </Column>
+      </Row>
       <div className={styles.container}>
         {positions.map((position) => (
           <StakingPositionItem
