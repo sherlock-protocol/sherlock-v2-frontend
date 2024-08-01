@@ -5,6 +5,7 @@ export const getUnlockOverTime = () => "stats/unlock"
 export const getAPYOverTime = () => "stats/apy"
 export const getTVLOverTime = () => "stats_tvl"
 export const getTVCOverTime = () => "stats_tvc"
+export const getExternalCoverageOverTime = () => "stats_external_coverage"
 export const getStakePositions = (account?: string) => (account ? `staking/${account}` : "staking")
 export const getCoveredProtocols = () => "protocols"
 export const getLastIndexedBlock = () => `last-block-indexed`
