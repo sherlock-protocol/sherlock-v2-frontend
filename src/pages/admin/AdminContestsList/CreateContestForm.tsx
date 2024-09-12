@@ -20,6 +20,7 @@ import RadioButton from "../../../components/RadioButton/RadioButton"
 import styles from "./CreateContestForm.module.scss"
 import { useAdminProtocolContests } from "../../../hooks/api/admin/useAdminProtocolContests"
 import Select from "../../../components/Select/Select"
+import { useAdminPricing } from "../../../hooks/api/admin/useAdminPricing"
 
 export type ContestValues = {
   protocol: {
@@ -135,9 +136,7 @@ export const CreateContestForm: React.FC<Props> = ({
 
   const displayProtocolInfo = !!protocol || protocolNotFound || protocolLoading
 
-  const { data: contestVariables, isSuccess: contestVariablesSuccess } = useAdminContestVariables(
-    parseInt(debouncedContestNSLOC)
-  )
+  const { data: contestVariables, isSuccess: adminPricingSuccess } = useAdminPricing(parseInt(debouncedContestNSLOC))
 
   useEffect(() => {
     if (contest) {
@@ -167,15 +166,15 @@ export const CreateContestForm: React.FC<Props> = ({
   }, [contest])
 
   useEffect(() => {
-    if (contestVariablesSuccess && (!contest || contest.status === "DRAFT")) {
+    if (adminPricingSuccess && (!contest || contest.status === "DRAFT")) {
       setContestAuditLength(`${contestVariables.length}`)
       setInitialTotalRewards(ethers.utils.parseUnits(`${contestVariables.minTotalRewards}`, 6))
       setInitialAuditContestRewards(ethers.utils.parseUnits(`${contestVariables.minContestRewards}`, 6))
-      setInitialJudgingPrizePool(ethers.utils.parseUnits(`${contestVariables.judgingPrizePool}`, 6))
-      setInitialLeadJudgeFixedPay(ethers.utils.parseUnits(`${contestVariables.leadJudgeFixedPay}`, 6))
+      setInitialJudgingPrizePool(ethers.utils.parseUnits(`${contestVariables.minJudgingPrizePool}`, 6))
+      setInitialLeadJudgeFixedPay(ethers.utils.parseUnits(`${contestVariables.minLeadJudgeFixedPay}`, 6))
       setInitialTotalCost(ethers.utils.parseUnits(`${contestVariables.minTotalPrice}`, 6))
     }
-  }, [contestVariablesSuccess, setContestAuditLength, contestVariables, contest])
+  }, [adminPricingSuccess, setContestAuditLength, contestVariables, contest])
 
   useEffect(() => {
     const diff = contestTotalRewards
@@ -411,10 +410,14 @@ export const CreateContestForm: React.FC<Props> = ({
         setInitialTotalRewards(ethers.utils.parseUnits(`${contestVariables?.minTotalRewards}`, 6))
         setInitialAuditContestRewards(ethers.utils.parseUnits(`${contestVariables?.minContestRewards}`, 6))
         setInitialTotalCost(ethers.utils.parseUnits(`${contestVariables?.minTotalPrice}`, 6))
+        setInitialLeadJudgeFixedPay(ethers.utils.parseUnits(`${contestVariables?.minLeadJudgeFixedPay}`, 6))
+        setInitialJudgingPrizePool(ethers.utils.parseUnits(`${contestVariables?.minJudgingPrizePool}`, 6))
       } else {
         setInitialTotalRewards(ethers.utils.parseUnits(`${contestVariables?.recTotalRewards}`, 6))
         setInitialAuditContestRewards(ethers.utils.parseUnits(`${contestVariables?.recContestRewards}`, 6))
         setInitialTotalCost(ethers.utils.parseUnits(`${contestVariables?.recTotalPrice}`, 6))
+        setInitialLeadJudgeFixedPay(ethers.utils.parseUnits(`${contestVariables?.recLeadJudgeFixedPay}`, 6))
+        setInitialJudgingPrizePool(ethers.utils.parseUnits(`${contestVariables?.recJudgingPrizePool}`, 6))
       }
     },
     [setInitialTotalCost, setInitialAuditContestRewards, setInitialTotalRewards, contestVariables]
