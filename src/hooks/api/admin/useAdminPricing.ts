@@ -59,6 +59,6 @@ export const useAdminPricing = (nSLOC: number) =>
       recTotalPrice: recommendedPricing.total_price,
       recLeadJudgeFixedPay: recommendedPricing.lead_judge_fixed_pay,
       recJudgingPrizePool: recommendedPricing?.judging_prize_pool,
-      length: data.length,
+      length: minimumPricing.length,
     }
   })
