@@ -42,6 +42,7 @@ export type ContestsListItem = {
   private: boolean
   requiresKYC: boolean
   maxNumberOfParticipants: number | null
+  token: string
 }
 
 export type GetAdminContestsResponse = {
@@ -80,6 +81,7 @@ export type GetAdminContestsResponse = {
   private: boolean
   requires_kyc: boolean
   max_number_of_participants: number | null
+  token: string
 }
 
 export type ContestListStatus = "active" | "finished" | "draft"
@@ -121,6 +123,7 @@ export const parseContest = (d: GetAdminContestsResponse): ContestsListItem => {
     requiresKYC: d.requires_kyc,
     maxNumberOfParticipants: d.max_number_of_participants,
     leadSeniorAuditorFixedPay: d.lead_senior_auditor_fixed_pay,
+    token: d.token,
   }
 }
 
