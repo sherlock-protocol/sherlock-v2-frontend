@@ -20,6 +20,7 @@ type GetAdminPricingResponse = {
   total_price: number
   total_rewards: number
   type: PricingType
+  exchangeRate: number
 }[]
 
 type Pricing = {
@@ -34,12 +35,15 @@ type Pricing = {
   recLeadJudgeFixedPay: number
   recJudgingPrizePool: number
   length: number
+  exchangeRate: number
 }
 
-export const adminPricingQueryKey = (nSLOC: number) => ["contest-variables", nSLOC]
-export const useAdminPricing = (nSLOC: number) =>
-  useQuery<Pricing, Error>(adminPricingQueryKey(nSLOC), async (): Promise<Pricing> => {
-    const { data } = await contestsAPI.get<GetAdminPricingResponse>(`/internal/simulate-pricing?nsloc=${nSLOC}`)
+export const adminPricingQueryKey = (nSLOC: number, token: string) => ["contest-variables", nSLOC, token]
+export const useAdminPricing = (nSLOC: number, token: string) =>
+  useQuery<Pricing, Error>(adminPricingQueryKey(nSLOC, token), async (): Promise<Pricing> => {
+    const { data } = await contestsAPI.get<GetAdminPricingResponse>(
+      `/internal/simulate-pricing?nsloc=${nSLOC}&token=${token}`
+    )
 
     const minimumPricing = data.find((p) => p.type === "MINIMUM")
     const recommendedPricing = data.find((p) => p.type === "RECOMMENDED")
@@ -60,5 +64,6 @@ export const useAdminPricing = (nSLOC: number) =>
       recLeadJudgeFixedPay: recommendedPricing.lead_judge_fixed_pay,
       recJudgingPrizePool: recommendedPricing?.judging_prize_pool,
       length: minimumPricing.length,
+      exchangeRate: minimumPricing.exchangeRate,
     }
   })

@@ -46,6 +46,8 @@ export type ContestValues = {
     requiresKYC?: boolean
     maxNumberOfParticipants?: number | null
     previousContestId?: number | null
+    token: string
+    exchangeRate: number
   }
 }
 
@@ -136,7 +138,12 @@ export const CreateContestForm: React.FC<Props> = ({
 
   const displayProtocolInfo = !!protocol || protocolNotFound || protocolLoading
 
-  const { data: contestVariables, isSuccess: adminPricingSuccess } = useAdminPricing(parseInt(debouncedContestNSLOC))
+  const [token, setToken] = useState(contest?.token ?? "USDC")
+
+  const { data: contestVariables, isSuccess: adminPricingSuccess } = useAdminPricing(
+    parseInt(debouncedContestNSLOC),
+    token
+  )
 
   useEffect(() => {
     if (contest) {
@@ -358,6 +365,8 @@ export const CreateContestForm: React.FC<Props> = ({
             ? parseInt(maxNumberOfParticipants)
             : null,
         previousContestId: isUpdateContest ? previousContest : null,
+        token,
+        exchangeRate: contestVariables?.exchangeRate ?? 1,
       },
     })
   }, [
@@ -384,6 +393,8 @@ export const CreateContestForm: React.FC<Props> = ({
     hasLimitedContestants,
     previousContest,
     isUpdateContest,
+    token,
+    contestVariables?.exchangeRate,
   ])
 
   const isMinimum = useMemo(
@@ -604,6 +615,16 @@ export const CreateContestForm: React.FC<Props> = ({
             <Row spacing="xl">
               <Column spacing="s" alignment={["stretch", "start"]} className={styles.settingsSection}>
                 <Column spacing="s">
+                  <RadioButton
+                    label="Token"
+                    options={[
+                      { label: "USDC", value: "USDC" },
+                      { label: "OP", value: "OP" },
+                      { label: "ARB", value: "ARB" },
+                    ]}
+                    value={token}
+                    onChange={setToken}
+                  />
                   <Text size="small" strong>
                     Pricing presets
                   </Text>
@@ -631,7 +652,7 @@ export const CreateContestForm: React.FC<Props> = ({
                     token="USDC"
                     initialValue={initialTotalRewards}
                     onChange={setContestTotalRewards}
-                    placeholder="USDC"
+                    placeholder={token}
                     persistPlaceholder
                     displayTokenLabel={false}
                   />
@@ -641,7 +662,7 @@ export const CreateContestForm: React.FC<Props> = ({
                     token="USDC"
                     initialValue={initialAuditContestRewards}
                     onChange={setContestAuditRewards}
-                    placeholder="USDC"
+                    placeholder={token}
                     persistPlaceholder
                     displayTokenLabel={false}
                   />
@@ -651,7 +672,7 @@ export const CreateContestForm: React.FC<Props> = ({
                     token="USDC"
                     initialValue={initialJudgingPrizePool}
                     onChange={setContestJudgingPrizePool}
-                    placeholder="USDC"
+                    placeholder={token}
                     persistPlaceholder
                     displayTokenLabel={false}
                   />
@@ -661,7 +682,7 @@ export const CreateContestForm: React.FC<Props> = ({
                     token="USDC"
                     initialValue={initialLeadJudgeFixedPay}
                     onChange={setContestLeadJudgeFixedPay}
-                    placeholder="USDC"
+                    placeholder={token}
                     persistPlaceholder
                     displayTokenLabel={false}
                   />
@@ -671,12 +692,12 @@ export const CreateContestForm: React.FC<Props> = ({
                     token="USDC"
                     initialValue={initialTotalCost}
                     onChange={setContestTotalCost}
-                    placeholder="USDC"
+                    placeholder={token}
                     persistPlaceholder
                     displayTokenLabel={false}
                   />
                 </Field>
-                <Text size="small">{`Admin Fee: ${sherlockFee} USDC`}</Text>
+                <Text size="small">{`Admin Fee: ${sherlockFee} ${token}`}</Text>
               </Column>
               <Column spacing="l" alignment={["stretch", "start"]} className={styles.settingsSection}>
                 <RadioButton
@@ -728,7 +749,7 @@ export const CreateContestForm: React.FC<Props> = ({
                       token="USDC"
                       initialValue={initialCustomLswFixedPay}
                       onChange={setCustomLswFixedPay}
-                      placeholder="USDC"
+                      placeholder={token}
                       persistPlaceholder
                       displayTokenLabel={false}
                     />
