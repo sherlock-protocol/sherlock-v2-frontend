@@ -46,6 +46,8 @@ export type ContestValues = {
     requiresKYC?: boolean
     maxNumberOfParticipants?: number | null
     previousContestId?: number | null
+    token: string
+    exchangeRate: number
   }
 }
 
@@ -363,6 +365,8 @@ export const CreateContestForm: React.FC<Props> = ({
             ? parseInt(maxNumberOfParticipants)
             : null,
         previousContestId: isUpdateContest ? previousContest : null,
+        token,
+        exchangeRate: contestVariables?.exchangeRate ?? 1,
       },
     })
   }, [
@@ -389,6 +393,8 @@ export const CreateContestForm: React.FC<Props> = ({
     hasLimitedContestants,
     previousContest,
     isUpdateContest,
+    token,
+    contestVariables?.exchangeRate,
   ])
 
   const isMinimum = useMemo(

@@ -20,6 +20,7 @@ type GetAdminPricingResponse = {
   total_price: number
   total_rewards: number
   type: PricingType
+  exchangeRate: number
 }[]
 
 type Pricing = {
@@ -34,6 +35,7 @@ type Pricing = {
   recLeadJudgeFixedPay: number
   recJudgingPrizePool: number
   length: number
+  exchangeRate: number
 }
 
 export const adminPricingQueryKey = (nSLOC: number, token: string) => ["contest-variables", nSLOC, token]
@@ -62,5 +64,6 @@ export const useAdminPricing = (nSLOC: number, token: string) =>
       recLeadJudgeFixedPay: recommendedPricing.lead_judge_fixed_pay,
       recJudgingPrizePool: recommendedPricing?.judging_prize_pool,
       length: minimumPricing.length,
+      exchangeRate: minimumPricing.exchangeRate,
     }
   })
