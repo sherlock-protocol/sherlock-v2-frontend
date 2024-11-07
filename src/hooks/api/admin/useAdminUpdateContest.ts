@@ -20,6 +20,8 @@ type AdminUpdateContestParams = {
   private?: boolean
   requiresKYC?: boolean
   maxNumberOfParticipants?: number | null
+  token: string
+  exchangeRate: number
 }
 
 export const useAdminUpdateContest = () => {
@@ -41,6 +43,8 @@ export const useAdminUpdateContest = () => {
           private: params.private,
           requires_kyc: params.requiresKYC,
           max_number_of_participants: params.maxNumberOfParticipants,
+          token: params.token,
+          exchange_rate: params.exchangeRate,
         })
       } catch (error) {
         const axiosError = error as AxiosError
