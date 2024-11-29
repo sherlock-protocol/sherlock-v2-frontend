@@ -108,6 +108,16 @@ export const CreateContestForm: React.FC<Props> = ({
   const [debouncedProtocolTwitter] = useDebounce(protocolTwitter, 300)
   const { data: twitterAccount } = useAdminTwitterAccount(debouncedProtocolTwitter)
 
+  useEffect(() => {
+    const pattern = /^(?:https?:\/\/)?(?:twitter\.com\/)?(?:x\.com\/)?(\w*)(?:.*)$/
+    const results = pattern.exec(debouncedProtocolTwitter)
+    const parsedValue = (!!results && results?.length) > 1 ? results?.[1] : null
+
+    if (parsedValue && parsedValue !== "" && parsedValue !== debouncedProtocolTwitter) {
+      setProtocolTwitter(parsedValue)
+    }
+  }, [setProtocolTwitter, debouncedProtocolTwitter])
+
   const [contestTitle, setContestTitle] = useState("")
   const [contestShortDescription, setShortDescription] = useState("")
   const [contestNSLOC, setContestNSLOC] = useState(contest?.nSLOC?.toString() ?? "")
