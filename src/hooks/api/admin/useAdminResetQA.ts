@@ -2,7 +2,6 @@ import { useMutation } from "wagmi"
 import { adminResetQA as adminResetQAUrl } from "../urls"
 import { contests as contestsAPI } from "../axios"
 import { useQueryClient } from "react-query"
-import { adminContestsQuery } from "./useAdminContests"
 import { adminContestQuery } from "./useAdminContest"
 
 type AdminResetQAParams = {
@@ -12,7 +11,7 @@ type AdminResetQAParams = {
 export const useAdminResetQA = () => {
   const queryClient = useQueryClient()
 
-  const { mutate, mutateAsync, ...mutation } = useMutation<void, Error, AdminResetQAParams>(
+  const { mutate, ...mutation } = useMutation<void, Error, AdminResetQAParams>(
     async (params) => {
       await contestsAPI.post(adminResetQAUrl(params.contestID))
     },

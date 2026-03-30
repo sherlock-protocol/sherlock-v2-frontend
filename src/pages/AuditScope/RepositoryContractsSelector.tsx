@@ -3,7 +3,6 @@ import {
   FaCaretDown,
   FaCaretRight,
   FaCheckCircle,
-  FaDotCircle,
   FaFile,
   FaFolder,
   FaMinusCircle,
@@ -89,10 +88,6 @@ export const TreeEntry: React.FC<TreeEntryProps> = ({
     [parentPath, tree, name]
   )
   const allSelected = useMemo(() => allSubPaths.every((p) => selectedPaths.includes(p)), [allSubPaths, selectedPaths])
-  const allInInitialScope = useMemo(
-    () => initialScope?.files.filter((f) => f.selected).map((f) => f.filePath) ?? [],
-    [initialScope]
-  )
 
   const isCollapsed = collapsedEntries.includes(`${parentPath}/${name}`)
 

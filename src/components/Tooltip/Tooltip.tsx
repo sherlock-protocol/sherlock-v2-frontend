@@ -15,7 +15,6 @@ import {
   safePolygon,
 } from "@floating-ui/react"
 import type { Placement } from "@floating-ui/react"
-import cx from "classnames"
 
 interface TooltipOptions {
   initialOpen?: boolean

@@ -14,10 +14,9 @@ import { shortenCommitHash } from "../../../utils/repository"
 import { BranchSelectionModal } from "../../AuditScope/BranchSelectionModal"
 import { CommitSelectionModal } from "../../AuditScope/CommitSelectionModal"
 import { RepositoryContractsSelector } from "../../AuditScope/RepositoryContractsSelector"
-import { repositoryContractsQuery, useRepositoryContracts } from "../../../hooks/api/scope/useRepositoryContracts"
+import { useRepositoryContracts } from "../../../hooks/api/scope/useRepositoryContracts"
 import { SaveScopeSuccessModal } from "./SaveScopeSuccessModal"
 import { ScopeErrorModal } from "./ScopeErrorModal"
-import { useQueryClient } from "react-query"
 
 export const AdminScope = () => {
   const [repoLink, setRepoLink] = useState("")
@@ -39,8 +38,6 @@ export const AdminScope = () => {
     isLoading: isLoadingContracts,
     error: contractsError,
   } = useRepositoryContracts(debouncedRepoName, commitHash ?? "")
-
-  const queryClient = useQueryClient()
 
   useEffect(() => {
     const pattern = /^https?:\/\/github\.com\/([A-Za-z0-9-]+\/[A-Za-z0-9-]+)(?:\.git)?(?:\/tree\/([A-Za-z0-9-]+))?$/

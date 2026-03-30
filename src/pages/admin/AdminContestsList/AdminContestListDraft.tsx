@@ -1,14 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import {
-  FaCaretDown,
-  FaCaretRight,
-  FaCaretUp,
-  FaClipboardList,
-  FaFilter,
-  FaTrash,
-  FaUndo,
-  FaUsers,
-} from "react-icons/fa"
+import { FaCaretRight, FaCaretUp, FaClipboardList, FaFilter, FaTrash, FaUndo, FaUsers } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -24,7 +15,6 @@ import { ContestResetInitialScopeModal } from "./ContestResetInitialScopeModal"
 import { DeleteDraftContestModal } from "./DeleteDraftContestModal"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../../components/Tooltip/Tooltip"
 import { DateTime } from "luxon"
-import { useNavigate } from "react-router-dom"
 
 type FilterType = "ALL" | "ONLY_SCOPE_SUBMITTED" | "ONLY_SCOPE_NOT_SUBMITTED"
 

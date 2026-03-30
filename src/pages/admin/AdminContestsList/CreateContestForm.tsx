@@ -10,7 +10,6 @@ import { Title } from "../../../components/Title"
 import { useAdminProtocol } from "../../../hooks/api/admin/useAdminProtocol"
 import { Field } from "../../Claim/Field"
 import { useAdminTwitterAccount } from "../../../hooks/api/admin/useTwitterAccount"
-import { useAdminContestVariables } from "../../../hooks/api/admin/useAdminContestVariables"
 import { commify } from "../../../utils/units"
 import { Text } from "../../../components/Text"
 import TokenInput from "../../../components/TokenInput/TokenInput"
@@ -134,8 +133,6 @@ export const CreateContestForm: React.FC<Props> = ({
   const [initialCustomLswFixedPay, setInitialCustomLswFixedPay] = useState<BigNumber | undefined>(BigNumber.from(0))
 
   const [startDateError, setStartDateError] = useState<string>()
-  const [shortDescriptionError, setShortDescriptionError] = useState<string>()
-
   const displayProtocolInfo = !!protocol || protocolNotFound || protocolLoading
 
   const [token, setToken] = useState(contest?.token ?? "USDC")
@@ -190,7 +187,7 @@ export const CreateContestForm: React.FC<Props> = ({
       .sub(contestLeadJudgeFixedPay ?? BigNumber.from(0))
 
     setInitialAuditContestRewards(contestAuditRewards?.add(diff ?? BigNumber.from(0)))
-  }, [contestTotalRewards, setInitialAuditContestRewards])
+  }, [contestTotalRewards, contestAuditRewards, contestJudgingPrizePool, contestLeadJudgeFixedPay])
 
   useEffect(() => {
     if (protocol?.name) {
@@ -584,7 +581,7 @@ export const CreateContestForm: React.FC<Props> = ({
         )}
         {draft ? null : (
           <Column spacing="s">
-            <Field label="Short Description" error={!!shortDescriptionError} errorMessage={shortDescriptionError ?? ""}>
+            <Field label="Short Description">
               <Input value={contestShortDescription} onChange={setShortDescription} />
             </Field>
             <Row spacing="s">

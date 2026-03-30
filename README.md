@@ -13,8 +13,8 @@ This is interface for Sherlock - a protocol for decentralized exploit protection
 ## Installation
 
 Requirements:
- - **Node.js** version `>=14.18.0`
- - **npm** version `8.3.0`
+ - **Node.js** version `>=20.18.3`
+ - **npm** version `10.8.2`
 
 ```bash
 $ git clone https://github.com/sherlock-protocol/sherlock-v2-frontend.git

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react"
+import React, { useCallback, useMemo } from "react"
 import { Outlet } from "react-router-dom"
 import { Footer } from "./components/Footer"
 import { Header, NavigationLink } from "./components/Header"
@@ -10,11 +10,9 @@ import { Button } from "./components/Button"
 import { Box } from "./components/Box"
 import { useAdminSignIn } from "./hooks/api/admin/useAdminSignIn"
 import { ErrorModal } from "./pages/ContestDetails/ErrorModal"
-import { useAccount } from "wagmi"
 
 const AppInternal = () => {
   const { data: adminAddress } = useAdminProfile()
-  const { address: connectedAddress } = useAccount()
   const { signIn, error, reset } = useAdminSignIn()
 
   const handleSignInAsAdmin = useCallback(() => {

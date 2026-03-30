@@ -73,7 +73,7 @@ export const ProtocolPage: React.FC = () => {
       )
 
       if (found) {
-        const [_, protocol] = found
+        const [, protocol] = found
         setSelectedProtocolId(protocol.bytesIdentifier)
       }
     }

@@ -2,11 +2,6 @@ import { useQuery } from "react-query"
 import { contests as contestsAPI } from "../axios"
 import { getAdminTwitterAccount as getAdminTwitterAccountUrl } from "../urls"
 
-type TwitterAccount = {
-  username: string
-  profilePictureURL: string
-}
-
 type AdminTwitterAccountResponse = {
   username: string
   profile_image_url: string

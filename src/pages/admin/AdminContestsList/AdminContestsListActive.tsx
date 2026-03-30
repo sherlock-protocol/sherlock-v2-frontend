@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
 import { useCallback, useEffect, useState } from "react"
-import { FaClipboardList, FaFastForward, FaPlus, FaEdit, FaRegListAlt, FaUsers } from "react-icons/fa"
+import { FaClipboardList, FaFastForward, FaEdit, FaRegListAlt, FaUsers } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"

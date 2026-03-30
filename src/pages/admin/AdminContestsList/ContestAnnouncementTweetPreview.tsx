@@ -1,5 +1,5 @@
 import TweetCard from "react-tweet-card"
-import { Column, Row } from "../../../components/Layout"
+import { Column } from "../../../components/Layout"
 import { useAdminContestTweetPreview } from "../../../hooks/api/admin/useAdminContestTweetPreview"
 
 type Props = {
