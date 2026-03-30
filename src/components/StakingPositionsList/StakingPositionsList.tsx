@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react"
+import React, { useEffect } from "react"
 import { useAccount } from "wagmi"
 
 import StakingPositionItem from "../StakingPosition/StakingPosition"

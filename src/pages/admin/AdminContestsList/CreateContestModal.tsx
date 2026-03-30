@@ -7,7 +7,7 @@ import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
 import { useAdminCreateContest } from "../../../hooks/api/admin/useAdminCreateContest"
 import { ErrorModal } from "../../../pages/ContestDetails/ErrorModal"
-import { ContestValues, CreateContestForm } from "./CreateContestForm"
+import { CreateContestForm } from "./CreateContestForm"
 
 type Props = ModalProps & {}
 

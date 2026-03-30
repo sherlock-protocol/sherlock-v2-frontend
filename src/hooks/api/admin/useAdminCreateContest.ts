@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from "react-query"
 import { adminContestsQuery } from "./useAdminContests"
 import { adminCreateContest as adminCreateContestUrl } from "../urls"
 import { contests as contestsAPI } from "../axios"
-import { DateTime } from "luxon"
 import { AxiosError } from "axios"
 
 type AdminCreateContestParams = {
@@ -22,7 +21,7 @@ type AdminCreateContestParams = {
 
 export const useAdminCreateContest = () => {
   const queryClient = useQueryClient()
-  const { mutate, mutateAsync, ...mutation } = useMutation<void, Error, AdminCreateContestParams>(
+  const { mutate, ...mutation } = useMutation<void, Error, AdminCreateContestParams>(
     async (params) => {
       try {
         await contestsAPI.post(adminCreateContestUrl(), {

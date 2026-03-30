@@ -8,7 +8,6 @@ import { Table, TBody, Td, Tr } from "../../../components/Table/Table"
 import { Text } from "../../../components/Text"
 import { Title } from "../../../components/Title"
 import { useAdminContestScope } from "../../../hooks/api/admin/useAdminContestScope"
-import { useContest } from "../../../hooks/api/contests"
 
 import styles from "./AdminContestsList.module.scss"
 import { useAdminResetScope } from "../../../hooks/api/admin/useAdminResetScope"
