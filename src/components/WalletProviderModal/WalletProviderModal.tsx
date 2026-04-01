@@ -1,9 +1,8 @@
 import React, { useCallback } from "react"
-import { useConnect } from "wagmi"
+import { useConnect, useConnectors } from "wagmi"
 import Modal from "../Modal/Modal"
 import styles from "./WalletProviderModal.module.scss"
 import { ReactComponent as Metamask } from "../../assets/icons/metamask.svg"
-import { ReactComponent as WalletConnect } from "../../assets/icons/walletconnect.svg"
 import { Title } from "../Title"
 import { Text } from "../Text"
 import { Column, Row } from "../Layout"
@@ -17,7 +16,8 @@ interface Props {
  * wallet providers, in order to connect to the web application.
  */
 const WalletProviderModal: React.FC<Props> = ({ onClose }) => {
-  const { connectAsync, connectors } = useConnect()
+  const connect = useConnect()
+  const connectors = useConnectors()
 
   /**
    * Connects via given connector
@@ -32,10 +32,10 @@ const WalletProviderModal: React.FC<Props> = ({ onClose }) => {
         return
       }
 
-      await connectAsync({ connector })
+      await connect.mutateAsync({ connector })
       onClose()
     },
-    [connectors, connectAsync, onClose]
+    [connectors, connect, onClose]
   )
 
   return (
@@ -51,23 +51,6 @@ const WalletProviderModal: React.FC<Props> = ({ onClose }) => {
             <Metamask height={45} width={45} />
             <Title>MetaMask</Title>
             <Text>Connect to your MetaMask wallet</Text>
-          </Column>
-        </Row>
-        <Row>
-          <Column grow={1}>
-            <hr className={styles.divider} />
-          </Column>
-        </Row>
-        <Row>
-          <Column
-            alignment="center"
-            grow={1}
-            className={styles.provider}
-            onClick={(e) => handleConnectWithConnector(e, "walletConnect")}
-          >
-            <WalletConnect height={45} width={45} />
-            <Title>WalletConnect</Title>
-            <Text>Scan with WalletConnect to connect</Text>
           </Column>
         </Row>
       </Column>

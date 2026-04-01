@@ -38,7 +38,7 @@ function App() {
   const { signOut, profile } = useAuthentication()
 
   const addressIsAllowed = useCallback(
-    (address: string) => profile?.addresses.some((a) => a.address === address),
+    (address: string) => (profile?.addresses ?? []).some((a) => a.address === address),
     [profile]
   )
 

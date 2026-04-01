@@ -4,7 +4,7 @@ import { Config } from "./ConfigType"
 export const config: Config = {
   networkId: 1,
   sherBuyEntryDeadline: 1647100800,
-  alchemyApiUrl: "wss://eth-mainnet.alchemyapi.io/v2/H7GQZq65vKCHEh5cnz_luQmYM8HWWcr-",
+  alchemyApiUrl: "https://eth-mainnet.g.alchemy.com/v2/H7GQZq65vKCHEh5cnz_luQmYM8HWWcr-",
   indexerBaseUrl: "https://mainnet-indexer.sherlock.xyz/",
   contestsApiBaseUrl: "https://mainnet-contest.sherlock.xyz/",
   sherlockAddress: "0x0865a889183039689034dA55c1Fd12aF5083eabF",

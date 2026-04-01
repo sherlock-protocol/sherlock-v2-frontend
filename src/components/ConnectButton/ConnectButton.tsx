@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useCallback, useEffect, useState } from "react"
-import { useAccount, useNetwork, useSwitchNetwork } from "wagmi"
+import { useAccount, useChainId, useSwitchChain } from "wagmi"
 import config from "../../config"
 import { shortenAddress } from "../../utils/format"
 import { setUser } from "../../utils/sentry"
@@ -18,8 +18,8 @@ const ConnectButton: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
   const [isAccountModalVisible, setIsAccountModalVisible] = useState(false)
   const [isCorrectNetwork, setIsCorrectNetwork] = useState(false)
 
-  const { chain } = useNetwork()
-  const { switchNetwork } = useSwitchNetwork()
+  const chainId = useChainId()
+  const switchChain = useSwitchChain()
   const { address: connectedAddress, isConnected } = useAccount()
 
   /**
@@ -33,15 +33,15 @@ const ConnectButton: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
    * Check if network is the right one
    */
   useEffect(() => {
-    setIsCorrectNetwork(chain?.id === config.networkId)
-  }, [chain?.id])
+    setIsCorrectNetwork(chainId === config.networkId)
+  }, [chainId])
 
   /**
    * Triggers a network switch to the correct network
    */
   const handleSwitchToCorrectNetwork = useCallback(() => {
-    switchNetwork?.(config.networkId)
-  }, [switchNetwork])
+    switchChain.mutate({ chainId: config.networkId })
+  }, [switchChain])
 
   /**
    * Toggles the connection modal visibility

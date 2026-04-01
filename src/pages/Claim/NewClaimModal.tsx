@@ -3,7 +3,8 @@ import React, { useState, useCallback, useEffect } from "react"
 import { Modal, Props as ModalProps } from "../../components/Modal/Modal"
 import { BigNumber, ethers } from "ethers"
 import { useQueryClient } from "react-query"
-import { Address, useAccount, useProvider } from "wagmi"
+import type { Address } from "viem"
+import { useAccount } from "wagmi"
 import { Button } from "../../components/Button"
 import { Text } from "../../components/Text"
 import { Protocol } from "../../hooks/api/protocols"
@@ -21,6 +22,7 @@ import { useDebounce } from "use-debounce"
 import { useWaitForBlock } from "../../hooks/api/useWaitForBlock"
 import { activeClaimQueryKey } from "../../hooks/api/claims"
 import { DateTime } from "luxon"
+import { useEthersProvider } from "../../utils/wagmiEthers"
 
 type Props = ModalProps & {
   protocol: Protocol
@@ -45,7 +47,7 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
   const [canStartNewClaim, setCanStartNewClaim] = useState(false)
 
   const { waitForTx } = useWaitTx()
-  const provider = useProvider()
+  const provider = useEthersProvider()
   const { startClaim } = useClaimManager()
 
   /**
@@ -64,6 +66,9 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
       const inputAsBlockNumber = parseInt(debouncedExploitStartInput)
       if (!isNaN(inputAsBlockNumber)) {
         try {
+          if (!provider) {
+            return
+          }
           block = await provider.getBlock(inputAsBlockNumber)
         } catch (e) {
           // provider.getBlock throws if it couldn't find a block
@@ -73,6 +78,9 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
       // Checks if blockNumber hasn't resolved and input is a block hash
       if (!block) {
         try {
+          if (!provider) {
+            return
+          }
           block = await provider.getBlock(debouncedExploitStartInput)
         } catch (e) {
           // provider.getBlock throws if it couldn't find a block
@@ -82,6 +90,9 @@ export const NewClaimModal: React.FC<Props> = ({ protocol, onClose, ...props }) 
       // Checks if blockNumber hasn't resolved and input is a tx hash
       if (!block) {
         try {
+          if (!provider) {
+            return
+          }
           const tx = await provider.getTransaction(debouncedExploitStartInput)
           if (tx && tx.blockNumber) {
             block = await provider.getBlock(tx.blockNumber)

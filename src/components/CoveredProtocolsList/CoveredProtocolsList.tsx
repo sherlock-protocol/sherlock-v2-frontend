@@ -36,29 +36,39 @@ const CoveredProtocolsList: React.FC = () => {
 
     // Compute each protocol's max claimable amount
     const protocolsWithCoverages =
-      activeProtocols.map((item) => {
-        const [current] = item.coverages.sort(
-          (a, b) => b.coverageAmountSetAt.getTime() - a.coverageAmountSetAt.getTime()
-        )
-        const coverage = item.tvl?.lt(current.coverageAmount) ? item.tvl : current.coverageAmount
+      activeProtocols
+        .map((item) => {
+          if (!item.coverages || item.coverages.length === 0 || !item.tvl) {
+            return null
+          }
 
-        const percentageOfTotal = +((coverage.div(1e6).toNumber() * 100) / tvc.div(1e6).toNumber()).toFixed(2)
+          const [current] = item.coverages.sort(
+            (a, b) => b.coverageAmountSetAt.getTime() - a.coverageAmountSetAt.getTime()
+          )
+          if (!current) {
+            return null
+          }
 
-        return {
-          id: item.bytesIdentifier,
-          name: item.name,
-          website: item.website,
-          coverage,
-          percentageOfTotal,
-        }
-      }) ?? []
+          const coverage = item.tvl?.lt(current.coverageAmount) ? item.tvl : current.coverageAmount
+
+          const percentageOfTotal = +((coverage.div(1e6).toNumber() * 100) / tvc.div(1e6).toNumber()).toFixed(2)
+
+          return {
+            id: item.bytesIdentifier,
+            name: item.name,
+            website: item.website,
+            coverage,
+            percentageOfTotal,
+          }
+        })
+        ?.filter((item): item is NonNullable<typeof item> => !!item) ?? []
 
     // Sort protocols descending
     const sortedProtocols = protocolsWithCoverages.sort((a, b) => b.percentageOfTotal - a.percentageOfTotal)
 
     // Fix rounding errors so percentages add up to 100%
     const totalPercentages = sortedProtocols.reduce((value, item) => item.percentageOfTotal + value, 0)
-    if (totalPercentages !== 100) {
+    if (sortedProtocols.length > 0 && totalPercentages !== 100) {
       const delta = totalPercentages - 100
       sortedProtocols[sortedProtocols.length - 1].percentageOfTotal -= delta
     }

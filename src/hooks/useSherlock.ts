@@ -1,8 +1,9 @@
 import React from "react"
-import { useAccount, useContract, useProvider, useSigner } from "wagmi"
+import { useAccount } from "wagmi"
 import SherlockABI from "../abi/Sherlock"
 import { BigNumber } from "ethers"
 import config from "../config"
+import { useEthersContract } from "./useEthersContract"
 
 /**
  * Address of Sherlock contract
@@ -17,14 +18,8 @@ export const SHERLOCK_ADDRESS = config.sherlockAddress
 const useSherlock = () => {
   const [tvl, setTvl] = React.useState<BigNumber>()
 
-  const provider = useProvider()
-  const { data: signerData } = useSigner()
   const { address: connectedAddress } = useAccount()
-  const contract = useContract({
-    address: SHERLOCK_ADDRESS,
-    signerOrProvider: signerData || provider,
-    abi: SherlockABI,
-  })
+  const contract = useEthersContract(SHERLOCK_ADDRESS, SherlockABI)
 
   /**
    * Fetch Sherlock's Total Value Locked

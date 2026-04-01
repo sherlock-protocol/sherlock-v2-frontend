@@ -1,8 +1,8 @@
 import { ethers, BigNumber } from "ethers"
 import { useCallback, useMemo } from "react"
-import { useContract, useProvider, useSigner } from "wagmi"
 import SherBuyABI from "../abi/SherBuy"
 import config from "../config"
+import { useEthersContract } from "./useEthersContract"
 
 /**
  * SherBuy smart contract address
@@ -31,13 +31,7 @@ export type CapitalRequirements = {
  */
 
 export const useSherBuyContract = () => {
-  const provider = useProvider()
-  const { data: signerData } = useSigner()
-  const contract = useContract({
-    address: SHER_BUY_ADDRESS,
-    abi: SherBuyABI,
-    signerOrProvider: signerData || provider,
-  })
+  const contract = useEthersContract(SHER_BUY_ADDRESS, SherBuyABI)
 
   /**
    * Fetch stakeRate & buyRate values and calculates the USDC to SHER ratio.

@@ -1,9 +1,9 @@
 import React, { useCallback } from "react"
-import { useContract, useProvider, useSigner } from "wagmi"
 
 import SherlockProtocolManagerABI from "../abi/SherlockProtocolManager"
 import { BigNumber } from "ethers"
 import config from "../config"
+import { useEthersContract } from "./useEthersContract"
 
 /**
  * Address of Sherlock Protocol Manager contract
@@ -16,13 +16,7 @@ export const SHERLOCK_PROTOCOL_MANAGER_ADDRESS = config.sherlockProtocolManagerA
  * See https://github.com/sherlock-protocol/sherlock-v2-core
  */
 const useProtocolManager = () => {
-  const provider = useProvider()
-  const { data: signerData } = useSigner()
-  const contract = useContract({
-    address: SHERLOCK_PROTOCOL_MANAGER_ADDRESS,
-    signerOrProvider: signerData || provider,
-    abi: SherlockProtocolManagerABI,
-  })
+  const contract = useEthersContract(SHERLOCK_PROTOCOL_MANAGER_ADDRESS, SherlockProtocolManagerABI)
 
   /**
    * Fetch a protocol's active balance.
