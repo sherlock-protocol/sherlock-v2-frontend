@@ -1,5 +1,6 @@
 import React, { PropsWithChildren } from "react"
 import { WagmiProvider as WagmiProviderCore, createConfig, http, injected } from "wagmi"
+import { walletConnect } from "wagmi/connectors"
 import { mainnet, goerli, hardhat, localhost, type Chain } from "wagmi/chains"
 import config from "../config"
 
@@ -27,7 +28,24 @@ const transports = Object.fromEntries(
 
 const wagmiConfig = createConfig({
   chains,
-  connectors: [injected()],
+  connectors: [
+    injected(),
+    walletConnect({
+      projectId: "67c86b4ce6dac476f6f20f41c4ef0364",
+      metadata: {
+        name: "Sherlock Audits",
+        description: "",
+        url: "sherlock.xyz",
+        icons: [],
+      },
+      showQrModal: true,
+      qrModalOptions: {
+        themeVariables: {
+          "--wcm-z-index": "1000",
+        },
+      },
+    }),
+  ],
   transports: transports as Record<number, ReturnType<typeof http>>,
   ssr: false,
 })
