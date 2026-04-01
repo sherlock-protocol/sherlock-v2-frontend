@@ -96,7 +96,11 @@ const AppProtocolDashboard = () => {
                           <Text strong>Contest Prize Pool</Text>
                         </Td>
                         <Td>
-                          <Text alignment="right">{`${commify(protocolDashboard.contest.prizePool)} USDC`}</Text>
+                          <Text alignment="right">
+                            {protocolDashboard.contest.prizePool
+                              ? ` ${commify(protocolDashboard.contest.prizePool)} USDC`
+                              : "TBD"}
+                          </Text>
                         </Td>
                       </Tr>
                       <Tr>
@@ -104,9 +108,11 @@ const AppProtocolDashboard = () => {
                           <Text strong>Lead Senior Watson Fixed Pay</Text>
                         </Td>
                         <Td>
-                          <Text alignment="right">{`${commify(
-                            protocolDashboard.contest.leadSeniorAuditorFixedPay
-                          )} USDC`}</Text>
+                          <Text alignment="right">
+                            {protocolDashboard.contest.leadSeniorAuditorFixedPay
+                              ? `${commify(protocolDashboard.contest.leadSeniorAuditorFixedPay)} USDC`
+                              : "TBD"}
+                          </Text>
                         </Td>
                       </Tr>
                       <Tr>

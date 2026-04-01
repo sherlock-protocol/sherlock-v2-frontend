@@ -1,9 +1,11 @@
 import { useCallback, useMemo } from "react"
-import { Address, useContract, useProvider, useSigner } from "wagmi"
+import type { Address } from "viem"
 import config from "../config"
 import SherlockClaimManagerABI from "../abi/SherlockClaimManager"
 import { BigNumber, ethers } from "ethers"
 import { formatUSDC } from "../utils/units"
+import { useEthersContract } from "./useEthersContract"
+import { useEthersProvider } from "../utils/wagmiEthers"
 
 export const SHERLOCK_CLAIM_MANAGER_ADDRESS = config.sherlockClaimManagerAddress
 
@@ -30,13 +32,8 @@ type BytesIdentifier = `0x${string}`
  * See https://github.com/sherlock-protocol/sherlock-v2-core/blob/main/contracts/managers/SherlockClaimManager.sol
  */
 export const useClaimManager = () => {
-  const provider = useProvider()
-  const { data: signerData } = useSigner()
-  const contract = useContract({
-    address: SHERLOCK_CLAIM_MANAGER_ADDRESS,
-    signerOrProvider: signerData || provider,
-    abi: SherlockClaimManagerABI,
-  })
+  const provider = useEthersProvider()
+  const contract = useEthersContract(SHERLOCK_CLAIM_MANAGER_ADDRESS, SherlockClaimManagerABI)
 
   /**
    * Start a claim (Supposed to be called by protocol's agent only)
@@ -58,6 +55,10 @@ export const useClaimManager = () => {
       coverageAgreement: HashedRemoteFile,
       additionalResources?: HashedRemoteFile
     ) => {
+      if (!provider) {
+        return
+      }
+
       const block = await provider.getBlock(exploitStartBlock)
       const ancillaryData = encodeAncillaryData(
         protocol,

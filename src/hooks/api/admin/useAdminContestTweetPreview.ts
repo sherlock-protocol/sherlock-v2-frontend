@@ -4,8 +4,8 @@ import { getAdminContestTweetPreview as getAdminContestTweetPreviewUrl } from ".
 
 export const adminContestTweetPreviewKey = (contestID: number) => ["contest-tweet-preview", contestID]
 export const useAdminContestTweetPreview = (contestID: number) =>
-  useQuery<string, Error>(adminContestTweetPreviewKey(contestID), async () => {
-    const { data } = await contestsAPI.get<string>(getAdminContestTweetPreviewUrl(contestID))
+  useQuery<string[], Error>(adminContestTweetPreviewKey(contestID), async () => {
+    const { data } = await contestsAPI.get<{ tweets: string[] }>(getAdminContestTweetPreviewUrl(contestID))
 
-    return data
+    return data.tweets
   })

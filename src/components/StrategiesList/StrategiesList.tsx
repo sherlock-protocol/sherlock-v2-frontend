@@ -51,7 +51,7 @@ const StrategiesList: React.FC = () => {
 
     // Fix rounding errors so percentages add up to 100%
     const totalPercentages = sortedStrategies.reduce((value, item) => item.percentageOfTotal + value, 0)
-    if (totalPercentages !== 100) {
+    if (sortedStrategies.length > 0 && totalPercentages !== 100) {
       const delta = totalPercentages - 100
       sortedStrategies[sortedStrategies.length - 1].percentageOfTotal -= delta
     }

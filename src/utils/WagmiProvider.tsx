@@ -1,11 +1,7 @@
 import React, { PropsWithChildren } from "react"
-import { WagmiConfig, configureChains, createClient } from "wagmi"
-import { mainnet, goerli, hardhat, localhost, Chain } from "wagmi/chains"
-import { InjectedConnector } from "wagmi/connectors/injected"
-import { publicProvider } from "wagmi/providers/public"
-import { alchemyProvider } from "wagmi/providers/alchemy"
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc"
-import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
+import { WagmiProvider as WagmiProviderCore, createConfig, http, injected } from "wagmi"
+import { walletConnect } from "wagmi/connectors"
+import { mainnet, goerli, hardhat, localhost, type Chain } from "wagmi/chains"
 import config from "../config"
 
 // API key for Alchemy project
@@ -21,27 +17,20 @@ if (process.env.NODE_ENV === "development") {
   chains.push(localhost)
 }
 
-const {
-  provider,
-  webSocketProvider,
-  chains: configuredChains,
-} = configureChains(chains, [
-  alchemyProvider({ apiKey: alchemyApiKey }),
-  publicProvider(),
-  jsonRpcProvider({
-    rpc: () => ({
-      http: "http://127.0.0.1:8545",
-    }),
-  }),
-])
+const transports = Object.fromEntries(
+  chains.map((chain) => {
+    const isMainnet = chain.id === mainnet.id
+    const hasAlchemy = Boolean(alchemyApiKey) && isMainnet
+    const url = hasAlchemy ? alchemyApiUrl : chain.rpcUrls.default.http[0]
+    return [chain.id, http(url)]
+  })
+)
 
-const connectors = [
-  new InjectedConnector({
-    chains: configuredChains,
-  }),
-  new WalletConnectConnector({
-    chains: configuredChains,
-    options: {
+const wagmiConfig = createConfig({
+  chains,
+  connectors: [
+    injected(),
+    walletConnect({
       projectId: "67c86b4ce6dac476f6f20f41c4ef0364",
       metadata: {
         name: "Sherlock Audits",
@@ -55,12 +44,12 @@ const connectors = [
           "--wcm-z-index": "1000",
         },
       },
-    },
-  }),
-]
-
-const client = createClient({ provider, webSocketProvider, connectors, autoConnect: true })
+    }),
+  ],
+  transports: transports as Record<number, ReturnType<typeof http>>,
+  ssr: false,
+})
 
 export const WagmiProvider: React.FC<PropsWithChildren<unknown>> = ({ children }) => (
-  <WagmiConfig client={client}>{children}</WagmiConfig>
+  <WagmiProviderCore config={wagmiConfig}>{children}</WagmiProviderCore>
 )

@@ -1,6 +1,6 @@
 import { Chart } from "../../components/Chart/Chart"
 import { DateTime } from "luxon"
-import { useTVCOverTime } from "../../hooks/api/stats"
+import { useExternalCoverageOverTime } from "../../hooks/api/stats"
 import { useMemo } from "react"
 import { utils } from "ethers"
 
@@ -17,11 +17,11 @@ const tooltipTitles: Record<string, string> = {
 const nexusStartDate = DateTime.fromSeconds(config.nexusMutualStartTimestamp)
 
 export const ExcessCoverageChart = () => {
-  const { data: tvcData } = useTVCOverTime()
+  const { data: externalCoverageData } = useExternalCoverageOverTime()
 
   const chartData = useMemo(
     () =>
-      tvcData?.reduce<{ name: number; value: number }[]>((dataPoints, item) => {
+      externalCoverageData?.reduce<{ name: number; value: number }[]>((dataPoints, item) => {
         const date = DateTime.fromSeconds(item.timestamp)
 
         if (nexusStartDate.diff(date, "days").days < 5) {
@@ -31,13 +31,13 @@ export const ExcessCoverageChart = () => {
 
           dataPoints.push({
             name: item.timestamp,
-            value: date > nexusStartDate ? Number(utils.formatUnits(item.value.mul(25).div(100), 6)) : 0,
+            value: Number(utils.formatUnits(item.value, 6)),
           })
         }
 
         return dataPoints
       }, []),
-    [tvcData]
+    [externalCoverageData]
   )
 
   const totalAmount = useMemo(() => {

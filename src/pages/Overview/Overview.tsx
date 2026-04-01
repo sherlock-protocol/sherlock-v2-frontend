@@ -6,16 +6,14 @@ import { Column, Row } from "../../components/Layout"
 import { Title } from "../../components/Title"
 import { Chart } from "../../components/Chart/Chart"
 
-import { useTVCOverTime, useTVLOverTime } from "../../hooks/api/stats"
+import { useTVCOverTime, useTVLOverTime, useExternalCoverageOverTime } from "../../hooks/api/stats"
 
 import styles from "./Overview.module.scss"
 import APYChart from "../../components/APYChart/APYChart"
 import CoveredProtocolsList from "../../components/CoveredProtocolsList/CoveredProtocolsList"
 import { formatAmount } from "../../utils/format"
 import StrategiesList from "../../components/StrategiesList/StrategiesList"
-import config from "../../config"
 import { ExcessCoverageChart } from "./ExcessCoverageChart"
-import { Text } from "../../components/Text"
 import ClaimsList from "../../components/ClaimsList/ClaimsList"
 
 type ChartDataPoint = {
@@ -26,33 +24,19 @@ type ChartDataPoint = {
 export const OverviewPage: React.FC = () => {
   const { data: tvlData } = useTVLOverTime()
   const { data: tvcData } = useTVCOverTime()
+  const { data: externalCoverageData } = useExternalCoverageOverTime()
 
   const chartsData = useMemo(() => {
-    if (!tvlData || !tvcData) return
+    if (!tvlData || !tvcData || !externalCoverageData) return
 
     const tvcChartData: ChartDataPoint[] = []
     const tvlChartData: ChartDataPoint[] = []
     const capitalEfficiencyChartData: ChartDataPoint[] = []
 
-    for (let i = 0, j = 0; i < tvlData.length && j < tvcData.length; ) {
-      const tvcDataPointDate = DateTime.fromSeconds(tvcData[i].timestamp)
-      const tvlDataPointDate = DateTime.fromSeconds(tvlData[j].timestamp)
-
-      let tvc = tvcData[i]
-      let tvl = tvlData[j]
-
-      if (tvcDataPointDate.day !== tvlDataPointDate.day) {
-        if (tvcDataPointDate < tvlDataPointDate) {
-          tvl = j > 0 ? tvlData[j - 1] : tvlData[j]
-          i++
-        } else {
-          tvc = i > 0 ? tvcData[i - 1] : tvcData[i]
-          j++
-        }
-      } else {
-        i++
-        j++
-      }
+    for (let i = 0; i < tvcData.length; i++) {
+      const tvc = tvcData[i]
+      const tvl = tvlData[i]
+      const externalCoverage = externalCoverageData[i]
 
       const timestamp = Math.min(tvc.timestamp, tvl.timestamp)
 
@@ -66,9 +50,10 @@ export const OverviewPage: React.FC = () => {
         value: Number(utils.formatUnits(tvl.value, 6)),
       }
 
-      // TVC is increased by 25% due to our agreement with Nexus.
-      // To calculate capital efficiency, we only used what is being covered by Sherlock's staking pool.
-      const sherlockTVC = timestamp > config.nexusMutualStartTimestamp ? tvc.value.mul(75).div(100) : tvc.value
+      // External coverage is subtracted from the total TVC due to our agreement with Nexus
+      // and only a part of the TVC is covereged by Sherlock's staking pool.
+      // const sherlockTVC = timestamp > config.nexusMutualStartTimestamp ? tvc.value.mul(75).div(100) : tvc.value
+      const sherlockTVC = tvc.value.sub(externalCoverage.value)
 
       const capitalEfficiencyDataPoint = {
         name: timestamp,
@@ -83,7 +68,10 @@ export const OverviewPage: React.FC = () => {
 
       tvcChartData.push(tvcDataPoint)
       tvlChartData.push(tvlDataPoint)
-      capitalEfficiencyChartData.push(capitalEfficiencyDataPoint)
+
+      if (capitalEfficiencyDataPoint.value > 0) {
+        capitalEfficiencyChartData.push(capitalEfficiencyDataPoint)
+      }
     }
 
     return {
@@ -91,7 +79,7 @@ export const OverviewPage: React.FC = () => {
       tvlChartData,
       capitalEfficiencyChartData,
     }
-  }, [tvlData, tvcData])
+  }, [tvlData, tvcData, externalCoverageData])
 
   return (
     <Column spacing="m" className={styles.container}>

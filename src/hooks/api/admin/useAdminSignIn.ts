@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "react-query"
-import { Address, useAccount, useNetwork, useSignMessage } from "wagmi"
+import type { Address } from "viem"
+import { useAccount, useChainId, useSignMessage } from "wagmi"
 import { SiweMessage } from "siwe"
 import { contests as contestsAPI } from "../axios"
 import { getAdminNonce as getAdminNonceUrl, adminSignIn as adminSignInUrl } from "../urls"
@@ -23,7 +24,7 @@ type AdminSignInParams = {
 
 export const useAdminSignIn = () => {
   const { address: connectedAddress } = useAccount()
-  const { chain } = useNetwork()
+  const chainId = useChainId()
   const { signMessageAsync, reset: resetSignature, isLoading: signatureIsLoading } = useSignMessage()
   const queryClient = useQueryClient()
 
@@ -62,7 +63,7 @@ export const useAdminSignIn = () => {
         domain: "app.sherlock.xyz",
         address: connectedAddress,
         statement: "Sign in with Ethereum to Sherlock Audits",
-        chainId: chain?.id,
+        chainId,
         uri: "https://app.sherlock.xyz",
         version: "1",
         nonce,
@@ -77,7 +78,7 @@ export const useAdminSignIn = () => {
     } catch (error) {
       console.error(error)
     }
-  }, [mutate, connectedAddress, signMessageAsync, chain?.id])
+  }, [mutate, connectedAddress, signMessageAsync, chainId])
 
   const reset = useCallback(() => {
     resetSignature()

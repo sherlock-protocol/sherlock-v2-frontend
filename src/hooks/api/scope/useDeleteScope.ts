@@ -36,7 +36,7 @@ export const useDeleteScope = () => {
 
         const previousScope = queryClient.getQueryData<Scope>(scopeQueryKey(params.protocolDashboardID))
 
-        queryClient.setQueryData<Scope | undefined>(scopeQueryKey(params.protocolDashboardID), (previous) =>
+        queryClient.setQueryData<Scope[] | undefined>(scopeQueryKey(params.protocolDashboardID), (previous) =>
           previous?.filter((s) => s.repoName !== params.repoName)
         )
 

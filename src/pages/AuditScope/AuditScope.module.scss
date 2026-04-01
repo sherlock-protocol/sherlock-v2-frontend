@@ -77,6 +77,11 @@
             opacity: 1;
           }
         }
+
+        .addedNSLOC {
+          color: #58c322;
+          font-weight: bold;
+        }
       }
     }
   }
@@ -103,4 +108,21 @@
       color: $alternate-pink;
     }
   }
+}
+
+.nslocDiff {
+  color: #ffa837 !important;
+}
+
+.fileAdded {
+  color: #91e467 !important;
+}
+
+.fileRemoved {
+  color: #ef3131 !important;
+  opacity: 1 !important;
+}
+
+.fileSame {
+  color: $primary-purple !important;
 }

@@ -16,7 +16,7 @@ import { Title } from "../Title"
 
 export type NavigationLink = {
   title: string
-  route: Route
+  route: Route | string
   external?: boolean
   protected?: boolean
 }
@@ -48,6 +48,8 @@ type HeaderProps = {
    * URL of logo. Default to Sherlock's
    */
   logoURL?: string
+
+  includePayouts?: boolean
 }
 
 /**
@@ -60,6 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
   connectButton = true,
   title,
   logoURL,
+  includePayouts,
 }) => {
   const { authenticate } = useAuthentication()
   const { data: authenticatedProfile, isFetched } = useProfile()
@@ -104,6 +107,7 @@ export const Header: React.FC<HeaderProps> = ({
                 {navLink.external && <FaExternalLinkAlt />}
               </CustomLink>
             ))}
+            {includePayouts ? <a href="https://audits.sherlock.xyz/admin/payouts">PAYOUTS</a> : null}
           </Row>
         </div>
       )}

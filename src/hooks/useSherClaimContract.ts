@@ -1,8 +1,9 @@
 import { useCallback, useMemo } from "react"
-import { Address, useContract, useProvider, useSigner } from "wagmi"
+import type { Address } from "viem"
 import SherClaimInterface from "../abi/SherClaim"
 import { DateTime } from "luxon"
 import config from "../config"
+import { useEthersContract } from "./useEthersContract"
 
 export const SHER_CLAIM_ADDRESS = config.sherClaimAddress
 export const SHER_BUY_ENTRY_DEADLINE = Number.isInteger(config.sherBuyEntryDeadline) ? config.sherBuyEntryDeadline : 0
@@ -16,13 +17,7 @@ export const SHER_CLAIM_START = SHER_BUY_ENTRY_DEADLINE + 60 * 60 * 24 * 7 * 26 
  */
 
 export const useSherClaimContract = () => {
-  const provider = useProvider()
-  const { data: signerData } = useSigner()
-  const contract = useContract({
-    address: SHER_CLAIM_ADDRESS,
-    abi: SherClaimInterface,
-    signerOrProvider: signerData || provider,
-  })
+  const contract = useEthersContract(SHER_CLAIM_ADDRESS, SherClaimInterface)
 
   /**
    * Fetch date at which tokens become available to claim.

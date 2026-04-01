@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { useProvider } from "wagmi"
 import config from "../config"
+import { useEthersProvider } from "../utils/wagmiEthers"
 
 type Status = {
   isValid: boolean
@@ -9,7 +9,7 @@ type Status = {
 }
 
 export const useValidateTransaction = (txHash: string) => {
-  const provider = useProvider({ chainId: config.networkId })
+  const provider = useEthersProvider(config.networkId)
 
   const [status, setStatus] = useState<Status>({
     isValid: false,
@@ -28,6 +28,15 @@ export const useValidateTransaction = (txHash: string) => {
     }
 
     const validateTx = async () => {
+      if (!provider) {
+        setStatus({
+          isLoading: false,
+          isError: true,
+          isValid: false,
+        })
+        return
+      }
+
       setStatus({
         isLoading: true,
         isError: false,

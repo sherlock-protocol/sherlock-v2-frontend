@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
-import { useCallback, useState } from "react"
-import { FaClipboardList, FaEye, FaFastForward, FaPlus, FaBullseye } from "react-icons/fa"
+import { useCallback, useEffect, useState } from "react"
+import { FaClipboardList, FaFastForward, FaEdit, FaRegListAlt, FaUsers } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -12,8 +12,11 @@ import { ContestsListItem, useAdminContests } from "../../../hooks/api/admin/use
 
 import styles from "./AdminContestsList.module.scss"
 import { ConfirmContestActionModal } from "./ConfirmContestActionModal"
-import { CreateContestModal } from "./CreateContestModal"
 import { ContestScopeModal } from "./ContestScopeModal"
+import { UpdateContestModal } from "./UpdateContestModal"
+import { TelegramBotIndicator } from "./TelegramBotIndicator"
+import { GenerateReportSuccessModal } from "./GenerateReportSuccessModal"
+import { useAdminGenerateReport } from "../../../hooks/api/admin/useGenerateReport"
 
 type ContestLifeCycleStatus =
   | "WAITING_INITIAL_PAYMENT"
@@ -21,7 +24,6 @@ type ContestLifeCycleStatus =
   | "WAITING_FOR_SENIOR_SELECTION"
   | "READY_TO_PUBLISH"
   | "WAITING_ON_FINAL_PAYMENT"
-  | "WAITING_ON_FINALIZE_SUBMISSION"
   | "READY_TO_APPROVE_START"
   | "START_APPROVED"
   | "RUNNING"
@@ -29,22 +31,22 @@ type ContestLifeCycleStatus =
   | "ESCALATING"
   | "SHERLOCK_JUDGING"
   | "FINISHED"
+  | "DRAFT"
+  | "FINAL_REPORT_AVAILABLE"
+  | "FINAL_REPORT_AVAILABLE_TO_GENERATE"
 
 const getCurrentStatus = (contest: ContestsListItem): ContestLifeCycleStatus => {
   if (!contest.initialPayment) return "WAITING_INITIAL_PAYMENT"
   if (!contest.leadSeniorAuditorHandle && !contest.leadSeniorSelectionMessageSentAt) return "READY_TO_SELECT_SENIOR"
   if (!contest.leadSeniorAuditorHandle) return "WAITING_FOR_SENIOR_SELECTION"
   if (!contest.adminUpcomingApproved) return "READY_TO_PUBLISH"
-  if (!contest.fullPayment) return "WAITING_ON_FINAL_PAYMENT"
-  if (!contest.submissionReady) return "WAITING_ON_FINALIZE_SUBMISSION"
+  if (!contest.fullPaymentComplete) return "WAITING_ON_FINAL_PAYMENT"
   if (!contest.adminStartApproved) return "READY_TO_APPROVE_START"
+  if (contest.status === "CREATED") return "START_APPROVED"
+  if (contest.auditReport) return "FINAL_REPORT_AVAILABLE"
+  if (contest.finalReportAvailable) return "FINAL_REPORT_AVAILABLE_TO_GENERATE"
 
-  switch (contest.status) {
-    case "CREATED":
-      return "START_APPROVED"
-    default:
-      return contest.status
-  }
+  return contest.status
 }
 
 const getForcedStatus = (contest: ContestsListItem): ContestLifeCycleStatus | undefined => {
@@ -74,9 +76,29 @@ type ConfirmationModal = {
 export const AdminContestsListActive = () => {
   const { data: contests, isLoading } = useAdminContests("active")
   const [confirmationModal, setConfirmationModal] = useState<ConfirmationModal | undefined>()
-  const [createContestModalOpen, setCreateContestModalOpen] = useState(false)
+  const [updateContestIndex, setUpdateContextIndex] = useState<number | undefined>()
   const [scopeModal, setScopeModal] = useState<number | undefined>()
   const [forceActionRowIndex, setForceActionRowIndex] = useState<number | undefined>()
+  const [reportGeneratedModalVisible, setReportGenerateModalVisible] = useState<number | undefined>()
+  const {
+    generateReport,
+    isLoading: generateReportIsLoading,
+    isSuccess,
+    reset,
+    variables,
+    data: reportURL,
+  } = useAdminGenerateReport()
+
+  useEffect(() => {
+    if (isSuccess) {
+      const index = contests?.findIndex((c) => c.id === variables?.contestID)
+      setReportGenerateModalVisible(index)
+      console.log("undef")
+    } else {
+      setReportGenerateModalVisible(undefined)
+      console.log("undef")
+    }
+  }, [isSuccess, setReportGenerateModalVisible, variables, contests])
 
   const handleActionClick = useCallback(
     (contestIndex: number, action: ContestAction) => {
@@ -110,6 +132,33 @@ export const AdminContestsListActive = () => {
       return i === index ? undefined : index
     })
   }, [])
+
+  const handleModalClose = useCallback(() => {
+    console.log("close")
+    reset()
+    setReportGenerateModalVisible(undefined)
+  }, [reset])
+
+  const handleGenerateReportClick = useCallback(
+    (index: number) => {
+      if (!contests) return
+
+      const contest = contests[index]
+      generateReport({ contestID: contest.id })
+    },
+    [generateReport, contests]
+  )
+
+  const handleViewReportClick = useCallback(
+    (index: number) => {
+      if (!contests) return
+
+      setReportGenerateModalVisible(index)
+
+      console.log(contests[index])
+    },
+    [contests, setReportGenerateModalVisible]
+  )
 
   const renderContestAction = useCallback(
     (contestIndex: number) => {
@@ -151,13 +200,28 @@ export const AdminContestsListActive = () => {
           </Button>
         )
 
+      if (status === "FINAL_REPORT_AVAILABLE_TO_GENERATE")
+        return (
+          <Button
+            size="normal"
+            variant={forceActionRowIndex === contestIndex ? "alternate" : "primary"}
+            onClick={() => handleGenerateReportClick(contestIndex)}
+            fullWidth
+          >
+            Generate Report
+          </Button>
+        )
+
+      if (status === "FINAL_REPORT_AVAILABLE")
+        return <Button onClick={() => handleViewReportClick(contestIndex)}>View report</Button>
+
       return (
         <Button variant="secondary" disabled fullWidth>
           -
         </Button>
       )
     },
-    [contests, handleActionClick, forceActionRowIndex]
+    [contests, handleActionClick, forceActionRowIndex, handleGenerateReportClick, handleViewReportClick]
   )
 
   const renderContestState = useCallback(
@@ -176,9 +240,7 @@ export const AdminContestsListActive = () => {
       }
 
       if (status === "WAITING_FOR_SENIOR_SELECTION") {
-        const timeLeft = DateTime.fromSeconds(contest.leadSeniorSelectionMessageSentAt)
-          .plus({ hours: 72 })
-          .diffNow(["days", "hours"])
+        const timeLeft = DateTime.fromSeconds(contest.leadSeniorSelectionDate).diffNow(["days", "hours"])
         return (
           <Column spacing="s">
             <Text variant="secondary">Lead Senior Watson selection in progress</Text>
@@ -196,9 +258,6 @@ export const AdminContestsListActive = () => {
       if (status === "WAITING_ON_FINAL_PAYMENT") {
         return <Text variant="secondary">Waiting on full payment</Text>
       }
-
-      if (status === "WAITING_ON_FINALIZE_SUBMISSION")
-        return <Text variant="secondary">Waiting of protocol to finalize submission</Text>
 
       if (status === "READY_TO_APPROVE_START") {
         return <Text variant="secondary">Ready to approve start</Text>
@@ -259,16 +318,8 @@ export const AdminContestsListActive = () => {
   )
 
   return (
-    <LoadingContainer loading={isLoading}>
+    <LoadingContainer loading={isLoading || generateReportIsLoading}>
       <Column spacing="l">
-        <Box shadow={false} fullWidth>
-          <Row alignment="center">
-            <Button variant="alternate" onClick={() => setCreateContestModalOpen(true)}>
-              <FaPlus />
-              &nbsp;Create contest
-            </Button>
-          </Row>
-        </Box>
         <Box shadow={false} fullWidth>
           <Title>CONTESTS</Title>
           <Table selectable={false} className={styles.contestsTable}>
@@ -300,6 +351,7 @@ export const AdminContestsListActive = () => {
                           <Text size="small" variant="secondary">
                             Starts {DateTime.fromSeconds(c.startDate).toFormat("LLLL d - t")}
                           </Text>
+                          <TelegramBotIndicator contest={c} />
                         </Column>
                       </Row>
                     </Td>
@@ -316,18 +368,20 @@ export const AdminContestsListActive = () => {
                         <Button
                           size="small"
                           variant="secondary"
-                          disabled={!c.adminUpcomingApproved}
-                          onClick={() => window.open(`/audits/contests/${c.id}`)}
+                          onClick={() => window.open(`https://audits.sherlock.xyz/admin/contests/${c.id}/watsons`)}
                         >
-                          <FaEye />
+                          <FaUsers />
                         </Button>
                         <Button
                           size="small"
                           variant="secondary"
-                          disabled={!c.hasSolidityMetricsReport}
-                          onClick={() => setScopeModal(c.id)}
+                          disabled={c.status !== "CREATED"}
+                          onClick={() => setUpdateContextIndex(index)}
                         >
-                          <FaBullseye />
+                          <FaEdit />
+                        </Button>
+                        <Button size="small" variant="secondary" onClick={() => setScopeModal(c.id)}>
+                          <FaRegListAlt />
                         </Button>
                       </Row>
                     </Td>
@@ -359,10 +413,22 @@ export const AdminContestsListActive = () => {
               force={forceActionRowIndex === confirmationModal.contestIndex}
             />
           )}
-          {createContestModalOpen && <CreateContestModal onClose={() => setCreateContestModalOpen(false)} />}
+          {updateContestIndex !== undefined && contests && (
+            <UpdateContestModal
+              onClose={() => setUpdateContextIndex(undefined)}
+              contest={contests[updateContestIndex]}
+            />
+          )}
           {scopeModal && <ContestScopeModal contestID={scopeModal} onClose={handleScopeModalClose} />}
         </Box>
       </Column>
+      {(reportGeneratedModalVisible === 0 || !!reportGeneratedModalVisible) && contests && (
+        <GenerateReportSuccessModal
+          contest={contests[reportGeneratedModalVisible]}
+          report={reportURL}
+          onClose={handleModalClose}
+        />
+      )}
     </LoadingContainer>
   )
 }

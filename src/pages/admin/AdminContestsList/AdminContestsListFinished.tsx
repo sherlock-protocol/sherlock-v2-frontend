@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
 import { useCallback, useEffect, useState } from "react"
-import { FaClipboardList, FaEye, FaFileDownload, FaRecycle, FaRedo } from "react-icons/fa"
+import { FaClipboardList, FaEye } from "react-icons/fa"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
 import { Column, Row } from "../../../components/Layout"
@@ -128,10 +128,12 @@ export const AdminContestsListFinished = () => {
                     <Row spacing="s" alignment="end">
                       {c.auditReport ? (
                         <Button onClick={() => handleViewReportClick(index)}>View report</Button>
-                      ) : (
+                      ) : c.finalReportAvailable ? (
                         <Button onClick={() => handleGenerateReportClick(index)} variant="alternate">
                           Generate
                         </Button>
+                      ) : (
+                        <span>Conditions not met for the final report to be generated</span>
                       )}
                     </Row>
                   </Td>

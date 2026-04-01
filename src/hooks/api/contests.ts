@@ -27,7 +27,6 @@ export type Contest = {
   judgingPrizePool?: number
   jugdingEndDate?: number // Timestamp in seconds.
   repo: string
-  linesOfCode?: string
   rewards: number
   judgingRepo: string
   escalationStartDate?: number // Timestamp in seconds.
@@ -118,7 +117,6 @@ type GetContestResponseData = {
   judging_prize_pool: number | null
   judging_ends_at?: number
   template_repo_name: string
-  lines_of_code: string
   lead_judge_handle: string
   lead_judge_fixed_pay: number
   rewards: number
@@ -153,7 +151,6 @@ export const useContest = (id: number) =>
         judgingPrizePool: response.judging_prize_pool ?? undefined,
         jugdingEndDate: response.judging_ends_at,
         repo: response.template_repo_name,
-        linesOfCode: response.lines_of_code,
         rewards: response.rewards,
         leadJudgeHandle: response.lead_judge_handle,
         leadJudgeFixedPay: response.lead_judge_fixed_pay,

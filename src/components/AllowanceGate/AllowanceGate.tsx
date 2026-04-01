@@ -8,7 +8,7 @@ import { Button } from "../Button/Button"
 import { Row } from "../Layout"
 import styles from "./AllowanceGate.module.scss"
 import cx from "classnames"
-import { Address } from "wagmi"
+import type { Address } from "viem"
 
 interface Props {
   /**

@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react"
-import { useProvider } from "wagmi"
+import { useEthersProvider } from "../utils/wagmiEthers"
 
 export const useCurrentBlockTime = () => {
-  const provider = useProvider()
+  const provider = useEthersProvider()
   const [timestamp, setTimestamp] = useState<number>()
 
   useEffect(() => {
     const getCurrentBlock = async () => {
+      if (!provider) {
+        return
+      }
+
       const lastBlockNumber = await provider.getBlockNumber()
       const block = await provider.getBlock(lastBlockNumber)
 

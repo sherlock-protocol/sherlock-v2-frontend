@@ -187,10 +187,10 @@ const Escalate: React.FC<Props> = ({ claim, protocol }) => {
       {!connectedAccountIsClaimInitiator && (
         <>
           <Row>
-            <Text size="small">Only the claim inintiator can escalate it to UMA.</Text>
+            <Text size="small">Only the claim initiator can escalate it to UMA.</Text>
           </Row>
           <Row>
-            <Text size="small">Please connnect using account with address {shortenAddress(claim.initiator)}</Text>
+            <Text size="small">Please connect using account with address {shortenAddress(claim.initiator)}</Text>
           </Row>
         </>
       )}

@@ -18,6 +18,7 @@ export type Props = Omit<InputProps<string>, "value" | "onChange"> & {
   token: InputToken
   onChange: (value?: BigNumber) => void
   initialValue?: BigNumber
+  displayTokenLabel?: boolean
 }
 
 export const decimalsByToken: Record<InputToken, number> = {
@@ -27,7 +28,14 @@ export const decimalsByToken: Record<InputToken, number> = {
 
 const decommify = (value: string) => value.replaceAll(",", "")
 
-export const TokenInput: React.FC<Props> = ({ balance, token, onChange, initialValue, ...props }) => {
+export const TokenInput: React.FC<Props> = ({
+  balance,
+  token,
+  onChange,
+  initialValue,
+  displayTokenLabel = true,
+  ...props
+}) => {
   const [amount, amountBN, setAmount, setAmountBN] = useAmountState(decimalsByToken[token])
   const { disabled } = props
 
@@ -62,11 +70,13 @@ export const TokenInput: React.FC<Props> = ({ balance, token, onChange, initialV
         <Column grow={1}>
           <Input value={commify(amount)} onChange={handleInputChange} {...props} />
         </Column>
-        <Column grow={0}>
-          <Text size="extra-large" strong>
-            {token}
-          </Text>
-        </Column>
+        {displayTokenLabel && (
+          <Column grow={0}>
+            <Text size="extra-large" strong>
+              {token}
+            </Text>
+          </Column>
+        )}
       </Row>
       {balance && !disabled && (
         <Row alignment={["end", "center"]} spacing="m">

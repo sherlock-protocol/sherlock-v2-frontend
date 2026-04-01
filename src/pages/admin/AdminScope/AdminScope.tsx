@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { FaCopy, FaDownload, FaGithub } from "react-icons/fa"
+import { FaGithub } from "react-icons/fa"
 import { useDebounce } from "use-debounce"
 import { Box } from "../../../components/Box"
 import { Button } from "../../../components/Button"
@@ -14,6 +14,9 @@ import { shortenCommitHash } from "../../../utils/repository"
 import { BranchSelectionModal } from "../../AuditScope/BranchSelectionModal"
 import { CommitSelectionModal } from "../../AuditScope/CommitSelectionModal"
 import { RepositoryContractsSelector } from "../../AuditScope/RepositoryContractsSelector"
+import { useRepositoryContracts } from "../../../hooks/api/scope/useRepositoryContracts"
+import { SaveScopeSuccessModal } from "./SaveScopeSuccessModal"
+import { ScopeErrorModal } from "./ScopeErrorModal"
 
 export const AdminScope = () => {
   const [repoLink, setRepoLink] = useState("")
@@ -21,13 +24,20 @@ export const AdminScope = () => {
   const [debouncedRepoName] = useDebounce(repoName, 300)
   const [branchName, setBranchName] = useState<string>()
   const [commitHash, setCommitHash] = useState<string>()
+  const [nSLOCAdjustment, setNSLOCAdjustment] = useState<number>()
   const [files, setFiles] = useState<string[]>([])
 
   const [branchSelectionModalOpen, setBranchSelectionModalOpen] = useState(false)
   const [commitSelectionModalOpen, setCommitSelectionModalOpen] = useState(false)
 
   const { data: repo, isLoading: repoIsLoading } = useRepository(debouncedRepoName)
-  const { submitScope, isLoading, data: report } = useAdminSubmitScope()
+  const { submitScope, isLoading, data: report, isSuccess } = useAdminSubmitScope()
+
+  const {
+    data: repoContracts,
+    isLoading: isLoadingContracts,
+    error: contractsError,
+  } = useRepositoryContracts(debouncedRepoName, commitHash ?? "")
 
   useEffect(() => {
     const pattern = /^https?:\/\/github\.com\/([A-Za-z0-9-]+\/[A-Za-z0-9-]+)(?:\.git)?(?:\/tree\/([A-Za-z0-9-]+))?$/
@@ -45,6 +55,10 @@ export const AdminScope = () => {
       setCommitHash(repo.mainBranch.commit)
     }
   }, [repo, branchName])
+
+  const handleErrorModalClose = useCallback(() => {
+    window.location.reload()
+  }, [])
 
   const handlePathSelected = useCallback(
     (selectedPaths: string[]) => {
@@ -75,12 +89,9 @@ export const AdminScope = () => {
     [setCommitHash]
   )
 
-  const handleSelectAll = useCallback(
-    (selectedPaths: string[]) => {
-      setFiles(selectedPaths)
-    },
-    [setFiles]
-  )
+  const handleSelectAll = useCallback(() => {
+    setFiles(repoContracts?.rawPaths ?? [])
+  }, [repoContracts])
 
   const handleClearSelection = useCallback(() => {
     setFiles([])
@@ -99,21 +110,15 @@ export const AdminScope = () => {
       branchName: branchName!,
       commitHash: commitHash!,
       files,
+      nSLOCAdjustment,
     })
-  }, [canGenerateReport, submitScope, repo, branchName, commitHash, files])
-
-  const handleDownloadReport = useCallback(() => {
-    if (report?.url) {
-      window.open(report.url, "blank")
-    }
-  }, [report])
-
-  const handleCopyLink = useCallback(async () => {
-    await navigator.clipboard.writeText(report?.url ?? "")
-  }, [report?.url])
+  }, [canGenerateReport, submitScope, repo, branchName, commitHash, files, nSLOCAdjustment])
 
   return (
-    <LoadingContainer loading={isLoading || repoIsLoading} label={repoIsLoading ? "" : "Generating report ..."}>
+    <LoadingContainer
+      loading={isLoading || repoIsLoading || isLoadingContracts}
+      label={repoIsLoading || isLoadingContracts ? "Analyzing repo ..." : "Saving scope ..."}
+    >
       <Row spacing="l">
         <Column spacing="l">
           <Box shadow={false} fullWidth>
@@ -142,29 +147,17 @@ export const AdminScope = () => {
           )}
           {repo && (
             <Box shadow={false}>
-              {report ? (
-                <Column spacing="m">
-                  <Row spacing="s">
-                    <Text strong>nSLOC:</Text>
-                    <Text>{report.nSLOC}</Text>
-                  </Row>
-                  <Row spacing="s">
-                    <Column grow={1}>
-                      <Button onClick={handleDownloadReport}>
-                        <FaDownload />
-                        &nbsp;Download report
-                      </Button>
-                    </Column>
-                    <Button variant="secondary" onClick={handleCopyLink}>
-                      <FaCopy />
-                    </Button>
-                  </Row>
-                </Column>
-              ) : (
-                <Button onClick={handleGenerateReport} disabled={!canGenerateReport}>
-                  Generate report
-                </Button>
-              )}
+              <Column spacing="m">
+                <Title variant="h2">nSLOC Adjustment</Title>
+                <Input type="number" onChange={setNSLOCAdjustment} value={nSLOCAdjustment} />
+              </Column>
+            </Box>
+          )}
+          {repo && (
+            <Box shadow={false}>
+              <Button onClick={handleGenerateReport} disabled={!canGenerateReport}>
+                Save scope
+              </Button>
             </Box>
           )}
         </Column>
@@ -177,17 +170,20 @@ export const AdminScope = () => {
                   &nbsp;
                   {repo.name}
                 </Title>
-                <RepositoryContractsSelector
-                  repo={repo?.name}
-                  commit={commitHash}
-                  onPathSelected={handlePathSelected}
-                  selectedPaths={files}
-                  onSelectAll={handleSelectAll}
-                  onClearSelection={handleClearSelection}
-                />
+                {repoContracts ? (
+                  <RepositoryContractsSelector
+                    tree={repoContracts.tree}
+                    onPathSelected={handlePathSelected}
+                    selectedPaths={files}
+                    onSelectAll={handleSelectAll}
+                    onClearSelection={handleClearSelection}
+                  />
+                ) : null}
               </Column>
             </Box>
           )}
+          {isSuccess && <SaveScopeSuccessModal reportURL={report} />}
+          {contractsError && <ScopeErrorModal onClose={handleErrorModalClose} />}
           {branchSelectionModalOpen && (
             <BranchSelectionModal
               repoName={repo?.name ?? ""}

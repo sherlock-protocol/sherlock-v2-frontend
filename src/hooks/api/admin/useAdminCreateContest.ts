@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from "react-query"
 import { adminContestsQuery } from "./useAdminContests"
 import { adminCreateContest as adminCreateContestUrl } from "../urls"
 import { contests as contestsAPI } from "../axios"
-import { DateTime } from "luxon"
 import { AxiosError } from "axios"
 
 type AdminCreateContestParams = {
@@ -16,20 +15,13 @@ type AdminCreateContestParams = {
   }
   contest: {
     title: string
-    shortDescription: string
-    nSLOC: string
-    startDate: DateTime
-    endDate: DateTime
-    auditRewards: number
-    judgingPrizePool: number
-    leadJudgeFixedPay: number
-    fullPayment: number
+    previousContestId?: number | null
   }
 }
 
 export const useAdminCreateContest = () => {
   const queryClient = useQueryClient()
-  const { mutate, mutateAsync, ...mutation } = useMutation<void, Error, AdminCreateContestParams>(
+  const { mutate, ...mutation } = useMutation<void, Error, AdminCreateContestParams>(
     async (params) => {
       try {
         await contestsAPI.post(adminCreateContestUrl(), {
@@ -42,14 +34,7 @@ export const useAdminCreateContest = () => {
             website: params.protocol.website,
           },
           title: params.contest.title,
-          short_description: params.contest.shortDescription,
-          lines_of_code: params.contest.nSLOC,
-          starts_at: params.contest.startDate.toSeconds(),
-          ends_at: params.contest.endDate.toSeconds(),
-          audit_rewards: params.contest.auditRewards,
-          judging_prize_pool: params.contest.judgingPrizePool,
-          lead_judge_fixed_pay: params.contest.leadJudgeFixedPay,
-          full_payment: params.contest.fullPayment,
+          previous_contest_id: params.contest.previousContestId,
         })
       } catch (error) {
         const axiosError = error as AxiosError
@@ -58,6 +43,7 @@ export const useAdminCreateContest = () => {
     },
     {
       onSuccess: async () => {
+        await queryClient.invalidateQueries(adminContestsQuery("draft"))
         await queryClient.invalidateQueries(adminContestsQuery("active"))
       },
     }

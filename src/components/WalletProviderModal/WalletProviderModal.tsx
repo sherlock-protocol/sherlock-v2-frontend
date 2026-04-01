@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import { useConnect } from "wagmi"
+import { useConnect, useConnectors } from "wagmi"
 import Modal from "../Modal/Modal"
 import styles from "./WalletProviderModal.module.scss"
 import { ReactComponent as Metamask } from "../../assets/icons/metamask.svg"
@@ -17,7 +17,8 @@ interface Props {
  * wallet providers, in order to connect to the web application.
  */
 const WalletProviderModal: React.FC<Props> = ({ onClose }) => {
-  const { connectAsync, connectors } = useConnect()
+  const { connectAsync } = useConnect()
+  const connectors = useConnectors()
 
   /**
    * Connects via given connector

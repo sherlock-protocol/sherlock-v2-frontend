@@ -5,6 +5,7 @@ import {
   getAPYOverTime as getAPYOverTimeUrl,
   getTVCOverTime as getTVCOverTimeUrl,
   getTVLOverTime as getTVLOverTimeUrl,
+  getExternalCoverageOverTime as getExternalCoverageOverTimeUrl,
 } from "./urls"
 
 type APYDataPoint = {
@@ -69,6 +70,22 @@ export const tvcOverTimeQueryKey = "tvcOverTime"
 export const useTVCOverTime = () =>
   useQuery<DataPoint<BigNumber>[] | null, Error>(tvcOverTimeQueryKey, async () => {
     const { data: response } = await axios.get<GetStatsResponseData>(getTVCOverTimeUrl())
+
+    if (response.ok === false) throw Error(response.error)
+    if (response.data === null) return null
+
+    return response.data
+      .map((r) => ({
+        timestamp: r.timestamp,
+        value: BigNumber.from(r.value),
+      }))
+      .sort((a, b) => a.timestamp - b.timestamp)
+  })
+
+export const externalCoverageOverTimeQueryKey = "externalCoverageOverTime"
+export const useExternalCoverageOverTime = () =>
+  useQuery<DataPoint<BigNumber>[] | null, Error>(externalCoverageOverTimeQueryKey, async () => {
+    const { data: response } = await axios.get<GetStatsResponseData>(getExternalCoverageOverTimeUrl())
 
     if (response.ok === false) throw Error(response.error)
     if (response.data === null) return null

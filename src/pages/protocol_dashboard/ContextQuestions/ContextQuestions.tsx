@@ -13,6 +13,7 @@ import { useContextQuestions } from "../../../hooks/api/protocols/useContextQues
 import { useSubmitContextQuestionsAnswers } from "../../../hooks/api/protocols/useSubmitContextQuestionsAnswers"
 import { useUpdateContextQuestionAnswers } from "../../../hooks/api/protocols/useUpdateContextQuestionAnswers"
 import Modal, { Props as ModalProps } from "../../../components/Modal/Modal"
+import * as DOMPurify from "dompurify"
 
 import styles from "./ContextQuestions.module.scss"
 import { ErrorModal } from "../../ContestDetails/ErrorModal"
@@ -139,11 +140,16 @@ export const ContextQuestions = () => {
             {contextQuestions && contextQuestions.length > 0 ? (
               contextQuestions?.map((q) => {
                 const answer = answers.find((a) => a.questionID === q.id)
+                const cleanDescriptionHTML = DOMPurify.sanitize(q.description, {
+                  USE_PROFILES: { html: true },
+                  ADD_ATTR: ["target"],
+                })
+
                 return (
                   <Column key={`question-${q.id}`} spacing="xs">
                     <Text strong>{q.question}</Text>
                     <Text variant="secondary" size="small">
-                      {q.description}
+                      <span dangerouslySetInnerHTML={{ __html: cleanDescriptionHTML }}></span>
                     </Text>
                     <Input
                       variant="small"

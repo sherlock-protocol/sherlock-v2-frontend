@@ -35,23 +35,23 @@ export const useProfile = () =>
       const { data } = await contestsAPI.get<GetAuditorProfile>(getProfileUrl())
 
       return {
-        id: data.profile.id,
-        handle: data.profile.handle,
-        discordHandle: data.profile.discord_handle,
-        githubHandle: data.profile.github_handle,
-        twitterHandle: data.profile.twitter_handle,
-        telegramHandle: data.profile.telegram_handle,
-        addresses: data.profile.addresses.map((a) => ({
+        id: data?.profile?.id,
+        handle: data?.profile?.handle,
+        discordHandle: data?.profile?.discord_handle,
+        githubHandle: data?.profile?.github_handle,
+        twitterHandle: data?.profile?.twitter_handle,
+        telegramHandle: data?.profile?.telegram_handle,
+        addresses: data?.profile?.addresses.map((a) => ({
           id: a.id,
           address: a.address,
         })),
-        managedTeams: data.profile.managed_teams.map((t) => ({
+        managedTeams: data?.profile?.managed_teams?.map((t) => ({
           id: t.id,
           handle: t.handle,
         })),
-        payoutAddress: data.profile.payout_address_mainnet,
-        auditDays: data.profile.days,
-        outstandingDebt: data.profile.outstanding_debt,
+        payoutAddress: data?.profile?.payout_address_mainnet,
+        auditDays: data?.profile.days,
+        outstandingDebt: data?.profile?.outstanding_debt,
       }
     },
     {

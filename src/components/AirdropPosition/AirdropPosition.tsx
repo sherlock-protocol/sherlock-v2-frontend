@@ -8,10 +8,11 @@ import { Column, Row } from "../Layout"
 import { Text } from "../Text"
 import { Title } from "../Title"
 import styles from "./AirdropPosition.module.scss"
-import { useContract, useProvider, useSigner, Address } from "wagmi"
+import type { Address } from "viem"
 import useWaitTx from "../../hooks/useWaitTx"
 import { formatAmount } from "../../utils/format"
 import config from "../../config"
+import { useEthersContract } from "../../hooks/useEthersContract"
 
 type Props = {
   index: number
@@ -34,13 +35,7 @@ const AirdropPosition: React.FC<Props> = ({
   index,
   onSuccess,
 }) => {
-  const { data: signerData } = useSigner()
-  const provider = useProvider()
-  const contract = useContract({
-    address: contractAddress,
-    signerOrProvider: signerData || provider,
-    abi: MerkleDistributorABI,
-  })
+  const contract = useEthersContract(contractAddress, MerkleDistributorABI)
   const { waitForTx } = useWaitTx()
 
   const units = React.useMemo(() => (tokenSymbol === "USDC" ? 6 : 18), [tokenSymbol])
