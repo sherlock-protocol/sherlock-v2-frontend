@@ -1,5 +1,5 @@
 import { useQuery } from "react-query"
-import { Address } from "wagmi"
+import type { Address } from "viem"
 import { contests as contestsAPI } from "../axios"
 import { getAdminProfile } from "../urls"
 

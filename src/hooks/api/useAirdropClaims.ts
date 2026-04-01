@@ -3,7 +3,7 @@ import { useQuery } from "react-query"
 import axios from "./axios"
 import { DateTime } from "luxon"
 import { getAirdropClaims as getAirdropClaimsUrl } from "./urls"
-import { Address } from "wagmi"
+import type { Address } from "viem"
 
 type AirdropClaim = {
   id: number

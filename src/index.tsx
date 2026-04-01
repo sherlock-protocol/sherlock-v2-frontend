@@ -2,6 +2,10 @@ import React from "react"
 import { createRoot } from "react-dom/client"
 import { BrowserRouter } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "react-query"
+import {
+  QueryClient as TanstackQueryClient,
+  QueryClientProvider as TanstackQueryClientProvider,
+} from "@tanstack/react-query"
 
 import { WagmiProvider } from "./utils/WagmiProvider"
 import { TxWaitProvider } from "./hooks/useWaitTx"
@@ -26,28 +30,32 @@ const queryClient = new QueryClient({
     },
   },
 })
+
+const wagmiQueryClient = new TanstackQueryClient()
 const container = document.getElementById("root")
 const root = createRoot(container!)
 
 root.render(
   <React.StrictMode>
-    <SentryErrorBoundary>
-      <BrowserRouter>
-        <WagmiProvider>
+    <BrowserRouter>
+      <WagmiProvider>
+        <TanstackQueryClientProvider client={wagmiQueryClient}>
           <QueryClientProvider client={queryClient}>
-            <TxWaitProvider>
-              <FundraisePositionProvider>
-                <StakingPositionsProvider>
-                  <AuthenticationContextProvider>
-                    <App />
-                  </AuthenticationContextProvider>
-                </StakingPositionsProvider>
-              </FundraisePositionProvider>
-            </TxWaitProvider>
+            <SentryErrorBoundary>
+              <TxWaitProvider>
+                <FundraisePositionProvider>
+                  <StakingPositionsProvider>
+                    <AuthenticationContextProvider>
+                      <App />
+                    </AuthenticationContextProvider>
+                  </StakingPositionsProvider>
+                </FundraisePositionProvider>
+              </TxWaitProvider>
+            </SentryErrorBoundary>
           </QueryClientProvider>
-        </WagmiProvider>
-      </BrowserRouter>
-    </SentryErrorBoundary>
+        </TanstackQueryClientProvider>
+      </WagmiProvider>
+    </BrowserRouter>
   </React.StrictMode>
 )
 

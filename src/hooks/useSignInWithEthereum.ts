@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { useAccount, useNetwork, useSignMessage } from "wagmi"
+import { useAccount, useChainId, useSignMessage } from "wagmi"
 import { SiweMessage } from "siwe"
 import { contests as contestsAPI } from "./api/axios"
 import { getNonce as getNonceUrl } from "./api/urls"
@@ -14,7 +14,7 @@ type GetNonceResponseData = {
 
 export const useSignInWithEthereum = () => {
   const { address } = useAccount()
-  const { chain } = useNetwork()
+  const chainId = useChainId()
   const [signature, setSignature] = useState<string>()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error>()
@@ -57,7 +57,7 @@ export const useSignInWithEthereum = () => {
   }, [address])
 
   const signIn = useCallback(async () => {
-    if (!address || !chain) return
+    if (!address || !chainId) return
 
     setIsLoading(true)
     setError(undefined)
@@ -72,7 +72,7 @@ export const useSignInWithEthereum = () => {
         domain: "app.sherlock.xyz",
         address: ethers.utils.getAddress(address),
         statement: "Sign in with Ethereum to Sherlock Audits",
-        chainId: chain?.id,
+        chainId,
         uri: "https://app.sherlock.xyz",
         version: "1",
         nonce,
@@ -88,7 +88,7 @@ export const useSignInWithEthereum = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [signMessageAsync, setIsLoading, address, chain, verify])
+  }, [signMessageAsync, setIsLoading, address, chainId, verify])
 
   return useMemo(
     () => ({ signIn, isLoading: isLoading || verificationIsLoading, error, isError: !!error, signature }),

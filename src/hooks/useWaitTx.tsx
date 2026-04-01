@@ -26,8 +26,27 @@ const TxWaitContext = React.createContext<TxWaitContextType>({} as TxWaitContext
 export const TxWaitProvider: React.FC<PropsWithChildren<unknown>> = ({ children }) => {
   const [txState, setTxState] = useState(TxState.NONE)
   const [txHash, setTxHash] = useState<string | undefined>()
+  const [txErrorReason, setTxErrorReason] = useState<string | undefined>()
   const [txType, setTxType] = useState<TxType>(TxType.GENERIC)
   const [modalIsOpen, setModalIsOpen] = useState(false)
+
+  const getErrorReason = (error: any): string => {
+    const candidates = [
+      error?.reason,
+      error?.error?.reason,
+      error?.error?.data?.message,
+      error?.data?.message,
+      error?.message,
+    ].filter(Boolean) as string[]
+
+    const message = candidates[0] ?? "Transaction failed"
+    const revertedMatch = message.match(/execution reverted(?::\s*)?(.*)$/i)
+    if (revertedMatch && revertedMatch[1]) {
+      return revertedMatch[1].trim()
+    }
+
+    return message
+  }
 
   /**
    * Wrap a contract transaction and follow transaction state changes
@@ -41,6 +60,7 @@ export const TxWaitProvider: React.FC<PropsWithChildren<unknown>> = ({ children 
       }
     ): Promise<ethers.ContractReceipt | undefined> => {
       setTxHash(undefined)
+      setTxErrorReason(undefined)
       setTxState(TxState.REQUESTED)
       setTxType(options?.transactionType ?? TxType.GENERIC)
       setModalIsOpen(true)
@@ -66,11 +86,25 @@ export const TxWaitProvider: React.FC<PropsWithChildren<unknown>> = ({ children 
 
         return receipt
       } catch (error: any) {
+        const errorReason = getErrorReason(error)
+        setTxErrorReason(errorReason)
+        const errorTxHash = error?.transactionHash ?? error?.receipt?.transactionHash
+        if (errorTxHash) {
+          setTxHash(errorTxHash)
+        }
+
+        console.error("[tx] transaction failed", {
+          reason: errorReason,
+          code: error?.code,
+          hash: errorTxHash,
+          error,
+        })
+
         // User denied transaction (EIP-1193)
         if (error?.code === 4001 || error === "User rejected the transaction") {
           setTxState(TxState.USER_DENIED)
         } else {
-          captureException(new Error(error?.message), {
+          captureException(new Error(errorReason), {
             extra: error,
             tags: {
               section: "transactions",
@@ -101,11 +135,11 @@ export const TxWaitProvider: React.FC<PropsWithChildren<unknown>> = ({ children 
       case TxState.SUCCESS:
         return <SuccessTx type={txType} hash={txHash} onClose={handleModalClose} />
       case TxState.REVERTED:
-        return <RevertedTx hash={txHash} onClose={handleModalClose} />
+        return <RevertedTx hash={txHash} reason={txErrorReason} onClose={handleModalClose} />
       case TxState.USER_DENIED:
         return <UserDeniedTx onClose={handleModalClose} />
     }
-  }, [txState, modalIsOpen, txType, txHash, handleModalClose])
+  }, [txState, modalIsOpen, txType, txHash, txErrorReason, handleModalClose])
 
   const ctx = React.useMemo(() => ({ waitForTx }), [waitForTx])
 

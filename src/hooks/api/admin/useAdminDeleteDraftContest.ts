@@ -1,4 +1,4 @@
-import { useMutation } from "wagmi"
+import { useMutation } from "react-query"
 import { adminDeleteDraftContest as adminDeleteDraftContestUrl } from "../urls"
 import { contests as contestsAPI } from "../axios"
 import { useQueryClient } from "react-query"

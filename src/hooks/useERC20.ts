@@ -1,8 +1,10 @@
 import React from "react"
 import ERC20ABI from "../abi/ERC20"
-import { Address, useAccount, useContract, useProvider, useSigner } from "wagmi"
+import type { Address } from "viem"
+import { useAccount } from "wagmi"
 import { BigNumber, ethers } from "ethers"
 import config from "../config"
+import { useEthersContract } from "./useEthersContract"
 
 /**
  * Object containing used ERC20 tokens.
@@ -37,15 +39,9 @@ const useERC20 = (token: AvailableERC20Tokens) => {
   const [balance, setBalance] = React.useState<BigNumber>()
   const [allowances, setAllowances] = React.useState<{ [key: string]: BigNumber }>({})
 
-  const provider = useProvider()
-  const { data: signerData } = useSigner()
   const { address: connectedAddress } = useAccount()
 
-  const contract = useContract({
-    address: address,
-    signerOrProvider: signerData || provider,
-    abi: ERC20ABI,
-  })
+  const contract = useEthersContract(address, ERC20ABI)
 
   /**
    * Refresh token balance

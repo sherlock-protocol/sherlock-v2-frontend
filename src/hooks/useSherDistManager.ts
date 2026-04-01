@@ -1,8 +1,8 @@
 import React from "react"
-import { useContract, useProvider, useSigner } from "wagmi"
 import SherDistManagerABI from "../abi/SherDistributionManager"
 import { BigNumber } from "ethers"
 import config from "../config"
+import { useEthersContract } from "./useEthersContract"
 
 /**
  * Address of Sher Distribution Manager contract
@@ -15,13 +15,7 @@ export const SHERLOCK_DIST_MANAGER_ADDRESS = config.sherDistributionManagerAddre
  * See https://github.com/sherlock-protocol/sherlock-v2-core
  */
 const useSherDistManager = () => {
-  const provider = useProvider()
-  const { data: signerData } = useSigner()
-  const contract = useContract({
-    address: SHERLOCK_DIST_MANAGER_ADDRESS,
-    signerOrProvider: signerData || provider,
-    abi: SherDistManagerABI,
-  })
+  const contract = useEthersContract(SHERLOCK_DIST_MANAGER_ADDRESS, SherDistManagerABI)
 
   /**
    * Compute SHER rewards for staking USDC for a given period
